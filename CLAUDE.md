@@ -67,7 +67,8 @@ The folder name provides context that individual files inherit. The agent valida
 |---|---|---|
 | Analyze | `/analyze` | Scan sources, extract insights, detect conflicts |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
-| Ship | `/ship` | Generate deliverables with traceability |
+| Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
+| Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 
 ## Maturity Levels
 
@@ -96,7 +97,8 @@ The folder name provides context that individual files inherit. The agent valida
 ├── .claude/skills/
 │   ├── analyze/SKILL.md       /analyze — ingest sources
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
-│   └── ship/SKILL.md          /ship — generate deliverables
+│   ├── ship/SKILL.md          /ship — generate deliverables
+│   └── visualize/SKILL.md    /visualize — generate diagrams
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files

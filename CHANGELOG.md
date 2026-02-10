@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.4.0] — 2025-02-10
+
+### Added
+- **`/visualize` skill** — generates interactive Mermaid diagrams from Work layer (system-map, insights, conflicts, all). Outputs to `03_Outputs/DIAGRAMS.html`
+- **`/ship presentation`** — Reveal.js slide deck generator. Single HTML file with speaker notes, keyboard navigation, and presenter mode
+- **`/ship report`** — A4 formatted report for stakeholders, optimized for Print > Save as PDF. Cover page, table of contents, executive summary
+
+### Changed
+- `/ship` argument-hint expanded: `[prd|presentation|report|benchmark|audit|strategy]`
+- All docs updated to reflect 4-skill pipeline (analyze, synthesis, ship, visualize)
+
 ## [2.3.0] — 2025-02-10
 
 ### Added

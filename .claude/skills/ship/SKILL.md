@@ -3,7 +3,7 @@ name: ship
 description: Generate or update deliverables in 03_Outputs with full traceability to insights
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|benchmark|audit|strategy]"
+argument-hint: "[prd|presentation|report|benchmark|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -20,7 +20,11 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 ### Phase 1: Load & Validate
 
-1. **Determine target** — Default: `PRD.html`. If the user passes an argument (benchmark, audit, strategy), generate that document type instead.
+1. **Determine target** — Default: `PRD.html`. If the user passes an argument, generate that document type instead:
+   - `prd` — Product Requirements Document (default).
+   - `presentation` — Reveal.js slide deck with key insights and decisions.
+   - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
+   - `benchmark` / `audit` / `strategy` — Specialized documents.
 
 2. **Load knowledge base** — Read:
    - `02_Work/SYSTEM_MAP.md` for product architecture and decisions.
@@ -53,17 +57,39 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 6. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
 
-7. **For new document types** (benchmark, audit, strategy):
+7. **For presentation** (`/ship presentation`):
+   - Output: `03_Outputs/PRESENTATION.html`
+   - Use Reveal.js (CDN) in a single self-contained HTML file.
+   - Structure: Title slide → Problem/Context → Key Insights (1 per slide, with `[IG-XX]` refs) → System Map summary → Decisions → Open Questions → Next Steps.
+   - Keep slides minimal — one idea per slide, large text, insight callouts.
+   - Include speaker notes (`<aside class="notes">`) with supporting detail.
+   - Navigation: arrow keys, presenter mode (press `S`).
+   - Use the same color palette as PRD.html (Inter font, green callouts, `#F0F2F5` background).
+   - HTML structure:
+     ```html
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+     <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+     ```
+
+8. **For report** (`/ship report`):
+   - Output: `03_Outputs/REPORT.html`
+   - Use the same A4 CSS system as PRD.html (Inter font, `.page` container, print media query).
+   - Structure: Cover page (title, date, author) → Table of Contents → Executive Summary → Findings by category → Insight References → Methodology Notes.
+   - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
+   - Target audience: stakeholders who don't use GitHub or the pipeline.
+
+9. **For other document types** (benchmark, audit, strategy):
    - Use `03_Outputs/PRD.html` as the CSS and layout reference.
    - Adapt the section structure to the document type.
    - Maintain the same traceability requirements.
 
-8. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
-   - What was generated or updated.
-   - Date of generation.
-   - Number of insights referenced.
+10. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
+    - What was generated or updated.
+    - Date of generation.
+    - Number of insights referenced.
 
-9. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]

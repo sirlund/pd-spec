@@ -93,6 +93,9 @@ Client-facing and stakeholder-facing deliverables, generated from the Work layer
 
 **Key files:**
 - `PRD.html` — Product Requirements Document with full insight traceability.
+- `PRESENTATION.html` — Reveal.js slide deck with key insights and decisions.
+- `REPORT.html` — A4 formatted report for stakeholders (PDF-ready).
+- `DIAGRAMS.html` — Mermaid diagrams of system map, insights, and conflicts.
 - Additional deliverables (benchmarks, audits, strategies) generated via `/ship`.
 
 **Rules:**
@@ -102,7 +105,7 @@ Client-facing and stakeholder-facing deliverables, generated from the Work layer
 
 ## The Skills Pipeline
 
-ProductLM uses three Claude Code skills that form an analysis pipeline:
+ProductLM uses four Claude Code skills:
 
 ### `/analyze` — Source Ingestion
 Scans `01_Sources/` files, extracts atomic claims, assigns `[IG-XX]` IDs, and detects contradictions against existing insights.
@@ -121,6 +124,14 @@ Generates HTML deliverables in `03_Outputs/` with full traceability. Uses the A4
 
 **Input:** `SYSTEM_MAP.md` + `INSIGHTS_GRAPH.md`
 **Output:** HTML deliverables in `03_Outputs/`
+**Types:** `prd` (default), `presentation` (Reveal.js slides), `report` (A4 PDF-ready), `benchmark`, `audit`, `strategy`
+
+### `/visualize` — Diagram Generation
+Transforms Work layer files into interactive Mermaid diagrams rendered as HTML.
+
+**Input:** `SYSTEM_MAP.md`, `INSIGHTS_GRAPH.md`, `CONFLICTS.md`
+**Output:** `03_Outputs/DIAGRAMS.html`
+**Targets:** `system-map` (default), `insights`, `conflicts`, `all`
 
 ## Maturity Levels
 

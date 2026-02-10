@@ -36,12 +36,13 @@ Information flows in one direction: Sources → Work → Outputs. This is the co
 
 ### The Skills Pipeline
 
-Three Claude Code skills form the analysis pipeline:
+Four Claude Code skills form the pipeline:
 
 ```
-/analyze    →  Scan sources, extract insights, detect contradictions
-/synthesis  →  Resolve conflicts, update system map
-/ship       →  Generate deliverables with full traceability
+/analyze              →  Scan sources, extract insights, detect contradictions
+/synthesis            →  Resolve conflicts, update system map
+/ship [type]          →  Generate deliverables (prd, presentation, report, benchmark, audit, strategy)
+/visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
 ```
 
 Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
@@ -51,6 +52,9 @@ Each skill reads from the layer below it and writes to its own layer. The pipeli
 | `/analyze` | `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
 | `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
 | `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
+| `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
+
+`/ship` supports multiple output types: `prd` (default), `presentation` (Reveal.js slides), `report` (A4 PDF-ready), `benchmark`, `audit`, `strategy`.
 
 Every skill starts with a **Phase 0: integrity check** — reading MEMORY.md to detect manual edits since the last session. Every skill ends by appending its actions to MEMORY.md.
 
@@ -89,7 +93,8 @@ You don't configure the level — the system infers it from the number and diver
 ├── .claude/skills/
 │   ├── analyze/SKILL.md          /analyze skill definition
 │   ├── synthesis/SKILL.md        /synthesis skill definition
-│   └── ship/SKILL.md             /ship skill definition
+│   ├── ship/SKILL.md             /ship skill definition
+│   └── visualize/SKILL.md       /visualize skill definition
 ├── 01_Sources/                   Raw inputs (immutable, any format)
 │   ├── _SOURCE_TEMPLATE.md      Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md     Metadata template for non-markdown files
@@ -126,9 +131,12 @@ cd my-project
 #    See 01_Sources/_README.md for details
 
 # 4. Open in Claude Code or Cursor, then run the pipeline
-/analyze     # Extract insights
-/synthesis   # Resolve conflicts
-/ship        # Generate deliverables
+/analyze                # Extract insights
+/synthesis              # Resolve conflicts
+/ship                   # Generate PRD
+/ship presentation      # Generate slide deck
+/ship report            # Generate PDF-ready report
+/visualize              # Generate system map diagram
 ```
 
 Each layer has a `_README.md` explaining what it does and what you should (or shouldn't) touch. Start with `01_Sources/_README.md`.
