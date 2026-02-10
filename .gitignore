@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Temp files
+*.tmp
+*.bak
+*.orig
+
+# Generated outputs
+03_Outputs/*.docx
+03_Outputs/*.pdf
+
+# Dependencies
+node_modules/

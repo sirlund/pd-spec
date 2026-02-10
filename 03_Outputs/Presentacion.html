@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PROJECT_NAME}} — Presentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-color: #f5f7fa;
+            --text-color: #1a1a2e;
+            --accent-color: #2563eb;
+            --accent-light: #dbeafe;
+            --accent-secondary: #0ea5e9;
+            --box-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--box-bg);
+            padding: 40px 60px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 0.5em;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.8em;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.7;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--text-color);
+        }
+
+        ul {
+            text-align: left;
+            font-size: 1.1em;
+            list-style-type: none;
+            padding: 0;
+            display: inline-block;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        li {
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        li::before {
+            content: "\2022";
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        strong {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .columns {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            justify-content: center;
+            text-align: left;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: -50px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 0.9em;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            border: none;
+            color: #fff;
+            padding: 10px 24px;
+            font-family: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background-color: var(--accent-color);
+            transition: width 0.3s;
+            z-index: 10;
+            border-radius: 2px;
+        }
+
+        .sub-text {
+            font-size: 0.9em;
+            color: var(--muted);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .card {
+            background: var(--accent-light);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="slide-container">
+        <div class="progress" id="progressBar"></div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <div class="icon">&#x1F4CB;</div>
+            <h1>{{PROJECT_NAME}}</h1>
+            <p>{{PROJECT_OBJECTIVE}}</p>
+            <br>
+            <p>Prepared by <strong>{{CONSULTANT_NAME}}</strong> | {{DATE}}</p>
+            <p class="sub-text">For {{CLIENT_NAME}}</p>
+            <br>
+            <p class="sub-text">[Press Space or click to navigate]</p>
+        </div>
+
+        <!-- Slide 2: Background -->
+        <div class="slide">
+            <h2>Background</h2>
+            <div class="columns">
+                <div class="column">
+                    <h3>The Request</h3>
+                    <p>[Describe what the client asked for in 2–3 sentences.]</p>
+                </div>
+                <div class="column">
+                    <h3>The Context</h3>
+                    <p>[Describe the business context and why this matters now.]</p>
+                </div>
+            </div>
+            <div class="card" style="margin-top:20px; width:80%;">
+                <p><strong>Key Challenge:</strong> [Summarize the core challenge in one sentence.]</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Strategy -->
+        <div class="slide">
+            <h2>Recommended Strategy</h2>
+            <p>[Describe your recommended approach at a high level.]</p>
+
+            <div class="columns">
+                <div class="column">
+                    <h3>Why This Approach</h3>
+                    <ul>
+                        <li>[Reason 1]</li>
+                        <li>[Reason 2]</li>
+                        <li>[Reason 3]</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h3>Key Benefits</h3>
+                    <ul>
+                        <li>[Benefit 1]</li>
+                        <li>[Benefit 2]</li>
+                        <li>[Benefit 3]</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Scope -->
+        <div class="slide">
+            <h2>Scope & Deliverables</h2>
+            <p>[What will be delivered and what is out of scope.]</p>
+
+            <div class="columns">
+                <div class="column card">
+                    <h3>Included</h3>
+                    <ul>
+                        <li>[Deliverable 1]</li>
+                        <li>[Deliverable 2]</li>
+                        <li>[Deliverable 3]</li>
+                    </ul>
+                </div>
+                <div class="column card" style="border-left-color: var(--accent-secondary);">
+                    <h3>Out of Scope</h3>
+                    <ul>
+                        <li>[Exclusion 1]</li>
+                        <li>[Exclusion 2]</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Investment -->
+        <div class="slide">
+            <h2>Investment</h2>
+            <div class="icon">&#x1F4B0;</div>
+            <div class="columns" style="align-items: center;">
+                <div class="column">
+                    <div class="card">
+                        <h3>[Option A]</h3>
+                        <h2 style="border:none; color:var(--accent-color)">[Amount]</h2>
+                        <p class="sub-text">[Description]</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card" style="border-left-color: var(--accent-secondary);">
+                        <h3>[Option B]</h3>
+                        <h2 style="border:none; color:var(--accent-secondary)">[Amount]</h2>
+                        <p class="sub-text">[Description]</p>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <p>[Additional pricing context or notes.]</p>
+        </div>
+
+        <!-- Slide 6: Next Steps -->
+        <div class="slide">
+            <h2>Next Steps</h2>
+            <div class="card" style="text-align: left; display: inline-block;">
+                <ul>
+                    <li>1. [Action item for the client]</li>
+                    <li>2. [Action item for the client]</li>
+                    <li>3. [Action item for the client]</li>
+                </ul>
+            </div>
+            <br><br>
+            <p><strong>Let's get started.</strong></p>
+        </div>
+
+        <div class="controls">
+            <button onclick="prevSlide()">&#8592; Back</button>
+            <span id="slideCounter">1 / 6</span>
+            <button onclick="nextSlide()">Next &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const slideCounter = document.getElementById('slideCounter');
+        const totalSlides = slides.length;
+
+        function updateUI() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = progress + '%';
+            slideCounter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateUI();
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        document.body.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                var width = window.innerWidth;
+                if (e.clientX > width * 0.7) nextSlide();
+                if (e.clientX < width * 0.3) prevSlide();
+            }
+        });
+
+        updateUI();
+    </script>
+</body>
+
+</html>
