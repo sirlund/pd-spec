@@ -2,7 +2,7 @@
 name: synthesis
 description: Review pending conflicts, update the system map based on verified insights
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Edit
+allowed-tools: Read, Grep, Glob, Edit, Write
 ---
 
 # /synthesis — Conflict Resolution & System Map Update

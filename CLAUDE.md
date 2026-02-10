@@ -138,6 +138,6 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 
 - **Maturity:** Level 1 (Seed)
 - **Last updated:** 2025-02-10
-- **Status:** v2.3 — Project memory, _CONTEXT.md for non-markdown sources, layer signage, propose-first skills with integrity checks.
+- **Status:** v2.4 — 4-skill pipeline (analyze, synthesis, ship, visualize), project memory, propose-first workflows, layer signage.
 - **Insights count:** 0
 - **Conflicts count:** 0

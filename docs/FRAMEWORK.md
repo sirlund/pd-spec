@@ -9,10 +9,14 @@ The framework enforces a 3-layer architecture (Sources → Work → Outputs) whe
 ## Core Principles
 
 1. **No Hallucination** — If it's not in `01_Sources/`, the insight doesn't exist. Every claim must trace to a source file.
-2. **Homer's Car Detector** — Flag unnecessary complexity and feature creep. If a module or decision can't justify itself with insight references, it shouldn't exist.
-3. **Silence is Gold** — Minimize cognitive load. Outputs should be concise, scannable, and free of filler.
-4. **Sources Are Read-Only** — Files in `01_Sources/` capture raw input and are never modified after initial capture.
-5. **Log Everything** — All changes are logged in `CHANGELOG.md`. Every significant decision gets a dated entry.
+2. **Transparency & Control** — The agent proposes before executing. The user has final veto over any change.
+3. **Homer's Car Detector** — Flag unnecessary complexity and feature creep. If a module or decision can't justify itself with insight references, it shouldn't exist.
+4. **Proactive Gap Detection** — Detect missing definitions and suggest validation methods as open options.
+5. **Source Organization Validation** — Validate that file content matches its folder context.
+6. **Uncertainty Management** — Present clear options with reasoning when facing ambiguity. Never silently pick one interpretation.
+7. **Silence is Gold** — Minimize cognitive load. Outputs should be concise, scannable, and free of filler.
+8. **Sources Are Read-Only** — Files in `01_Sources/` capture raw input and are never modified after initial capture.
+9. **Log Everything** — All changes are logged in `CHANGELOG.md` and `MEMORY.md`. Every significant decision gets a dated entry.
 
 ## The 3-Layer Architecture
 
@@ -162,7 +166,7 @@ Every skill appends an entry after execution:
 
 ```markdown
 ## [2026-02-10T14:30] /analyze
-- **Request:** "Analiza las entrevistas del workshop de febrero"
+- **Request:** "Analyze the interviews from the February workshop"
 - **Actions:** Scanned 3 files in `01_Sources/2026-02-workshop-gerencia/`
 - **Result:** Added [IG-01]–[IG-05], detected [CF-01]
 - **Snapshot:** 5 insights (3 PENDING, 2 VERIFIED) · 1 conflict PENDING · 0 outputs

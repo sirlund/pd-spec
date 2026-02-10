@@ -34,7 +34,7 @@
 - **Propose-first workflow** in all three skills (`/analyze`, `/synthesis`, `/ship`) — agent presents draft findings and waits for user approval before writing to files
 
 ### Changed
-- **No Hallucination mandate** enhanced with actionable phrasing: "¿lo marcamos como asunción o sugiero cómo validarlo?"
+- **No Hallucination mandate** enhanced with actionable phrasing: "should we mark it as an assumption or should I suggest how to validate it?"
 - `/analyze` skill restructured into 4 phases: Discovery & Validation → Analysis → Propose → Write
 - `/synthesis` skill restructured into 4 phases: Load → Present & Discuss → Propose → Write
 - `/ship` skill restructured into 3 phases: Load & Validate → Propose → Generate
