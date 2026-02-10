@@ -149,3 +149,86 @@ Implement `/audit` when:
 - [ ] Update FRAMEWORK.md pipeline documentation
 - [ ] Add CHANGELOG entry
 - [ ] Test on a real project at Validation maturity level
+
+---
+
+## [BL-03] `/ship persona` & `/ship journey-map` — UX Research Artifacts
+
+**Status:** Proposed
+**Priority:** Medium
+**Proposed in:** v2.4 session (2025-02-10)
+**Inspired by:** aitmpl/ux-researcher-designer skill
+
+### What it does
+
+Adds `persona` and `journey-map` as new output types for `/ship`. Generates UX research artifacts derived from `user-need` insights in the Work layer.
+
+- `persona` → `03_Outputs/PERSONAS.html` — User archetypes synthesized from multiple `user-need` insights.
+- `journey-map` → `03_Outputs/JOURNEY_MAP.html` — User flow visualization with pain points, touchpoints, and emotional states.
+
+### How it differs from raw insights
+
+Insights in `INSIGHTS_GRAPH.md` are atomic claims: "[IG-07] Users report frustration when switching between 3+ tools during a single workflow." A persona **combines** multiple user-need insights into a coherent archetype. A journey map **sequences** them into a temporal flow. Both are synthesis deliverables, not raw data.
+
+### Architecture fit
+
+- Reads from `02_Work/INSIGHTS_GRAPH.md` (filtered to `user-need` category) + `02_Work/SYSTEM_MAP.md`.
+- Writes to `03_Outputs/PERSONAS.html` or `03_Outputs/JOURNEY_MAP.html`.
+- Follows the same Phase 0 → Phase 1 → Phase 2 → Phase 3 pattern.
+- NOT a separate skill — another output type of `/ship`, consistent with all existing types.
+
+### No Hallucination tension
+
+Personas and journey maps inherently involve **synthesis** — combining multiple data points into a narrative. This creates tension with No Hallucination:
+
+1. **Insight-backed elements** — Demographics, pain points, goals, and behaviors that trace directly to `[IG-XX]` entries. Example: "Frustration with tool-switching → [IG-07]."
+2. **Synthesized narrative** — The persona's name, photo placeholder, scenario description, and emotional arc. These are presentation scaffolding, not evidence claims.
+
+To maintain the mandate, the output must:
+
+```html
+<!-- Each persona attribute traces to insights -->
+<div class="persona-attribute backed">
+  <span class="tag">IG-07, IG-12</span>
+  <strong>Pain point:</strong> Loses 20 min/day switching between disconnected tools.
+</div>
+
+<!-- Narrative scaffolding is labeled -->
+<div class="persona-narrative scaffold">
+  <span class="tag">SYN</span>
+  "María" is a composite archetype representing 3 interview subjects.
+</div>
+```
+
+Synthesized elements are labeled `SYN` (not `IG-XX` or `REC`) to distinguish them from evidence-backed claims and design recommendations.
+
+### Why not a separate `/research` skill
+
+Gemini proposed a `/research` skill with `analyze` and `synthesize` subcommands. This duplicates our existing pipeline:
+
+| Gemini proposes | Already exists as |
+|---|---|
+| `/research analyze` — audit PRDs | `/analyze` (scans all source types, not just code) |
+| `/research synthesize` — generate personas | `/ship persona` (deliverable from Work layer) |
+
+A `/research` skill would duplicate Phase 0–3 structure, MEMORY.md writing, and readiness validation. The only new thing is the output format — which is exactly what `/ship` types are for.
+
+### Prerequisites
+
+Persona and journey map generation requires sufficient `user-need` insights. Minimum viable input:
+- 3+ `user-need` insights from different sources (not all from the same interview).
+- At least 1 insight at `VERIFIED` status.
+- If the knowledge base doesn't meet this threshold, `/ship persona` should report what's missing and suggest running `/analyze` on user research sources.
+
+### Implementation checklist
+
+- [ ] Add `persona` and `journey-map` to `/ship` argument-hint
+- [ ] Add sections in `/ship` SKILL.md with structure, HTML template, and SYN vs IG-XX labeling rules
+- [ ] Define persona template (archetype name, demographics, goals, pain points, behaviors — all traced)
+- [ ] Define journey map template (stages, touchpoints, pain points, emotional curve — all traced)
+- [ ] Define minimum `user-need` insight threshold for generation
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Update README skills section
+- [ ] Update FRAMEWORK.md `/ship` types list
+- [ ] Add CHANGELOG entry
+- [ ] Test with real user research insights
