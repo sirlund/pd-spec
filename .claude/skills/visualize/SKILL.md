@@ -1,6 +1,6 @@
 ---
 name: visualize
-description: Generate Mermaid diagrams from the Work layer (system map, insights graph, conflicts) as interactive HTML
+description: Generate interactive Mermaid diagrams (system-map, insights, conflicts) as HTML in 03_Outputs/ from the knowledge base in 02_Work/
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 argument-hint: "[system-map|insights|conflicts|all]"

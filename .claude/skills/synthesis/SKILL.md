@@ -1,6 +1,6 @@
 ---
 name: synthesis
-description: Review pending conflicts, update the system map based on verified insights
+description: Resolve pending conflicts in 02_Work/CONFLICTS.md, update insight statuses in INSIGHTS_GRAPH.md, and refresh SYSTEM_MAP.md with verified decisions
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 ---

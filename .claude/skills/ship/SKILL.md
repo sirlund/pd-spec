@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Generate or update deliverables in 03_Outputs with full traceability to insights
+description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 argument-hint: "[prd|presentation|report|benchmark|audit|strategy]"

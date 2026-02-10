@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: Scan sources in 01_Sources, extract entities and claims, cross-reference with existing insights, and log contradictions
+description: Scan sources in 01_Sources/, extract atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 ---
