@@ -116,6 +116,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   └── FRAMEWORK.md           Full methodology documentation
 ├── CLAUDE.md                  This file
 ├── CHANGELOG.md               Dated change log
+├── BACKLOG.md                 Future work proposals
 └── README.md                  Project overview
 ```
 

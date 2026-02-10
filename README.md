@@ -112,6 +112,7 @@ You don't configure the level — the system infers it from the number and diver
 │   └── FRAMEWORK.md              Full methodology reference
 ├── CLAUDE.md                     AI agent protocol
 ├── CHANGELOG.md                  Dated change log
+├── BACKLOG.md                    Future work proposals
 └── README.md                     This file
 ```
 
