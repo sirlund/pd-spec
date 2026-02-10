@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proposal: {{PROJECT_NAME}}</title>
+    <title>PRD: [Product Name]</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -133,6 +133,12 @@
             font-size: 0.9em;
         }
 
+        .insight-ref {
+            font-size: 0.8em;
+            color: #666;
+            font-style: italic;
+        }
+
         @media print {
             body {
                 background: none;
@@ -157,77 +163,63 @@
 
     <div class="page">
         <div class="doc-header">
-            <h1>Proposal: {{PROJECT_NAME}}</h1>
+            <h1>PRD: [Product Name]</h1>
             <div class="meta">
-                <p><strong>Prepared by:</strong> {{CONSULTANT_NAME}} <br>
-                    <strong>Date:</strong> {{DATE}} <br>
-                    <strong>Client:</strong> {{CLIENT_NAME}} <br>
-                    <strong>Objective:</strong> {{PROJECT_OBJECTIVE}}
+                <p><strong>Version:</strong> 0.1 <br>
+                    <strong>Last Updated:</strong> [Date] <br>
+                    <strong>Status:</strong> Draft
                 </p>
             </div>
         </div>
 
-        <h2>1. Background & Initial Request</h2>
-        <p>[Describe the client's original request and context. What problem are they trying to solve? What prompted this engagement?]</p>
+        <h2>1. Product Overview</h2>
+        <p>[One-paragraph description of the product, its purpose, and who it serves. Generated from SYSTEM_MAP.md Product Vision.]</p>
 
-        <h2>2. Recommended Strategy</h2>
-        <p>[Describe your recommended approach. If you're pivoting from the client's original request, explain why. Frame the strategy in terms of risk reduction and value delivery.]</p>
+        <h2>2. User Problem & Context</h2>
+        <p>[Describe the core user problem this product addresses. Reference the user-need insights that define the problem space.]</p>
+        <p class="insight-ref">Sources: [IG-XX], [IG-XX]</p>
 
-        <div class="callout">
-            <p><strong>Key Insight:</strong> [Highlight the most important strategic recommendation here.]</p>
-        </div>
-
-        <h2>3. Scope & Deliverables</h2>
-        <p>[Define what will be delivered. Be specific about what is included and what is explicitly excluded.]</p>
-        <ul>
-            <li><strong>[Deliverable 1]:</strong> [Description]</li>
-            <li><strong>[Deliverable 2]:</strong> [Description]</li>
-            <li><strong>[Deliverable 3]:</strong> [Description]</li>
-        </ul>
-
-        <h2>4. Investment</h2>
-        <p>[Present the cost estimate. Consider using a range/band to give flexibility.]</p>
-
+        <h2>3. Insights Summary</h2>
+        <p>Key verified insights driving this PRD:</p>
         <table>
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Estimate</th>
+                    <th>ID</th>
+                    <th>Insight</th>
+                    <th>Category</th>
+                    <th>Source</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>[Line item 1]</td>
-                    <td>[Amount]</td>
-                </tr>
-                <tr>
-                    <td>[Line item 2]</td>
-                    <td>[Amount]</td>
-                </tr>
-                <tr>
-                    <td><strong>Total</strong></td>
-                    <td><strong>[Total amount]</strong></td>
+                    <td>[IG-01]</td>
+                    <td>[Insight title]</td>
+                    <td>[category]</td>
+                    <td>[source file]</td>
                 </tr>
             </tbody>
         </table>
 
-        <h2>5. Roadmap</h2>
-        <p>[Break the work into phases with clear milestones.]</p>
-        <ul>
-            <li><strong>Phase 1:</strong> [Description and timeline]</li>
-            <li><strong>Phase 2:</strong> [Description and timeline]</li>
-            <li><strong>Phase 3:</strong> [Description and timeline]</li>
-        </ul>
+        <h2>4. System Architecture</h2>
+        <p>[High-level architecture derived from SYSTEM_MAP.md modules. Describe how the system is organized and why.]</p>
+        <p class="insight-ref">Sources: [IG-XX], [IG-XX]</p>
 
-        <h2>6. Conditions</h2>
-        <ul>
-            <li><strong>Infrastructure:</strong> [Who pays for hosting, domains, third-party services]</li>
-            <li><strong>IP Ownership:</strong> [Who owns the code and deliverables]</li>
-            <li><strong>Payment Terms:</strong> [Schedule, method, currency]</li>
-        </ul>
+        <h2>5. Module Specifications</h2>
 
-        <h2>7. Next Steps</h2>
-        <p>[Clear call to action. What does the client need to do to move forward?]</p>
+        <h3>5.1 [Module Name]</h3>
+        <p>[What this module does and the user/business need it serves.]</p>
+        <div class="callout">
+            <p><strong>Key Insight:</strong> [Highlight the most important insight driving this module.] <span class="insight-ref">[IG-XX]</span></p>
+        </div>
+
+        <h3>5.2 [Module Name]</h3>
+        <p>[What this module does and the user/business need it serves.]</p>
+
+        <h2>6. Open Questions & Risks</h2>
+        <ul>
+            <li>[Open question from SYSTEM_MAP.md]</li>
+            <li>[Risk identified during analysis]</li>
+        </ul>
     </div>
 
 </body>

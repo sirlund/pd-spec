@@ -1,0 +1,60 @@
+---
+name: ship
+description: Generate or update deliverables in 03_Outputs with full traceability to insights
+user-invocable: true
+allowed-tools: Read, Grep, Glob, Edit, Write
+argument-hint: "[prd|benchmark|audit|strategy]"
+---
+
+# /ship — Deliverable Generation
+
+## What this skill does
+
+Generates or updates HTML deliverables in `03_Outputs/` with full traceability to verified insights. Default target is `PRD.html`.
+
+## Instructions
+
+### Phase 1: Load & Validate
+
+1. **Determine target** — Default: `PRD.html`. If the user passes an argument (benchmark, audit, strategy), generate that document type instead.
+
+2. **Load knowledge base** — Read:
+   - `02_Work/SYSTEM_MAP.md` for product architecture and decisions.
+   - `02_Work/INSIGHTS_GRAPH.md` for verified insights to reference.
+
+3. **Validate readiness** — Check that the Work layer has sufficient verified content:
+   - Are there VERIFIED insights to reference?
+   - Is the SYSTEM_MAP populated with traceable decisions?
+   - Are there unresolved PENDING conflicts that could affect the deliverable?
+   - **If the knowledge base is insufficient**, report what's missing and suggest running `/analyze` or `/synthesis` first.
+
+### Phase 2: Propose (User Approval)
+
+4. **Present deliverable outline** — Before generating, show:
+   - Document type and target file.
+   - Proposed section structure.
+   - Key insights that will be referenced (by ID).
+   - Any gaps where sections lack sufficient insight backing.
+   - **Wait for user approval before generating.**
+
+### Phase 3: Generate (After Approval)
+
+5. **Generate or update the HTML deliverable** in `03_Outputs/`:
+   - Use the A4 CSS system from `03_Outputs/PRD.html` as the style reference:
+     - Inter font (Google Fonts)
+     - `.page` container: 21cm width, 2.54cm padding
+     - Gray background (`#F0F2F5`), white page
+     - Print media query for clean PDF export
+   - Green callout boxes (`.callout`) for key insights.
+
+6. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
+
+7. **For new document types** (benchmark, audit, strategy):
+   - Use `03_Outputs/PRD.html` as the CSS and layout reference.
+   - Adapt the section structure to the document type.
+   - Maintain the same traceability requirements.
+
+8. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
+   - What was generated or updated.
+   - Date of generation.
+   - Number of insights referenced.

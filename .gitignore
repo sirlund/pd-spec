@@ -19,6 +19,3 @@ Thumbs.db
 # Generated outputs
 03_Outputs/*.docx
 03_Outputs/*.pdf
-
-# Dependencies
-node_modules/
