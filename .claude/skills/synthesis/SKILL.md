@@ -13,6 +13,10 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 ## Instructions
 
+### Phase 0: Session Resume & Integrity Check
+
+0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
+
 ### Phase 1: Load & Analyze
 
 1. **Load conflicts** — Read `02_Work/CONFLICTS.md` and identify all `PENDING` conflicts.
@@ -54,3 +58,12 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
    - Open Questions — add any new questions surfaced during resolution.
 
 9. **Ensure traceability** — Every entry in SYSTEM_MAP.md must reference at least one `[IG-XX]` insight ID. Flag any entries that lack references.
+
+10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+    ```markdown
+    ## [YYYY-MM-DDTHH:MM] /synthesis
+    - **Request:** [what the user asked]
+    - **Actions:** [conflicts resolved, insights updated, system map changes]
+    - **Result:** [summary of resolutions and decisions]
+    - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
+    ```

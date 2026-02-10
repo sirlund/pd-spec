@@ -49,19 +49,43 @@ Naming conventions:
 
 The agent validates coherence between the folder context and its file contents. A benchmark file inside an interviews folder is flagged as an organizational inconsistency.
 
+**Handling non-markdown files:**
+
+Not all sources are markdown. Images, PDFs, spreadsheets, .txt, and .docx files can't carry internal metadata. For these, add a `_CONTEXT.md` in the folder:
+
+```markdown
+# Context: Workshop Gerencia Feb 2026
+
+- **Date:** 2026-02-15
+- **Type:** workshop
+- **Participants:** [names]
+
+## Files
+
+| File | Format | Description |
+|---|---|---|
+| foto-whiteboard.png | image | Diagram of proposed user flow |
+| datos-asistencia.xlsx | spreadsheet | Attendance and role data |
+| grabacion-resumen.txt | text | Transcribed summary of recording |
+```
+
+The `/analyze` skill reads `_CONTEXT.md` to understand files it can't parse directly. Markdown files in the same folder still carry their own metadata via `_SOURCE_TEMPLATE.md` — no conflict.
+
 ### Layer 2: Work (`02_Work/`)
 
-The analytical engine. This is where raw sources become structured knowledge.
+The project's brain. This is where raw sources become structured knowledge. **This layer is agent-managed — users should not edit files here directly.**
 
 **Key files:**
 - `INSIGHTS_GRAPH.md` — Atomic insights with `[IG-XX]` IDs, statuses, and source references.
 - `SYSTEM_MAP.md` — Product architecture decisions traceable to insights.
 - `CONFLICTS.md` — Contradictions between insights awaiting resolution.
+- `MEMORY.md` — Session log and state tracker (see [Project Memory](#project-memory) below).
 
 **Rules:**
 - Every insight must reference its source file.
 - Every system map entry must reference at least one `[IG-XX]` insight.
 - Conflicts must be resolved through `/synthesis` before they can inform the system map.
+- Manual edits are detected via MEMORY.md integrity checks at session start.
 
 ### Layer 3: Outputs (`03_Outputs/`)
 
@@ -72,9 +96,9 @@ Client-facing and stakeholder-facing deliverables, generated from the Work layer
 - Additional deliverables (benchmarks, audits, strategies) generated via `/ship`.
 
 **Rules:**
-- Outputs are **derived**, never authored from scratch.
+- Outputs are **derived**, never authored from scratch. **Users should not edit files here directly.**
 - Every section must reference `[IG-XX]` insight IDs.
-- If an output needs changes, update the Work layer first, then regenerate.
+- If an output needs changes, update the source layer, re-run the pipeline, and regenerate.
 
 ## The Skills Pipeline
 
@@ -116,6 +140,34 @@ The system adapts its behavior based on the project's knowledge maturity:
 - **Sources:** Multiple technical, stakeholder, and market sources.
 - **Behavior:** Full contradiction detection. System map is rich and traceable.
 - **Outputs:** Comprehensive PRD, benchmarks, strategy docs — all fully sourced.
+
+## Project Memory
+
+`02_Work/MEMORY.md` serves two purposes:
+
+### 1. Session Continuity
+
+Every skill appends an entry after execution:
+
+```markdown
+## [2026-02-10T14:30] /analyze
+- **Request:** "Analiza las entrevistas del workshop de febrero"
+- **Actions:** Scanned 3 files in `01_Sources/2026-02-workshop-gerencia/`
+- **Result:** Added [IG-01]–[IG-05], detected [CF-01]
+- **Snapshot:** 5 insights (3 PENDING, 2 VERIFIED) · 1 conflict PENDING · 0 outputs
+```
+
+At the start of a new session, the agent reads MEMORY.md to understand where the project left off — no need for the user to re-explain context.
+
+### 2. Manual Edit Detection
+
+The Snapshot line records the expected state of the Work layer after each action. At session start, the agent compares the snapshot against the actual file contents:
+
+- **Extra insights** not logged in MEMORY → someone added entries manually.
+- **Modified entries** with different status or content → someone edited directly.
+- **Unexpected files** in `02_Work/` or `03_Outputs/` → user may have dropped files in the wrong layer.
+
+When discrepancies are found, the agent reports them to the user and asks how to proceed before running any skill.
 
 ## Agent Behavior Protocols
 

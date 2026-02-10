@@ -24,14 +24,15 @@ Information flows in one direction: Sources → Work → Outputs. This is the co
 
 ### Layer Details
 
-**Sources** (`01_Sources/`) contain raw, unprocessed input: interview transcripts, briefs, technical docs, quantitative data. Once a source is captured, it is never modified. This guarantees that the ground truth doesn't shift under you. Sources are organized in subfolders by milestone or category (e.g., `2026-02-workshop-gerencia/`, `benchmark-inicial/`, `entrevistas-operadores/`) so the folder name provides temporal and thematic context that individual files inherit.
+**Sources** (`01_Sources/`) contain raw, unprocessed input: interview transcripts, briefs, technical docs, quantitative data, images, PDFs, spreadsheets — any format. Once a source is captured, it is never modified. Sources are organized in subfolders by milestone or category (e.g., `2026-02-workshop-gerencia/`, `benchmark-inicial/`). Markdown files carry their own metadata; non-markdown files are described by a `_CONTEXT.md` in their folder.
 
-**Work** (`02_Work/`) is where analysis happens:
+**Work** (`02_Work/`) is the project's brain — **agent-managed, not user-edited**:
 - `INSIGHTS_GRAPH.md` — Atomic claims extracted from sources, each with an `[IG-XX]` ID, a status (PENDING → VERIFIED/MERGED/INVALIDATED), and a source reference.
 - `CONFLICTS.md` — Contradictions between insights. Two sources disagree? It gets logged here with a `[CF-XX]` ID and stays PENDING until explicitly resolved.
 - `SYSTEM_MAP.md` — Product architecture decisions. Every entry references the insights that justify it.
+- `MEMORY.md` — Session log and state tracker. Written after every skill execution, read at session start to resume context and detect manual edits.
 
-**Outputs** (`03_Outputs/`) are generated artifacts (PRD, benchmarks, strategy docs). They are *derived*, never authored from scratch. If a section needs to change, you update the Work layer and regenerate.
+**Outputs** (`03_Outputs/`) are generated artifacts (PRD, benchmarks, strategy docs) — **agent-managed, not user-edited**. They are *derived*, never authored from scratch. If a section needs to change, you update the source layer and re-run the pipeline.
 
 ### The Skills Pipeline
 
@@ -47,9 +48,11 @@ Each skill reads from the layer below it and writes to its own layer. The pipeli
 
 | Skill | Reads | Writes |
 |---|---|---|
-| `/analyze` | `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md` |
-| `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md` |
-| `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*` |
+| `/analyze` | `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
+| `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
+| `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
+
+Every skill starts with a **Phase 0: integrity check** — reading MEMORY.md to detect manual edits since the last session. Every skill ends by appending its actions to MEMORY.md.
 
 ## Design Principles
 
@@ -84,22 +87,27 @@ You don't configure the level — the system infers it from the number and diver
 
 ```
 ├── .claude/skills/
-│   ├── analyze/SKILL.md       /analyze skill definition
-│   ├── synthesis/SKILL.md     /synthesis skill definition
-│   └── ship/SKILL.md          /ship skill definition
-├── 01_Sources/                Raw inputs (immutable, organized by milestone/category)
-│   └── _SOURCE_TEMPLATE.md   Metadata template for new sources
-├── 02_Work/                   Knowledge base
-│   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
-│   ├── SYSTEM_MAP.md          Product architecture decisions
-│   └── CONFLICTS.md           [CF-XX] contradiction log
-├── 03_Outputs/                Generated deliverables
-│   └── PRD.html               Product Requirements Document
+│   ├── analyze/SKILL.md          /analyze skill definition
+│   ├── synthesis/SKILL.md        /synthesis skill definition
+│   └── ship/SKILL.md             /ship skill definition
+├── 01_Sources/                   Raw inputs (immutable, any format)
+│   ├── _SOURCE_TEMPLATE.md      Metadata template for markdown sources
+│   ├── _CONTEXT_TEMPLATE.md     Metadata template for non-markdown files
+│   └── _README.md               Onboarding guide
+├── 02_Work/                      Agent-managed knowledge base
+│   ├── INSIGHTS_GRAPH.md         [IG-XX] atomic insights
+│   ├── SYSTEM_MAP.md             Product architecture decisions
+│   ├── CONFLICTS.md              [CF-XX] contradiction log
+│   ├── MEMORY.md                 Session log & state tracker
+│   └── _README.md               Layer rules
+├── 03_Outputs/                   Agent-managed deliverables
+│   ├── PRD.html                  Product Requirements Document
+│   └── _README.md               Layer rules
 ├── docs/
-│   └── FRAMEWORK.md           Full methodology reference
-├── CLAUDE.md                  AI agent protocol
-├── CHANGELOG.md               Dated change log
-└── README.md                  This file
+│   └── FRAMEWORK.md              Full methodology reference
+├── CLAUDE.md                     AI agent protocol
+├── CHANGELOG.md                  Dated change log
+└── README.md                     This file
 ```
 
 ## Getting Started

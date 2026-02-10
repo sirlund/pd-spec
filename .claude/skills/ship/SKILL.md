@@ -14,6 +14,10 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 ## Instructions
 
+### Phase 0: Session Resume & Integrity Check
+
+0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
+
 ### Phase 1: Load & Validate
 
 1. **Determine target** — Default: `PRD.html`. If the user passes an argument (benchmark, audit, strategy), generate that document type instead.
@@ -58,3 +62,12 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
    - What was generated or updated.
    - Date of generation.
    - Number of insights referenced.
+
+9. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+   ```markdown
+   ## [YYYY-MM-DDTHH:MM] /ship
+   - **Request:** [what the user asked]
+   - **Actions:** [deliverable generated/updated, sections written]
+   - **Result:** [file created, insights referenced count]
+   - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
+   ```

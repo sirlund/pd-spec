@@ -59,6 +59,8 @@ Sources in `01_Sources/` are organized in subfolders by milestone or category to
 
 The folder name provides context that individual files inherit. The agent validates coherence between folder context and file content.
 
+**Non-markdown files** (images, PDFs, spreadsheets, .txt, .docx) can't carry internal metadata. Add a `_CONTEXT.md` in the folder to describe them — see `_CONTEXT_TEMPLATE.md` for the format.
+
 ## Skills Pipeline
 
 | Skill | Command | What it does |
@@ -83,6 +85,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
+| `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
 | `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
 | `CHANGELOG.md` | Change log | Yes (append-only) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
@@ -95,13 +98,18 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
 │   └── ship/SKILL.md          /ship — generate deliverables
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
-│   └── _SOURCE_TEMPLATE.md   Metadata template for new sources
-├── 02_Work/                   Knowledge base
+│   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
+│   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
+│   └── _README.md            Onboarding guide for users
+├── 02_Work/                   Knowledge base (agent-managed, do not edit manually)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
 │   ├── SYSTEM_MAP.md          Product architecture decisions
-│   └── CONFLICTS.md           [CF-XX] contradiction log
-├── 03_Outputs/                Deliverables
-│   └── PRD.html               Product Requirements Document
+│   ├── CONFLICTS.md           [CF-XX] contradiction log
+│   ├── MEMORY.md              Session log & state tracker
+│   └── _README.md            Layer rules for users
+├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
+│   ├── PRD.html               Product Requirements Document
+│   └── _README.md            Layer rules for users
 ├── docs/
 │   └── FRAMEWORK.md           Full methodology documentation
 ├── CLAUDE.md                  This file
@@ -109,12 +117,25 @@ The folder name provides context that individual files inherit. The agent valida
 └── README.md                  Project overview
 ```
 
+## Session Protocol
+
+At the start of every session (new conversation), the agent must:
+
+1. **Read `02_Work/MEMORY.md`** — understand the last known state, recent actions, and current snapshot.
+2. **Integrity check** — compare the MEMORY snapshot against the actual state of `02_Work/` files. Look for:
+   - Insights, conflicts, or system map entries not logged in MEMORY (possible manual edits).
+   - Unexpected files in `02_Work/` or `03_Outputs/` (user may have added files directly).
+   - Any discrepancies are reported to the user before proceeding.
+3. **Resume context** — use MEMORY to continue where the last session left off, without requiring the user to re-explain.
+
+After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot.
+
 ## Current State
 
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
 - **Last updated:** 2025-02-10
-- **Status:** Architecture defined. README rewritten for architecture-first documentation. Skills pipeline operational.
+- **Status:** v2.3 — Project memory, _CONTEXT.md for non-markdown sources, layer signage, propose-first skills with integrity checks.
 - **Insights count:** 0
 - **Conflicts count:** 0
