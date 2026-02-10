@@ -186,7 +186,7 @@ The agent never writes directly to Work or Output files without presenting a sum
 
 When the agent cannot find source evidence for a claim or decision, it must surface the gap explicitly:
 
-> *"No encuentro evidencia para X — ¿lo marcamos como asunción o sugiero cómo validarlo?"*
+> *"I can't find evidence for X — should we mark it as an assumption or should I suggest how to validate it?"*
 
 Options the agent can suggest:
 - Mark as assumption (tagged `ASSUMPTION` in INSIGHTS_GRAPH).

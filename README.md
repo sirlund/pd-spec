@@ -1,6 +1,6 @@
 # ProductLM
 
-A **Product Knowledge OS** that turns messy research into traceable product decisions. Built as a Claude Code skill pipeline on a 3-layer architecture.
+A **Product Knowledge OS** that turns messy research into traceable product decisions. Built as a skill pipeline for Claude Code and Cursor on a 3-layer architecture.
 
 ## The Problem
 
@@ -57,7 +57,7 @@ Every skill starts with a **Phase 0: integrity check** — reading MEMORY.md to 
 ## Design Principles
 
 ### No Hallucination
-Every `[IG-XX]` insight references a real source file. The agent cannot invent user needs, technical constraints, or business assumptions. If the source doesn't exist, the insight doesn't exist. When the agent detects an evidence gap, it asks: *"No encuentro evidencia para X — ¿lo marcamos como asunción o sugiero cómo validarlo?"*
+Every `[IG-XX]` insight references a real source file. The agent cannot invent user needs, technical constraints, or business assumptions. If the source doesn't exist, the insight doesn't exist. When the agent detects an evidence gap, it asks: *"I can't find evidence for X — should we mark it as an assumption or should I suggest how to validate it?"*
 
 ### Transparency & Control
 No black boxes. The agent **proposes before executing**. Every insight extraction, conflict resolution, or deliverable draft is presented for user approval before writing to files. The user has final veto over any change.
@@ -114,18 +114,24 @@ You don't configure the level — the system infers it from the number and diver
 
 ```bash
 # 1. Clone or use as GitHub template
-git clone https://github.com/nlundin/ProductLM.git my-project
+git clone https://github.com/sirlund/ProductLM.git my-project
 cd my-project
 
-# 2. Fill in CLAUDE.md with your project context
+# 2. Fill in CLAUDE.md with your project context (name, product, team, date)
 
-# 3. Add sources to 01_Sources/ (use _SOURCE_TEMPLATE.md)
+# 3. Add sources to 01_Sources/
+#    Create a subfolder per milestone or category
+#    For markdown files: copy _SOURCE_TEMPLATE.md, fill metadata, paste content
+#    For other files (images, PDFs, .xlsx): add a _CONTEXT.md describing them
+#    See 01_Sources/_README.md for details
 
-# 4. Run the pipeline
+# 4. Open in Claude Code or Cursor, then run the pipeline
 /analyze     # Extract insights
 /synthesis   # Resolve conflicts
 /ship        # Generate deliverables
 ```
+
+Each layer has a `_README.md` explaining what it does and what you should (or shouldn't) touch. Start with `01_Sources/_README.md`.
 
 See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for the full methodology reference.
 

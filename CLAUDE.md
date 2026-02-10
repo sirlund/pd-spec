@@ -20,7 +20,7 @@ This project follows the ProductLM 3-layer architecture. The AI agent operates w
 ## Agent Mandates
 
 ### 1. No Hallucination
-If a claim does not trace back to a file in `01_Sources/`, the insight **does not exist**. Never invent insights, user needs, or technical constraints. Every `[IG-XX]` entry must reference a real source file. When the agent detects an evidence gap, it must ask: *"No encuentro evidencia para X — ¿lo marcamos como asunción o sugiero cómo validarlo?"*
+If a claim does not trace back to a file in `01_Sources/`, the insight **does not exist**. Never invent insights, user needs, or technical constraints. Every `[IG-XX]` entry must reference a real source file. When the agent detects an evidence gap, it must ask: *"I can't find evidence for X — should we mark it as an assumption or should I suggest how to validate it?"*
 
 ### 2. Transparency & Control
 No black boxes. The agent **proposes before executing** — every insight extraction, conflict resolution, or deliverable generation is presented as a draft for user approval before writing to files. The user has final veto over any reclassification, edit, or structural change.
