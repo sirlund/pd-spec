@@ -13,6 +13,8 @@
 - **Data Flow diagram** showing how PD-Spec outputs feed into PD-Build's Kernel
 - **Backlog items**: BL-01 `/ship design-system` (REC vs IG-XX labeling), BL-02 `/audit` (strategic quality gate), BL-03 `/ship persona` & `/ship journey-map` (SYN label for synthesized narrative)
 - **PD-Build sibling repo** scaffolded at `https://github.com/sirlund/pd-build` — 4-layer architecture (Sources → Kernel → Drivers → Dist), TOON format, TRACED/HYPOTHESIS data labeling
+- **Document versioning in `/ship`** — every HTML output carries a visible `doc-meta` header with version, date, snapshot, and inline changelog. No silent updates to shared documents.
+- **Operating model defined** — PD-Spec is the architect's personal companion tool. Stakeholders only see outputs (PRD, presentations, briefs). Transfer to PD-Build via manual copy-paste of DESIGN_BRIEF.md.
 
 ### Architecture Decisions (v2.1–v3.0 session)
 
