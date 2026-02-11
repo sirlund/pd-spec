@@ -15,6 +15,7 @@
 - **PD-Build sibling repo** scaffolded at `https://github.com/sirlund/pd-build` — 4-layer architecture (Sources → Kernel → Drivers → Dist), TOON format, TRACED/HYPOTHESIS data labeling
 - **Document versioning in `/ship`** — every HTML output carries a visible `doc-meta` header with version, date, snapshot, and inline changelog. No silent updates to shared documents.
 - **Operating model defined** — PD-Spec is the architect's personal companion tool. Stakeholders only see outputs (PRD, presentations, briefs). Transfer to PD-Build via manual copy-paste of DESIGN_BRIEF.md.
+- **Two-log separation** — `02_Work/MEMORY.md` is the project usage log (written by skills automatically). `docs/CHANGELOG.md` (this file) is the PD-Spec product development log (versions, fixes, decisions — written manually, never by skills). CHANGELOG moved from root to `docs/` to keep the template root clean.
 
 ### Architecture Decisions (v2.1–v3.0 session)
 
