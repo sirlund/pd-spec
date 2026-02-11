@@ -69,6 +69,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
 | Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
+| Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 
 ## Maturity Levels
 
@@ -98,7 +99,8 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── analyze/SKILL.md       /analyze — ingest sources
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
 │   ├── ship/SKILL.md          /ship — generate deliverables
-│   └── visualize/SKILL.md    /visualize — generate diagrams
+│   ├── visualize/SKILL.md    /visualize — generate diagrams
+│   └── reset/SKILL.md        /reset — reset generated layers
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
