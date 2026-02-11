@@ -3,13 +3,43 @@
 ## [3.0.0] — 2025-02-10
 
 ### Changed
-- **Renamed from ProductLM to PD-Spec** — the project is now the Strategy & Intelligence layer of ProductDesign OS (PD-OS)
+- **Renamed from ProductLM to PD-Spec** — the project is now the Strategy & Intelligence layer of ProductDesign OS (PD-OS). Original name preserved as "formerly ProductLM" (started as "I'll build my own NotebookLM")
 - All references updated across README, CLAUDE.md, FRAMEWORK.md, and skill templates
+- Skill frontmatter descriptions enriched with explicit input/output layer paths (Anthropic skill-creator best practice)
 
 ### Added
 - **PD-OS Ecosystem documentation** in README and FRAMEWORK.md — defines the relationship between PD-Spec (strategy) and PD-Build (execution)
 - **Interface Contract** specification — `DESIGN_BRIEF.md` format with `[INTENT]`, `[LOGIC_RULES]`, `[DATA_EVIDENCE]`, `[USER_FLOW]` blocks
 - **Data Flow diagram** showing how PD-Spec outputs feed into PD-Build's Kernel
+- **Backlog items**: BL-01 `/ship design-system` (REC vs IG-XX labeling), BL-02 `/audit` (strategic quality gate), BL-03 `/ship persona` & `/ship journey-map` (SYN label for synthesized narrative)
+- **PD-Build sibling repo** scaffolded at `https://github.com/sirlund/pd-build` — 4-layer architecture (Sources → Kernel → Drivers → Dist), TOON format, TRACED/HYPOTHESIS data labeling
+
+### Architecture Decisions (v2.1–v3.0 session)
+
+Proposals evaluated during the v2–v3 design sessions. Documented here for context across tools and models.
+
+**Adopted:**
+- 3-layer stack (Sources → Work → Outputs) with unidirectional data flow
+- 4 skills (/analyze, /synthesis, /ship, /visualize) with propose-before-execute pattern
+- 7 agent mandates in CLAUDE.md
+- MEMORY.md for session continuity + manual edit detection
+- _CONTEXT.md system for non-markdown source files
+- PD-OS as two-repo ecosystem: PD-Spec (strategy) + PD-Build (execution in product repo, like Storybook)
+- DESIGN_BRIEF.md as the contract between repos (format over transport)
+- TRACED vs HYPOTHESIS data labeling in PD-Build (golden rule: HYPOTHESIS never overwrites TRACED)
+- IDE-first rendering (Cursor/.cursorrules) before expanding to other tools
+- Anthropic skill best practices: frontmatter with layer paths, <500 lines, no aux docs in skill folders
+
+**Rejected (Homer's Car Detector):**
+- 00_Config as 4th layer — breaks 3-layer invariant, CLAUDE.md handles config
+- Rename 02_Work → 02_System — high migration cost, cosmetic benefit
+- _CONTEXT.yaml — rejected for _CONTEXT.md (stays in markdown ecosystem)
+- Separate /present, /report, /design-specs, /research skills — scoped to /ship output types or existing skills
+- OOODS "Triple O" branding — branding not architecture
+- 4 rendering layers simultaneously (IDE + Pencil + Figma + Storybook) — start with one, prove it, expand
+- AGENTS block per tool in TOON objects — O(objects × tools) maintenance, use per-tool drivers instead
+- PD-Bootstrap as 4 functions — scoped to single ingestion processor
+- .pd-build-ignore custom format — .gitignore already handles it
 
 ## [2.4.0] — 2025-02-10
 
