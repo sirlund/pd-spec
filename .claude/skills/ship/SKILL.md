@@ -55,9 +55,29 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
      - Print media query for clean PDF export
    - Green callout boxes (`.callout`) for key insights.
 
-6. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
+6. **Document versioning** — Every output carries visible version metadata so stakeholders always know what they're reading:
+   - **Check existing output** — If the file already exists, read its current version number and changelog.
+   - **Increment version** — First generation: `v1.0`. Each regeneration: increment minor (`v1.1`, `v1.2`). Major increment (`v2.0`) only if the user requests a full rewrite.
+   - **Visible metadata header** — Every HTML output must include a `doc-meta` block at the top of the body, visible to the reader:
+     ```html
+     <div class="doc-meta">
+       <strong>v1.2</strong> · Generated YYYY-MM-DD · PD-Spec snapshot: X insights (N verified), Y conflicts
+       <details>
+         <summary>Document changelog</summary>
+         <ul>
+           <li>v1.2 (YYYY-MM-DD): [what changed and why]</li>
+           <li>v1.1 (YYYY-MM-DD): [what changed and why]</li>
+           <li>v1.0 (YYYY-MM-DD): Initial version.</li>
+         </ul>
+       </details>
+     </div>
+     ```
+   - **Changelog entries** describe what changed in the document (added sections, updated insights, removed modules) — not internal pipeline details.
+   - **Rationale:** Outputs may be shared with stakeholders via link or file. If the document changes between viewings without visible versioning, stakeholders lose trust. No silent updates.
 
-7. **For presentation** (`/ship presentation`):
+7. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
+
+8. **For presentation** (`/ship presentation`):
    - Output: `03_Outputs/PRESENTATION.html`
    - Use Reveal.js (CDN) in a single self-contained HTML file.
    - Structure: Title slide → Problem/Context → Key Insights (1 per slide, with `[IG-XX]` refs) → System Map summary → Decisions → Open Questions → Next Steps.
@@ -72,24 +92,24 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
      <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
      ```
 
-8. **For report** (`/ship report`):
+9. **For report** (`/ship report`):
    - Output: `03_Outputs/REPORT.html`
    - Use the same A4 CSS system as PRD.html (Inter font, `.page` container, print media query).
    - Structure: Cover page (title, date, author) → Table of Contents → Executive Summary → Findings by category → Insight References → Methodology Notes.
    - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
    - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-9. **For other document types** (benchmark, audit, strategy):
+10. **For other document types** (benchmark, audit, strategy):
    - Use `03_Outputs/PRD.html` as the CSS and layout reference.
    - Adapt the section structure to the document type.
    - Maintain the same traceability requirements.
 
-10. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
+11. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
     - What was generated or updated.
     - Date of generation.
     - Number of insights referenced.
 
-11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
