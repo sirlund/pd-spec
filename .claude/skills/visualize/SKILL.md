@@ -72,7 +72,7 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
    <html lang="en">
    <head>
      <meta charset="UTF-8">
-     <title>ProductLM — [Diagram Type]</title>
+     <title>PD-Spec — [Diagram Type]</title>
      <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
      <style>
        body { font-family: 'Inter', sans-serif; background: #F0F2F5; margin: 0; padding: 2rem; }
@@ -82,7 +82,7 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
      </style>
    </head>
    <body>
-     <h1>ProductLM Diagrams</h1>
+     <h1>PD-Spec Diagrams</h1>
      <p class="meta">Generated [date] · [insight count] insights · [conflict count] conflicts</p>
      <div class="diagram-container">
        <h2>[Diagram Title]</h2>

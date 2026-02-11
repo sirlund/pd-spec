@@ -1,12 +1,14 @@
-# ProductLM
+# PD-Spec
 
-A **Product Knowledge OS** that turns messy research into traceable product decisions. Built as a skill pipeline for Claude Code and Cursor on a 3-layer architecture.
+The **Strategy & Intelligence layer** of [ProductDesign OS](https://product-os.design). Turns messy research into traceable product decisions. Built as a skill pipeline for Claude Code and Cursor on a 3-layer architecture.
+
+> Formerly **ProductLM** — started as "I'll build my own NotebookLM" and evolved into the specification engine for a full design operative system.
 
 ## The Problem
 
 Product decisions rot. An interview says users want X, a technical doc says X is impossible, and six months later the PRD still claims X. Nobody catches the contradiction because the research lives in scattered docs, Notion pages, and someone's memory.
 
-ProductLM enforces a single rule: **every claim in every deliverable must trace back to a real source**. If it can't, it doesn't exist.
+PD-Spec enforces a single rule: **every claim in every deliverable must trace back to a real source**. If it can't, it doesn't exist.
 
 ## Architecture
 
@@ -120,7 +122,7 @@ You don't configure the level — the system infers it from the number and diver
 
 ```bash
 # 1. Clone or use as GitHub template
-git clone https://github.com/sirlund/ProductLM.git my-project
+git clone https://github.com/sirlund/pd-spec.git my-project
 cd my-project
 
 # 2. Fill in CLAUDE.md with your project context (name, product, team, date)
@@ -143,6 +145,28 @@ cd my-project
 Each layer has a `_README.md` explaining what it does and what you should (or shouldn't) touch. Start with `01_Sources/_README.md`.
 
 See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for the full methodology reference.
+
+## ProductDesign OS Ecosystem
+
+PD-Spec is the intelligence layer of **ProductDesign OS (PD-OS)**, a framework that separates strategic decision-making from technical execution.
+
+```
+PD-Spec (this repo)                    PD-Build (in product repo)
+Research → Decisions → Brief    →      Brief → Kernel (.toon) → .cursorrules → PR
+01_Sources/ → 02_Work/ → 03_Outputs/   01_Sources/ → 02_Kernel/ → 03_Drivers/ → 04_Dist/
+```
+
+**PD-Spec** is a standalone strategy repo (private, consultancy/discovery). It processes research and business objectives to produce a Product Contract — the `DESIGN_BRIEF.md`.
+
+**PD-Build** lives inside the product's repository (like Storybook). It consumes the brief and transforms it into a tool-agnostic Kernel (`.toon` files) that AI agents (Cursor, Claude Code) use to write code that respects the product's design logic.
+
+The two systems connect through a **format contract**. The `DESIGN_BRIEF.md` must contain:
+- `[INTENT]` — Business objective
+- `[LOGIC_RULES]` — Validation and behavior rules
+- `[DATA_EVIDENCE]` — Reference to PD-Spec insight IDs (`[IG-XX]`)
+- `[USER_FLOW]` — Expected logical state sequence
+
+See [product-os.design](https://product-os.design) for the full PD-OS specification.
 
 ## License
 

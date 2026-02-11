@@ -2,14 +2,14 @@
 
 ## Project Context
 
-- **Project:** ProductLM
-- **Product:** A Product Knowledge OS — 3-layer architecture + Claude Code skills pipeline for turning research into traceable product decisions
+- **Project:** PD-Spec (formerly ProductLM)
+- **Product:** The Strategy & Intelligence layer of ProductDesign OS — 3-layer architecture + Claude Code skills pipeline for turning research into traceable product decisions
 - **Team:** Niklas Lundin
 - **Started:** 2025-02-09
 
 ## The Truth Stack
 
-This project follows the ProductLM 3-layer architecture. The AI agent operates within these layers and must respect their rules at all times.
+This project follows the PD-Spec 3-layer architecture. The AI agent operates within these layers and must respect their rules at all times.
 
 ```
 01_Sources/  →  Raw input (read-only)
@@ -139,6 +139,6 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 
 - **Maturity:** Level 1 (Seed)
 - **Last updated:** 2025-02-10
-- **Status:** v2.4 — 4-skill pipeline (analyze, synthesis, ship, visualize), project memory, propose-first workflows, layer signage.
+- **Status:** v3.0 — Renamed to PD-Spec (formerly ProductLM). Strategy layer of ProductDesign OS. 4-skill pipeline, project memory, propose-first workflows.
 - **Insights count:** 0
 - **Conflicts count:** 0

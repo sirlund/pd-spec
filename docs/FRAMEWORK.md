@@ -1,8 +1,8 @@
-# ProductLM Framework
+# PD-Spec Framework
 
 ## Overview
 
-ProductLM is a **Product Knowledge OS** for Product Designers and Researchers. It provides a structured methodology for consolidating diverse sources (interviews, briefs, technical docs, quantitative data) into a traceable knowledge base that drives product decisions and deliverables.
+PD-Spec (formerly ProductLM) is the **Strategy & Intelligence layer** of ProductDesign OS. It provides a structured methodology for consolidating diverse sources (interviews, briefs, technical docs, quantitative data) into a traceable knowledge base that drives product decisions and deliverables.
 
 The framework enforces a 3-layer architecture (Sources → Work → Outputs) where every deliverable traces back to verified insights from real sources.
 
@@ -109,7 +109,7 @@ Client-facing and stakeholder-facing deliverables, generated from the Work layer
 
 ## The Skills Pipeline
 
-ProductLM uses four Claude Code skills:
+PD-Spec uses four Claude Code skills:
 
 ### `/analyze` — Source Ingestion
 Scans `01_Sources/` files, extracts atomic claims, assigns `[IG-XX]` IDs, and detects contradictions against existing insights.
@@ -255,3 +255,39 @@ When the agent encounters ambiguity — conflicting signals, incomplete data, or
 - **Resolution:** [filled during /synthesis]
 - **Action:** [what changed in INSIGHTS_GRAPH or SYSTEM_MAP]
 ```
+
+## ProductDesign OS (PD-OS) Ecosystem
+
+PD-Spec is one half of **ProductDesign OS**, a framework that separates strategy from execution.
+
+### The Stack
+
+| Layer | Repo | Function | Output |
+|---|---|---|---|
+| **PD-Spec** | Standalone (this repo) | Research → Decisions | `DESIGN_BRIEF.md` |
+| **PD-Build** | Inside product repo (`/pd-build/`) | Decisions → Implementation | `.cursorrules`, component code |
+
+### Data Flow
+
+```
+PD-Spec                              PD-Build (inside product repo)
+01_Sources/ (research)               01_Sources/specs/ (receives brief)
+02_Work/ (insights, system map)      02_Kernel/ (TOON objects, MEMORY, CONFLICTS)
+03_Outputs/ (DESIGN_BRIEF.md)  →     03_Drivers/ (transformation logic)
+                               copy  04_Dist/ (staging → production → .cursorrules)
+```
+
+### The Interface Contract
+
+PD-Spec's `/ship design-brief` generates a `DESIGN_BRIEF.md` that PD-Build can consume. The brief must contain:
+
+- `[INTENT]` — Business objective.
+- `[LOGIC_RULES]` — Validation and behavior rules (extracted to TOON).
+- `[DATA_EVIDENCE]` — Reference to PD-Spec insight IDs (`[IG-XX]`), tagged as `[TRACED]` in PD-Build.
+- `[USER_FLOW]` — Expected logical state sequence.
+
+### Independence
+
+The two systems are **independently useful**:
+- PD-Spec can validate a business idea and decide not to build anything (saving runway).
+- PD-Build can bootstrap an existing codebase into a structured Kernel without prior research (via `[HYPOTHESIS]` tagging).

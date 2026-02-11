@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0] — 2025-02-10
+
+### Changed
+- **Renamed from ProductLM to PD-Spec** — the project is now the Strategy & Intelligence layer of ProductDesign OS (PD-OS)
+- All references updated across README, CLAUDE.md, FRAMEWORK.md, and skill templates
+
+### Added
+- **PD-OS Ecosystem documentation** in README and FRAMEWORK.md — defines the relationship between PD-Spec (strategy) and PD-Build (execution)
+- **Interface Contract** specification — `DESIGN_BRIEF.md` format with `[INTENT]`, `[LOGIC_RULES]`, `[DATA_EVIDENCE]`, `[USER_FLOW]` blocks
+- **Data Flow diagram** showing how PD-Spec outputs feed into PD-Build's Kernel
+
 ## [2.4.0] — 2025-02-10
 
 ### Added
@@ -44,7 +55,7 @@
 
 ### Changed
 - **README rewritten as architecture documentation** — explains the problem, the 3-layer invariant, design principles, and maturity model before "Getting Started"
-- **CLAUDE.md filled in** with ProductLM as the project (no more placeholders)
+- **CLAUDE.md filled in** with project context (no more placeholders)
 - Repo positioning shifted from "template to clone" to "product architecture reference"
 
 ## [2.0.0] — 2025-02-09
