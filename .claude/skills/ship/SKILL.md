@@ -104,12 +104,7 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
    - Adapt the section structure to the document type.
    - Maintain the same traceability requirements.
 
-11. **Log the generation** — Append an entry to `CHANGELOG.md` recording:
-    - What was generated or updated.
-    - Date of generation.
-    - Number of insights referenced.
-
-12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]

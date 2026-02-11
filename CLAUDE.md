@@ -88,7 +88,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
 | `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
-| `CHANGELOG.md` | Change log | Yes (append-only) |
+| `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
 
 ## Folder Structure
@@ -113,9 +113,9 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── PRD.html               Product Requirements Document
 │   └── _README.md            Layer rules for users
 ├── docs/
+│   ├── CHANGELOG.md           Internal change log (PD-Spec development)
 │   └── FRAMEWORK.md           Full methodology documentation
 ├── CLAUDE.md                  This file
-├── CHANGELOG.md               Dated change log
 ├── BACKLOG.md                 Future work proposals
 └── README.md                  Project overview
 ```
