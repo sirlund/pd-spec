@@ -27,6 +27,9 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
    - Does the file's metadata (type, date, context) match the folder it's in?
    - Is any file misplaced (e.g., a benchmark in an interviews folder)?
    - Does the file date conflict with the folder date prefix?
+   - Are there missing metadata fields (Type, Date, Participants, Context)?
+   - Are there non-standard date formats (expected: `YYYY-MM-DD`)?
+   - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
    - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
 
 4. **Read each source** — For every source file, extract atomic claims and facts. Each claim should be a single, verifiable statement. For non-markdown files described in `_CONTEXT.md`, extract claims from the descriptions provided.
@@ -38,8 +41,9 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 6. **Prepare new insights** — For each new claim not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, zero-padded).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
-   - Reference the source file it came from.
-   - Status: `PENDING`.
+   - Reference the specific source file it came from.
+   - **Status: always `PENDING`.** Insights are never born as VERIFIED. Verification happens later through cross-referencing in `/synthesis` or explicit user validation.
+   - Aim for **one insight per atomic claim**. "Users want X and hate Y" is two insights, not one.
 
 7. **Cross-reference** — Compare new claims against all existing VERIFIED insights.
    - Look for contradictions, tensions, or incompatible statements.
@@ -48,15 +52,27 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
 ### Phase 3: Propose (User Approval)
 
-9. **Present findings summary** — Before writing anything, output to the user:
-   - Integrity issues found in `02_Work/` (if any from Phase 0).
-   - Source organization issues found (if any).
-   - Non-markdown files without `_CONTEXT.md` coverage (if any).
-   - New insights to be added (list with proposed IDs, categories, and source refs).
-   - Conflicts detected (list with the tension described).
-   - Evidence gaps detected (with suggested validation methods).
-   - Sources with no extractable claims.
-   - **Wait for user approval before proceeding to Phase 4.**
+9. **Present findings summary** — Before writing anything, output to the user. **Every item must be individually visible — never ask the user to approve N items without showing each one.**
+
+   **a) Source organization issues** (if any from step 3).
+
+   **b) New insights — show ALL of them in a table:**
+   | ID | Claim | Category | Source file | Status |
+   |---|---|---|---|---|
+   | IG-01 | [atomic claim] | [category] | [file path] | PENDING |
+
+   Do NOT summarize as "12 insights found" — the user must see each insight to approve or reject it.
+
+   **c) Conflicts detected — show ALL of them with cross-references:**
+   | ID | Tension | Insights involved |
+   |---|---|---|
+   | CF-01 | [description of contradiction] | IG-XX vs IG-YY |
+
+   **d) Evidence gaps** — areas with no source coverage or insufficient backing. For each gap, suggest a validation method (interview, benchmark, data analysis).
+
+   **e) Sources with no extractable claims** (if any).
+
+   **Wait for user approval before proceeding to Phase 4.** The user may approve all, reject some, or ask for changes.
 
 ### Phase 4: Write (After Approval)
 
