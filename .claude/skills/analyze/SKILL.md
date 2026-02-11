@@ -50,39 +50,24 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
 8. **Detect evidence gaps** — If the agent identifies areas where claims are made without sufficient source backing, or where important product areas have no source coverage, note them as potential gaps.
 
-### Phase 3: Propose (User Approval)
+### Phase 3: Write
 
-9. **Present findings summary** — Before writing anything, output to the user. **Every item must be individually visible — never ask the user to approve N items without showing each one.**
+All insights are written as `PENDING`. The real approval happens downstream — the user reviews the files at their own pace and `/synthesis` is where PENDING insights get promoted to VERIFIED. This skill does NOT require chat-based approval.
 
-   **a) Source organization issues** (if any from step 3).
+> **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-   **b) New insights — show ALL of them in a table:**
-   | ID | Claim | Category | Source file | Status |
-   |---|---|---|---|---|
-   | IG-01 | [atomic claim] | [category] | [file path] | PENDING |
+9. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+   - `[IG-XX]` ID (sequential, zero-padded)
+   - Category in parentheses: `(user-need)`, `(technical)`, `(business)`, `(constraint)`
+   - Atomic claim — one idea per insight
+   - Source reference: `Ref: [file path]`
+   - All insights are `PENDING`
 
-   Do NOT summarize as "12 insights found" — the user must see each insight to approve or reject it.
-
-   **c) Conflicts detected — show ALL of them with cross-references:**
-   | ID | Tension | Insights involved |
-   |---|---|---|
-   | CF-01 | [description of contradiction] | IG-XX vs IG-YY |
-
-   **d) Evidence gaps** — areas with no source coverage or insufficient backing. For each gap, suggest a validation method (interview, benchmark, data analysis).
-
-   **e) Sources with no extractable claims** (if any).
-
-   **Wait for user approval before proceeding to Phase 4.** The user may approve all, reject some, or ask for changes.
-
-### Phase 4: Write (After Approval)
-
-10. **Write insights** — Add approved insights to `02_Work/INSIGHTS_GRAPH.md`.
-
-11. **Log conflicts** — For approved conflicts:
+10. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
-    - Append the conflict as `PENDING` with references to both insights.
+    - Append the conflict as `PENDING` with a description of the tension and references to the conflicting insight IDs.
 
-12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze
     - **Request:** [what the user asked]
@@ -91,7 +76,11 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
     - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
     ```
 
-13. **Final report** — Confirm what was written:
-    - Insights added (count and ID range).
-    - Conflicts logged (count and ID range).
-    - Any items the user chose to skip or defer.
+### Phase 4: Report
+
+12. **Summarize to the user** what was written:
+    - Source organization issues found (list each one).
+    - Insights added (count, ID range, and breakdown by category).
+    - Conflicts logged (count, ID range, with a 1-line summary of each tension).
+    - Evidence gaps detected (with suggested validation methods).
+    - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."

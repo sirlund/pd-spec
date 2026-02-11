@@ -47,6 +47,7 @@ Four Claude Code skills form the pipeline:
 /visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
 /reset [scope]        →  Reset generated layers to template state (preserves sources)
 /seed [domain]        →  Generate synthetic sources for testing and onboarding
+/status               →  Generate Work layer dashboard (open in browser to review)
 ```
 
 Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
@@ -58,6 +59,7 @@ Each skill reads from the layer below it and writes to its own layer. The pipeli
 | `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
 | `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
 | `/reset` | `02_Work/*`, `03_Outputs/*` | `02_Work/*` (templates), `03_Outputs/*` (clean) |
+| `/status` | `02_Work/*`, `01_Sources/*` | `03_Outputs/STATUS.html` |
 | `/seed` | — | `01_Sources/seed-*` (synthetic data) |
 
 `/ship` supports multiple output types: `prd` (default), `presentation` (Reveal.js slides), `report` (A4 PDF-ready), `benchmark`, `audit`, `strategy`.
@@ -102,7 +104,8 @@ You don't configure the level — the system infers it from the number and diver
 │   ├── ship/SKILL.md             /ship skill definition
 │   ├── visualize/SKILL.md       /visualize skill definition
 │   ├── reset/SKILL.md           /reset skill definition
-│   └── seed/SKILL.md            /seed skill definition
+│   ├── seed/SKILL.md            /seed skill definition
+│   └── status/SKILL.md          /status skill definition
 ├── 01_Sources/                   Raw inputs (immutable, any format)
 │   ├── _SOURCE_TEMPLATE.md      Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md     Metadata template for non-markdown files
