@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD-Spec — Status</title>
+  <style>
+    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .insight-card:target { background: #fffde7; border-left: 3px solid #ffc107; padding-left: calc(0.5rem - 3px); transition: background 0.3s; }
+    .conflict-card:target { box-shadow: 0 0 0 2px #ffc107; transition: box-shadow 0.3s; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #111;
+      background: #fff;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .meta { color: #666; font-size: 0.875rem; margin-bottom: 2rem; }
+    .cards { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .card {
+      flex: 1;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    .card .count { font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .card .label { font-size: 0.875rem; color: #666; }
+    .card .breakdown { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
+    .card.card-warn { border-color: #f0d080; }
+    .card.card-ok { border-color: #a3d9a5; }
+    .card.card-error { border-color: #e8a0a0; }
+    details { border-top: 1px solid #e5e5e5; }
+    summary {
+      padding: 0.75rem 0;
+      font-weight: 500;
+      cursor: pointer;
+      list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▸ '; color: #999; }
+    details[open] summary::before { content: '▾ '; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-pending { background: #fef3cd; color: #856404; }
+    .badge-verified { background: #d4edda; color: #155724; }
+    .badge-merged { background: #d1ecf1; color: #0c5460; }
+    .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+    .badge-resolved { background: #d4edda; color: #155724; }
+    .badge-flagged { background: #fef3cd; color: #856404; }
+    .badge-research { background: #d1ecf1; color: #0c5460; }
+    .source-ref { color: #999; font-size: 0.8rem; cursor: pointer; }
+
+    /* Insight cards */
+    .insight-card {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .insight-card:last-child { border-bottom: none; }
+    .insight-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      flex-wrap: wrap;
+    }
+    .insight-id { font-weight: 600; font-size: 0.8rem; color: #444; }
+    .insight-cat { font-size: 0.75rem; color: #999; }
+    .insight-claim { flex: 1; min-width: 200px; }
+    .insight-source { margin-top: 0.25rem; margin-left: 1.5rem; }
+    .insight-source blockquote {
+      margin: 0.375rem 0 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-left: 3px solid #e5e5e5;
+      background: #fafafa;
+      font-size: 0.8rem;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .gap-item { padding: 0.75rem 0; border-bottom: 1px solid #f5f5f5; }
+    .gap-item:last-child { border-bottom: none; }
+    .gap-action { color: #666; font-size: 0.875rem; font-style: italic; margin-top: 0.25rem; }
+    .issue-item { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; font-size: 0.875rem; }
+    .issue-type { font-weight: 500; }
+
+    /* Conflict cards */
+    .conflict-card {
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .conflict-card.resolved { border-color: #a3d9a5; background: #fafff9; }
+    .conflict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .conflict-id { font-weight: 600; font-size: 0.875rem; }
+    .conflict-refs { font-size: 0.75rem; color: #999; }
+    .conflict-tension { font-size: 0.875rem; margin-bottom: 0.75rem; }
+    .conflict-resolution { font-size: 0.875rem; color: #155724; padding: 0.5rem 0.75rem; background: #d4edda; border-radius: 4px; }
+    .conflict-options { display: flex; flex-direction: column; gap: 0.375rem; }
+    .conflict-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .conflict-option input[type="radio"] { margin-top: 0.3rem; accent-color: #111; }
+    .conflict-option label { cursor: pointer; }
+    .conflict-option .option-label { font-weight: 500; }
+    .conflict-note {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.375rem 0.5rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      resize: vertical;
+      display: none;
+    }
+    .conflict-note.visible { display: block; }
+
+    /* Insight actions */
+    .insight-action {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .insight-btn {
+      background: none;
+      border: 1px solid #e5e5e5;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: #666;
+    }
+    .insight-btn:hover { background: #f5f5f5; }
+    .insight-btn.selected-approve { background: #d4edda; color: #155724; border-color: #a3d9a5; }
+    .insight-btn.selected-reject { background: #f8d7da; color: #721c24; border-color: #e8a0a0; text-decoration: line-through; }
+
+    /* System map summary */
+    .module-item { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; font-size: 0.875rem; }
+    .module-item:last-child { border-bottom: none; }
+    .module-name { font-weight: 600; }
+    .module-refs { font-size: 0.75rem; color: #999; }
+    .module-status { font-size: 0.8rem; color: #666; margin-top: 0.125rem; }
+    .oq-item { padding: 0.375rem 0; font-size: 0.875rem; color: #444; }
+
+    /* Generate prompt */
+    .action-bar {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid #111;
+      border-radius: 6px;
+    }
+    .action-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .action-bar h2 { font-size: 0.875rem; font-weight: 600; }
+    .action-bar .decision-count { font-size: 0.75rem; color: #666; }
+    .generate-btn {
+      display: block;
+      width: 100%;
+      padding: 0.625rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .generate-btn:hover { background: #333; }
+    .generate-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .prompt-output {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
+    .prompt-output.visible { display: block; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #333; }
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    @media print {
+      details[open] > summary { display: none; }
+      details { border: none; }
+      .action-bar, .insight-btn, .conflict-options { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PD-Spec Status</h1>
+  <div class="meta">Generated 2026-02-11 · Last session: 2026-02-11T21:55 (/visualize all)</div>
+
+  <div class="cards">
+    <div class="card card-ok">
+      <div class="count">12</div>
+      <div class="label">Insights</div>
+      <div class="breakdown">10 verified · 2 invalidated · 0 pending</div>
+    </div>
+    <div class="card card-warn">
+      <div class="count">4</div>
+      <div class="label">Conflicts</div>
+      <div class="breakdown">1 resolved · 1 flagged · 2 research</div>
+    </div>
+    <div class="card card-warn">
+      <div class="count">6</div>
+      <div class="label">Sources</div>
+      <div class="breakdown">4 issues found</div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <details>
+    <summary>Insights <span style="color:#999; font-weight:400; font-size:0.8rem;">(click to expand source context)</span></summary>
+    <div style="padding: 0.5rem 0;">
+
+      <div class="insight-card" data-insight="IG-01">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-01</span>
+          <span class="insight-cat">business</span>
+          <span class="insight-claim">"Social banking" — shared pots, public feeds, squad goals</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-brief/project-brief.md</summary>
+          <blockquote>"NeoWallet aims to be the first 'social banking' experience for Gen Z. Traditional banks are boring and solitary. We want to make finance viral, multiplayer, and deeply integrated with social status."<br><br>"Multiplayer Finance: Shared pots, public transaction feeds (venmo style but richer), and 'squad goals' for saving."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-02">
+        <div class="insight-row">
+          <span class="badge badge-invalidated">Invalidated</span>
+          <span class="insight-id">IG-02</span>
+          <span class="insight-cat">business</span>
+          <span class="insight-claim">Aggressive AI coaching that "roasts" spending</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-brief/project-brief.md</summary>
+          <blockquote>"AI-Driven Coaching: An aggressive AI personality that roasts you when you spend too much on boba."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-03">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-03</span>
+          <span class="insight-cat">technical</span>
+          <span class="insight-claim">Mobile-only, 100% native iOS/Android, no web</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-brief/project-brief.md</summary>
+          <blockquote>"Mobile-Only: We are not building a web app. This is 100% iOS/Android. If it's not in your pocket, it doesn't exist."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-04">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-04</span>
+          <span class="insight-cat">business</span>
+          <span class="insight-claim">Flat $5/month subscription model</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-brief/project-brief.md</summary>
+          <blockquote>"We will charge a flat $5/month subscription. Our research shows Gen Z hates ads and hidden fees. They value transparency and are willing to pay for premium 'status' features like metal cards and profile skins."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-05">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-05</span>
+          <span class="insight-cat">technical</span>
+          <span class="insight-claim">Must use legacy OldGuard SOAP API — T+2 days settlement</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-technical/constraints.md</summary>
+          <blockquote>"The 'Stark' banking API mentioned in the brief is actually not approved by compliance yet. We have to use the 'OldGuard' SOAP API for at least the first 12 months."<br><br>"No Instant Settlement: OldGuard takes T+2 days to clear transactions. Real-time feeds will be impossible."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-06">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-06</span>
+          <span class="insight-cat">technical</span>
+          <span class="insight-claim">Implementation will be React/Cordova wrapper, not native</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-technical/constraints.md</summary>
+          <blockquote>"To hit the timeline, we are repurposing the existing React web portal. We will wrap it in Cordova for iOS/Android. It will NOT be native."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-07">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-07</span>
+          <span class="insight-cat">user-need</span>
+          <span class="insight-claim">User (Alex) finds public financial broadcasts "creepy" — values privacy</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-interviews/interview-01.md</summary>
+          <blockquote>"Oh, absolutely not. Money is private. I have a Venmo, but I keep my transactions private. I honestly find it creepy when people broadcast what they pay for. I distinctly remember my friend getting roasted for spending $50 on a game skin, and I don't want that energy."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-08">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-08</span>
+          <span class="insight-cat">user-need</span>
+          <span class="insight-claim">User (Alex) unwilling to pay subscription — free alternatives exist</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-interviews/interview-01.md</summary>
+          <blockquote>"Probably not. There are so many free ones. Chime is free, CashApp is free. Why would I pay a subscription just to hold my own money?"</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-09">
+        <div class="insight-row">
+          <span class="badge badge-invalidated">Invalidated</span>
+          <span class="insight-id">IG-09</span>
+          <span class="insight-cat">user-need</span>
+          <span class="insight-claim">User (Taylor) motivated by competition — wants leaderboards</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-interviews/interview-02.md</summary>
+          <blockquote>"I love the idea of competition. If I could see a leaderboard of who saved the most percentage of their income among my friends, that would actually motivate me. Gamify it."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-10">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-10</span>
+          <span class="insight-cat">user-need</span>
+          <span class="insight-claim">User (Taylor) would pay $2-3/month, $5 feels steep</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-interviews/interview-02.md</summary>
+          <blockquote>"I'd pay for good features. Maybe like $2 or $3. $5 feels steep unless it comes with like... heavy perks."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-11">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-11</span>
+          <span class="insight-cat">business</span>
+          <span class="insight-claim">No successful competitor combines subscription + social — it's one or the other</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-benchmark/competitor-analysis.md</summary>
+          <blockquote>"The market is bifurcating. Free/Social apps are winning volume. Paid/Privacy apps are niche but high ARPU. There is NO successful app that charges a subscription AND pushes social features. It's one or the other."</blockquote>
+        </details>
+      </div>
+
+      <div class="insight-card" data-insight="IG-12">
+        <div class="insight-row">
+          <span class="badge badge-verified">Verified</span>
+          <span class="insight-id">IG-12</span>
+          <span class="insight-cat">user-need</span>
+          <span class="insight-claim">User (Jordan) refuses to link main bank account — security concern</span>
+        </div>
+        <details class="insight-source">
+          <summary class="source-ref">seed-benchmark/interview-03-jordan.md</summary>
+          <blockquote>"Would you link your main bank account?" — "Hell no. Security risk. I'd only put like 'play money' in there."</blockquote>
+        </details>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- CONFLICTS -->
+  <details open>
+    <summary>Conflicts <span style="color:#999; font-weight:400; font-size:0.8rem;">(flag for stakeholder discussion)</span></summary>
+    <div style="padding: 0.5rem 0;">
+
+      <div class="conflict-card" data-conflict="CF-01">
+        <div class="conflict-header">
+          <span class="conflict-id">CF-01 · Real-time vs Legacy</span>
+          <span class="badge badge-flagged">Flagged</span>
+        </div>
+        <div class="conflict-refs" style="margin-bottom:0.5rem;">IG-01 vs IG-05</div>
+        <div class="conflict-tension">Brief promises real-time social feeds, but OldGuard API has T+2 day settlement. Real-time is technically impossible.</div>
+        <div class="conflict-options">
+          <div class="conflict-option">
+            <input type="radio" name="cf01" id="cf01a" value="Flag for discussion — CTO + Product: real-time UX vs API constraints">
+            <label for="cf01a"><span class="option-label">Flag for discussion</span> — CTO + Product: real-time UX vs API constraints</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf01" id="cf01b" value="Needs more research — investigate Stark API timeline, alternative settlement options">
+            <label for="cf01b"><span class="option-label">Needs more research</span> — Stark API timeline, alternative settlement options</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf01" id="cf01c" value="I have context" onchange="showNote(this)">
+            <label for="cf01c"><span class="option-label">I have context</span> — add resolution notes below</label>
+          </div>
+          <textarea class="conflict-note" data-for="cf01" placeholder="What context or resolution do you want to surface?"></textarea>
+        </div>
+      </div>
+
+      <div class="conflict-card resolved" data-conflict="CF-02">
+        <div class="conflict-header">
+          <span class="conflict-id">CF-02 · Native vs Hybrid</span>
+          <span class="badge badge-resolved">Resolved</span>
+        </div>
+        <div class="conflict-refs" style="margin-bottom:0.5rem;">IG-03 vs IG-06</div>
+        <div class="conflict-tension">Brief mandates 100% native mobile. CTO says it'll be a React/Cordova web wrapper to hit the 3-month timeline.</div>
+        <div class="conflict-resolution">CEO confirmed Cordova for 3-month launch. Backlog must include approximate milestone for Flutter migration after reaching product-market fit. IG-06 wins for MVP, IG-03 remains as long-term target.</div>
+      </div>
+
+      <div class="conflict-card" data-conflict="CF-03">
+        <div class="conflict-header">
+          <span class="conflict-id">CF-03 · Social vs Privacy</span>
+          <span class="badge badge-research">Research</span>
+        </div>
+        <div class="conflict-refs" style="margin-bottom:0.5rem;">IG-01 vs IG-07</div>
+        <div class="conflict-tension">Core value prop is public transaction feeds. But user Alex finds sharing finances "creepy" and prefers total privacy.</div>
+        <div class="conflict-options">
+          <div class="conflict-option">
+            <input type="radio" name="cf03" id="cf03a" value="Flag for discussion — Product + CEO: social vs privacy positioning">
+            <label for="cf03a"><span class="option-label">Flag for discussion</span> — Product + CEO: social vs privacy positioning</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf03" id="cf03b" value="Needs more research — user interviews on privacy in social finance">
+            <label for="cf03b"><span class="option-label">Needs more research</span> — user interviews on privacy in social finance</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf03" id="cf03c" value="I have context" onchange="showNote(this)">
+            <label for="cf03c"><span class="option-label">I have context</span> — add resolution notes below</label>
+          </div>
+          <textarea class="conflict-note" data-for="cf03" placeholder="What context or resolution do you want to surface?"></textarea>
+        </div>
+      </div>
+
+      <div class="conflict-card" data-conflict="CF-04">
+        <div class="conflict-header">
+          <span class="conflict-id">CF-04 · Pricing Model</span>
+          <span class="badge badge-research">Research</span>
+        </div>
+        <div class="conflict-refs" style="margin-bottom:0.5rem;">IG-04 vs IG-08, IG-10, IG-11</div>
+        <div class="conflict-tension">Brief sets $5/mo subscription. Users say $0 or $2-3 max. Market data says no app succeeds with subscription + social.</div>
+        <div class="conflict-options">
+          <div class="conflict-option">
+            <input type="radio" name="cf04" id="cf04a" value="Flag for discussion — CEO + Finance: pricing vs user/market data">
+            <label for="cf04a"><span class="option-label">Flag for discussion</span> — CEO + Finance: pricing vs user/market data</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf04" id="cf04b" value="Needs more research — freemium benchmarks, conversion rates, ARPU">
+            <label for="cf04b"><span class="option-label">Needs more research</span> — freemium benchmarks, conversion rates, ARPU</label>
+          </div>
+          <div class="conflict-option">
+            <input type="radio" name="cf04" id="cf04c" value="I have context" onchange="showNote(this)">
+            <label for="cf04c"><span class="option-label">I have context</span> — add resolution notes below</label>
+          </div>
+          <textarea class="conflict-note" data-for="cf04" placeholder="What context or resolution do you want to surface?"></textarea>
+        </div>
+      </div>
+
+    </div>
+  </details>
+
+  <!-- SOURCE ISSUES -->
+  <details>
+    <summary>Source Issues</summary>
+    <div style="padding: 0.5rem 0;">
+      <div class="issue-item">
+        <span class="issue-type">Misplaced file:</span> <code>seed-benchmark/interview-03-jordan.md</code> — interview in benchmark folder
+      </div>
+      <div class="issue-item">
+        <span class="issue-type">Wrong type:</span> <code>seed-benchmark/competitor-analysis.md</code> — labeled as <code>workshop</code>, content is benchmark
+      </div>
+      <div class="issue-item">
+        <span class="issue-type">Missing metadata:</span> <code>seed-interviews/interview-02.md</code> — Context field empty, date format non-standard (12/05/2026)
+      </div>
+      <div class="issue-item">
+        <span class="issue-type">No template:</span> <code>seed-technical/constraints.md</code> — doesn't follow _SOURCE_TEMPLATE.md structure
+      </div>
+    </div>
+  </details>
+
+  <!-- EVIDENCE GAPS -->
+  <details>
+    <summary>Evidence Gaps</summary>
+    <div style="padding: 0.5rem 0;">
+      <div class="gap-item">
+        <strong>User trust &amp; security</strong> — Jordan refuses to link bank account (IG-12) but no other source addresses the security/trust barrier. The brief ignores it entirely.
+        <div class="gap-action">Suggested: User interviews focused on security perception in fintech apps.</div>
+      </div>
+      <div class="gap-item">
+        <strong>Retention &amp; engagement</strong> — All sources discuss acquisition (virality, downloads). No source addresses what makes users come back after day 1.
+        <div class="gap-action">Suggested: Competitor retention analysis, cohort data from similar apps.</div>
+      </div>
+      <div class="gap-item">
+        <strong>Viable monetization</strong> — $5/mo subscription contradicted by all external sources. No alternative model proposed. <span class="badge badge-research">Research</span>
+        <div class="gap-action">Linked to CF-04. Suggested: Benchmark of freemium models in fintech (conversion rates, ARPU).</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SYSTEM MAP -->
+  <details>
+    <summary>System Map</summary>
+    <div style="padding: 0.5rem 0;">
+
+      <div style="font-size:0.875rem; margin-bottom:0.75rem; color:#444;">
+        <strong>Vision:</strong> Social banking for Gen Z — mobile-only, multiplayer finance. Privacy-first positioning may be required (CF-03 unresolved). [IG-01, IG-03]
+      </div>
+
+      <div style="font-size:0.8rem; font-weight:500; color:#666; margin-bottom:0.375rem;">Modules</div>
+      <div class="module-item">
+        <span class="module-name">Core Banking</span> <span class="badge badge-verified">Verified</span>
+        <div class="module-status">Cordova + OldGuard SOAP, T+2 settlement. CEO approved for 3-month launch.</div>
+        <div class="module-refs">[IG-05, IG-06, CF-02 RESOLVED]</div>
+      </div>
+      <div class="module-item">
+        <span class="module-name">Social Layer</span> <span class="badge badge-research">Blocked CF-03</span>
+        <div class="module-status">Shared pots, public feeds. Design must assume opt-in social until privacy conflict resolved.</div>
+        <div class="module-refs">[IG-01, IG-07]</div>
+      </div>
+      <div class="module-item">
+        <span class="module-name">Monetization</span> <span class="badge badge-research">Blocked CF-04</span>
+        <div class="module-status">$5/mo contradicted by users and market. Model undefined until research completes.</div>
+        <div class="module-refs">[IG-04, IG-08, IG-10, IG-11]</div>
+      </div>
+      <div class="module-item">
+        <span class="module-name">Trust &amp; Security</span> <span class="badge badge-pending">Needs research</span>
+        <div class="module-status">Users refuse to link main accounts. "Play money" framing needed.</div>
+        <div class="module-refs">[IG-12]</div>
+      </div>
+
+      <div style="font-size:0.8rem; font-weight:500; color:#666; margin: 0.75rem 0 0.375rem;">Open Questions</div>
+      <div class="oq-item">How to reconcile social banking vision with user privacy concerns? (CF-03)</div>
+      <div class="oq-item">What monetization model works if $5 subscription fails? (CF-04)</div>
+      <div class="oq-item">What is the Stark API approval timeline? (CF-01)</div>
+      <div class="oq-item">When is the Flutter migration milestone relative to PMF? (CF-02)</div>
+      <div class="oq-item">How to address trust barrier for bank account linking? (IG-12)</div>
+    </div>
+  </details>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <div class="action-bar-header">
+      <h2>Generate /synthesis prompt</h2>
+      <span class="decision-count" id="decisionCount">0 decisions made</span>
+    </div>
+    <button class="generate-btn" id="generateBtn" onclick="generatePrompt()">Generate prompt</button>
+    <div class="prompt-output" id="promptOutput">
+      <button class="copy-btn" onclick="copyPrompt()">Copy</button>
+      <pre id="promptText"></pre>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <script>
+    // Auto-assign IDs for anchor navigation from other documents
+    document.querySelectorAll('[data-insight]').forEach(el => el.id = el.dataset.insight);
+    document.querySelectorAll('[data-conflict]').forEach(el => el.id = el.dataset.conflict);
+
+    // Auto-open parent <details> when arriving via anchor
+    if (location.hash) {
+      const target = document.querySelector(location.hash);
+      if (target) {
+        const details = target.closest('details');
+        if (details) details.open = true;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    const insightDecisions = {};
+    const state = { conflictCount: 0, insightCount: 0 };
+
+    function toggleInsight(btn, action) {
+      const row = btn.closest('.insight-card');
+      const id = row.dataset.insight;
+      const buttons = row.querySelectorAll('.insight-btn');
+
+      if (insightDecisions[id] === action) {
+        delete insightDecisions[id];
+        buttons.forEach(b => b.className = 'insight-btn');
+      } else {
+        insightDecisions[id] = action;
+        buttons.forEach(b => {
+          b.className = 'insight-btn';
+          if (b.dataset.action === action) {
+            b.classList.add(action === 'approve' ? 'selected-approve' : 'selected-reject');
+          }
+        });
+      }
+      updateCount();
+    }
+
+    function showNote(radio) {
+      const card = radio.closest('.conflict-card');
+      const note = card.querySelector('.conflict-note');
+      note.classList.add('visible');
+      note.focus();
+    }
+
+    function updateCount() {
+      const conflicts = document.querySelectorAll('.conflict-card:not(.resolved)');
+      let cCount = 0;
+      conflicts.forEach(card => {
+        const selected = card.querySelector('input[type="radio"]:checked');
+        if (selected) cCount++;
+      });
+      const iCount = Object.keys(insightDecisions).length;
+      state.conflictCount = cCount;
+      state.insightCount = iCount;
+      document.getElementById('decisionCount').textContent =
+        `${cCount + iCount} decision${(cCount + iCount) !== 1 ? 's' : ''} made`;
+    }
+
+    document.querySelectorAll('.conflict-card:not(.resolved) input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const card = radio.closest('.conflict-card');
+        const note = card.querySelector('.conflict-note');
+        if (!radio.value.startsWith('I have context')) {
+          note.classList.remove('visible');
+        }
+        updateCount();
+      });
+    });
+
+    function generatePrompt() {
+      const lines = [];
+      lines.push('/synthesis with these inputs:\n');
+
+      const conflicts = document.querySelectorAll('.conflict-card:not(.resolved)');
+      const flagged = [], research = [], context = [];
+      conflicts.forEach(card => {
+        const id = card.dataset.conflict;
+        const selected = card.querySelector('input[type="radio"]:checked');
+        if (selected) {
+          let value = selected.value;
+          const note = card.querySelector('.conflict-note');
+          if (value.startsWith('I have context') && note.value.trim()) {
+            value = 'Context: ' + note.value.trim();
+            context.push(`${id.toUpperCase()}: ${value}`);
+          } else if (value.startsWith('Flag')) {
+            flagged.push(`${id.toUpperCase()}: ${value}`);
+          } else if (value.startsWith('Needs more')) {
+            research.push(`${id.toUpperCase()}: ${value}`);
+          }
+        }
+      });
+
+      if (flagged.length > 0) {
+        lines.push('## Flag for stakeholder discussion');
+        flagged.forEach(l => lines.push(l));
+        lines.push('');
+      }
+      if (research.length > 0) {
+        lines.push('## Needs more research');
+        research.forEach(l => lines.push(l));
+        lines.push('');
+      }
+      if (context.length > 0) {
+        lines.push('## Resolution context provided');
+        context.forEach(l => lines.push(l));
+        lines.push('');
+      }
+      if (flagged.length === 0 && research.length === 0 && context.length === 0) {
+        lines.push('(no conflict directions selected)');
+      }
+
+      // Insights
+      const approved = [];
+      const rejected = [];
+      Object.entries(insightDecisions).forEach(([id, action]) => {
+        if (action === 'approve') approved.push(id);
+        else rejected.push(id);
+      });
+
+      if (approved.length > 0 || rejected.length > 0) {
+        lines.push('');
+        if (approved.length > 0) lines.push(`Approve insights: ${approved.join(', ')}`);
+        if (rejected.length > 0) lines.push(`Reject insights: ${rejected.join(', ')}`);
+      }
+
+      const output = document.getElementById('promptOutput');
+      const text = document.getElementById('promptText');
+      text.textContent = lines.join('\n');
+      output.classList.add('visible');
+    }
+
+    function copyPrompt() {
+      const text = document.getElementById('promptText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1500);
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoWallet — Competitive Benchmark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #F0F2F5; font-family: 'Inter', sans-serif; margin: 0; padding: 20px 0; display: flex; justify-content: center; }
+        .page { background: #fff; width: 21cm; min-height: 29.7cm; padding: 2.54cm; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        h1 { font-size: 24pt; font-weight: 700; color: #111; margin: 0 0 6pt; }
+        h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
+        h3 { font-size: 13pt; font-weight: 600; color: #333; margin: 16pt 0 4pt; }
+        p, li, td, th { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 10pt; }
+        ul { padding-left: 24pt; margin: 0 0 12pt; }
+        table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
+        th, td { border: 1px solid #c7c7c7; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .doc-meta { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px 15px; font-size: 0.85em; color: #444; margin-bottom: 20pt; }
+        .doc-meta strong { color: #111; }
+        .callout { background: #e6fffa; border-left: 4px solid #00cea5; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout p { margin: 0; font-size: 0.9em; }
+        .callout-warn { background: #fef3cd; border-left: 4px solid #ffc107; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout-warn p { margin: 0; font-size: 0.9em; }
+        .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+        .check { color: #28a745; } .cross { color: #dc3545; } .maybe { color: #ffc107; }
+        @media print { body { background: none; padding: 0; } .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; } }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <div class="doc-meta">
+        <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts
+    </div>
+
+    <h1>Competitive Benchmark</h1>
+    <p style="color:#666; font-size:12pt;">NeoWallet positioning vs. Gen Z fintech market</p>
+
+    <h2>1. Market Landscape</h2>
+    <p>The Gen Z fintech market bifurcates into two successful models. NeoWallet attempts to bridge them — a strategy with no successful precedent. <span class="insight-ref">[IG-11]</span></p>
+
+    <table>
+        <thead><tr><th></th><th>CashFlow Z</th><th>SaveMate</th><th>FinTok</th><th style="background:#e6fffa;">NeoWallet (proposed)</th></tr></thead>
+        <tbody>
+            <tr><td><strong>Model</strong></td><td>Freemium</td><td>$10/month</td><td>Ad-supported</td><td>$5/month subscription</td></tr>
+            <tr><td><strong>Positioning</strong></td><td>Social-first</td><td>Privacy-first</td><td>Content/education</td><td>Social + Subscription</td></tr>
+            <tr><td><strong>Social features</strong></td><td>Public feeds (default)</td><td>None</td><td>Video sharing</td><td>Shared pots, public feeds, squads</td></tr>
+            <tr><td><strong>Privacy</strong></td><td>Low (public default)</td><td>High (core value)</td><td>Medium</td><td>TBD (CF-03 unresolved)</td></tr>
+            <tr><td><strong>Traction</strong></td><td>10M users</td><td>Struggling</td><td>Growing</td><td>Pre-launch</td></tr>
+            <tr><td><strong>Target</strong></td><td>Gen Z social</td><td>"Adults"</td><td>Gen Z curious</td><td>Gen Z social</td></tr>
+        </tbody>
+    </table>
+
+    <h2>2. Feature Comparison</h2>
+    <table>
+        <thead><tr><th>Feature</th><th>CashFlow Z</th><th>SaveMate</th><th>FinTok</th><th style="background:#e6fffa;">NeoWallet</th></tr></thead>
+        <tbody>
+            <tr><td>Public transaction feed</td><td class="check">Yes (default)</td><td class="cross">No</td><td class="cross">No</td><td class="maybe">TBD (CF-03)</td></tr>
+            <tr><td>Shared savings pots</td><td class="check">Yes</td><td class="cross">No</td><td class="cross">No</td><td class="check">Yes</td></tr>
+            <tr><td>AI coaching</td><td class="cross">No</td><td class="check">Yes (quiet)</td><td class="cross">No</td><td class="cross">Invalidated (IG-02)</td></tr>
+            <tr><td>Leaderboards</td><td class="check">Yes</td><td class="cross">No</td><td class="cross">No</td><td class="cross">Invalidated (IG-09)</td></tr>
+            <tr><td>Native mobile</td><td class="check">Yes</td><td class="check">Yes</td><td class="check">Yes</td><td class="cross">Cordova (CF-02)</td></tr>
+            <tr><td>Instant settlement</td><td class="check">Yes</td><td class="check">Yes</td><td>N/A</td><td class="cross">T+2 days (IG-05)</td></tr>
+            <tr><td>Free tier</td><td class="check">Yes</td><td class="cross">No</td><td class="check">Yes</td><td class="maybe">TBD (CF-04)</td></tr>
+        </tbody>
+    </table>
+
+    <h2>3. Strategic Implications</h2>
+
+    <h3>3.1 NeoWallet vs CashFlow Z (direct competitor)</h3>
+    <p>CashFlow Z owns the social-first Gen Z segment with 10M users and a freemium model. NeoWallet's proposed differentiator (social + subscription) is a harder sell — CashFlow Z offers similar social features for free.</p>
+    <div class="callout-warn">
+        <p><strong>Risk:</strong> NeoWallet launches with worse UX (Cordova vs native), slower data (T+2 vs real-time), higher price ($5 vs free), and fewer users (network effects). The only unique angle is "squad goals" — untested.</p>
+    </div>
+
+    <h3>3.2 The Bifurcation Problem</h3>
+    <div class="callout">
+        <p><strong>[IG-11]:</strong> "There is NO successful app that charges a subscription AND pushes social features. It's one or the other." The market punishes SaveMate ($10/mo, losing users) and rewards CashFlow Z (free, 10M users).</p>
+    </div>
+    <p>NeoWallet sits in the gap between the two successful models. This is either visionary or suicidal — the data suggests caution.</p>
+
+    <h3>3.3 Technical Disadvantage at Launch</h3>
+    <table>
+        <thead><tr><th>Dimension</th><th>CashFlow Z</th><th>NeoWallet (MVP)</th><th>Gap</th></tr></thead>
+        <tbody>
+            <tr><td>App type</td><td>Native</td><td>Cordova wrapper</td><td>UX quality, performance</td></tr>
+            <tr><td>Settlement</td><td>Instant</td><td>T+2 days</td><td>Real-time feeds impossible</td></tr>
+            <tr><td>API quality</td><td>Modern REST</td><td>Legacy SOAP</td><td>Rate limits, reliability</td></tr>
+        </tbody>
+    </table>
+    <p>NeoWallet launches technically behind every competitor. The "ship fast, iterate later" principle (CF-02) accepts this trade-off, but the gap is significant.</p>
+
+    <h2>4. Recommendations</h2>
+    <ol>
+        <li><strong>Don't compete on social features against CashFlow Z</strong> — they have 10M users and network effects. Find a different angle. <span class="insight-ref">[IG-11]</span></li>
+        <li><strong>Resolve pricing before launch</strong> — $5/month with no free tier will lose to every competitor. <span class="insight-ref">[IG-08], [IG-10]</span></li>
+        <li><strong>Privacy as differentiator?</strong> — If CF-03 resolves toward privacy-first, NeoWallet could position between CashFlow Z (too public) and SaveMate (too serious). Requires research. <span class="insight-ref">[IG-07]</span></li>
+        <li><strong>Trust-first onboarding</strong> — Start with "play money" deposits to build trust before asking for primary bank linking. <span class="insight-ref">[IG-12]</span></li>
+    </ol>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoWallet — Strategic Recommendations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #F0F2F5; font-family: 'Inter', sans-serif; margin: 0; padding: 20px 0; display: flex; justify-content: center; }
+        .page { background: #fff; width: 21cm; min-height: 29.7cm; padding: 2.54cm; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        h1 { font-size: 24pt; font-weight: 700; color: #111; margin: 0 0 6pt; }
+        h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
+        h3 { font-size: 13pt; font-weight: 600; color: #333; margin: 16pt 0 4pt; }
+        p, li, td, th { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 10pt; }
+        ul, ol { padding-left: 24pt; margin: 0 0 12pt; }
+        li { margin-bottom: 4pt; }
+        table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
+        th, td { border: 1px solid #c7c7c7; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+        th { background: #f8f9fa; font-weight: 600; }
+        blockquote { border-left: 3px solid #ccc; margin: 10pt 20pt; padding-left: 12pt; color: #555; font-style: italic; }
+        .doc-meta { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px 15px; font-size: 0.85em; color: #444; margin-bottom: 20pt; }
+        .doc-meta strong { color: #111; }
+        .callout { background: #e6fffa; border-left: 4px solid #00cea5; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout p { margin: 0; font-size: 0.9em; }
+        .callout-warn { background: #fef3cd; border-left: 4px solid #ffc107; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout-warn p { margin: 0; font-size: 0.9em; }
+        .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+        .scenario { border: 1px solid #e5e5e5; border-radius: 6px; padding: 12pt 16pt; margin: 10pt 0; }
+        .scenario-title { font-weight: 600; font-size: 12pt; margin-bottom: 6pt; }
+        .scenario-good { border-color: #a3d9a5; }
+        .scenario-risk { border-color: #e8a0a0; }
+        @media print { body { background: none; padding: 0; } .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; } }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <div class="doc-meta">
+        <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts
+    </div>
+
+    <h1>Strategic Recommendations</h1>
+    <p style="color:#666; font-size:12pt;">Decision framework for NeoWallet based on verified evidence</p>
+
+    <h2>1. Strategic Situation</h2>
+    <p>NeoWallet has a clear vision (social banking for Gen Z) but faces three structural problems that the evidence base has surfaced:</p>
+    <ol>
+        <li><strong>The core differentiator is the core risk.</strong> Public finance feeds — the thing that makes NeoWallet different — is exactly what users resist. <span class="insight-ref">[IG-01] vs [IG-07]</span></li>
+        <li><strong>The business model has no market precedent.</strong> Subscription + social has never worked in fintech. <span class="insight-ref">[IG-11]</span></li>
+        <li><strong>The tech stack creates a UX gap.</strong> Cordova + OldGuard means NeoWallet launches slower and less polished than every competitor. <span class="insight-ref">[IG-05], [IG-06]</span></li>
+    </ol>
+    <p>None of these are dealbreakers, but they cannot be ignored. The strategy must address all three explicitly.</p>
+
+    <h2>2. Three Strategic Paths</h2>
+    <p>Based on the evidence, three viable positioning strategies emerge. Each resolves the conflicts differently:</p>
+
+    <div class="scenario scenario-good">
+        <div class="scenario-title">Path A: "Private Squads" — Social by Invitation</div>
+        <p><strong>Resolves:</strong> CF-03 (privacy vs social) by making all social features opt-in and group-based. No public feeds. Finance stays private; squads are the social unit.</p>
+        <p><strong>Pricing:</strong> Freemium. Free core banking + $2-3/mo for squad features (shared pots, group goals, premium profiles).</p>
+        <p><strong>Differentiation:</strong> CashFlow Z is "finance Twitter" (everything public). NeoWallet is "finance group chat" (private by default, social by choice).</p>
+        <p><strong>Evidence:</strong> Aligns with IG-07 (privacy), IG-10 ($2-3 willingness), IG-12 (trust). Keeps IG-01 (social) but reframes it.</p>
+        <p><strong>Risk:</strong> Smaller viral potential. No public feed means no organic discovery. Growth requires marketing spend.</p>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Path B: "Finance for Clout" — Double Down on Social</div>
+        <p><strong>Resolves:</strong> CF-03 by accepting that public finance is polarizing and targeting the segment that wants it (Taylor-like users, not Alex-like users).</p>
+        <p><strong>Pricing:</strong> Free + cosmetic monetization (profile skins, metal cards, status badges). No subscription.</p>
+        <p><strong>Differentiation:</strong> Compete directly with CashFlow Z on features, bet on squad goals as the hook.</p>
+        <p><strong>Evidence:</strong> Aligns with IG-01 (social vision). Contradicts IG-07 (privacy). Requires accepting a smaller addressable market.</p>
+        <p><strong>Risk:</strong> Network effects favor incumbent (CashFlow Z has 10M users). Launching with Cordova + T+2 means worse UX than the competitor you're challenging.</p>
+    </div>
+
+    <div class="scenario scenario-risk">
+        <div class="scenario-title">Path C: "Status Quo" — Launch as Proposed</div>
+        <p><strong>Resolves:</strong> Nothing. $5 subscription + public social feeds + Cordova + OldGuard.</p>
+        <p><strong>Evidence against:</strong> IG-07 (users find it creepy), IG-08 (won't pay), IG-10 ($5 too steep), IG-11 (no precedent), IG-12 (trust barrier).</p>
+        <p><strong>Risk:</strong> Every external data point contradicts this path. The brief's assumptions are the only supporting evidence, and they are untested.</p>
+    </div>
+
+    <h2>3. Recommendation</h2>
+    <div class="callout">
+        <p><strong>Path A ("Private Squads") is the strongest evidence-backed strategy.</strong> It resolves the privacy conflict, aligns with user willingness-to-pay, and creates a differentiated position between CashFlow Z (too public) and SaveMate (too serious).</p>
+    </div>
+    <p>However, this recommendation is based on 3 interviews and 1 benchmark. Before committing, the following validation is needed:</p>
+
+    <h2>4. Research Roadmap</h2>
+    <table>
+        <thead><tr><th>Priority</th><th>Research</th><th>Unblocks</th><th>Method</th><th>Timeline</th></tr></thead>
+        <tbody>
+            <tr>
+                <td>P0</td>
+                <td>Privacy expectations in social finance</td>
+                <td>CF-03 → Social Layer</td>
+                <td>5-8 user interviews focused on opt-in vs public default</td>
+                <td>2 weeks</td>
+            </tr>
+            <tr>
+                <td>P0</td>
+                <td>Freemium benchmarks in Gen Z fintech</td>
+                <td>CF-04 → Monetization</td>
+                <td>Desk research: conversion rates, ARPU, churn</td>
+                <td>1 week</td>
+            </tr>
+            <tr>
+                <td>P1</td>
+                <td>Trust barrier validation</td>
+                <td>IG-12 → Trust module</td>
+                <td>5+ interviews on bank account linking anxiety</td>
+                <td>2 weeks</td>
+            </tr>
+            <tr>
+                <td>P1</td>
+                <td>Retention/engagement patterns</td>
+                <td>Evidence gap</td>
+                <td>Competitor cohort data, app analytics benchmarks</td>
+                <td>1 week</td>
+            </tr>
+            <tr>
+                <td>P2</td>
+                <td>Stark API timeline</td>
+                <td>CF-01 → Real-time feeds</td>
+                <td>Internal: CTO + Compliance sync</td>
+                <td>1 meeting</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>5. Decision Points</h2>
+    <p>After completing P0 research, the following decisions must be made by stakeholders:</p>
+    <ol>
+        <li><strong>CEO + Product:</strong> Social positioning — private-first (Path A) or social-first (Path B)? <span class="insight-ref">Input: CF-03 research results</span></li>
+        <li><strong>CEO + Finance:</strong> Pricing model — freemium, low subscription ($2-3), or alternative monetization? <span class="insight-ref">Input: CF-04 benchmarks</span></li>
+        <li><strong>CTO + Product:</strong> Real-time feasibility — Stark API timeline vs "pending" UX design? <span class="insight-ref">Input: CF-01 compliance update</span></li>
+    </ol>
+    <p>These 3 decisions unlock the remaining 75% of the product architecture. Until they're made, only Core Banking can be fully specified.</p>
+
+    <div class="callout-warn">
+        <p><strong>Timeline impact:</strong> P0 research takes ~2 weeks. If the 3-month MVP timeline is firm (CEO decision on CF-02), research must start immediately — delay here compresses design and development into an even tighter window.</p>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoWallet — Product Strategy</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .reveal { font-family: 'Inter', sans-serif; }
+        .reveal h1 { font-size: 2.2em; font-weight: 700; color: #111; }
+        .reveal h2 { font-size: 1.6em; font-weight: 600; color: #111; }
+        .reveal h3 { font-size: 1.2em; font-weight: 600; color: #333; }
+        .reveal p, .reveal li { font-size: 0.85em; line-height: 1.6; color: #333; }
+        .reveal .subtitle { font-size: 0.9em; color: #666; margin-top: 0.5em; }
+        .reveal .doc-meta { font-size: 0.6em; color: #999; position: absolute; bottom: 1em; left: 1em; }
+        .reveal .callout {
+            background: #e6fffa;
+            border-left: 4px solid #00cea5;
+            padding: 0.8em 1em;
+            margin: 0.8em 0;
+            text-align: left;
+            border-radius: 0 4px 4px 0;
+        }
+        .reveal .callout-warn {
+            background: #fef3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.8em 1em;
+            margin: 0.8em 0;
+            text-align: left;
+            border-radius: 0 4px 4px 0;
+        }
+        .reveal .callout p, .reveal .callout-warn p { font-size: 0.8em; margin: 0; }
+        .reveal .insight-ref { font-size: 0.65em; color: #999; }
+        .reveal blockquote {
+            background: none;
+            border-left: 3px solid #ccc;
+            padding: 0.5em 1em;
+            font-style: italic;
+            color: #555;
+            width: 80%;
+            margin: 0.5em auto;
+            text-align: left;
+        }
+        .reveal blockquote p { font-size: 0.85em; }
+        .reveal table { font-size: 0.7em; margin: 0.5em auto; }
+        .reveal th { background: #f8f9fa; }
+        .reveal th, .reveal td { padding: 0.4em 0.6em; border: 1px solid #ddd; }
+        .badge { display: inline-block; font-size: 0.6em; font-weight: 500; padding: 0.15em 0.5em; border-radius: 3px; text-transform: uppercase; vertical-align: middle; }
+        .badge-verified { background: #d4edda; color: #155724; }
+        .badge-blocked { background: #f8d7da; color: #721c24; }
+        .badge-pending { background: #fef3cd; color: #856404; }
+        .big-number { font-size: 3em; font-weight: 700; color: #111; margin: 0; }
+        .big-label { font-size: 0.8em; color: #666; }
+        .stats-grid { display: flex; justify-content: center; gap: 3em; margin: 1em 0; }
+        .stat-item { text-align: center; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+    <!-- TITLE -->
+    <section>
+        <h1>NeoWallet</h1>
+        <p class="subtitle">Product Strategy Review — Social Banking for Gen Z</p>
+        <div class="stats-grid">
+            <div class="stat-item"><div class="big-number">10</div><div class="big-label">Verified Insights</div></div>
+            <div class="stat-item"><div class="big-number">3</div><div class="big-label">Open Conflicts</div></div>
+            <div class="stat-item"><div class="big-number">4</div><div class="big-label">Modules</div></div>
+        </div>
+        <div class="doc-meta">v1.0 · 2026-02-11 · PD-Spec Pipeline</div>
+        <aside class="notes">This presentation summarizes the current state of the NeoWallet product strategy based on 6 source documents analyzed through PD-Spec. 2 of 4 modules are blocked on unresolved conflicts.</aside>
+    </section>
+
+    <!-- THE PROBLEM -->
+    <section>
+        <h2>The Problem</h2>
+        <p>Gen Z finds banking <strong>boring and solitary</strong>.</p>
+        <p>They manage money reactively, resist manual budgeting tools, and expect mobile-native, social experiences in everything — except finance.</p>
+        <blockquote><p>"I usually just look at my bank balance before I buy something. If I have money, I buy it." — Alex</p></blockquote>
+        <aside class="notes">But "social finance" is not as straightforward as it seems. User research reveals fundamental tensions between the social vision and what users actually want.</aside>
+    </section>
+
+    <!-- THE VISION -->
+    <section>
+        <h2>The Vision</h2>
+        <p>"Social banking" — multiplayer finance with shared pots, public feeds, and squad goals.</p>
+        <div class="callout">
+            <p><strong>[IG-01]</strong> "We want to make finance viral, multiplayer, and deeply integrated with social status."</p>
+        </div>
+        <p>Mobile-only. If it's not in your pocket, it doesn't exist. <span class="insight-ref">[IG-03]</span></p>
+        <aside class="notes">This is the brief's vision. But the next slides show why it's more complicated than it sounds.</aside>
+    </section>
+
+    <!-- THE TENSIONS -->
+    <section>
+        <h2>Three Tensions</h2>
+        <p>User research contradicts core assumptions:</p>
+        <table>
+            <thead><tr><th>Assumption</th><th>Reality</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr><td>Users want public feeds</td><td>"Money is private. It's creepy."</td><td><span class="badge badge-blocked">CF-03</span></td></tr>
+                <tr><td>Users will pay $5/mo</td><td>$0-3 max. Free alternatives exist.</td><td><span class="badge badge-blocked">CF-04</span></td></tr>
+                <tr><td>Real-time social feeds</td><td>API has T+2 day settlement</td><td><span class="badge badge-pending">CF-01</span></td></tr>
+            </tbody>
+        </table>
+        <aside class="notes">These aren't minor issues — they affect 2 of the 4 product modules. The social layer and monetization module cannot be fully specified until these are resolved.</aside>
+    </section>
+
+    <!-- PRIVACY -->
+    <section>
+        <h2>Privacy vs Social</h2>
+        <blockquote><p>"I honestly find it creepy when people broadcast what they pay for. I distinctly remember my friend getting roasted for spending $50 on a game skin, and I don't want that energy."</p></blockquote>
+        <p>— Alex, user interview <span class="insight-ref">[IG-07]</span></p>
+        <div class="callout-warn">
+            <p><strong>CF-03 — Needs research:</strong> Additional user interviews on privacy expectations in social finance apps.</p>
+        </div>
+        <aside class="notes">This is the single biggest risk to the product. The core differentiator (public finance) is exactly what users resist. We need more data before deciding on positioning.</aside>
+    </section>
+
+    <!-- PRICING -->
+    <section>
+        <h2>Pricing Model</h2>
+        <p>The brief says <strong>$5/month</strong>. Every external source disagrees:</p>
+        <ul>
+            <li>Alex: "Why would I pay just to hold my own money?" <span class="insight-ref">[IG-08]</span></li>
+            <li>Taylor: "$2-3 maybe. $5 feels steep." <span class="insight-ref">[IG-10]</span></li>
+            <li>Market: No successful app combines subscription + social. <span class="insight-ref">[IG-11]</span></li>
+        </ul>
+        <div class="callout-warn">
+            <p><strong>CF-04 — Needs research:</strong> Freemium benchmarks, conversion rates, ARPU analysis.</p>
+        </div>
+        <aside class="notes">3 independent sources all point the same direction. The $5 model needs serious reconsideration or very strong justification.</aside>
+    </section>
+
+    <!-- WHAT WE DECIDED -->
+    <section>
+        <h2>Decision Made: Tech Stack</h2>
+        <div class="callout">
+            <p><strong>CF-02 — Resolved:</strong> CEO confirmed Cordova/React wrapper for 3-month launch. Flutter migration after PMF.</p>
+        </div>
+        <p>The brief said "100% native." The CTO said "Cordova or we miss the deadline."</p>
+        <p>Decision: <strong>ship fast with Cordova</strong>, plan Flutter migration post-PMF. <span class="insight-ref">[IG-06] wins for MVP, [IG-03] remains long-term target</span></p>
+        <aside class="notes">This is the only fully resolved conflict. CEO made the call — speed over polish for v1.</aside>
+    </section>
+
+    <!-- SYSTEM MAP -->
+    <section>
+        <h2>Product Architecture</h2>
+        <table>
+            <thead><tr><th>Module</th><th>Status</th><th>Blocker</th></tr></thead>
+            <tbody>
+                <tr><td>Core Banking</td><td><span class="badge badge-verified">Verified</span></td><td>—</td></tr>
+                <tr><td>Social Layer</td><td><span class="badge badge-blocked">Blocked</span></td><td>CF-03: Privacy</td></tr>
+                <tr><td>Monetization</td><td><span class="badge badge-blocked">Blocked</span></td><td>CF-04: Pricing</td></tr>
+                <tr><td>Trust &amp; Security</td><td><span class="badge badge-pending">Needs research</span></td><td>Only 1 data point</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size:0.75em; color:#666;">Only 1 of 4 modules is fully specifiable today.</p>
+        <aside class="notes">This is the honest state of the product. We can spec Core Banking. Everything else needs stakeholder decisions or more research.</aside>
+    </section>
+
+    <!-- TRUST -->
+    <section>
+        <h2>Trust Barrier</h2>
+        <blockquote><p>"Would you link your main bank account?"<br>"Hell no. Security risk. I'd only put like 'play money' in there."</p></blockquote>
+        <p>— Jordan <span class="insight-ref">[IG-12]</span></p>
+        <p>Only 1 source addresses this. The brief ignores security perception entirely.</p>
+        <p><strong>Implication:</strong> Onboarding cannot require primary bank linking.</p>
+        <aside class="notes">This is an evidence gap. We have one strong signal but need more data to know if it's universal or segment-specific.</aside>
+    </section>
+
+    <!-- NEXT STEPS -->
+    <section>
+        <h2>Next Steps</h2>
+        <ol>
+            <li><strong>Privacy research</strong> — User interviews on social finance expectations <span class="insight-ref">→ unblock CF-03</span></li>
+            <li><strong>Pricing research</strong> — Freemium benchmarks, ARPU analysis <span class="insight-ref">→ unblock CF-04</span></li>
+            <li><strong>CTO + Product sync</strong> — Stark API timeline, real-time feasibility <span class="insight-ref">→ address CF-01</span></li>
+            <li><strong>Trust research</strong> — Security perception in fintech <span class="insight-ref">→ validate IG-12</span></li>
+            <li><strong>CEO alignment</strong> — PMF criteria and Flutter migration trigger <span class="insight-ref">→ operationalize CF-02</span></li>
+        </ol>
+        <aside class="notes">These are ordered by impact. Privacy and pricing block 2 of 4 modules — they should be prioritized.</aside>
+    </section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script>Reveal.initialize({ hash: true, slideNumber: true, transition: 'none' });</script>
+</body>
+</html>

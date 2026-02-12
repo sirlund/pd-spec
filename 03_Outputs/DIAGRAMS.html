@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD-Spec — Diagrams</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #111;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 2rem 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .meta { color: #666; font-size: 0.875rem; margin-bottom: 2rem; }
+    .diagram-container {
+      background: #fff;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e5e5e5;
+    }
+    .diagram-container h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .diagram-desc {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .legend {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: #666;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    .mermaid { text-align: center; }
+    @media print {
+      body { background: #fff; }
+      .diagram-container { border: none; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PD-Spec Diagrams</h1>
+  <p class="meta">Generated 2026-02-11 · 12 insights (10 verified, 2 invalidated) · 4 conflicts (1 resolved, 3 pending)</p>
+
+  <!-- SYSTEM MAP -->
+  <div class="diagram-container">
+    <h2>System Map</h2>
+    <p class="diagram-desc">Product modules, design principles, and their relationship to conflicts. Dotted lines = conflict dependency.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#d4edda;border:1px solid #28a745;"></div> Verified / Resolved</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f8d7da;border:1px solid #dc3545;"></div> Blocked</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fef3cd;border:1px solid #ffc107;"></div> Pending / Flagged</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e8e8e8;border:1px solid #999;"></div> Design Principle</div>
+    </div>
+    <div class="mermaid">
+flowchart TD
+    Vision["Product Vision\nSocial banking for Gen Z\nMobile-only, multiplayer finance"]
+
+    Vision --> CB["Core Banking\nCordova + OldGuard SOAP\nT+2 settlement"]
+    Vision --> SL["Social Layer\nShared pots, feeds\nBlocked on CF-03"]
+    Vision --> Mon["Monetization\n5/mo subscription proposed\nBlocked on CF-04"]
+    Vision --> TS["Trust and Security\nUsers refuse to link accounts"]
+
+    CB --> P2["Ship fast, iterate later"]
+    SL --> P1["Privacy by default"]
+    Mon --> P3["Price-sensitive audience"]
+    TS --> P1
+
+    CB -.- CF02["CF-02 RESOLVED\nCordova MVP, Flutter post-PMF"]
+    CB -.- CF01["CF-01 FLAGGED\nReal-time vs T+2 settlement"]
+    SL -.- CF03["CF-03 PENDING\nPrivacy research needed"]
+    Mon -.- CF04["CF-04 PENDING\nFreemium benchmarks needed"]
+
+    classDef verified fill:#d4edda,stroke:#28a745,color:#155724
+    classDef blocked fill:#f8d7da,stroke:#dc3545,color:#721c24
+    classDef pending fill:#fef3cd,stroke:#ffc107,color:#856404
+    classDef principle fill:#e8e8e8,stroke:#999,color:#333
+
+    class Vision,CB verified
+    class SL,Mon blocked
+    class TS pending
+    class CF02 verified
+    class CF01 pending
+    class CF03,CF04 blocked
+    class P1,P2,P3 principle
+    </div>
+  </div>
+
+  <!-- INSIGHTS NETWORK -->
+  <div class="diagram-container">
+    <h2>Insights Network</h2>
+    <p class="diagram-desc">Insights grouped by source, connected by conflicts. Shape = category, color = status.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#d4edda;border:1px solid #28a745;"></div> Verified</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f5f5f5;border:1px solid #ccc;"></div> Invalidated</div>
+      <div class="legend-item" style="margin-left:0.5rem;">Shapes: ([ user-need ]) · [[ technical ]] · {{ business }}</div>
+    </div>
+    <div class="mermaid">
+graph LR
+    subgraph seed-brief
+        IG01{{"IG-01\nSocial banking"}}
+        IG02{{"IG-02\nAI roasting"}}
+        IG03[["IG-03\nMobile-only native"]]
+        IG04{{"IG-04\n5/mo subscription"}}
+    end
+
+    subgraph seed-technical
+        IG05[["IG-05\nOldGuard SOAP T+2"]]
+        IG06[["IG-06\nCordova wrapper"]]
+    end
+
+    subgraph seed-interviews
+        IG07(["IG-07\nAlex: privacy"])
+        IG08(["IG-08\nAlex: wont pay"])
+        IG09(["IG-09\nTaylor: leaderboards"])
+        IG10(["IG-10\nTaylor: 2-3/mo max"])
+    end
+
+    subgraph seed-benchmark
+        IG11{{"IG-11\nNo sub+social works"}}
+        IG12(["IG-12\nJordan: wont link bank"])
+    end
+
+    IG01 -.->|CF-01| IG05
+    IG01 -.->|CF-03| IG07
+    IG03 -.->|CF-02| IG06
+    IG04 -.->|CF-04| IG08
+    IG04 -.->|CF-04| IG10
+    IG04 -.->|CF-04| IG11
+
+    classDef verified fill:#d4edda,stroke:#28a745,color:#155724
+    classDef invalidated fill:#f5f5f5,stroke:#ccc,color:#999,stroke-dasharray:5 5
+
+    class IG01,IG03,IG04,IG05,IG06,IG07,IG08,IG10,IG11,IG12 verified
+    class IG02,IG09 invalidated
+    </div>
+  </div>
+
+  <!-- CONFLICTS MAP -->
+  <div class="diagram-container">
+    <h2>Conflicts Map</h2>
+    <p class="diagram-desc">Each conflict connects the insights in tension. Note IG-01 appears in two conflicts.</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#d4edda;border:1px solid #28a745;"></div> Resolved</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f8d7da;border:1px solid #dc3545;"></div> Pending</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fef3cd;border:1px solid #ffc107;"></div> Flagged</div>
+    </div>
+    <div class="mermaid">
+graph TD
+    CF01["CF-01 Real-time vs Legacy\nFlagged for CTO + Product"]
+    CF02["CF-02 Native vs Hybrid\nRESOLVED"]
+    CF03["CF-03 Social vs Privacy\nNeeds user research"]
+    CF04["CF-04 Pricing Model\nNeeds freemium benchmarks"]
+
+    IG01(["IG-01 Social banking"])
+    IG03[["IG-03 Mobile-only"]]
+    IG04{{"IG-04 5/mo subscription"}}
+    IG05[["IG-05 OldGuard T+2"]]
+    IG06[["IG-06 Cordova"]]
+    IG07(["IG-07 Privacy concerns"])
+    IG08(["IG-08 Wont pay"])
+    IG10(["IG-10 Max 2-3/mo"])
+    IG11{{"IG-11 No sub+social"}}
+
+    CF01 --- IG01
+    CF01 --- IG05
+    CF02 --- IG03
+    CF02 --- IG06
+    CF03 --- IG01
+    CF03 --- IG07
+    CF04 --- IG04
+    CF04 --- IG08
+    CF04 --- IG10
+    CF04 --- IG11
+
+    classDef resolved fill:#d4edda,stroke:#28a745,color:#155724
+    classDef pending fill:#f8d7da,stroke:#dc3545,color:#721c24
+    classDef flagged fill:#fef3cd,stroke:#ffc107,color:#856404
+    classDef insight fill:#fff,stroke:#bbb,color:#333
+
+    class CF02 resolved
+    class CF03,CF04 pending
+    class CF01 flagged
+    class IG01,IG03,IG04,IG05,IG06,IG07,IG08,IG10,IG11 insight
+    </div>
+  </div>
+
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });</script>
+
+</body>
+</html>

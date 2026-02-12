@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoWallet — Product Strategy Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F0F2F5;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .page {
+            background-color: #fff;
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 2.54cm;
+            margin: 0 auto 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+        .page:last-child { page-break-after: auto; }
+        h1 { font-size: 28pt; font-weight: 700; color: #111; margin: 0 0 8pt; }
+        h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
+        h3 { font-size: 13pt; font-weight: 600; color: #333; margin: 16pt 0 4pt; }
+        p, li, td, th { font-size: 11pt; line-height: 1.6; color: #000; margin-bottom: 10pt; }
+        ul, ol { padding-left: 24pt; margin: 0 0 12pt; }
+        li { margin-bottom: 4pt; }
+        table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
+        th, td { border: 1px solid #c7c7c7; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+        th { background: #f8f9fa; font-weight: 600; }
+        blockquote { border-left: 3px solid #ccc; margin: 10pt 20pt; padding-left: 12pt; color: #555; font-style: italic; }
+        .doc-meta { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px 15px; font-size: 0.85em; color: #444; margin-bottom: 20pt; }
+        .doc-meta strong { color: #111; }
+        .doc-meta details { margin-top: 6px; }
+        .doc-meta summary { cursor: pointer; font-size: 0.9em; color: #666; }
+        .cover-subtitle { font-size: 14pt; color: #666; margin-bottom: 40pt; }
+        .cover-info { font-size: 11pt; color: #444; line-height: 2; }
+        .toc a { color: #111; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .toc li { margin-bottom: 6pt; }
+        .callout { background: #e6fffa; border-left: 4px solid #00cea5; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout p { margin: 0; font-size: 0.9em; }
+        .callout-warn { background: #fef3cd; border-left: 4px solid #ffc107; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout-warn p { margin: 0; font-size: 0.9em; }
+        .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+        .badge { display: inline-block; font-size: 0.7em; font-weight: 500; padding: 1px 6px; border-radius: 3px; text-transform: uppercase; }
+        .badge-verified { background: #d4edda; color: #155724; }
+        .badge-blocked { background: #f8d7da; color: #721c24; }
+        .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+        @media print {
+            body { background: none; padding: 0; }
+            .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="page" style="display:flex; flex-direction:column; justify-content:center;">
+        <h1>NeoWallet</h1>
+        <p class="cover-subtitle">Product Strategy Report</p>
+        <div class="cover-info">
+            <p><strong>Date:</strong> February 11, 2026<br>
+            <strong>Version:</strong> 1.0<br>
+            <strong>Status:</strong> Draft — 2 of 4 modules blocked on unresolved conflicts<br>
+            <strong>Sources:</strong> 6 documents analyzed (1 brief, 3 interviews, 1 benchmark, 1 technical)<br>
+            <strong>Pipeline:</strong> PD-Spec v3.0</p>
+        </div>
+    </div>
+
+    <!-- TOC + EXECUTIVE SUMMARY -->
+    <div class="page">
+        <div class="doc-meta">
+            <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts (1 resolved, 3 pending)
+            <details>
+                <summary>Document changelog</summary>
+                <ul><li>v1.0 (2026-02-11): Initial report from seed data analysis.</li></ul>
+            </details>
+        </div>
+
+        <h2>Table of Contents</h2>
+        <ol class="toc">
+            <li><a href="#exec">Executive Summary</a></li>
+            <li><a href="#user">User Research Findings</a></li>
+            <li><a href="#tech">Technical Constraints</a></li>
+            <li><a href="#business">Business &amp; Market Analysis</a></li>
+            <li><a href="#decisions">Decisions &amp; Open Questions</a></li>
+            <li><a href="#refs">Insight References</a></li>
+            <li><a href="#method">Methodology</a></li>
+        </ol>
+
+        <h2 id="exec">1. Executive Summary</h2>
+        <p>NeoWallet aims to be a "social banking" app for Gen Z — mobile-only, with shared savings pots, public transaction feeds, and squad-based financial goals. The business model proposes a $5/month subscription.</p>
+        <p>Analysis of 6 source documents (initial brief, 3 user interviews, 1 competitor benchmark, 1 technical constraints document) reveals <strong>fundamental tensions</strong> between the product vision and available evidence:</p>
+        <ul>
+            <li><strong>Privacy vs Social:</strong> The core differentiator (public finance) is exactly what users resist. "Money is private. It's creepy." (CF-03 — needs research)</li>
+            <li><strong>Pricing:</strong> $5/month is contradicted by all user and market data. Users expect free or $2-3 max. No successful competitor combines subscription + social. (CF-04 — needs research)</li>
+            <li><strong>Tech stack:</strong> "100% native" is not feasible for the 3-month timeline. CEO approved Cordova/React wrapper with Flutter migration post-PMF. (CF-02 — resolved)</li>
+        </ul>
+        <p><strong>Bottom line:</strong> Only 1 of 4 product modules (Core Banking) can be fully specified today. The social layer and monetization model require stakeholder decisions and additional research before they can be defined.</p>
+    </div>
+
+    <!-- USER RESEARCH -->
+    <div class="page">
+        <h2 id="user">2. User Research Findings</h2>
+        <p>Three user interviews were conducted. Key findings by theme:</p>
+
+        <h3>2.1 Privacy Expectations</h3>
+        <blockquote>"I honestly find it creepy when people broadcast what they pay for. I distinctly remember my friend getting roasted for spending $50 on a game skin." — Alex <span class="insight-ref">[IG-07]</span></blockquote>
+        <p>Alex keeps Venmo transactions private. The assumption that Gen Z wants public financial data is directly challenged. This affects the entire Social Layer module.</p>
+
+        <h3>2.2 Price Sensitivity</h3>
+        <blockquote>"Why would I pay a subscription just to hold my own money?" — Alex <span class="insight-ref">[IG-08]</span></blockquote>
+        <blockquote>"I'd pay for good features. Maybe $2 or $3. $5 feels steep." — Taylor <span class="insight-ref">[IG-10]</span></blockquote>
+        <p>Two users independently signal that $5/month is above willingness-to-pay. Free alternatives (Chime, CashApp) set the baseline expectation.</p>
+
+        <h3>2.3 Trust &amp; Security</h3>
+        <blockquote>"Would you link your main bank account?" — "Hell no. Security risk. I'd only put 'play money' in there." — Jordan <span class="insight-ref">[IG-12]</span></blockquote>
+        <p>Only one source addresses trust, but the signal is strong. Onboarding design must not require primary bank account linking.</p>
+
+        <div class="callout-warn">
+            <p><strong>Evidence gap:</strong> Only 3 interviews conducted. Sample is too small for definitive conclusions. Directional signals are consistent but need validation at scale.</p>
+        </div>
+
+        <h3>2.4 Invalidated Assumptions</h3>
+        <table>
+            <thead><tr><th>Insight</th><th>Why Invalidated</th></tr></thead>
+            <tbody>
+                <tr><td><span class="badge badge-invalidated">IG-02</span> AI "roasting" coaching</td><td>Alex: "If it starts lecturing me or trying to be funny, I'll uninstall it."</td></tr>
+                <tr><td><span class="badge badge-invalidated">IG-09</span> Competition leaderboards</td><td>Single data point. Conflicts with privacy-first principle — leaderboards require public financial data.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TECHNICAL + BUSINESS -->
+    <div class="page">
+        <h2 id="tech">3. Technical Constraints</h2>
+        <table>
+            <thead><tr><th>Constraint</th><th>Impact</th><th>Ref</th></tr></thead>
+            <tbody>
+                <tr><td>OldGuard SOAP API (T+2 settlement)</td><td>Real-time feeds impossible. Must show "pending" states.</td><td>[IG-05]</td></tr>
+                <tr><td>Cordova/React wrapper (not native)</td><td>UX limitations — no native gestures, larger bundles. Accepted for speed.</td><td>[IG-06]</td></tr>
+                <tr><td>1 call/second API rate limit</td><td>Multiplayer frequent updates may overload provider.</td><td>constraints.md</td></tr>
+                <tr><td>PCI-DSS data separation</td><td>Social graph must be on separate infrastructure from banking data.</td><td>constraints.md</td></tr>
+            </tbody>
+        </table>
+        <p>The "Stark" API from the brief is not compliance-approved. OldGuard will be the only option for at least 12 months.</p>
+
+        <h2 id="business">4. Business &amp; Market Analysis</h2>
+        <h3>4.1 Competitive Landscape</h3>
+        <table>
+            <thead><tr><th>Competitor</th><th>Model</th><th>Positioning</th><th>Traction</th></tr></thead>
+            <tbody>
+                <tr><td>CashFlow Z</td><td>Freemium</td><td>Social, public feeds default</td><td>10M users</td></tr>
+                <tr><td>SaveMate</td><td>$10/month</td><td>Privacy-focused, "bank for adults"</td><td>Struggling, losing users</td></tr>
+                <tr><td>FinTok</td><td>Ad-supported</td><td>Video-based financial advice</td><td>Users tolerate entertaining ads</td></tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <p><strong>[IG-11]:</strong> "The market is bifurcating. Free/Social apps win volume. Paid/Privacy apps are niche. There is NO successful app that charges a subscription AND pushes social features."</p>
+        </div>
+
+        <p>NeoWallet's proposed positioning (subscription + social) has no successful precedent in the market. This is either a gap opportunity or a warning signal — the data leans toward warning.</p>
+    </div>
+
+    <!-- DECISIONS + REFERENCES -->
+    <div class="page">
+        <h2 id="decisions">5. Decisions &amp; Open Questions</h2>
+
+        <h3>5.1 Resolved</h3>
+        <table>
+            <thead><tr><th>Conflict</th><th>Decision</th><th>Owner</th></tr></thead>
+            <tbody>
+                <tr><td>CF-02: Native vs Hybrid</td><td>Cordova for MVP (3 months). Flutter migration after PMF. Backlog must include migration milestone.</td><td>CEO</td></tr>
+            </tbody>
+        </table>
+
+        <h3>5.2 Open — Requires Stakeholder Input</h3>
+        <table>
+            <thead><tr><th>Question</th><th>Conflict</th><th>Action</th></tr></thead>
+            <tbody>
+                <tr><td>Social vs privacy positioning?</td><td>CF-03</td><td>User interviews on privacy expectations</td></tr>
+                <tr><td>Monetization model?</td><td>CF-04</td><td>Freemium benchmarks, ARPU analysis</td></tr>
+                <tr><td>Stark API timeline?</td><td>CF-01</td><td>CTO + Product discussion</td></tr>
+                <tr><td>Flutter migration criteria?</td><td>CF-02</td><td>CEO input on PMF definition</td></tr>
+                <tr><td>Trust/security barrier?</td><td>IG-12</td><td>Additional user research (not yet planned)</td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="refs">6. Insight References</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Status</th><th>Category</th><th>Claim</th><th>Source</th></tr></thead>
+            <tbody>
+                <tr><td>IG-01</td><td><span class="badge badge-verified">V</span></td><td>business</td><td>Social banking vision</td><td>project-brief.md</td></tr>
+                <tr><td>IG-03</td><td><span class="badge badge-verified">V</span></td><td>technical</td><td>Mobile-only, native</td><td>project-brief.md</td></tr>
+                <tr><td>IG-04</td><td><span class="badge badge-verified">V</span></td><td>business</td><td>$5/mo subscription</td><td>project-brief.md</td></tr>
+                <tr><td>IG-05</td><td><span class="badge badge-verified">V</span></td><td>technical</td><td>OldGuard SOAP, T+2</td><td>constraints.md</td></tr>
+                <tr><td>IG-06</td><td><span class="badge badge-verified">V</span></td><td>technical</td><td>Cordova wrapper</td><td>constraints.md</td></tr>
+                <tr><td>IG-07</td><td><span class="badge badge-verified">V</span></td><td>user-need</td><td>Privacy: "creepy"</td><td>interview-01.md</td></tr>
+                <tr><td>IG-08</td><td><span class="badge badge-verified">V</span></td><td>user-need</td><td>Won't pay subscription</td><td>interview-01.md</td></tr>
+                <tr><td>IG-10</td><td><span class="badge badge-verified">V</span></td><td>user-need</td><td>$2-3 max willingness</td><td>interview-02.md</td></tr>
+                <tr><td>IG-11</td><td><span class="badge badge-verified">V</span></td><td>business</td><td>No sub+social works</td><td>competitor-analysis.md</td></tr>
+                <tr><td>IG-12</td><td><span class="badge badge-verified">V</span></td><td>user-need</td><td>Won't link bank account</td><td>interview-03-jordan.md</td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="method">7. Methodology</h2>
+        <p>This report was generated by the PD-Spec pipeline — a 3-layer architecture (Sources → Work → Outputs) that enforces traceability between raw research and product decisions. Every claim in this document references a verified insight ID ([IG-XX]) that traces back to a specific source file.</p>
+        <p><strong>Sources analyzed:</strong> 6 files across 4 categories (brief, interviews, benchmark, technical constraints). Sources were generated synthetically for pipeline testing purposes.</p>
+        <p><strong>Limitations:</strong> Small sample size (3 interviews). Source organization issues detected (1 misplaced file, 1 wrong type label, 1 missing metadata, 1 non-standard format). Evidence gaps in trust/security and retention.</p>
+    </div>
+
+</body>
+</html>

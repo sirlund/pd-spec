@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoWallet — Strategic Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #F0F2F5; font-family: 'Inter', sans-serif; margin: 0; padding: 20px 0; display: flex; justify-content: center; }
+        .page { background: #fff; width: 21cm; min-height: 29.7cm; padding: 2.54cm; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        h1 { font-size: 24pt; font-weight: 700; color: #111; margin: 0 0 6pt; }
+        h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
+        h3 { font-size: 13pt; font-weight: 600; color: #333; margin: 16pt 0 4pt; }
+        p, li, td, th { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 10pt; }
+        ul, ol { padding-left: 24pt; margin: 0 0 12pt; }
+        li { margin-bottom: 4pt; }
+        table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
+        th, td { border: 1px solid #c7c7c7; padding: 6pt 8pt; text-align: left; vertical-align: top; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .doc-meta { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px 15px; font-size: 0.85em; color: #444; margin-bottom: 20pt; }
+        .doc-meta strong { color: #111; }
+        .callout { background: #e6fffa; border-left: 4px solid #00cea5; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout p { margin: 0; font-size: 0.9em; }
+        .callout-warn { background: #fef3cd; border-left: 4px solid #ffc107; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout-warn p { margin: 0; font-size: 0.9em; }
+        .callout-error { background: #f8d7da; border-left: 4px solid #dc3545; padding: 8pt 12pt; margin: 10pt 0; }
+        .callout-error p { margin: 0; font-size: 0.9em; }
+        .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+        .score { font-size: 2em; font-weight: 700; }
+        .score-ok { color: #28a745; }
+        .score-warn { color: #ffc107; }
+        .score-bad { color: #dc3545; }
+        .meter { height: 8px; background: #e5e5e5; border-radius: 4px; margin: 4pt 0 8pt; }
+        .meter-fill { height: 100%; border-radius: 4px; }
+        @media print { body { background: none; padding: 0; } .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; } }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <div class="doc-meta">
+        <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts
+    </div>
+
+    <h1>Strategic Audit</h1>
+    <p style="color:#666; font-size:12pt;">Quality gate — knowledge base health and decision readiness</p>
+
+    <h2>1. Overall Health</h2>
+
+    <table>
+        <thead><tr><th>Dimension</th><th>Score</th><th>Assessment</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><strong>Source Coverage</strong></td>
+                <td><span class="score score-warn">C+</span></td>
+                <td>6 sources across 4 types. Minimal viable coverage but significant gaps in trust/security and retention.</td>
+            </tr>
+            <tr>
+                <td><strong>Source Quality</strong></td>
+                <td><span class="score score-warn">C</span></td>
+                <td>4 organizational issues: 1 misplaced file, 1 wrong type label, 1 missing metadata, 1 non-standard format.</td>
+            </tr>
+            <tr>
+                <td><strong>Insight Extraction</strong></td>
+                <td><span class="score score-ok">A</span></td>
+                <td>12 insights extracted, 10 verified, 2 invalidated with reasoning. Good atomic granularity.</td>
+            </tr>
+            <tr>
+                <td><strong>Conflict Detection</strong></td>
+                <td><span class="score score-ok">A</span></td>
+                <td>4 real conflicts detected. All high-impact. No false positives.</td>
+            </tr>
+            <tr>
+                <td><strong>Conflict Resolution</strong></td>
+                <td><span class="score score-bad">D</span></td>
+                <td>1 of 4 resolved. 2 modules blocked. Product cannot be fully specified.</td>
+            </tr>
+            <tr>
+                <td><strong>Decision Readiness</strong></td>
+                <td><span class="score score-bad">D</span></td>
+                <td>Only Core Banking is specifiable. Social, Monetization, and Trust need research or stakeholder input.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Source Coverage Analysis</h2>
+
+    <table>
+        <thead><tr><th>Category</th><th>Sources</th><th>Insights</th><th>Coverage</th></tr></thead>
+        <tbody>
+            <tr><td>Business/Vision</td><td>1 (brief)</td><td>IG-01, IG-04</td><td>Single source, no validation</td></tr>
+            <tr><td>User Research</td><td>3 (interviews)</td><td>IG-07, IG-08, IG-09, IG-10, IG-12</td><td>Small sample, directional only</td></tr>
+            <tr><td>Technical</td><td>1 (constraints)</td><td>IG-05, IG-06</td><td>Single source, CTO perspective only</td></tr>
+            <tr><td>Market/Benchmark</td><td>1 (competitors)</td><td>IG-11</td><td>Single analysis, needs validation</td></tr>
+            <tr><td>Retention/Engagement</td><td>0</td><td>—</td><td style="color:#dc3545;">No coverage</td></tr>
+            <tr><td>Security/Trust</td><td>0 (1 incidental)</td><td>IG-12</td><td style="color:#dc3545;">1 data point from misplaced interview</td></tr>
+        </tbody>
+    </table>
+
+    <div class="callout-warn">
+        <p><strong>Critical gap:</strong> Zero sources address user retention. Every source discusses acquisition (downloads, virality) but none address day-2+ engagement. This is a blind spot in the strategy.</p>
+    </div>
+
+    <h2>3. Source Quality Issues</h2>
+    <table>
+        <thead><tr><th>Issue</th><th>File</th><th>Impact</th></tr></thead>
+        <tbody>
+            <tr><td>Misplaced file</td><td><code>seed-benchmark/interview-03-jordan.md</code></td><td>Interview in benchmark folder. Could be missed in category-based analysis.</td></tr>
+            <tr><td>Wrong type label</td><td><code>seed-benchmark/competitor-analysis.md</code></td><td>Labeled as "workshop" — content is clearly benchmark. Metadata misleading.</td></tr>
+            <tr><td>Missing metadata</td><td><code>seed-interviews/interview-02.md</code></td><td>Empty Context field, non-standard date format (12/05/2026). Reduces traceability.</td></tr>
+            <tr><td>No template</td><td><code>seed-technical/constraints.md</code></td><td>Doesn't follow _SOURCE_TEMPLATE.md. Missing Type/Participants/Context fields.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>4. Conflict Resolution Status</h2>
+    <div class="meter"><div class="meter-fill" style="width:25%; background:#28a745;"></div></div>
+    <p>1 of 4 conflicts resolved (25%). The 3 unresolved conflicts block 75% of the product architecture.</p>
+
+    <table>
+        <thead><tr><th>ID</th><th>Tension</th><th>Status</th><th>Blocking</th></tr></thead>
+        <tbody>
+            <tr><td>CF-01</td><td>Real-time vs Legacy</td><td style="color:#ffc107;">Flagged</td><td>Real-time feed UX</td></tr>
+            <tr><td>CF-02</td><td>Native vs Hybrid</td><td style="color:#28a745;">Resolved</td><td>— (unblocked)</td></tr>
+            <tr><td>CF-03</td><td>Social vs Privacy</td><td style="color:#dc3545;">Research needed</td><td>Social Layer module</td></tr>
+            <tr><td>CF-04</td><td>Pricing Model</td><td style="color:#dc3545;">Research needed</td><td>Monetization module</td></tr>
+        </tbody>
+    </table>
+
+    <h2>5. Traceability Check</h2>
+    <div class="callout">
+        <p><strong>Pass:</strong> All 4 system map modules reference [IG-XX] insight IDs. All 3 design principles are traceable. No orphaned claims found in PRD.html.</p>
+    </div>
+
+    <h2>6. Recommendations</h2>
+    <ol>
+        <li><strong>Priority 1: Resolve CF-03 and CF-04.</strong> These block 2 of 4 modules. Schedule user research (privacy expectations) and market research (freemium benchmarks) immediately.</li>
+        <li><strong>Priority 2: Fill retention gap.</strong> Add sources on day-2+ engagement — competitor retention data, cohort analysis, engagement hooks from similar apps.</li>
+        <li><strong>Priority 3: Fix source quality.</strong> Move misplaced files, correct type labels, add missing metadata. Run source organization validation.</li>
+        <li><strong>Priority 4: Validate trust barrier at scale.</strong> IG-12 is a strong signal from 1 user. Validate with 5+ interviews before designing around it.</li>
+        <li><strong>Priority 5: Schedule CTO sync.</strong> CF-01 (Stark API timeline) is flagged but not scheduled. Get a date.</li>
+    </ol>
+
+</div>
+</body>
+</html>
