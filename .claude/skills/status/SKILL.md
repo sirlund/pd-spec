@@ -19,6 +19,8 @@ Generates an interactive HTML dashboard of the current Work layer state. The use
 
 ## Instructions
 
+**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all dashboard labels, section headings, and card descriptions in that language. Button labels (Approve/Reject, Flag/Research) should also be localized. System IDs and status labels stay in English.
+
 ### Phase 1: Load
 
 1. **Read all Work layer files:**

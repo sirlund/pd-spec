@@ -18,6 +18,8 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found, report them to the user before proceeding.
 
+**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all diagram labels, node text, and legend entries in that language. System IDs stay in English.
+
 ### Phase 1: Load & Determine Target
 
 1. **Determine target** — Based on user argument:

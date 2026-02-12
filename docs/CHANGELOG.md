@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0] — 2026-02-11
+
+### Added
+- **`/kickoff` skill** — project setup wizard. Asks project name, language (en/es), and one-liner description. Writes to `CLAUDE.md` `## Project Settings`. Run once after cloning. Idempotent — detects existing config before overwriting.
+- **`output_language` setting** in CLAUDE.md `## Project Settings` — controls content language for Work layer and Output deliverables. System IDs (`[IG-XX]`, `VERIFIED`, `PENDING`) always stay in English. Currently supports `en` and `es`.
+- **Language instructions** in 5 content-producing skills (`/analyze`, `/synthesis`, `/ship`, `/status`, `/visualize`) — each reads `output_language` from Project Settings and generates content accordingly.
+- **Cross-referencing v1** between outputs — STATUS.html is the canonical anchor hub. All `/ship` outputs auto-link `[IG-XX]`/`[CF-XX]` text to `STATUS.html#ID` via JS regex. `:target` CSS highlights arrival cards. Defined in `/status` SKILL.md and `/ship` SKILL.md step 8.
+- **Interactive STATUS dashboard** codified in `/status` SKILL.md — insight cards with approve/reject toggle buttons, conflict cards with Flag/Research/Context radio options, action bar with prompt generator for copy-paste to agent. Previously ad-hoc, now reproducible across `/status` runs.
+
+### Changed
+- README Getting Started now starts with `/kickoff` instead of manual CLAUDE.md editing
+- CLAUDE.md skills table includes `/kickoff` and folder structure updated
+
 ## [3.0.0] — 2025-02-10
 
 ### Changed

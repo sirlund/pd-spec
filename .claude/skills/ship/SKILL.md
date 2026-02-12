@@ -18,6 +18,8 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
 
+**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels) in that language. System IDs (`[IG-XX]`, `[CF-XX]`) and `doc-meta` field names stay in English.
+
 ### Phase 1: Load & Validate
 
 1. **Determine target** — Default: `PRD.html`. If the user passes an argument, generate that document type instead:
