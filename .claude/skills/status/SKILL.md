@@ -97,10 +97,39 @@ Areas where the knowledge base is thin. Each gap with a suggested action.
 
 Current modules and open questions from SYSTEM_MAP.md. Each module shows its insight refs.
 
+#### Cross-referencing (anchor hub)
+
+STATUS.html is the canonical anchor hub — other documents link here with `STATUS.html#IG-01` or `STATUS.html#CF-03`.
+
+**Requirements:**
+
+- Every insight card must have `data-insight="IG-XX"` attribute.
+- Every conflict card must have `data-conflict="CF-XX"` attribute.
+- Add JS at script start to auto-assign `id` from these attributes:
+  ```js
+  document.querySelectorAll('[data-insight]').forEach(el => el.id = el.dataset.insight);
+  document.querySelectorAll('[data-conflict]').forEach(el => el.id = el.dataset.conflict);
+  ```
+- When arriving via anchor (`location.hash`), auto-open the parent `<details>` and scroll to the target:
+  ```js
+  if (location.hash) {
+    const target = document.querySelector(location.hash);
+    if (target) {
+      const details = target.closest('details');
+      if (details) details.open = true;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+  ```
+- CSS: smooth scroll + `:target` highlight (see CSS reference below).
+
 #### CSS reference
 
 ```css
+html { scroll-behavior: smooth; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+.insight-card:target { background: #fffde7; border-left: 3px solid #ffc107; padding-left: calc(0.5rem - 3px); transition: background 0.3s; }
+.conflict-card:target { box-shadow: 0 0 0 2px #ffc107; transition: box-shadow 0.3s; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
