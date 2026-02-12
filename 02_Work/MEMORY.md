@@ -39,3 +39,9 @@
   - STRATEGY.html — 3 strategic paths (Private Squads / Finance for Clout / Status Quo), recommendation for Path A, research roadmap with timeline
 - **Result:** All 5 files written to 03_Outputs/. Each with doc-meta versioning (v1.0). All traceable to [IG-XX] insights.
 - **Snapshot:** 12 insights (10 VERIFIED, 0 PENDING, 2 INVALIDATED) · 1 conflict RESOLVED, 3 PENDING · 8 outputs
+
+## [2026-02-11T23:30] /status (regenerated) + cross-referencing v1
+- **Request:** Regenerate STATUS.html with interactive features (approve/reject insights, conflict action radios, prompt generator). Inject cross-referencing into all /ship outputs.
+- **Actions:** Regenerated `03_Outputs/STATUS.html` from updated SKILL.md with full interactive dashboard. Added cross-referencing CSS (`.ref-link`) and JS (auto-link `[IG-XX]`/`[CF-XX]` → `STATUS.html#ID`) to 6 /ship outputs: PRD, PRESENTATION (target=_blank), REPORT, BENCHMARK, AUDIT, STRATEGY. STATUS.html acts as anchor hub with `:target` CSS highlights and auto-opening `<details>`.
+- **Result:** All 7 output HTML files updated. Cross-referencing v1 operational — clicking any `[IG-XX]` or `[CF-XX]` in any output navigates to the corresponding card in STATUS.html.
+- **Snapshot:** 12 insights (10 VERIFIED, 0 PENDING, 2 INVALIDATED) · 1 conflict RESOLVED, 3 PENDING · 8 outputs (all cross-referenced)

@@ -196,6 +196,9 @@
         .badge-pending { background: #fef3cd; color: #856404; }
         .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
 
+        .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+        .ref-link:hover { color: #111; border-bottom-color: #111; }
+
         @media print {
             body {
                 background: none;
@@ -539,6 +542,14 @@
 
     </div>
 
+<script>
+document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /\[(IG-\d+|CF-\d+)\]/g,
+        '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
+    );
+});
+</script>
 </body>
 
 </html>

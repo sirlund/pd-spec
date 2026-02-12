@@ -24,6 +24,8 @@
         .callout-warn p { margin: 0; font-size: 0.9em; }
         .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
         .check { color: #28a745; } .cross { color: #dc3545; } .maybe { color: #ffc107; }
+        .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+        .ref-link:hover { color: #111; border-bottom-color: #111; }
         @media print { body { background: none; padding: 0; } .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; } }
     </style>
 </head>
@@ -100,5 +102,13 @@
     </ol>
 
 </div>
+<script>
+document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /\[(IG-\d+|CF-\d+)\]/g,
+        '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
+    );
+});
+</script>
 </body>
 </html>

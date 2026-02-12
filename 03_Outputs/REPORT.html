@@ -54,6 +54,9 @@
         .badge-verified { background: #d4edda; color: #155724; }
         .badge-blocked { background: #f8d7da; color: #721c24; }
         .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+        .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+        .ref-link:hover { color: #111; border-bottom-color: #111; }
+
         @media print {
             body { background: none; padding: 0; }
             .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; }
@@ -218,5 +221,13 @@
         <p><strong>Limitations:</strong> Small sample size (3 interviews). Source organization issues detected (1 misplaced file, 1 wrong type label, 1 missing metadata, 1 non-standard format). Evidence gaps in trust/security and retention.</p>
     </div>
 
+<script>
+document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+        /\[(IG-\d+|CF-\d+)\]/g,
+        '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
+    );
+});
+</script>
 </body>
 </html>
