@@ -41,6 +41,7 @@ Information flows in one direction: Sources → Work → Outputs. This is the co
 Four Claude Code skills form the pipeline:
 
 ```
+/kickoff              →  Project setup — name, language (en/es), description
 /analyze              →  Scan sources, extract insights, detect contradictions
 /synthesis            →  Resolve conflicts, update system map
 /ship [type]          →  Generate deliverables (prd, presentation, report, benchmark, audit, strategy)
@@ -99,6 +100,7 @@ You don't configure the level — the system infers it from the number and diver
 
 ```
 ├── .claude/skills/
+│   ├── kickoff/SKILL.md          /kickoff skill definition
 │   ├── analyze/SKILL.md          /analyze skill definition
 │   ├── synthesis/SKILL.md        /synthesis skill definition
 │   ├── ship/SKILL.md             /ship skill definition
@@ -134,15 +136,16 @@ You don't configure the level — the system infers it from the number and diver
 git clone https://github.com/sirlund/pd-spec.git my-project
 cd my-project
 
-# 2. Fill in CLAUDE.md with your project context (name, product, team, date)
+# 2. Open in Claude Code or Cursor, then run:
+/kickoff                # Set project name, language, and description
 
 # 3. Add sources to 01_Sources/
 #    Create a subfolder per milestone or category
 #    For markdown files: copy _SOURCE_TEMPLATE.md, fill metadata, paste content
 #    For other files (images, PDFs, .xlsx): add a _CONTEXT.md describing them
-#    See 01_Sources/_README.md for details
+#    Or run /seed to generate synthetic test data first
 
-# 4. Open in Claude Code or Cursor, then run the pipeline
+# 4. Run the pipeline
 /analyze                # Extract insights
 /synthesis              # Resolve conflicts
 /ship                   # Generate PRD

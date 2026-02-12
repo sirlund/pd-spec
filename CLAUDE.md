@@ -7,6 +7,16 @@
 - **Team:** Niklas Lundin
 - **Started:** 2025-02-09
 
+## Project Settings
+
+> Configured by `/kickoff`. Edit manually anytime.
+
+- **project_name:** [Set by /kickoff]
+- **output_language:** en
+- **one_liner:** [Set by /kickoff]
+
+**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
+
 ## The Truth Stack
 
 This project follows the PD-Spec 3-layer architecture. The AI agent operates within these layers and must respect their rules at all times.
@@ -65,6 +75,7 @@ The folder name provides context that individual files inherit. The agent valida
 
 | Skill | Command | What it does |
 |---|---|---|
+| Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
 | Analyze | `/analyze` | Scan sources, extract insights, detect conflicts |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
 | Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
@@ -98,6 +109,7 @@ The folder name provides context that individual files inherit. The agent valida
 
 ```
 ├── .claude/skills/
+│   ├── kickoff/SKILL.md       /kickoff — project setup wizard
 │   ├── analyze/SKILL.md       /analyze — ingest sources
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
 │   ├── ship/SKILL.md          /ship — generate deliverables
