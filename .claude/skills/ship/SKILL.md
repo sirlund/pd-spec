@@ -77,7 +77,26 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 7. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
 
-8. **For presentation** (`/ship presentation`):
+8. **Cross-referencing** — All `[IG-XX]` and `[CF-XX]` references in the HTML body must be clickable links to STATUS.html anchors. This applies to all output types.
+   - **CSS** — Add to the document `<style>`:
+     ```css
+     .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+     .ref-link:hover { color: #111; border-bottom-color: #111; }
+     ```
+   - **JS** — Add before `</body>`:
+     ```js
+     document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
+       el.innerHTML = el.innerHTML.replace(
+         /\[(IG-\d+|CF-\d+)\]/g,
+         '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
+       );
+     });
+     ```
+   - This converts text like `[IG-07]` into `<a href="STATUS.html#IG-07" class="ref-link">[IG-07]</a>`.
+   - The user clicks a reference → lands on STATUS.html at the exact insight/conflict card with a yellow highlight.
+   - **Exception:** Reveal.js presentations (`/ship presentation`) should use `target="_blank"` on links to avoid breaking the slide navigation.
+
+9. **For presentation** (`/ship presentation`):
    - Output: `03_Outputs/PRESENTATION.html`
    - Use Reveal.js (CDN) in a single self-contained HTML file.
    - Structure: Title slide → Problem/Context → Key Insights (1 per slide, with `[IG-XX]` refs) → System Map summary → Decisions → Open Questions → Next Steps.
@@ -92,19 +111,19 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
      <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
      ```
 
-9. **For report** (`/ship report`):
-   - Output: `03_Outputs/REPORT.html`
-   - Use the same A4 CSS system as PRD.html (Inter font, `.page` container, print media query).
-   - Structure: Cover page (title, date, author) → Table of Contents → Executive Summary → Findings by category → Insight References → Methodology Notes.
-   - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
-   - Target audience: stakeholders who don't use GitHub or the pipeline.
+10. **For report** (`/ship report`):
+    - Output: `03_Outputs/REPORT.html`
+    - Use the same A4 CSS system as PRD.html (Inter font, `.page` container, print media query).
+    - Structure: Cover page (title, date, author) → Table of Contents → Executive Summary → Findings by category → Insight References → Methodology Notes.
+    - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
+    - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-10. **For other document types** (benchmark, audit, strategy):
-   - Use `03_Outputs/PRD.html` as the CSS and layout reference.
-   - Adapt the section structure to the document type.
-   - Maintain the same traceability requirements.
+11. **For other document types** (benchmark, audit, strategy):
+    - Use `03_Outputs/PRD.html` as the CSS and layout reference.
+    - Adapt the section structure to the document type.
+    - Maintain the same traceability requirements.
 
-11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
