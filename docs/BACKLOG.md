@@ -276,3 +276,111 @@ Gemini proposed `/calibrate` as a dedicated skill with `DECISION_LOG.md`. This d
 - [ ] Update CLAUDE.md if insight categories expand
 - [ ] Add CHANGELOG entry
 - [ ] Test with real qualitative observations
+
+---
+
+## [BL-05] Source Diversity Gap Detection — `/analyze` Enhancement
+
+**Status:** Proposed
+**Priority:** Medium
+**Proposed in:** v3.0 session (2025-02-13)
+
+### The gap
+
+Mandate #4 (Proactive Gap Detection) currently flags missing evidence for specific claims: "I can't find evidence for X." But it doesn't evaluate **source diversity** — whether the knowledge base is built on a healthy mix of source types or dangerously skewed toward one.
+
+A PRD that says "we need high accessibility" without an accessibility audit source is a claim without evidence. A system map built entirely on internal briefs without user research is an echo chamber. These are gaps that `/analyze` should surface.
+
+### What changes
+
+Enhance `/analyze` Phase 2 (step 8, "Detect evidence gaps") to evaluate source type coverage:
+
+| Source type | What it provides | Gap signal |
+|---|---|---|
+| User research (interviews, observations, usability tests) | User needs, pain points, behaviors | "No user research sources — user-need insights may be assumptions" |
+| Business data (OKRs, metrics, unit economics) | Business constraints, success criteria | "No business sources — prioritization lacks financial grounding" |
+| Technical docs (architecture, API specs, constraints) | Technical feasibility, limitations | "No technical sources — feasibility of modules is unvalidated" |
+| Brand / design guidelines | Visual identity, tone, accessibility targets | "No brand/design sources — visual decisions lack foundation" |
+| Competitive analysis (benchmarks, audits) | Market context, differentiation | "No competitive sources — positioning is based on internal assumptions" |
+| Accessibility data (audits, demographics, WCAG targets) | Inclusive design constraints | "No accessibility sources — compliance claims are unsupported" |
+
+The agent reports this as a "Source Diversity" section in the `/analyze` summary, alongside insights and conflicts.
+
+### Why this is standalone value (not just for PD-Build)
+
+Every row in the table above improves deliverables for **human** consumers:
+- A PRD without business source backing is weaker
+- A strategy doc without competitive analysis is blind
+- An audit without accessibility data is incomplete
+
+This makes PD-Spec outputs more robust regardless of whether PD-Build exists. The fact that diverse sources also produce better design definitions downstream is a bonus, not the justification.
+
+### Architecture fit
+
+- Change to `/analyze` SKILL.md only (Phase 2, step 8)
+- No new files, skills, or layers
+- Report format: section in the `/analyze` summary output + suggested source types to fill gaps
+- Respects Mandate #4 framing: suggestions as open options, never impositions
+
+### Implementation checklist
+
+- [ ] Extend `/analyze` step 8 with source type diversity evaluation
+- [ ] Define source type categories and gap signals
+- [ ] Add "Source Diversity" section to `/analyze` Phase 4 report
+- [ ] Suggest specific source types to fill detected gaps (with methodology suggestions)
+- [ ] Add CHANGELOG entry
+- [ ] Test with projects that have skewed source coverage
+
+---
+
+## [BL-06] Design Implications in SYSTEM_MAP — `/synthesis` Enhancement
+
+**Status:** Proposed
+**Priority:** Medium
+**Proposed in:** v3.0 session (2025-02-13)
+
+### The gap
+
+SYSTEM_MAP modules currently have: name, status, blocker, insight references, and open questions. But they don't express **what they imply for design and implementation**. A module called "Onboarding Flow" that references `[IG-05] Users are 50+` and `[IG-12] Users distrust automation` doesn't explicitly say "this module requires large touch targets, high contrast, and progressive disclosure."
+
+That implication lives in the designer's head. It should live in the system map.
+
+### What changes
+
+Enhance `/synthesis` Phase 4 (system map update) to derive design implications from verified insights:
+
+```markdown
+### Module: Onboarding Flow
+**Status:** Ready
+**Refs:** [IG-05], [IG-12], [IG-18]
+**Design implications:**
+- High accessibility requirements — users 50+ [IG-05]
+- Trust-building UI patterns needed — users distrust automation [IG-12]
+- Progressive disclosure — avoid cognitive overload during first use [IG-18]
+**Open questions:**
+- [ ] What is the acceptable onboarding completion time?
+```
+
+Design implications are **derived from insights**, not invented. Each one references the insight it comes from. If the insight is invalidated, the implication goes with it.
+
+### Why this is standalone value
+
+A PRD that says "Module: Onboarding Flow — refs: [IG-05], [IG-12]" forces the reader to look up each insight and mentally derive what they mean for design. A PRD that says "Design implications: high accessibility, trust-building patterns, progressive disclosure" is immediately actionable.
+
+This makes every downstream deliverable (PRD, report, strategy, presentation) more useful for human stakeholders — PMs, devs, and designers who read these docs.
+
+### Architecture fit
+
+- Change to `/synthesis` SKILL.md only (Phase 4, system map update)
+- Change to `/ship` SKILL.md (include design implications in deliverables)
+- No new files or layers — implications live as a new field within existing SYSTEM_MAP module entries
+- Derived from verified insights only — maintains traceability
+
+### Implementation checklist
+
+- [ ] Add "Design implications" field to module template in `/synthesis` SKILL.md
+- [ ] Define derivation rules: how insight categories map to implication types
+- [ ] Update `/ship` to include design implications in PRD module sections
+- [ ] Ensure implications reference their source insights
+- [ ] Add CHANGELOG entry
+- [ ] Test with a project that has verified insights across multiple categories
