@@ -1,8 +1,9 @@
-# PD-Build — Design Notes
+# PD-Build — Design Notes (DEPRECATED)
 
-> Philosophy, architecture, and implementation roadmap for PD-Build.
+> **DEPRECATED:** These notes have been migrated to the PD-Build repo (`/Users/nlundin/Dev/repos/pd-build/docs/`). The canonical version lives there. This file is kept as historical reference only — do not update it. Delete when no longer needed.
+
+> Original context: Philosophy, architecture, and implementation roadmap for PD-Build.
 > Captured during PD-Spec v3.0 iteration (2025-02-13).
-> This is a design document — PD-Build is NOT ready for development until PD-Spec is validated with real clients.
 
 ## Philosophy: Why PD-Build Exists
 
