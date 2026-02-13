@@ -1,14 +1,36 @@
 # PD-Spec
 
-The **Strategy & Intelligence layer** of [ProductDesign OS](https://product-os.design). Turns messy research into traceable product decisions. Built as a skill pipeline for Claude Code and Cursor on a 3-layer architecture.
+Turns messy research into traceable decisions. Built as a skill pipeline for Claude Code on a 3-layer architecture.
 
-> Formerly **ProductLM** — started as "I'll build my own NotebookLM" and evolved into the specification engine for a full design operative system.
+> The **Strategy & Intelligence layer** of [ProductDesign OS](https://product-os.design). Born from Product Design consulting, but the architecture is domain-agnostic — any discipline that turns research into decisions (UX, strategy, policy, engineering) can use the same pipeline.
+
+## Why This Exists
+
+AI tools are great at processing research and great at generating documents. But the workflow between those two steps is broken.
+
+You ground your analysis in sources — interviews, data, benchmarks. Then you ask an AI to generate a deliverable. Three things go wrong every time:
+
+1. **Lost traceability.** The grounding step connects claims to sources. The generation step loses that connection. The final report says "users want X" but nobody can trace it back to which interview said that.
+2. **No memory across sessions.** Each conversation starts from zero. Yesterday's context doesn't exist today. You re-explain, copy-paste, or worse — start over.
+3. **Silent contradiction resolution.** Source A says X. Source B says not-X. The AI picks one silently when writing the deliverable. Nobody catches it until a stakeholder asks "where did this come from?"
+
+The result is always the same: scattered conversations, hallucinated claims sneaking into deliverables, and decisions that can't be traced back to evidence.
+
+PD-Spec replaces that workflow with a single rule: **every claim in every deliverable must trace back to a real source.** If it can't, it doesn't exist.
+
+| The chaos before | PD-Spec |
+|---|---|
+| Research grounded but not structured | `01_Sources/` + `/analyze` with explicit `[IG-XX]` refs |
+| Scattered AI conversations | `02_Work/MEMORY.md` + session continuity |
+| AI silently resolves contradictions | `CONFLICTS.md` + `/synthesis` with explicit user approval |
+| Deliverables without traceability | `03_Outputs/` with clickable `[IG-XX]` links to STATUS dashboard |
+| "Where was that decision made?" | `MEMORY.md` + integrity check at every session start |
 
 ## The Problem
 
-Product decisions rot. An interview says users want X, a technical doc says X is impossible, and six months later the PRD still claims X. Nobody catches the contradiction because the research lives in scattered docs, Notion pages, and someone's memory.
+Research-backed decisions rot. An interview says users want X, a technical doc says X is impossible, and six months later the PRD still claims X. Nobody catches the contradiction because the research lives in scattered docs, Notion pages, and someone's memory.
 
-PD-Spec enforces a single rule: **every claim in every deliverable must trace back to a real source**. If it can't, it doesn't exist.
+This isn't unique to Product Design. It happens wherever multiple sources of evidence must converge into coherent decisions — UX research, policy analysis, engineering trade-offs, competitive strategy. The pattern is always the same: evidence comes in, gets processed in someone's head (or scattered AI chats), and the output loses its connection to the input.
 
 ## Architecture
 
@@ -95,6 +117,18 @@ The system adapts behavior based on the project's knowledge density:
 | **Ecosystem** | Multiple source types | Full contradiction detection, rich traceable system map |
 
 You don't configure the level — the system infers it from the number and diversity of sources.
+
+## Boundaries
+
+PD-Spec is the strategy layer — it turns research into decisions. It does not cross into implementation.
+
+**Not a code generator.** It produces requirements, not React components or Flutter widgets. The output is a brief that tells developers *what* to build and *why*, never *how*.
+
+**Not a design system library.** It may inform design tokens and component specs downstream (via [PD-Build](https://product-os.design)), but it does not generate CSS, Figma files, or visual mockups.
+
+**Not a human replacement.** It synthesizes and cross-references, but it cannot conduct interviews, observe users, or feel the hesitation in someone's voice. The human runs the research. PD-Spec runs the paperwork.
+
+**Not methodology-specific.** It doesn't force you into Double Diamond, Design Sprints, or Lean UX. The pipeline is methodology-agnostic — what you put in `01_Sources/` determines what comes out. Bring interview transcripts, analytics dumps, business OKRs, competitor audits — the system adapts to the evidence, not the other way around.
 
 ## Repo Structure
 

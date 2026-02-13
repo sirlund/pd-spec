@@ -4,72 +4,10 @@ Documented proposals for future features. Each entry includes rationale, archite
 
 ---
 
-## [BL-01] `/ship design-system` — Visual Design Specifications
+## ~~[BL-01] `/ship design-system`~~ — REMOVED
 
-**Status:** Proposed
-**Priority:** Medium
-**Proposed in:** v2.4 session (2025-02-10)
-
-### What it does
-
-Adds `design-system` as a new output type for `/ship`. Generates `03_Outputs/DESIGN_SYSTEM.html` with visual specifications derived from the Work layer.
-
-### Output structure
-
-1. **Design Tokens** — Color palette, typography (Google Fonts), spacing scale, border radii.
-2. **Component Specs** — Key UI components with visual guidelines (buttons, cards, forms, navigation).
-3. **Anti-patterns** — What to avoid, with reasoning.
-4. **Traceability Table** — Maps every design decision to its source.
-
-### Architecture fit
-
-- Reads from `02_Work/SYSTEM_MAP.md` + `02_Work/INSIGHTS_GRAPH.md` (same as all `/ship` types).
-- Writes to `03_Outputs/DESIGN_SYSTEM.html`.
-- Follows the same Phase 0 → Phase 1 → Phase 2 → Phase 3 pattern.
-- NOT a separate skill — it's another output type of `/ship`, consistent with `prd`, `presentation`, `report`, etc.
-
-### No Hallucination tension
-
-A design system includes two types of decisions:
-
-1. **Insight-backed decisions** — Traceable to `[IG-XX]` entries. Example: "Dark mode support → [IG-15] Users work in low-light environments."
-2. **Design recommendations** — Based on domain expertise, not sources. Example: "Fintech apps benefit from trust-signaling blues and high-contrast type."
-
-To maintain the No Hallucination mandate, the output must explicitly distinguish these:
-
-```html
-<!-- Insight-backed -->
-<div class="decision backed">
-  <span class="tag">IG-15</span>
-  Dark mode as default theme — users report working primarily at night.
-</div>
-
-<!-- Recommendation -->
-<div class="decision recommendation">
-  <span class="tag">REC</span>
-  Use Inter for UI text, serif accent for headings — trust-signaling pattern for fintech.
-</div>
-```
-
-Recommendations are labeled `REC` (not `IG-XX`) so there is no confusion about what is evidence-backed and what is design expertise.
-
-### Why not a separate skill
-
-Homer's Car Detector: `/ship` already handles 6 output types. A design system is another deliverable derived from the Work layer. The input/output pattern is identical. A separate `/design-specs` or `/prototype` skill would duplicate the Phase 0–3 structure, the MEMORY.md writing, and the readiness validation — all for something that differs only in output format.
-
-### Why not wireframes
-
-Wireframes require UI layout decisions (component placement, screen flow, responsive breakpoints) that go beyond what the knowledge base can substantiate. That crosses from "product documentation" into "product design execution." If wireframes are needed later, they should be a separate evaluation.
-
-### Implementation checklist
-
-- [ ] Add `design-system` to `/ship` argument-hint
-- [ ] Add section in `/ship` SKILL.md with structure, HTML template, and REC vs IG-XX labeling rules
-- [ ] Update CLAUDE.md skills pipeline table
-- [ ] Update README skills section
-- [ ] Update FRAMEWORK.md `/ship` types list
-- [ ] Add CHANGELOG entry
-- [ ] Test with real insights to verify traceability output
+**Status:** Removed
+**Reason:** Crosses the PD-Spec boundary into implementation. Design tokens, color palettes, typography specs, and component specs are PD-Build's responsibility. See README.md § Boundaries.
 
 ---
 
@@ -152,83 +90,189 @@ Implement `/audit` when:
 
 ---
 
-## [BL-03] `/ship persona` & `/ship journey-map` — UX Research Artifacts
+## [BL-03] UX & Strategy Artifact Catalog — New `/ship` Types
 
 **Status:** Proposed
-**Priority:** Medium
-**Proposed in:** v2.4 session (2025-02-10)
-**Inspired by:** aitmpl/ux-researcher-designer skill
+**Priority:** High
+**Proposed in:** v2.4 session (2025-02-10), expanded v3.0 session (2025-02-13)
+**Inspired by:** aitmpl/ux-researcher-designer skill, Gemini v2.5/v3.0 artifact catalog discussion
 
 ### What it does
 
-Adds `persona` and `journey-map` as new output types for `/ship`. Generates UX research artifacts derived from `user-need` insights in the Work layer.
+Expands `/ship` with 6 new output types — industry-standard UX and strategy deliverables that help designers and non-designers visualize insights and make decisions. All follow the same pattern: read from `02_Work/`, write HTML to `03_Outputs/`, trace everything to `[IG-XX]`.
 
-- `persona` → `03_Outputs/PERSONAS.html` — User archetypes synthesized from multiple `user-need` insights.
-- `journey-map` → `03_Outputs/JOURNEY_MAP.html` — User flow visualization with pain points, touchpoints, and emotional states.
+### The new types
+
+| Type | Output file | What it visualizes | Primary insight categories |
+|---|---|---|---|
+| `persona` | `PERSONAS.html` | User archetypes from multiple user-need insights | `user-need` |
+| `journey-map` | `JOURNEY_MAP.html` | User flow with pain points, touchpoints, emotional states | `user-need`, `constraint` |
+| `service-blueprint` | `SERVICE_BLUEPRINT.html` | Frontstage/backstage/support processes | `user-need`, `technical`, `business` |
+| `lean-canvas` | `LEAN_CANVAS.html` | Business model synthesis (problem, solution, metrics, channels) | `business`, `user-need` |
+| `success-metrics` | `SUCCESS_METRICS.html` | KPIs traceable to insights (HEART/Pirate Metrics framework) | `business`, `user-need` |
+| `user-stories` | `USER_STORIES.html` | JTBD-framed stories — the handoff contract for PD-Build | all categories |
+
+**Existing types remain unchanged:** `prd`, `presentation`, `report`, `benchmark`, `audit`, `strategy`.
+
+### Why these belong in PD-Spec
+
+All 6 are **visualization and decision tools**, not implementation artifacts. They sit firmly in the strategy layer:
+
+- **Personas and journey maps** help stakeholders see *who* the product serves and *where* it fails.
+- **Service blueprint** maps the system from the user's perspective — frontstage actions map to modules in SYSTEM_MAP.md.
+- **Lean canvas and success metrics** translate insights into business language for non-designer stakeholders.
+- **User stories (JTBD)** are the **format contract** between PD-Spec and PD-Build. "When [situation], I want to [motivation], so I can [outcome]" with `[IG-XX]` refs is the bridge between strategic decisions and implementation. Without this, PD-Build has to interpret the PRD — which reintroduces the traceability gap.
 
 ### How it differs from raw insights
 
-Insights in `INSIGHTS_GRAPH.md` are atomic claims: "[IG-07] Users report frustration when switching between 3+ tools during a single workflow." A persona **combines** multiple user-need insights into a coherent archetype. A journey map **sequences** them into a temporal flow. Both are synthesis deliverables, not raw data.
-
-### Architecture fit
-
-- Reads from `02_Work/INSIGHTS_GRAPH.md` (filtered to `user-need` category) + `02_Work/SYSTEM_MAP.md`.
-- Writes to `03_Outputs/PERSONAS.html` or `03_Outputs/JOURNEY_MAP.html`.
-- Follows the same Phase 0 → Phase 1 → Phase 2 → Phase 3 pattern.
-- NOT a separate skill — another output type of `/ship`, consistent with all existing types.
+Insights in `INSIGHTS_GRAPH.md` are atomic claims. These deliverables **combine and contextualize** multiple insights into formats the industry already knows how to read. A persona combines 5 user-need insights into a coherent archetype. A journey map sequences them temporally. User stories translate them into developer-consumable specs. The data is the same — the lens changes.
 
 ### No Hallucination tension
 
-Personas and journey maps inherently involve **synthesis** — combining multiple data points into a narrative. This creates tension with No Hallucination:
-
-1. **Insight-backed elements** — Demographics, pain points, goals, and behaviors that trace directly to `[IG-XX]` entries. Example: "Frustration with tool-switching → [IG-07]."
-2. **Synthesized narrative** — The persona's name, photo placeholder, scenario description, and emotional arc. These are presentation scaffolding, not evidence claims.
-
-To maintain the mandate, the output must:
+These deliverables involve **synthesis** — combining data points into narratives and frameworks. The rule is simple: every claim traces to `[IG-XX]`. Everything without a ref is presentation scaffolding (persona names, narrative connectors, emotional arc labels). No special tag needed — if it doesn't have `[IG-XX]`, it's not an evidence claim.
 
 ```html
-<!-- Each persona attribute traces to insights -->
-<div class="persona-attribute backed">
+<!-- This is a claim — traced -->
+<div class="attribute">
   <span class="tag">IG-07, IG-12</span>
   <strong>Pain point:</strong> Loses 20 min/day switching between disconnected tools.
 </div>
 
-<!-- Narrative scaffolding is labeled -->
-<div class="persona-narrative scaffold">
-  <span class="tag">SYN</span>
-  "María" is a composite archetype representing 3 interview subjects.
-</div>
+<!-- This is scaffolding — no ref, no claim -->
+<p class="persona-name">"María" — composite archetype from 3 interview subjects</p>
 ```
 
-Synthesized elements are labeled `SYN` (not `IG-XX` or `REC`) to distinguish them from evidence-backed claims and design recommendations.
+### User stories as PD-Build contract
 
-### Why not a separate `/research` skill
+The `user-stories` type has a special role: it produces the **handoff document** that PD-Build consumes. Each story follows JTBD framing with traceability:
 
-Gemini proposed a `/research` skill with `analyze` and `synthesize` subcommands. This duplicates our existing pipeline:
+```
+**[US-01]** When [situation from IG-XX], I want to [motivation from IG-YY], so I can [outcome from IG-ZZ].
+Acceptance: [derived from SYSTEM_MAP module constraints]
+Refs: [IG-XX], [IG-YY], [IG-ZZ]
+Priority: [derived from conflict resolution in CF-XX]
+```
 
-| Gemini proposes | Already exists as |
-|---|---|
-| `/research analyze` — audit PRDs | `/analyze` (scans all source types, not just code) |
-| `/research synthesize` — generate personas | `/ship persona` (deliverable from Work layer) |
-
-A `/research` skill would duplicate Phase 0–3 structure, MEMORY.md writing, and readiness validation. The only new thing is the output format — which is exactly what `/ship` types are for.
+This replaces the informal `DESIGN_BRIEF.md` mentioned in the PD-OS ecosystem section with a structured, traceable format. Every user story traces back to insights; every acceptance criterion traces to the system map.
 
 ### Prerequisites
 
-Persona and journey map generation requires sufficient `user-need` insights. Minimum viable input:
-- 3+ `user-need` insights from different sources (not all from the same interview).
-- At least 1 insight at `VERIFIED` status.
-- If the knowledge base doesn't meet this threshold, `/ship persona` should report what's missing and suggest running `/analyze` on user research sources.
+Each type has minimum insight thresholds to avoid generating hollow deliverables:
+
+| Type | Minimum requirements |
+|---|---|
+| `persona` | 3+ `user-need` insights from different sources, 1+ VERIFIED |
+| `journey-map` | 3+ `user-need` insights with temporal/sequential context |
+| `service-blueprint` | Populated SYSTEM_MAP with modules + `user-need` and `technical` insights |
+| `lean-canvas` | 2+ `business` insights + 2+ `user-need` insights |
+| `success-metrics` | 2+ `business` insights with measurable claims |
+| `user-stories` | Populated SYSTEM_MAP + resolved conflicts for target modules |
+
+If thresholds aren't met, `/ship [type]` reports what's missing and suggests next steps.
+
+### Architecture fit
+
+- **Reads:** `02_Work/INSIGHTS_GRAPH.md` + `02_Work/SYSTEM_MAP.md` (+ `CONFLICTS.md` for user-stories priority)
+- **Writes:** `03_Outputs/[TYPE].html` + `02_Work/MEMORY.md`
+- **Same Phase 0–3 pattern** as all existing `/ship` types
+- NOT separate skills — they're output types of `/ship`, consistent with `prd`, `report`, etc.
 
 ### Implementation checklist
 
-- [ ] Add `persona` and `journey-map` to `/ship` argument-hint
-- [ ] Add sections in `/ship` SKILL.md with structure, HTML template, and SYN vs IG-XX labeling rules
-- [ ] Define persona template (archetype name, demographics, goals, pain points, behaviors — all traced)
-- [ ] Define journey map template (stages, touchpoints, pain points, emotional curve — all traced)
-- [ ] Define minimum `user-need` insight threshold for generation
+- [ ] Add 6 new types to `/ship` SKILL.md with HTML templates and traceability rules
+- [ ] Define persona template (archetype, demographics, goals, pain points — all traced)
+- [ ] Define journey map template (stages, touchpoints, emotional curve — all traced)
+- [ ] Define service blueprint template (frontstage/backstage/support — mapped to SYSTEM_MAP modules)
+- [ ] Define lean canvas template (9 blocks, each traced to insight categories)
+- [ ] Define success metrics template (HEART or Pirate Metrics, each KPI traced)
+- [ ] Define user stories template (JTBD frame, acceptance criteria from SYSTEM_MAP, priority from CONFLICTS)
+- [ ] Add minimum insight thresholds per type
+- [ ] Update `/ship` argument-hint in SKILL.md
 - [ ] Update CLAUDE.md skills pipeline table
-- [ ] Update README skills section
-- [ ] Update FRAMEWORK.md `/ship` types list
+- [ ] Update README `/ship` types list
+- [ ] Update FRAMEWORK.md
 - [ ] Add CHANGELOG entry
-- [ ] Test with real user research insights
+- [ ] Test each type with real project data
+
+---
+
+## [BL-04] Human Calibration Layer — "Add Context" + Field Notes
+
+**Status:** Proposed
+**Priority:** Medium-High
+**Proposed in:** v3.0 session (2025-02-13)
+**Inspired by:** Gemini's `/calibrate` concept (data-informed, human-led)
+
+### The gap
+
+The pipeline captures what sources say (`/analyze`) and how the user resolves contradictions (`/synthesis`). But there's no lightweight mechanism for the designer to inject **qualitative context that isn't in any source** — professional intuition, political dynamics observed in a room, body language during interviews, institutional knowledge.
+
+Currently the only way is to write a full markdown source file, which adds friction and discourages quick observations.
+
+### Solution: Two changes, no new skills
+
+#### A. "Add context" button in `/status` dashboard
+
+Extend insight cards in `03_Outputs/STATUS.html` from binary (Approve / Reject) to ternary:
+
+```
+[Approve]  [Reject]  [Add context]
+```
+
+"Add context" opens a textarea. The designer writes qualitative notes:
+- "I was in the room — the CEO won't approve this regardless of data."
+- "This insight is correct but the ops team will resist. Need change management."
+- "The interviewee said this but their tone suggested the opposite."
+
+These notes travel into the generated `/synthesis` prompt alongside approve/reject decisions:
+
+```
+## Insights with context
+IG-05: Approved with context — "CEO body language contradicted this during workshop. Proceed with caution."
+IG-12: Approved with context — "Ops team will resist. Need stakeholder alignment before shipping."
+
+Approve insights: IG-01, IG-03, IG-07
+Reject insights: IG-09
+```
+
+`/synthesis` reads this context and factors it into conflict resolution and system map decisions. The context gets recorded in `CONFLICTS.md` resolution notes or `MEMORY.md`, maintaining traceability.
+
+#### B. Field notes source convention
+
+Establish `01_Sources/field-notes/` as a lightweight source folder for designer observations:
+
+```markdown
+---
+Type: field-note
+Date: 2025-02-13
+Context: Workshop with operations team
+---
+
+The team says they're open to automation but three people visibly tensed up when we showed the workflow replacement demo. The resistance is real but unspoken.
+```
+
+These are first-class sources. `/analyze` extracts insights from them like any other source. The difference is they're quick to write (3-5 lines) and explicitly subjective — they capture what the designer *observed*, not what a document *states*.
+
+A `field-note` source type would generate insights categorized as `observation` (alongside `user-need`, `technical`, `business`, `constraint`) to distinguish designer observations from documentary evidence.
+
+### Architecture fit
+
+- **Part A** is a change to `/status` SKILL.md (HTML template + JS) and `/synthesis` SKILL.md (prompt parsing). No new files in `02_Work/`.
+- **Part B** is a convention, not code. Add guidance to `01_Sources/_README.md` and optionally a `_FIELD_NOTE_TEMPLATE.md`.
+- Both changes respect the existing pipeline. No new skills, no new Work layer files, no new layers.
+
+### Why not a separate `/calibrate` skill
+
+Gemini proposed `/calibrate` as a dedicated skill with `DECISION_LOG.md`. This duplicates what `/synthesis` already does — present findings, ask the human, record the decision. The gap isn't a missing skill; it's a missing *input channel* for qualitative context. A textarea in the dashboard and a lightweight source convention solve it without adding pipeline complexity.
+
+### Implementation checklist
+
+- [ ] Add "Add context" button + textarea to insight cards in `/status` SKILL.md
+- [ ] Update prompt generator JS to include context notes in `/synthesis` prompt
+- [ ] Update `/synthesis` SKILL.md to parse and use context notes from the prompt
+- [ ] Add `field-note` guidance to `01_Sources/_README.md`
+- [ ] Create `01_Sources/_FIELD_NOTE_TEMPLATE.md`
+- [ ] Consider adding `observation` as a 5th insight category in `/analyze`
+- [ ] Update CLAUDE.md if insight categories expand
+- [ ] Add CHANGELOG entry
+- [ ] Test with real qualitative observations
