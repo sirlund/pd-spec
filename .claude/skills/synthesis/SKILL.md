@@ -41,8 +41,8 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 5. **Draft resolution summary** — After all conflicts are discussed, present:
    - Proposed changes to `CONFLICTS.md` (status updates, resolution notes).
    - Proposed changes to `INSIGHTS_GRAPH.md` (status changes, new merged insights).
-   - Proposed changes to `SYSTEM_MAP.md` (vision, modules, principles, open questions).
-   - Any traceability gaps found (system map entries without `[IG-XX]` references).
+   - Proposed changes to `SYSTEM_MAP.md` (vision, modules, design implications, principles, open questions).
+   - Any traceability gaps found (system map entries or design implications without `[IG-XX]` references).
    - **Wait for user approval before writing.**
 
 ### Phase 4: Write (After Approval)
@@ -56,10 +56,24 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 8. **Update system map** — In `02_Work/SYSTEM_MAP.md`:
    - Product Vision — if core assumptions changed.
    - Modules — add, remove, or modify based on verified insights.
+   - **Design implications** — for each module, derive actionable implications from its referenced insights. These are not invented — they follow directly from the insight categories:
+     - `user-need` insights → UX requirements (e.g., "progressive disclosure", "trust-building patterns")
+     - `technical` insights → implementation constraints (e.g., "offline-first", "API rate limits")
+     - `business` insights → prioritization signals (e.g., "revenue-critical", "retention driver")
+     - `constraint` insights → hard limits (e.g., "must support screen readers", "max 3-step flow")
+   - Each implication references the insight it derives from. Format:
+     ```markdown
+     ### Module: [Name]
+     **Status:** [Ready/Blocked]
+     **Refs:** [IG-XX], [IG-YY], [IG-ZZ]
+     **Design implications:**
+     - [Implication] — [IG-XX]
+     - [Implication] — [IG-YY]
+     ```
    - Design Principles — ensure they reflect current truth.
    - Open Questions — add any new questions surfaced during resolution.
 
-9. **Ensure traceability** — Every entry in SYSTEM_MAP.md must reference at least one `[IG-XX]` insight ID. Flag any entries that lack references.
+9. **Ensure traceability** — Every entry in SYSTEM_MAP.md must reference at least one `[IG-XX]` insight ID. Every design implication must reference the insight it derives from. Flag any entries that lack references.
 
 10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown

@@ -50,7 +50,22 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 7. **Cross-reference** — Compare new claims against all existing VERIFIED insights.
    - Look for contradictions, tensions, or incompatible statements.
 
-8. **Detect evidence gaps** — If the agent identifies areas where claims are made without sufficient source backing, or where important product areas have no source coverage, note them as potential gaps.
+8. **Detect evidence gaps** — Two levels of gap detection:
+
+   **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
+
+   **b. Source diversity gaps** — Evaluate whether the knowledge base is built on a healthy mix of source types or dangerously skewed. Classify each source into one of these types based on its content and metadata:
+
+   | Source type | What it provides | Gap signal if missing |
+   |---|---|---|
+   | User research (interviews, observations, usability tests) | User needs, pain points, behaviors | "No user research — user-need insights may be assumptions" |
+   | Business data (OKRs, metrics, unit economics) | Business constraints, success criteria | "No business sources — prioritization lacks financial grounding" |
+   | Technical docs (architecture, API specs, constraints) | Technical feasibility, limitations | "No technical sources — feasibility of modules is unvalidated" |
+   | Brand / design guidelines | Visual identity, tone, accessibility targets | "No brand/design sources — visual decisions lack foundation" |
+   | Competitive analysis (benchmarks, audits) | Market context, differentiation | "No competitive sources — positioning based on internal assumptions" |
+   | Accessibility data (audits, demographics, WCAG targets) | Inclusive design constraints | "No accessibility sources — compliance claims are unsupported" |
+
+   Report which source types are present and which are missing. For missing types, suggest what kind of source would fill the gap (as options, not impositions — per Mandate #4).
 
 ### Phase 3: Write
 
@@ -84,5 +99,6 @@ All insights are written as `PENDING`. The real approval happens downstream — 
     - Source organization issues found (list each one).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
+    - **Source diversity** — which source types are covered, which are missing, and what to consider adding.
     - Evidence gaps detected (with suggested validation methods).
     - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."
