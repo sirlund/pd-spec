@@ -1,7 +1,38 @@
 # PD-Build — Design Notes
 
-> Ideas and architecture inputs for PD-Build, captured during PD-Spec v3.0 iteration (2025-02-13).
-> These concepts were proposed for PD-Spec but belong in the implementation layer.
+> Philosophy, architecture, and implementation roadmap for PD-Build.
+> Captured during PD-Spec v3.0 iteration (2025-02-13).
+> This is a design document — PD-Build is NOT ready for development until PD-Spec is validated with real clients.
+
+## Philosophy: Why PD-Build Exists
+
+Designers are increasingly "vibe coding" — prompting LLMs to generate interfaces directly. The results are fast but chaotic: random Tailwind classes, no design consistency, no connection to research or business decisions.
+
+**PD-OS orders the chaos.** PD-Spec validates what to build and why. PD-Build ensures that when an LLM generates output — whether a throwaway prototype or a production PR — it uses coherent design definitions grounded in validated research.
+
+**PD-Build is not a design system library.** It's the engine that guarantees visual coherence when AI agents generate output. The consumer isn't just Style Dictionary or a Figma plugin — it's Claude, Cursor, GPT, and any future AI that's generating interface from prompts.
+
+### Two Audiences for Definitions
+
+| Audience | What it needs | Format |
+|---|---|---|
+| **Compilers** (Style Dictionary, plugins) | Values: `color.primary: #0055FF` | `tokens.json` (W3C standard) |
+| **AI agents** (Cursor, Claude Code) | Values + context + rules: "Destructive actions use high contrast because users are 50+ `[IG-22]`. Always pair with confirmation step." | `.cursorrules`, system prompts, markdown with reasoning |
+
+An LLM that reads `#CC0000` produces generic code. An LLM that reads `#CC0000 — high contrast for users who struggle with visual hierarchy [IG-22]` produces code that respects the design intent.
+
+### Discovery vs Production: One Set of Definitions, Two Fidelity Levels
+
+| | Discovery | Production |
+|---|---|---|
+| **Purpose** | Prototype, explore, Design Sprints | Real features, PRs, production code |
+| **Input** | PD-Spec definitions | PD-Spec definitions + stack config |
+| **Output** | tokens.json, patterns.md (design intent) | tokens.json + .cursorrules + coding rules |
+| **Needs stack context?** | No | Yes (framework, lang, architecture, linting) |
+| **Consumer** | Designer + AI agent prototyping | AI agent (Cursor/Claude) writing code |
+| **Validation** | "Does this make design sense?" | "Does this compile, pass lint, follow arch?" |
+
+The definitions are the same. Discovery uses them as guidance; Production uses them as law. A designer vibe-coding a prototype in Cursor uses the same tokens as the dev writing the final component — the difference is enforcement, not the source of truth.
 
 ## What PD-Build Is
 
@@ -29,9 +60,48 @@ PD-Build's `02_Definitions/` is the headless layer. It describes *what* the desi
 
 **Why this matters:** One source of truth, multiple consumers. The same `tokens.json` feeds Storybook, Figma (via plugin), iOS (via ThemeData), and Flutter — without manual sync. When research changes the tokens (via PD-Spec → user stories → `/systemize`), every platform updates from the same source.
 
+**Why headless is mandatory for AI agents:** An AI doesn't "see" pixels — it processes data structures and logic. If the DS lives in Figma (visual), it's opaque to the agent. If it lives in JSON (semantic), it's manipulable. A headless DS is essentially **Infrastructure as Code applied to design** — the agent reads the JSON, validates consistency, proposes changes to the data structure, and the "heads" (CSS, Figma, Swift) are just compilation targets.
+
+### Beyond Tokens: Component Schemas and Patterns
+
+Tokens (colors, spacing, typography) are values. But design decisions also include **relationships** — layouts, composition rules, interaction patterns. These need a higher abstraction level than flat key-value pairs.
+
+```json
+{
+  "pattern": "DashboardShell",
+  "rules": {
+    "layout_strategy": "css-grid",
+    "areas": ["sidebar", "header", "main"],
+    "constraints": {
+      "sidebar": { "width": "fixed", "value": "{size.layout.sidebar}" },
+      "main": { "overflow": "scroll", "padding": "{spacing.container.inset}" }
+    }
+  }
+}
+```
+
+The agent reads this and understands the rule: "The sidebar has fixed width." It doesn't need to see the CSS. This is the path from "design tokens" to "design system as data."
+
+### Known Limitations
+
+- **Gestalt and visual context.** The agent can validate WCAG contrast mathematically, but it can't "feel" that a layout is visually unbalanced. Spatial intuition is hard to encode in rules.
+- **Exceptions vs. rules.** Real-world design breaks the grid for marketing impact or visual emphasis. Encoding "permitted exceptions" into JSON grows complexity exponentially.
+- **Representation ceiling.** A button is easy to define. A complex organism (data table with filters, sorting, empty states) can produce JSON so complex it becomes unreadable — defeating the purpose of an accessible source of truth.
+- **Bidirectional sync.** If a designer adjusts an auto-layout in Figma manually, reverse-engineering that visual change back to the logical rule in JSON is technically hard.
+
 ## The Contract Format
 
-PD-Build consumes user stories (JTBD) from `PD-Spec/03_Outputs/USER_STORIES.html`. Each story carries:
+The contract between PD-Spec and PD-Build evolves with maturity:
+
+### v0.1: Direct Read (today)
+PD-Spec doesn't produce user stories yet (BL-03 is proposed, not implemented). For v0.1, PD-Build reads PD-Spec's Work layer directly:
+- `02_Work/SYSTEM_MAP.md` — product architecture and module decisions
+- `02_Work/INSIGHTS_GRAPH.md` — verified insights with source refs
+
+This is pragmatic — don't formalize a contract between two repos when one doesn't produce it yet.
+
+### v0.2+: Formal Contract (after BL-03)
+Once PD-Spec implements `/ship user-stories` (BL-03), PD-Build migrates to consuming `USER_STORIES.html`. Each story carries:
 
 - `[US-XX]` ID
 - JTBD frame: When [situation], I want to [motivation], so I can [outcome]
@@ -39,7 +109,7 @@ PD-Build consumes user stories (JTBD) from `PD-Spec/03_Outputs/USER_STORIES.html
 - Acceptance criteria: derived from PD-Spec's SYSTEM_MAP
 - Priority: derived from conflict resolution
 
-This replaces the informal `DESIGN_BRIEF.md` mentioned in the original PD-OS spec.
+This replaces the now-obsolete `DESIGN_BRIEF.md` with 4 blocks (`[INTENT]`, `[LOGIC_RULES]`, `[DATA_EVIDENCE]`, `[USER_FLOW]`) that was in earlier PD-OS docs.
 
 ## Core Concept: Research-Reactive Design System
 
@@ -162,6 +232,68 @@ product-repo/
 
 **The 3-layer pattern repeats:** Contract (input) → Definitions (brain) → Drivers (output). Same architecture as PD-Spec's Sources → Work → Outputs, applied to implementation.
 
+## Core Concept: Assisted Governance (Gobernanza Asistida)
+
+The agent is not an enforcer that blocks the designer. It's a **senior dev reviewing your PR** — it flags inconsistencies, explains the rule you're breaking, but lets you override with a reason. The model has three levels of friction:
+
+### Level 1: Compliant (Silent Execution)
+The request uses existing tokens and patterns. Agent executes without questions.
+
+> "Create a confirmation modal." → Agent finds `Modal/Confirm` pattern, uses defined tokens. Zero friction.
+
+### Level 2: Deviation (Warning + Override)
+The request breaks a rule but isn't a structural error. Agent warns, explains the rule, offers alternatives, but executes if the human insists.
+
+> "Make the Cancel button red to stand out."
+> Agent: "The system defines secondary actions in `neutral-500`. Red (`danger-600`) implies destructive action. Options: (1) Use `neutral-500` per system rules, (2) Override locally with reason. Which one?"
+
+If the human overrides, the agent executes **and registers the deviation** (see Design Debt below).
+
+### Level 3: System Mutation (Confirmation Required)
+The request changes a base rule that cascades across the entire system (e.g., changing the primary color globally). Agent simulates impact and requires explicit confirmation before proceeding.
+
+> "Change the primary color to this new brand blue."
+> Agent: "This affects 47 components and 12 patterns. Here's the cascade impact: [list]. Confirm?"
+
+### Why This Model Works
+- **Not a police state.** Blocking overrides makes the tool useless for edge cases, marketing campaigns, and creative experimentation.
+- **Documents decisions.** Like a dev adding `// TODO: refactor this hardcoded value`, the system keeps the DS clean by marking exceptions.
+- **Educates.** Designers who don't know the full system learn the rules through the agent's warnings — like learning code conventions through code review.
+
+## Design Debt Registry
+
+When the designer overrides a system rule, PD-Build doesn't just execute — it logs the deviation in a `design-debt.json` (or equivalent) tracking file:
+
+```json
+{
+  "component_id": "btn_cta_marketing",
+  "base_pattern": "button.primary",
+  "status": "divergent",
+  "overrides": {
+    "background_color": "#FF5733",
+    "border_radius": "0px"
+  },
+  "governance_log": {
+    "author": "Nicolas",
+    "reason": "CyberMonday campaign — explicit request",
+    "timestamp": "2026-02-13T10:00:00Z",
+    "severity": "medium"
+  }
+}
+```
+
+This enables periodic cleanup: "List all components that don't use standard tokens and suggest whether to create new tokens or refactor them."
+
+### Pattern Promotion (Bottom-Up Evolution)
+
+The most powerful aspect of tracked debt: **emergent patterns surface automatically**.
+
+If the agent detects the same override 3+ times across different flows, it proactively suggests:
+
+> "You've used 32px padding in 4 containers, overriding the 24px rule each time. Should I officialize this as a new token `spacing.xl` or a variant `container.loose`?"
+
+This is how the design system evolves from usage data, not from top-down committee decisions. Repeated deviations become candidates for new rules. The system grows organically while maintaining traceability — every new token can trace back to the overrides that justified its creation.
+
 ## PD-Build Boundaries
 
 Mirroring PD-Spec's boundaries — what PD-Build is NOT:
@@ -171,11 +303,39 @@ Mirroring PD-Spec's boundaries — what PD-Build is NOT:
 - **Not a testing framework.** `qa-criteria.md` tells you what to test. It doesn't run Playwright or Chromatic.
 - **Not a substitute for design judgment.** The designer chooses which definitions to generate, overrides tokens when the research-derived value doesn't feel right, and makes the final call on aesthetics. PD-Build is the starting point, not the final word.
 
+## Critical Review (Homer's Car Check)
+
+These notes are a brain dump of where PD-Build *could* go. Before building any of this, the following concerns apply:
+
+### Governance assumes copilot, not pipeline
+PD-Spec works as batch: run `/analyze`, review, run `/synthesis`. PD-Build as designed follows the same pattern. But Assisted Governance describes real-time interaction — designer says "make it red", agent responds "that breaks the rule, are you sure?" That's a copilot running continuously (like Cursor), not a skill that returns a file. PD-Build may need a different agent architecture than PD-Spec — more copilot than pipeline. Be conscious of this when building.
+
+### Design Debt Registry risks becoming its own debt
+`design-debt.json` is another file someone has to review. Without a review mechanism (sprint reviews, periodic agent prompts), it grows forever and becomes what it tries to solve: a file nobody looks at. For a team it could work. For a solo designer, the overhead may not justify itself in v1.
+
+### Pattern Promotion needs critical mass
+3+ identical overrides is reasonable for teams with multiple designers making decisions in parallel. For a single designer, the volume of overrides may never reach useful thresholds. Also: how does the agent distinguish "intentional deviation" from "forgot the rule"? Three identical mistakes aren't an emergent pattern — they're a repeated error.
+
+### Component Schemas: who writes them?
+The `DashboardShell` JSON is conceptually elegant. But who produces it? If the agent generates it from user stories, quality depends on how good the stories are. If the designer writes it manually, the problem just moved from Figma to JSON without being solved. The answer probably lies in the middle — agent drafts from user stories, designer validates and adjusts.
+
+### PD-Build doesn't exist yet
+These notes are detailed for a product that hasn't started. The Homer's Car Detector applies here too. The risk is over-designing in theory while PD-Spec hasn't been validated with real clients yet.
+
+**The MVP of PD-Build is one thing:** read user stories from PD-Spec → generate `tokens.json`. No governance, no debt registry, no pattern promotion. Those are v2+ after the PD-Spec → PD-Build flow works end-to-end with a real project.
+
+### Suggested build order
+1. **v0.1** — Discovery mode only. `/systemize` reads PD-Spec Work layer directly (SYSTEM_MAP + INSIGHTS_GRAPH) → outputs `tokens.json`. Test: does an LLM produce more coherent output using these tokens?
+2. **v0.2** — Add `components.yaml` and `patterns.md`. Migrate to `[US-XX]` contract once PD-Spec BL-03 ships. Validate definitions are useful to both LLMs and devs.
+3. **v0.3** — Add `/compile` for one platform (CSS/.cursorrules). This is where Production mode begins — definitions + stack context → drivers.
+4. **v1.0** — Assisted Governance (level 1 + 2 only — compliant and deviation). System Mutation can wait.
+5. **v1.x** — Design Debt Registry + pattern promotion. Only when there's enough usage data to make it meaningful.
+
 ## Open Questions
 
 - How does the contract sync work? Manual copy, git submodule, API?
 - Should PD-Build validate that every token traces back to a `[US-XX]`? (Traceability all the way down)
-- How do design system overrides work? (Designer wants to change a color that was research-derived — does it break traceability?)
+- How do design system overrides work? → **Answered: Assisted Governance model.** Three levels (compliant/deviation/mutation). Overrides allowed with reason, tracked in Design Debt Registry. Traceability maintained through governance logs.
 - What's the minimum viable PD-Build? (Just tokens.json from user stories, skip components?)
 - Should `/compile` support incremental updates? (Only regenerate drivers for changed tokens)
 - How does PD-Build handle multiple platforms? (One product, web + iOS + Android — same definitions, different drivers)
@@ -183,4 +343,10 @@ Mirroring PD-Spec's boundaries — what PD-Build is NOT:
 
 ## Origin
 
-These ideas emerged from a critical review of Gemini's PD-Spec v2.5 and v3.0 proposals. Gemini correctly identified the research → design system pipeline but placed it in the wrong repo. The v2.5 contributed the methodology-aware generation concept, the extended artifact catalog (accessibility, QA, voice-tone, prototype specs), and the reactive design system examples. The v3.0 refined the skill structure and clarified the boundary between definition and implementation. The strategic intelligence (PD-Spec) and the system implementation (PD-Build) are separated by design — the user story contract is the bridge.
+These ideas emerged from a critical review of Gemini's PD-Spec v2.5 and v3.0 proposals, plus a dedicated Gemini session on headless DS architecture. Key contributions by source:
+
+- **v2.5:** Methodology-aware generation, extended artifact catalog, reactive design system examples
+- **v3.0:** Refined skill structure, definition/implementation boundary
+- **Headless DS session:** Component schemas beyond tokens, known limitations (gestalt, bidirectional sync), Assisted Governance model (3 intervention levels), Design Debt Registry, pattern promotion from usage data
+
+The strategic intelligence (PD-Spec) and the system implementation (PD-Build) are separated by design — the user story contract is the bridge.

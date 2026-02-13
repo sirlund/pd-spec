@@ -197,22 +197,44 @@ See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for the full methodology reference.
 PD-Spec is the intelligence layer of **ProductDesign OS (PD-OS)**, a framework that separates strategic decision-making from technical execution.
 
 ```
-PD-Spec (this repo)                    PD-Build (in product repo)
-Research → Decisions → Brief    →      Brief → Kernel (.toon) → .cursorrules → PR
-01_Sources/ → 02_Work/ → 03_Outputs/   01_Sources/ → 02_Kernel/ → 03_Drivers/ → 04_Dist/
+PD-Spec (this repo)                         PD-Build (in product repo)
+Research → Insights → System Map →          Contract → Definitions → Drivers
+01_Sources/ → 02_Work/ → 03_Outputs/        01_Contract/ → 02_Definitions/ → 03_Drivers/
 ```
 
-**PD-Spec** is a standalone strategy repo (private, consultancy/discovery). It processes research and business objectives to produce a Product Contract — the `DESIGN_BRIEF.md`.
+**PD-Spec** is a standalone strategy repo (private, consultancy/discovery). It processes research and business objectives into a traceable knowledge base — insights, conflicts, system map — and generates deliverables (PRDs, reports, presentations) with full `[IG-XX]` traceability.
 
-**PD-Build** lives inside the product's repository (like Storybook). It consumes the brief and transforms it into a tool-agnostic Kernel (`.toon` files) that AI agents (Cursor, Claude Code) use to write code that respects the product's design logic.
+**PD-Build** lives inside the product's repository (like Storybook). It consumes PD-Spec's output and transforms it into a **headless design system** — tool-agnostic definitions (tokens, component specs, patterns) that AI agents (Cursor, Claude Code) and tools (Figma, Storybook) use to produce visually coherent output.
 
-The two systems connect through a **format contract**. The `DESIGN_BRIEF.md` must contain:
-- `[INTENT]` — Business objective
-- `[LOGIC_RULES]` — Validation and behavior rules
-- `[DATA_EVIDENCE]` — Reference to PD-Spec insight IDs (`[IG-XX]`)
-- `[USER_FLOW]` — Expected logical state sequence
+```
+02_Definitions/                         03_Drivers/
+├── tokens.json    (W3C standard)       ├── .cursorrules   (AI agent context)
+├── components.yaml (functional specs)  ├── css/variables.css
+├── patterns.md    (composition rules)  ├── tailwind/config.js
+└── ...                                 └── ...
+```
 
-See [product-os.design](https://product-os.design) for the full PD-OS specification.
+### The Contract
+
+PD-Spec connects to PD-Build through its output layer. The contract evolves with maturity:
+
+- **Today:** PD-Build reads PD-Spec's Work layer directly (`SYSTEM_MAP.md` + `INSIGHTS_GRAPH.md`) to extract design definitions.
+- **Future:** PD-Spec produces `[US-XX]` user stories (JTBD framing with `[IG-XX]` refs) as a formal handoff format. Every definition in PD-Build traces back to a user story, which traces back to an insight, which traces back to a source.
+
+### Two Modes
+
+PD-Build operates at two fidelity levels from the same definitions:
+
+| | Discovery | Production |
+|---|---|---|
+| **Purpose** | Prototype, explore, validate | Real features, PRs, production code |
+| **Output** | Design definitions only | Definitions + stack-specific drivers |
+| **Consumer** | Designer + AI agent prototyping | AI agent writing production code |
+| **Needs stack context?** | No | Yes (framework, language, architecture) |
+
+The definitions are the same. The difference is enforcement — discovery uses them as guidance, production uses them as law.
+
+See [docs/PD_BUILD_NOTES.md](docs/PD_BUILD_NOTES.md) for the full PD-Build architecture design.
 
 ## License
 
