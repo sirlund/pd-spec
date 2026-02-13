@@ -11,16 +11,22 @@ Contradictions detected between insights. Each conflict has a unique `[CF-XX]` I
 
 <!-- New conflicts are appended below by /analyze -->
 
-### [2026-02-11] Seed Analysis
+### [2026-02-12] Análisis inicial
 
-- **[CF-01]** (PENDING · flagged) **Real-time Feeds vs. Legacy Settlement**. Brief promises viral, real-time social feeds ([IG-01]), but Technical Constraints confirm usage of OldGuard API with T+2 days settlement delay ([IG-05]).
-  - *Action:* Flag for discussion — CTO + Product: real-time UX vs API constraints trade-off. Investigate Stark API timeline.
+- **[CF-01]** (PENDING · research) **Tiempo real vs. Liquidación legacy.** Brief promete experiencia social viral en tiempo real [IG-01, IG-02, IG-06], pero API OldGuard impone liquidación T+2 días [IG-15, IG-16]. Feeds en tiempo real son imposibles con la infraestructura actual.
+  - *Acción:* Necesita más investigación — Evaluar patrones de UX para feeds con datos retrasados (T+2). Casos de éxito con estados "pendiente".
 
-- **[CF-02]** (RESOLVED) **Native vs. Hybrid**. Brief mandates "100% Native" experience ([IG-03]), but Technical Constraints enforce a React w/ Cordova wrapper approach due to timeline ([IG-06]).
-  - *Resolution:* CEO confirmed Cordova for 3-month launch. Backlog must include approximate milestone for Flutter migration after reaching product-market fit. [IG-06] wins for MVP, [IG-03] remains as long-term target.
+- **[CF-02]** (PENDING · flagged) **Nativo vs. Híbrido.** Brief exige "100% nativo iOS/Android" [IG-04], pero restricciones técnicas fuerzan wrapper React/Cordova por timeline [IG-17].
+  - *Acción:* Escalar para discusión — CEO + CTO: aceptar Cordova para MVP o retrasar lanzamiento por app nativa. Definir milestone de migración post-PMF.
 
-- **[CF-03]** (PENDING · research) **Privacy vs. Social**. Core value prop is public transaction feeds ([IG-01]), but user interviews indicate strong resistance to broadcasting financial data ([IG-07]).
-  - *Action:* Needs more research — additional user interviews focused on privacy expectations in social finance apps.
+- **[CF-03]** (PENDING · flagged) **Privacidad vs. Social.** Propuesta de valor central son feeds públicos de transacciones [IG-02], pero entrevistas muestran fuerte resistencia a compartir datos financieros públicamente [IG-08].
+  - *Acción:* Escalar para discusión — Product + UX Lead: redefinir "social" como opt-in vs broadcast. Privacy-by-default como principio de diseño.
 
-- **[CF-04]** (PENDING · research) **Subscription Model Viability**. Brief sets $5/mo price ([IG-04]), but users and benchmarks suggest this is above willingness-to-pay ([IG-08], [IG-10]) and market incompatibility ([IG-11]).
-  - *Action:* Needs more research — freemium benchmarks in fintech, conversion rates, ARPU analysis.
+- **[CF-04]** (PENDING · research) **Suscripción $5 cuestionada.** Brief fija $5/mes [IG-05], pero usuarios dicen $0 [IG-11] o $2-3 máx [IG-14], y benchmark muestra que suscripción + social no funciona en el mercado [IG-23].
+  - *Acción:* Necesita más investigación — Benchmarks freemium en fintech, tasas de conversión, ARPU de competidores, análisis de elasticidad de precio.
+
+- **[CF-05]** (PENDING · flagged) **Solo móvil vs. Necesidad de escritorio.** Brief dice 100% móvil [IG-04] y Taylor valida [IG-13], pero Alex necesita laptop para gestión financiera compleja [IG-10]. Señales mixtas sobre viabilidad del enfoque exclusivamente móvil.
+  - *Acción:* Escalar para discusión — Product: definir alcance de "gestión financiera" en la app. Si NeoWallet evita spreadsheets complejos, mobile-only puede funcionar.
+
+- **[CF-06]** (PENDING · flagged) **IA agresiva: ¿feature o anti-feature?** Brief propone IA que "roast" [IG-03], Alex rechaza coaching intrusivo [IG-09], pero Jordan lo ve como viral y atractivo [IG-24]. Señales contradictorias sobre el tono de la IA.
+  - *Acción:* Escalar para discusión — Product + UX: IA configurable (modo agresivo opt-in vs silencioso por defecto). Dos personalidades como feature.

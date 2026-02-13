@@ -1,555 +1,162 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRD: NeoWallet</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #F0F2F5;
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .page {
-            background-color: #ffffff;
-            width: 21cm;
-            min-height: 29.7cm;
-            padding: 2.54cm;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            box-sizing: border-box;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Inter', sans-serif;
-            color: #202124;
-        }
-
-        h1 {
-            font-size: 26pt;
-            font-weight: bold;
-            margin-top: 0;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
-        }
-
-        h2 {
-            color: #000000;
-            font-size: 16pt;
-            font-weight: bold;
-            margin-top: 24pt;
-            margin-bottom: 6pt;
-        }
-
-        h3 {
-            color: #434343;
-            font-size: 14pt;
-            font-weight: bold;
-            margin-top: 18pt;
-            margin-bottom: 4pt;
-        }
-
-        p, li, td, th, blockquote {
-            font-size: 11pt;
-            line-height: 1.5;
-            color: #000000;
-            margin-bottom: 12pt;
-        }
-
-        ul, ol {
-            margin-top: 0;
-            margin-bottom: 12pt;
-            padding-left: 24pt;
-        }
-
-        li {
-            margin-bottom: 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12pt 0;
-        }
-
-        th, td {
-            border: 1px solid #c7c7c7;
-            padding: 8pt;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .doc-header {
-            margin-bottom: 24pt;
-        }
-
-        .doc-meta {
-            background: #f8f9fa;
-            border: 1px solid #e5e5e5;
-            border-radius: 4px;
-            padding: 10px 15px;
-            font-size: 0.85em;
-            color: #444;
-            margin-bottom: 24pt;
-        }
-
-        .doc-meta strong {
-            color: #111;
-        }
-
-        .doc-meta details {
-            margin-top: 6px;
-        }
-
-        .doc-meta summary {
-            cursor: pointer;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .doc-meta ul {
-            margin: 6px 0 0;
-            padding-left: 20px;
-            font-size: 0.95em;
-        }
-
-        .meta {
-            color: #000000;
-            font-size: 11pt;
-            margin-bottom: 12pt;
-        }
-
-        blockquote {
-            background: none;
-            border-left: 3px solid #ccc;
-            margin: 12pt 24pt;
-            padding-left: 12pt;
-            color: #666;
-        }
-
-        strong {
-            font-weight: bold;
-            color: #000;
-        }
-
-        em {
-            font-style: italic;
-        }
-
-        .callout {
-            background-color: #e6ffFA;
-            border-left: 4px solid #00cea5;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-
-        .callout p {
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-        .callout-warn {
-            background-color: #fef3cd;
-            border-left: 4px solid #ffc107;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-
-        .callout-warn p {
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-        .insight-ref {
-            font-size: 0.8em;
-            color: #666;
-            font-style: italic;
-        }
-
-        .status-badge {
-            display: inline-block;
-            font-size: 0.75em;
-            font-weight: 500;
-            padding: 2px 8px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        .badge-verified { background: #d4edda; color: #155724; }
-        .badge-blocked { background: #f8d7da; color: #721c24; }
-        .badge-pending { background: #fef3cd; color: #856404; }
-        .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
-
-        .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
-        .ref-link:hover { color: #111; border-bottom-color: #111; }
-
-        @media print {
-            body {
-                background: none;
-                padding: 0;
-                display: block;
-            }
-
-            .page {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                max-width: 100%;
-                min-height: auto;
-                padding: 0;
-                border: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD — NeoWallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #F0F2F5; color: #111; line-height: 1.7; }
+.page { max-width: 21cm; margin: 2rem auto; background: #fff; padding: 2.54cm; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem; border-bottom: 2px solid #111; padding-bottom: 0.25rem; }
+h3 { font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; font-size: 0.9rem; }
+li { margin-bottom: 0.35rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+th, td { border: 1px solid #e5e5e5; padding: 0.5rem 0.75rem; text-align: left; }
+th { background: #f9f9f9; font-weight: 600; }
+.doc-meta { font-size: 0.8rem; color: #666; margin-bottom: 2rem; padding: 0.75rem; background: #f9f9f9; border-radius: 4px; }
+.doc-meta strong { color: #111; }
+.doc-meta details { margin-top: 0.5rem; }
+.doc-meta summary { cursor: pointer; color: #999; }
+.callout { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
+.callout-warn { background: #fff8e1; border-left-color: #ff9800; }
+.callout-error { background: #fce4ec; border-left-color: #e53935; }
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 500; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+.badge-blocked { background: #fce4ec; color: #c62828; }
+.badge-ok { background: #e8f5e9; color: #2e7d32; }
+.ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+.ref-link:hover { color: #111; border-bottom-color: #111; }
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; padding: 2cm; }
+  h2 { page-break-before: auto; }
+}
+</style>
 </head>
-
 <body>
+<div class="page">
 
-    <div class="page">
+<div class="doc-meta">
+  <strong>v1.0</strong> · Generado 2026-02-12 · PD-Spec snapshot: 25 insights (24 verified, 1 invalidated), 6 conflictos (4 flagged, 2 research)
+  <details>
+    <summary>Changelog del documento</summary>
+    <ul>
+      <li>v1.0 (2026-02-12): Versión inicial. PRD generado con 5 módulos, 4 principios de diseño, 10 preguntas abiertas. 4 de 5 módulos bloqueados por conflictos pendientes.</li>
+    </ul>
+  </details>
+</div>
 
-        <div class="doc-meta">
-            <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts (1 resolved, 3 pending)
-            <details>
-                <summary>Document changelog</summary>
-                <ul>
-                    <li>v1.0 (2026-02-11): Initial PRD generated from seed data analysis. 10 verified insights, 4 modules defined. 2 modules blocked pending conflict resolution (Social Layer, Monetization).</li>
-                </ul>
-            </details>
-        </div>
+<h1>PRD — NeoWallet</h1>
+<p style="color:#666;">Herramientas de finanzas multiplayer para Gen Z</p>
 
-        <div class="doc-header">
-            <h1>PRD: NeoWallet</h1>
-            <div class="meta">
-                <p><strong>Version:</strong> 1.0<br>
-                    <strong>Last Updated:</strong> 2026-02-11<br>
-                    <strong>Status:</strong> Draft — 2 modules blocked on unresolved conflicts<br>
-                    <strong>Author:</strong> PD-Spec pipeline
-                </p>
-            </div>
-        </div>
+<h2>1. Visión de Producto</h2>
+<p>NeoWallet ofrece herramientas de finanzas multiplayer para Gen Z con diseño privacy-first. El framing original "social banking" fue descartado [IG-01 INVALIDATED], pero los features específicos — ollas compartidas, feeds de transacciones y "squad goals" de ahorro — se mantienen como propuesta de valor [IG-02].</p>
+<p>La app debe resolver la tensión fundamental entre funcionalidad social y la resistencia de los usuarios a compartir datos financieros públicamente [IG-08].</p>
 
-        <h2>1. Product Overview</h2>
-        <p>NeoWallet is a mobile-only "social banking" experience targeting Gen Z users. The core premise is multiplayer finance — shared savings pots, public transaction feeds, and squad-based financial goals — designed to make personal finance viral and social rather than solitary and boring.</p>
-        <p>The product faces fundamental tensions between its social-first vision and strong user resistance to public financial data, as well as a pricing model contradicted by all available market and user evidence. These tensions are unresolved and block two of the four product modules.</p>
-        <p class="insight-ref">Sources: [IG-01], [IG-03]</p>
+<h2>2. Problema del Usuario</h2>
+<p>Los usuarios Gen Z perciben las apps de finanzas existentes como demasiado manuales [IG-07]. Prefieren verificación pasiva del saldo y automatización silenciosa del ahorro [IG-09]. Al mismo tiempo, existe interés en gamificación — leaderboards de ahorro entre amigos como motivación [IG-12] — pero con una barrera clara: compartir transacciones se percibe como "creepy" [IG-08].</p>
+<div class="callout">
+  <strong>Insight clave:</strong> Los usuarios quieren que la app actúe sin interrumpir. El valor está en la automatización silenciosa, no en el coaching agresivo [IG-07, IG-09].
+</div>
 
-        <h2>2. User Problem &amp; Context</h2>
-        <p>Gen Z users find traditional banking apps boring and impersonal. They manage finances reactively ("I look at my balance before I buy") and resist tools that feel like work (manual budgeting, spreadsheets). There is appetite for a more engaging, mobile-native experience.</p>
-        <p>However, user research surfaces three critical friction points:</p>
-        <ul>
-            <li><strong>Privacy:</strong> Users find public financial broadcasting "creepy." They keep Venmo transactions private and don't want friends seeing their spending. <span class="insight-ref">[IG-07]</span></li>
-            <li><strong>Price sensitivity:</strong> Free alternatives exist (Chime, CashApp). Users are unwilling to pay $5/month; $2-3 is the ceiling, and many expect free. <span class="insight-ref">[IG-08], [IG-10]</span></li>
-            <li><strong>Trust:</strong> Users refuse to link main bank accounts due to security concerns. They'd only put "play money" in a new app. <span class="insight-ref">[IG-12]</span></li>
-        </ul>
+<h2>3. Resumen de Insights</h2>
+<table>
+  <tr><th>ID</th><th>Categoría</th><th>Insight</th><th>Status</th></tr>
+  <tr><td>[IG-02]</td><td>business</td><td>Feeds, ollas compartidas, squad goals como propuesta de valor</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-03]</td><td>business</td><td>IA agresiva que critica gasto ("roast")</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-04]</td><td>constraint</td><td>Solo móvil: 100% iOS/Android nativo</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-05]</td><td>business</td><td>Suscripción $5/mes</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-06]</td><td>business</td><td>MVP 3 meses con API Stark</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-07]</td><td>user-need</td><td>Apps existentes demasiado manuales</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-08]</td><td>user-need</td><td>Privacidad: compartir finanzas es "creepy"</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-09]</td><td>user-need</td><td>Prefiere IA silenciosa, rechaza coaching agresivo</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-10]</td><td>user-need</td><td>Gestión compleja requiere laptop</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-11]</td><td>user-need</td><td>No pagaría suscripción (alternativas gratis)</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-12]</td><td>user-need</td><td>Leaderboards de ahorro, gamificación</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-13]</td><td>user-need</td><td>Valida mobile-only (sin laptop personal)</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-14]</td><td>user-need</td><td>Pagaría $2-3, $5 es caro</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-15]</td><td>technical</td><td>Stark no aprobada, OldGuard SOAP 12 meses</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-16]</td><td>technical</td><td>OldGuard: liquidación T+2 días</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-17]</td><td>technical</td><td>Wrapper React/Cordova, no nativo</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-18]</td><td>technical</td><td>PCI-DSS: infra separada para social y banking</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-19]</td><td>technical</td><td>Rate limit OldGuard: 1/s/user</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-20]</td><td>business</td><td>CashFlow Z: freemium, social, 10M users</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-21]</td><td>business</td><td>SaveMate: $10/mes, privacidad, perdiendo usuarios</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-22]</td><td>business</td><td>FinTok: ads tolerados si son entretenidos</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-23]</td><td>business</td><td>No hay app exitosa suscripción + social</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-24]</td><td>user-need</td><td>IA roast suena viral, descargaría por memes</td><td>VERIFIED</td></tr>
+  <tr><td>[IG-25]</td><td>user-need</td><td>No vincularía cuenta principal, solo "dinero de juego"</td><td>VERIFIED</td></tr>
+</table>
+<p style="font-size:0.8rem;color:#999;">Invalidado: [IG-01] Visión "social banking" como framing general.</p>
 
-        <h2>3. Insights Summary</h2>
-        <p>Verified insights driving this PRD:</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Insight</th>
-                    <th>Category</th>
-                    <th>Source</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>[IG-01]</td>
-                    <td>"Social banking" — shared pots, public feeds, squad goals</td>
-                    <td>business</td>
-                    <td>seed-brief/project-brief.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-03]</td>
-                    <td>Mobile-only, 100% native iOS/Android, no web</td>
-                    <td>technical</td>
-                    <td>seed-brief/project-brief.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-04]</td>
-                    <td>Flat $5/month subscription model</td>
-                    <td>business</td>
-                    <td>seed-brief/project-brief.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-05]</td>
-                    <td>Must use legacy OldGuard SOAP API — T+2 days settlement</td>
-                    <td>technical</td>
-                    <td>seed-technical/constraints.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-06]</td>
-                    <td>Implementation will be React/Cordova wrapper, not native</td>
-                    <td>technical</td>
-                    <td>seed-technical/constraints.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-07]</td>
-                    <td>User (Alex) finds public financial broadcasts "creepy"</td>
-                    <td>user-need</td>
-                    <td>seed-interviews/interview-01.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-08]</td>
-                    <td>User (Alex) unwilling to pay subscription — free alternatives exist</td>
-                    <td>user-need</td>
-                    <td>seed-interviews/interview-01.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-10]</td>
-                    <td>User (Taylor) would pay $2-3/month, $5 feels steep</td>
-                    <td>user-need</td>
-                    <td>seed-interviews/interview-02.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-11]</td>
-                    <td>No successful competitor combines subscription + social</td>
-                    <td>business</td>
-                    <td>seed-benchmark/competitor-analysis.md</td>
-                </tr>
-                <tr>
-                    <td>[IG-12]</td>
-                    <td>User (Jordan) refuses to link main bank account — security concern</td>
-                    <td>user-need</td>
-                    <td>seed-benchmark/interview-03-jordan.md</td>
-                </tr>
-            </tbody>
-        </table>
+<h2>4. Arquitectura — Módulos</h2>
 
-        <h2>4. System Architecture</h2>
-        <p>The product is organized into four modules. Two are fully specified; two are blocked pending stakeholder decisions on unresolved conflicts.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Module</th>
-                    <th>Status</th>
-                    <th>Blocker</th>
-                    <th>Key Insights</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Core Banking</td>
-                    <td><span class="status-badge badge-verified">Verified</span></td>
-                    <td>None (CF-02 resolved)</td>
-                    <td>IG-05, IG-06</td>
-                </tr>
-                <tr>
-                    <td>Social Layer</td>
-                    <td><span class="status-badge badge-blocked">Blocked</span></td>
-                    <td>CF-03: Social vs Privacy</td>
-                    <td>IG-01, IG-07</td>
-                </tr>
-                <tr>
-                    <td>Monetization</td>
-                    <td><span class="status-badge badge-blocked">Blocked</span></td>
-                    <td>CF-04: Pricing Model</td>
-                    <td>IG-04, IG-08, IG-10, IG-11</td>
-                </tr>
-                <tr>
-                    <td>Trust &amp; Security</td>
-                    <td><span class="status-badge badge-pending">Needs research</span></td>
-                    <td>No research planned</td>
-                    <td>IG-12</td>
-                </tr>
-            </tbody>
-        </table>
+<h3>4.1 Core Banking <span class="badge badge-blocked">Bloqueado CF-02</span></h3>
+<p>Wrapper Cordova/React sobre API SOAP OldGuard. Liquidación T+2 días [IG-16]. Rate limit de 1 llamada/segundo/usuario [IG-19]. La decisión sobre Cordova vs nativo está pendiente de CEO + CTO [CF-02].</p>
+<div class="callout-warn callout">Decisión pendiente: CEO + CTO deben aceptar Cordova para MVP o retrasar lanzamiento por app nativa. Definir milestone de migración post-PMF [CF-02].</div>
 
-        <h2>5. Module Specifications</h2>
+<h3>4.2 Social / Multiplayer <span class="badge badge-blocked">Bloqueado CF-01, CF-03</span></h3>
+<p>Ollas compartidas, feeds de transacciones (opt-in), squad goals, leaderboards de ahorro [IG-02, IG-12]. El diseño debe asumir opt-in hasta que se resuelva la tensión privacidad vs social [CF-03]. Limitado por datos retrasados T+2 [CF-01].</p>
+<div class="callout-warn callout">Doble bloqueo: (1) Investigar UX para feeds con datos retrasados [CF-01]. (2) Product + UX deben redefinir "social" como opt-in vs broadcast [CF-03].</div>
 
-        <h3>5.1 Core Banking <span class="status-badge badge-verified">Verified</span></h3>
-        <p>The banking foundation layer. Handles account management, transactions, and settlement through the OldGuard SOAP API.</p>
+<h3>4.3 IA Coaching <span class="badge badge-blocked">Bloqueado CF-06</span></h3>
+<p>Tono a definir: agresivo/viral vs silencioso/automático. Usuarios quieren automatización sin interrupciones [IG-09], pero el tono agresivo tiene potencial viral [IG-24]. Propuesta: IA configurable con dos personalidades [CF-06].</p>
 
-        <div class="callout">
-            <p><strong>Key Decision (CF-02 Resolved):</strong> CEO confirmed Cordova/React wrapper for 3-month launch timeline. The brief's "100% native" mandate is deferred — the backlog must include an approximate milestone for Flutter migration after reaching product-market fit. <span class="insight-ref">[IG-06] wins for MVP, [IG-03] remains long-term target</span></p>
-        </div>
+<h3>4.4 Monetización <span class="badge badge-blocked">Bloqueado CF-04</span></h3>
+<p>$5/mes propuesto en brief [IG-05], cuestionado por toda la evidencia: usuarios dicen $0 [IG-11] o $2-3 máx [IG-14], mercado muestra que suscripción + social no funciona [IG-23]. Modelo indefinido hasta completar investigación [CF-04].</p>
+<div class="callout-error callout">Riesgo alto: La totalidad de la evidencia externa contradice el modelo de pricing del brief. Se necesitan benchmarks de freemium fintech antes de definir modelo [CF-04].</div>
 
-        <p><strong>Technical constraints:</strong></p>
-        <ul>
-            <li>OldGuard SOAP API with T+2 day settlement latency. The "Stark" API mentioned in the brief is not compliance-approved and won't be available for at least 12 months. <span class="insight-ref">[IG-05]</span></li>
-            <li>React web portal wrapped in Cordova for iOS/Android. Not native — accepted trade-off for speed to market. <span class="insight-ref">[IG-06]</span></li>
-            <li>1 API call/second rate limit per user — impacts real-time multiplayer features.</li>
-            <li>Social graph data must live on separate infrastructure from banking data (PCI-DSS).</li>
-        </ul>
+<h3>4.5 Seguridad & Confianza <span class="badge badge-ok">Sin bloqueos</span></h3>
+<p>PCI-DSS requiere infraestructura separada para datos bancarios y grafo social [IG-18]. Usuarios no vincularían cuenta principal por seguridad — enfoque "dinero de juego" para onboarding [IG-25].</p>
 
-        <p><strong>Implications:</strong></p>
-        <ul>
-            <li>Real-time transaction feeds are impossible with OldGuard. Any social feed showing transactions must display "pending" states and tolerate 2-day latency. (See CF-01 in Open Questions.)</li>
-            <li>Cordova wrapper limits UX quality — no native gestures, slower animations, larger bundle size.</li>
-        </ul>
+<h2>5. Principios de Diseño</h2>
+<ol>
+  <li><strong>Privacy-by-default</strong> — Features sociales son opt-in, nunca broadcast. No exponer transacciones sin consentimiento explícito [IG-08, IG-25].</li>
+  <li><strong>Mobile-first (no mobile-only aún)</strong> — Mayoría valida móvil [IG-04, IG-13], pero necesidad de escritorio existe [IG-10]. Pendiente CF-05.</li>
+  <li><strong>Automatización silenciosa</strong> — La app actúa sin interrumpir. Coaching agresivo es opcional [IG-07, IG-09].</li>
+  <li><strong>Precio sensible</strong> — Gen Z no paga $5 sin justificación excepcional. Rango $0-3 [IG-11, IG-14, IG-23].</li>
+</ol>
 
-        <h3>5.2 Social Layer <span class="status-badge badge-blocked">Blocked on CF-03</span></h3>
+<h2>6. Preguntas Abiertas</h2>
+<h3>Escaladas (stakeholders)</h3>
+<ul>
+  <li>[CF-02] CEO + CTO: ¿Cordova para MVP o retrasar por nativo?</li>
+  <li>[CF-03] Product + UX: Redefinir "social" como opt-in vs broadcast.</li>
+  <li>[CF-05] Product: Alcance de "gestión financiera". Mobile-only viable si se evitan spreadsheets.</li>
+  <li>[CF-06] Product + UX: IA configurable (agresivo opt-in vs silencioso default).</li>
+</ul>
+<h3>Investigación necesaria</h3>
+<ul>
+  <li>[CF-01] Patrones UX para feeds con datos retrasados T+2.</li>
+  <li>[CF-04] Benchmarks freemium fintech, ARPU, elasticidad de precio.</li>
+</ul>
+<h3>Brechas de evidencia</h3>
+<ul>
+  <li>Confianza/seguridad — más investigación sobre barreras de vinculación de cuentas.</li>
+  <li>Retención — sin datos de churn ni retención a largo plazo.</li>
+  <li>Regulación fintech — solo PCI-DSS conocido. Falta KYC/AML, licencias.</li>
+  <li>TAM — sin sizing del mercado objetivo.</li>
+</ul>
 
-        <div class="callout-warn">
-            <p><strong>Blocked:</strong> This module cannot be fully specified until CF-03 (Social vs Privacy) is resolved through additional user research on privacy expectations in social finance. Design must assume <strong>opt-in social, private by default</strong> until stakeholders decide on positioning. <span class="insight-ref">[IG-01] vs [IG-07]</span></p>
-        </div>
+<h2>7. Insights Invalidados</h2>
+<table>
+  <tr><th>ID</th><th>Motivo</th></tr>
+  <tr><td>[IG-01]</td><td>Visión "social banking" rechazada como framing general. Los features específicos (IG-02) se mantienen, pero la etiqueta no representa la dirección del producto.</td></tr>
+</table>
 
-        <p>The brief's core differentiator is "multiplayer finance" — shared savings pots, public transaction feeds, and squad-based goals. However, user research directly contradicts the assumption that Gen Z wants public financial data:</p>
-
-        <blockquote>"Money is private. I honestly find it creepy when people broadcast what they pay for." — Alex (user interview) <span class="insight-ref">[IG-07]</span></blockquote>
-
-        <p><strong>What we can specify now:</strong></p>
-        <ul>
-            <li>Shared savings pots (private between participants) — no privacy conflict.</li>
-            <li>Squad goals (opt-in groups) — acceptable if membership is by invitation.</li>
-        </ul>
-
-        <p><strong>What requires resolution:</strong></p>
-        <ul>
-            <li>Public transaction feeds — the brief's key differentiator but directly opposed by user evidence.</li>
-            <li>Default visibility settings — private-by-default vs social-by-default fundamentally changes the product identity.</li>
-        </ul>
-
-        <h3>5.3 Monetization <span class="status-badge badge-blocked">Blocked on CF-04</span></h3>
-
-        <div class="callout-warn">
-            <p><strong>Blocked:</strong> The proposed $5/month subscription is contradicted by all available evidence. This module cannot be specified until CF-04 is resolved through freemium benchmarking and stakeholder alignment on pricing strategy. <span class="insight-ref">[IG-04] vs [IG-08], [IG-10], [IG-11]</span></p>
-        </div>
-
-        <p>The brief proposes a flat $5/month subscription, citing Gen Z's preference for transparency over ads. Three independent sources contradict this:</p>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Source</th>
-                    <th>Finding</th>
-                    <th>Ref</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>User interview (Alex)</td>
-                    <td>"Why would I pay a subscription just to hold my own money?" — Free alternatives exist.</td>
-                    <td>[IG-08]</td>
-                </tr>
-                <tr>
-                    <td>User interview (Taylor)</td>
-                    <td>Willing to pay $2-3. "$5 feels steep unless it comes with heavy perks."</td>
-                    <td>[IG-10]</td>
-                </tr>
-                <tr>
-                    <td>Competitor benchmark</td>
-                    <td>No successful app combines subscription AND social features. Market bifurcates: free/social or paid/privacy.</td>
-                    <td>[IG-11]</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p><strong>Research needed before specifying:</strong> Freemium conversion rate benchmarks in fintech, ARPU analysis of comparable apps, alternative monetization models (transaction fees, partnerships, premium cosmetics).</p>
-
-        <h3>5.4 Trust &amp; Security <span class="status-badge badge-pending">Needs research</span></h3>
-        <p>Users exhibit a fundamental trust barrier with new fintech apps. Jordan explicitly refuses to link their main bank account, calling it a "security risk" — willing to deposit only "play money."</p>
-
-        <div class="callout">
-            <p><strong>Key Insight:</strong> "Would you link your main bank account?" — "Hell no. Security risk. I'd only put like 'play money' in there." <span class="insight-ref">[IG-12]</span></p>
-        </div>
-
-        <p><strong>Design implications:</strong></p>
-        <ul>
-            <li>Onboarding cannot require primary bank account linking. A "play money" deposit flow may be necessary.</li>
-            <li>Trust must be earned incrementally — start with low-risk features, progressively suggest deeper integration.</li>
-            <li>Security messaging must be prominent — PCI-DSS compliance, data separation, encryption — without being patronizing.</li>
-        </ul>
-
-        <p><strong>Gap:</strong> Only one source (Jordan) addresses trust. The brief ignores security perception entirely. Additional user research is needed to understand whether this is a universal barrier or a segment-specific concern.</p>
-
-        <h2>6. Design Principles</h2>
-        <ol>
-            <li><strong>Privacy by default.</strong> Social features must be opt-in. Never expose transactions without explicit consent. Users find financial broadcasting "creepy." <span class="insight-ref">[IG-07], [IG-12]</span></li>
-            <li><strong>Ship fast, iterate later.</strong> Cordova MVP to validate market fit. Flutter migration after PMF, not before. Avoid premature optimization. <span class="insight-ref">[IG-06], CF-02</span></li>
-            <li><strong>Price-sensitive audience.</strong> Gen Z won't pay $5. Whatever monetization model is chosen, it must respect a $0-3 willingness range or offer exceptional perceived value. <span class="insight-ref">[IG-08], [IG-10], [IG-11]</span></li>
-        </ol>
-
-        <h2>7. Open Questions &amp; Risks</h2>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Question</th>
-                    <th>Related</th>
-                    <th>Action Needed</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>How to reconcile social vision with user privacy concerns?</td>
-                    <td>CF-03</td>
-                    <td>User interviews on privacy expectations in social finance</td>
-                </tr>
-                <tr>
-                    <td>What monetization model works if $5 subscription fails?</td>
-                    <td>CF-04</td>
-                    <td>Freemium benchmarks, conversion rates, ARPU analysis</td>
-                </tr>
-                <tr>
-                    <td>What is the Stark API approval timeline?</td>
-                    <td>CF-01</td>
-                    <td>CTO + Product discussion — flagged for stakeholders</td>
-                </tr>
-                <tr>
-                    <td>When is Flutter migration milestone relative to PMF?</td>
-                    <td>CF-02</td>
-                    <td>CEO input on PMF criteria and migration trigger</td>
-                </tr>
-                <tr>
-                    <td>How to address trust barrier for bank account linking?</td>
-                    <td>IG-12</td>
-                    <td>No research planned yet — gap</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h2>8. Invalidated Insights</h2>
-        <p>The following insights from the brief were reviewed and rejected during synthesis:</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Insight</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="status-badge badge-invalidated">IG-02</span></td>
-                    <td>Aggressive AI coaching that "roasts" spending</td>
-                    <td>Not aligned with product direction. User Alex explicitly stated: "If it starts lecturing me or trying to be funny, I'll uninstall it."</td>
-                </tr>
-                <tr>
-                    <td><span class="status-badge badge-invalidated">IG-09</span></td>
-                    <td>User (Taylor) wants competition leaderboards</td>
-                    <td>Single-user data point. Conflicts with privacy-first principle. Leaderboards require public financial data — the same pattern users resist.</td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
+</div>
 
 <script>
-document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
-    el.innerHTML = el.innerHTML.replace(
-        /\[(IG-\d+|CF-\d+)\]/g,
-        '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
-    );
+document.querySelectorAll('td, p, li, .callout').forEach(el => {
+  el.innerHTML = el.innerHTML.replace(
+    /\[(IG-\d+|CF-\d+)\]/g,
+    (match, id) => '<a href="STATUS.html#' + id + '" class="ref-link">[' + id + ']</a>'
+  );
 });
 </script>
 </body>
-
 </html>

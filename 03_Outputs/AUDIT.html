@@ -1,154 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoWallet — Strategic Audit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { background: #F0F2F5; font-family: 'Inter', sans-serif; margin: 0; padding: 20px 0; display: flex; justify-content: center; }
-        .page { background: #fff; width: 21cm; min-height: 29.7cm; padding: 2.54cm; margin: 0 auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); box-sizing: border-box; }
-        h1 { font-size: 24pt; font-weight: 700; color: #111; margin: 0 0 6pt; }
-        h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
-        h3 { font-size: 13pt; font-weight: 600; color: #333; margin: 16pt 0 4pt; }
-        p, li, td, th { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 10pt; }
-        ul, ol { padding-left: 24pt; margin: 0 0 12pt; }
-        li { margin-bottom: 4pt; }
-        table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 10pt; }
-        th, td { border: 1px solid #c7c7c7; padding: 6pt 8pt; text-align: left; vertical-align: top; }
-        th { background: #f8f9fa; font-weight: 600; }
-        .doc-meta { background: #f8f9fa; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px 15px; font-size: 0.85em; color: #444; margin-bottom: 20pt; }
-        .doc-meta strong { color: #111; }
-        .callout { background: #e6fffa; border-left: 4px solid #00cea5; padding: 8pt 12pt; margin: 10pt 0; }
-        .callout p { margin: 0; font-size: 0.9em; }
-        .callout-warn { background: #fef3cd; border-left: 4px solid #ffc107; padding: 8pt 12pt; margin: 10pt 0; }
-        .callout-warn p { margin: 0; font-size: 0.9em; }
-        .callout-error { background: #f8d7da; border-left: 4px solid #dc3545; padding: 8pt 12pt; margin: 10pt 0; }
-        .callout-error p { margin: 0; font-size: 0.9em; }
-        .insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
-        .score { font-size: 2em; font-weight: 700; }
-        .score-ok { color: #28a745; }
-        .score-warn { color: #ffc107; }
-        .score-bad { color: #dc3545; }
-        .meter { height: 8px; background: #e5e5e5; border-radius: 4px; margin: 4pt 0 8pt; }
-        .meter-fill { height: 100%; border-radius: 4px; }
-        .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
-        .ref-link:hover { color: #111; border-bottom-color: #111; }
-        @media print { body { background: none; padding: 0; } .page { box-shadow: none; margin: 0; width: 100%; padding: 2cm; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoría — NeoWallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #F0F2F5; color: #111; line-height: 1.7; }
+.page { max-width: 21cm; margin: 2rem auto; background: #fff; padding: 2.54cm; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+h2 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem; border-bottom: 2px solid #111; padding-bottom: 0.25rem; }
+h3 { font-size: 1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+p { margin-bottom: 0.75rem; font-size: 0.9rem; }
+ul, ol { margin: 0.5rem 0 1rem 1.5rem; font-size: 0.9rem; }
+li { margin-bottom: 0.35rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+th, td { border: 1px solid #e5e5e5; padding: 0.5rem 0.75rem; text-align: left; }
+th { background: #f9f9f9; font-weight: 600; }
+.doc-meta { font-size: 0.8rem; color: #666; margin-bottom: 2rem; padding: 0.75rem; background: #f9f9f9; border-radius: 4px; }
+.doc-meta strong { color: #111; }
+.doc-meta details { margin-top: 0.5rem; }
+.doc-meta summary { cursor: pointer; color: #999; }
+.callout { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
+.callout-warn { background: #fff8e1; border-left-color: #ff9800; }
+.callout-error { background: #fce4ec; border-left-color: #e53935; }
+.grade { font-size: 2rem; font-weight: 700; }
+.grade-a { color: #2e7d32; }
+.grade-b { color: #558b2f; }
+.grade-c { color: #ff9800; }
+.grade-d { color: #e53935; }
+.score-card { display: inline-block; text-align: center; padding: 1rem 1.5rem; border: 1px solid #e5e5e5; border-radius: 6px; margin: 0.5rem; }
+.ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+.ref-link:hover { color: #111; border-bottom-color: #111; }
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; padding: 2cm; }
+}
+</style>
 </head>
 <body>
 <div class="page">
 
-    <div class="doc-meta">
-        <strong>v1.0</strong> · Generated 2026-02-11 · PD-Spec snapshot: 12 insights (10 verified, 2 invalidated), 4 conflicts
-    </div>
+<div class="doc-meta">
+  <strong>v1.0</strong> · Generado 2026-02-12 · PD-Spec snapshot: 25 insights (24 verified), 6 conflictos
+  <details>
+    <summary>Changelog del documento</summary>
+    <ul><li>v1.0 (2026-02-12): Versión inicial. Auditoría de calidad del knowledge base.</li></ul>
+  </details>
+</div>
 
-    <h1>Strategic Audit</h1>
-    <p style="color:#666; font-size:12pt;">Quality gate — knowledge base health and decision readiness</p>
+<h1>Auditoría de Calidad — NeoWallet</h1>
+<p style="color:#666;">Quality gate del knowledge base antes de producción</p>
 
-    <h2>1. Overall Health</h2>
+<h2>1. Scorecard</h2>
+<div style="text-align:center; margin: 1.5rem 0;">
+  <div class="score-card"><div class="grade grade-c">C+</div><div>Cobertura de Fuentes</div></div>
+  <div class="score-card"><div class="grade grade-a">A</div><div>Extracción de Insights</div></div>
+  <div class="score-card"><div class="grade grade-d">D</div><div>Resolución de Conflictos</div></div>
+  <div class="score-card"><div class="grade grade-a">A</div><div>Trazabilidad</div></div>
+</div>
 
-    <table>
-        <thead><tr><th>Dimension</th><th>Score</th><th>Assessment</th></tr></thead>
-        <tbody>
-            <tr>
-                <td><strong>Source Coverage</strong></td>
-                <td><span class="score score-warn">C+</span></td>
-                <td>6 sources across 4 types. Minimal viable coverage but significant gaps in trust/security and retention.</td>
-            </tr>
-            <tr>
-                <td><strong>Source Quality</strong></td>
-                <td><span class="score score-warn">C</span></td>
-                <td>4 organizational issues: 1 misplaced file, 1 wrong type label, 1 missing metadata, 1 non-standard format.</td>
-            </tr>
-            <tr>
-                <td><strong>Insight Extraction</strong></td>
-                <td><span class="score score-ok">A</span></td>
-                <td>12 insights extracted, 10 verified, 2 invalidated with reasoning. Good atomic granularity.</td>
-            </tr>
-            <tr>
-                <td><strong>Conflict Detection</strong></td>
-                <td><span class="score score-ok">A</span></td>
-                <td>4 real conflicts detected. All high-impact. No false positives.</td>
-            </tr>
-            <tr>
-                <td><strong>Conflict Resolution</strong></td>
-                <td><span class="score score-bad">D</span></td>
-                <td>1 of 4 resolved. 2 modules blocked. Product cannot be fully specified.</td>
-            </tr>
-            <tr>
-                <td><strong>Decision Readiness</strong></td>
-                <td><span class="score score-bad">D</span></td>
-                <td>Only Core Banking is specifiable. Social, Monetization, and Trust need research or stakeholder input.</td>
-            </tr>
-        </tbody>
-    </table>
+<h2>2. Cobertura de Fuentes — C+</h2>
+<table>
+  <tr><th>Categoría</th><th>Fuentes</th><th>Insights</th><th>Evaluación</th></tr>
+  <tr><td>Brief de producto</td><td>1</td><td>6</td><td>Adecuado para seed</td></tr>
+  <tr><td>Entrevistas de usuario</td><td>3</td><td>11</td><td>Muestra pequeña. Sesgo potencial.</td></tr>
+  <tr><td>Restricciones técnicas</td><td>1</td><td>5</td><td>Solo CTO. Falta DevOps, Security.</td></tr>
+  <tr><td>Benchmark competitivo</td><td>1</td><td>4</td><td>Solo 3 competidores. Falta sizing.</td></tr>
+</table>
 
-    <h2>2. Source Coverage Analysis</h2>
+<h3>Problemas de organización detectados</h3>
+<ul>
+  <li><strong>Archivo mal ubicado:</strong> interview-03-jordan.md está en seed-benchmark/ en vez de seed-interviews/.</li>
+  <li><strong>Tipo incorrecto:</strong> competitor-analysis.md dice Type: workshop pero es un benchmark.</li>
+  <li><strong>Fecha no estándar:</strong> interview-02.md usa "12/05/2026" (ambiguo). Debería ser YYYY-MM-DD.</li>
+  <li><strong>Sin template:</strong> constraints.md no sigue _SOURCE_TEMPLATE.md.</li>
+</ul>
 
-    <table>
-        <thead><tr><th>Category</th><th>Sources</th><th>Insights</th><th>Coverage</th></tr></thead>
-        <tbody>
-            <tr><td>Business/Vision</td><td>1 (brief)</td><td>IG-01, IG-04</td><td>Single source, no validation</td></tr>
-            <tr><td>User Research</td><td>3 (interviews)</td><td>IG-07, IG-08, IG-09, IG-10, IG-12</td><td>Small sample, directional only</td></tr>
-            <tr><td>Technical</td><td>1 (constraints)</td><td>IG-05, IG-06</td><td>Single source, CTO perspective only</td></tr>
-            <tr><td>Market/Benchmark</td><td>1 (competitors)</td><td>IG-11</td><td>Single analysis, needs validation</td></tr>
-            <tr><td>Retention/Engagement</td><td>0</td><td>—</td><td style="color:#dc3545;">No coverage</td></tr>
-            <tr><td>Security/Trust</td><td>0 (1 incidental)</td><td>IG-12</td><td style="color:#dc3545;">1 data point from misplaced interview</td></tr>
-        </tbody>
-    </table>
+<h2>3. Extracción de Insights — A</h2>
+<table>
+  <tr><th>Métrica</th><th>Valor</th></tr>
+  <tr><td>Total de insights extraídos</td><td>25</td></tr>
+  <tr><td>Verificados</td><td>24 (96%)</td></tr>
+  <tr><td>Invalidados</td><td>1 (4%) — [IG-01]</td></tr>
+  <tr><td>Ratio insight/fuente</td><td>4.2 insights por fuente</td></tr>
+  <tr><td>Atomicidad</td><td>Alta — 1 claim por insight</td></tr>
+</table>
+<div class="callout">Extracción sólida. Cada insight es atómico y referencia su fuente específica. La invalidación de [IG-01] demuestra que el proceso de verificación funciona.</div>
 
-    <div class="callout-warn">
-        <p><strong>Critical gap:</strong> Zero sources address user retention. Every source discusses acquisition (downloads, virality) but none address day-2+ engagement. This is a blind spot in the strategy.</p>
-    </div>
+<h2>4. Resolución de Conflictos — D</h2>
+<table>
+  <tr><th>Métrica</th><th>Valor</th></tr>
+  <tr><td>Conflictos detectados</td><td>6</td></tr>
+  <tr><td>Resueltos</td><td>0 (0%)</td></tr>
+  <tr><td>Flagged para stakeholders</td><td>4</td></tr>
+  <tr><td>Necesitan investigación</td><td>2</td></tr>
+  <tr><td>Módulos bloqueados</td><td>4 de 5 (80%)</td></tr>
+</table>
+<div class="callout-error callout">Ningún conflicto resuelto. 80% de los módulos bloqueados. El producto no puede avanzar a diseño detallado sin decisiones de stakeholders y resultados de investigación.</div>
 
-    <h2>3. Source Quality Issues</h2>
-    <table>
-        <thead><tr><th>Issue</th><th>File</th><th>Impact</th></tr></thead>
-        <tbody>
-            <tr><td>Misplaced file</td><td><code>seed-benchmark/interview-03-jordan.md</code></td><td>Interview in benchmark folder. Could be missed in category-based analysis.</td></tr>
-            <tr><td>Wrong type label</td><td><code>seed-benchmark/competitor-analysis.md</code></td><td>Labeled as "workshop" — content is clearly benchmark. Metadata misleading.</td></tr>
-            <tr><td>Missing metadata</td><td><code>seed-interviews/interview-02.md</code></td><td>Empty Context field, non-standard date format (12/05/2026). Reduces traceability.</td></tr>
-            <tr><td>No template</td><td><code>seed-technical/constraints.md</code></td><td>Doesn't follow _SOURCE_TEMPLATE.md. Missing Type/Participants/Context fields.</td></tr>
-        </tbody>
-    </table>
+<h2>5. Trazabilidad — A</h2>
+<ul>
+  <li>100% de los módulos en SYSTEM_MAP.md referencian [IG-XX] insights.</li>
+  <li>100% de los principios de diseño referencian [IG-XX] insights.</li>
+  <li>100% de los conflictos referencian los insights en tensión.</li>
+  <li>Todos los outputs (PRD, presentación, reporte, benchmark) incluyen cross-referencing a STATUS.html.</li>
+</ul>
 
-    <h2>4. Conflict Resolution Status</h2>
-    <div class="meter"><div class="meter-fill" style="width:25%; background:#28a745;"></div></div>
-    <p>1 of 4 conflicts resolved (25%). The 3 unresolved conflicts block 75% of the product architecture.</p>
+<h2>6. Brechas de Evidencia</h2>
+<table>
+  <tr><th>Brecha</th><th>Impacto</th><th>Acción sugerida</th></tr>
+  <tr><td>Confianza/seguridad</td><td>Alto — solo 1 fuente menciona barrera de cuenta</td><td>Entrevistas focalizadas en seguridad percibida</td></tr>
+  <tr><td>Retención</td><td>Alto — sin datos de churn</td><td>Análisis de cohortes de competidores</td></tr>
+  <tr><td>Regulación</td><td>Medio — solo PCI-DSS conocido</td><td>Consulta legal: KYC/AML, licencias</td></tr>
+  <tr><td>Monetización alternativa</td><td>Alto — si $5 falla, no hay plan B</td><td>Benchmarks freemium fintech</td></tr>
+  <tr><td>TAM</td><td>Medio — sin sizing</td><td>Análisis TAM/SAM/SOM</td></tr>
+</table>
 
-    <table>
-        <thead><tr><th>ID</th><th>Tension</th><th>Status</th><th>Blocking</th></tr></thead>
-        <tbody>
-            <tr><td>CF-01</td><td>Real-time vs Legacy</td><td style="color:#ffc107;">Flagged</td><td>Real-time feed UX</td></tr>
-            <tr><td>CF-02</td><td>Native vs Hybrid</td><td style="color:#28a745;">Resolved</td><td>— (unblocked)</td></tr>
-            <tr><td>CF-03</td><td>Social vs Privacy</td><td style="color:#dc3545;">Research needed</td><td>Social Layer module</td></tr>
-            <tr><td>CF-04</td><td>Pricing Model</td><td style="color:#dc3545;">Research needed</td><td>Monetization module</td></tr>
-        </tbody>
-    </table>
-
-    <h2>5. Traceability Check</h2>
-    <div class="callout">
-        <p><strong>Pass:</strong> All 4 system map modules reference [IG-XX] insight IDs. All 3 design principles are traceable. No orphaned claims found in PRD.html.</p>
-    </div>
-
-    <h2>6. Recommendations</h2>
-    <ol>
-        <li><strong>Priority 1: Resolve CF-03 and CF-04.</strong> These block 2 of 4 modules. Schedule user research (privacy expectations) and market research (freemium benchmarks) immediately.</li>
-        <li><strong>Priority 2: Fill retention gap.</strong> Add sources on day-2+ engagement — competitor retention data, cohort analysis, engagement hooks from similar apps.</li>
-        <li><strong>Priority 3: Fix source quality.</strong> Move misplaced files, correct type labels, add missing metadata. Run source organization validation.</li>
-        <li><strong>Priority 4: Validate trust barrier at scale.</strong> IG-12 is a strong signal from 1 user. Validate with 5+ interviews before designing around it.</li>
-        <li><strong>Priority 5: Schedule CTO sync.</strong> CF-01 (Stark API timeline) is flagged but not scheduled. Get a date.</li>
-    </ol>
+<h2>7. Recomendaciones Priorizadas</h2>
+<ol>
+  <li><strong>Resolver CF-03 y CF-04 primero.</strong> Son los conflictos más fundamentales: privacidad vs social define la identidad del producto, pricing define la viabilidad del negocio.</li>
+  <li><strong>Ampliar muestra de usuarios.</strong> 3 entrevistas son insuficientes para decisiones de pricing y features sociales. Mínimo 8-12 entrevistas.</li>
+  <li><strong>Agregar fuentes de regulación.</strong> PCI-DSS no es suficiente. KYC/AML y licencias bancarias pueden ser bloqueantes no detectados.</li>
+  <li><strong>Fijar organización de fuentes.</strong> Mover interview-03-jordan.md, corregir tipos y fechas.</li>
+  <li><strong>Planificar investigación de monetización.</strong> Benchmarks freemium, ARPU de competidores, tests de willingness-to-pay antes de decidir modelo.</li>
+</ol>
 
 </div>
+
 <script>
-document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
-    el.innerHTML = el.innerHTML.replace(
-        /\[(IG-\d+|CF-\d+)\]/g,
-        '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
-    );
+document.querySelectorAll('td, p, li, .callout').forEach(el => {
+  el.innerHTML = el.innerHTML.replace(
+    /\[(IG-\d+|CF-\d+)\]/g,
+    (match, id) => '<a href="STATUS.html#' + id + '" class="ref-link">[' + id + ']</a>'
+  );
 });
 </script>
 </body>

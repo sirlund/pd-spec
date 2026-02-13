@@ -2,36 +2,48 @@
 
 The product's logic layer. Every decision here traces back to verified insights in `INSIGHTS_GRAPH.md`.
 
-## Product Vision
+## Visión de Producto
 
-A "social banking" experience for Gen Z — mobile-only, multiplayer finance with shared pots and public feeds. [IG-01, IG-03]
+Herramientas de finanzas multiplayer para Gen Z con diseño privacy-first. El framing "social banking" fue invalidado [IG-01 INVALIDATED], pero los features específicos (ollas compartidas, feeds, squad goals) se mantienen como propuesta de valor [IG-02]. La app debe resolver la tensión entre funcionalidad social y resistencia a compartir datos financieros [IG-08]. [IG-02, IG-07, IG-08]
 
-Core differentiator is social, but strong user resistance to public financial data creates an unresolved tension (CF-03). Privacy-first positioning may be required.
-
-## Modules
+## Módulos
 
 ### Core Banking
-Cordova/React wrapper on OldGuard SOAP API. T+2 settlement latency. CEO approved Cordova for 3-month launch timeline; backlog must include Flutter migration milestone post-PMF. [IG-05, IG-06, CF-02 RESOLVED]
+Wrapper Cordova/React sobre API SOAP OldGuard. Liquidación T+2 días. Rate limit 1 llamada/segundo/usuario. Decisión sobre Cordova vs nativo pendiente de CEO + CTO (CF-02). [IG-15, IG-16, IG-17, IG-19] — Bloqueado por CF-02.
 
-### Social Layer
-Shared pots, public transaction feeds, squad goals. Core value prop but privacy conflict unresolved — design must assume opt-in social until CF-03 is resolved. [IG-01, IG-07] — Blocked on CF-03.
+### Social / Multiplayer
+Ollas compartidas, feeds de transacciones (opt-in), squad goals, leaderboards de ahorro entre amigos. Diseño debe asumir opt-in hasta que CF-03 se resuelva. Limitado por datos retrasados T+2 (CF-01). [IG-02, IG-08, IG-12] — Bloqueado por CF-01, CF-03.
 
-### Monetization
-$5/mo flat subscription proposed in brief. Contradicted by all external evidence: users say $0 or $2-3 max, market shows no successful subscription + social combo. Model undefined until research completes. [IG-04, IG-08, IG-10, IG-11] — Blocked on CF-04.
+### IA Coaching
+Tono a definir: agresivo/viral vs silencioso/automático. Usuarios quieren automatización sin interrupciones [IG-09], pero el tono agresivo tiene potencial viral [IG-24]. Propuesta: IA configurable con dos personalidades. [IG-03, IG-09, IG-24] — Bloqueado por CF-06.
 
-### Trust & Security
-Users refuse to link main bank accounts. "Play money" framing needed for onboarding. No source addresses how to build trust over time. [IG-12]
+### Monetización
+$5/mes propuesto en brief [IG-05], cuestionado por toda la evidencia externa: usuarios dicen $0 [IG-11] o $2-3 máx [IG-14], mercado muestra que suscripción + social no funciona [IG-23]. Modelo indefinido hasta completar investigación. [IG-05, IG-11, IG-14, IG-23] — Bloqueado por CF-04.
 
-## Design Principles
+### Seguridad & Confianza
+PCI-DSS requiere infraestructura separada para datos bancarios y grafo social [IG-18]. Usuarios no vincularían cuenta principal por riesgo de seguridad — enfoque "dinero de juego" para onboarding [IG-25]. [IG-18, IG-25]
 
-1. **Privacy by default** — Social features must be opt-in. Users find financial broadcasting "creepy." Never expose transactions without explicit consent. [IG-07, IG-12]
-2. **Ship fast, iterate later** — Cordova MVP to validate market fit. Flutter migration after PMF, not before. [IG-06, CF-02]
-3. **Price-sensitive audience** — Gen Z won't pay $5. Whatever monetization model is chosen, it must respect a $0-3 willingness range or offer exceptional value. [IG-08, IG-10, IG-11]
+## Principios de Diseño
 
-## Open Questions
+1. **Privacy-by-default** — Features sociales son opt-in, nunca broadcast. Usuarios perciben compartir finanzas como "creepy". No exponer transacciones sin consentimiento explícito. [IG-08, IG-25]
+2. **Mobile-first (no mobile-only aún)** — Mayoría de usuarios valida móvil [IG-04, IG-13], pero necesidad de escritorio para finanzas complejas existe [IG-10]. Pendiente definición de alcance (CF-05).
+3. **Automatización silenciosa** — Usuarios quieren que la app actúe sin interrumpir [IG-07, IG-09]. Coaching agresivo debe ser opcional, no por defecto.
+4. **Precio sensible** — Gen Z no paga $5 sin justificación excepcional. Cualquier modelo de monetización debe respetar rango $0-3 o demostrar valor extraordinario. [IG-11, IG-14, IG-23]
 
-- [ ] How to reconcile social banking vision with user privacy concerns? (CF-03 — needs user research)
-- [ ] What monetization model works if $5 subscription fails? (CF-04 — needs freemium benchmarks)
-- [ ] What is the Stark API approval timeline? Can real-time feeds be unblocked sooner? (CF-01 — flagged for CTO + Product)
-- [ ] When is the Flutter migration milestone relative to PMF? What triggers it? (CF-02 — needs CEO input on criteria)
-- [ ] How to address trust barrier for bank account linking? No research planned yet. (IG-12)
+## Preguntas Abiertas
+
+### Escaladas (requieren decisión de stakeholders)
+- [ ] CF-02: CEO + CTO — ¿Aceptar Cordova para MVP o retrasar lanzamiento por app nativa? Definir milestone de migración post-PMF.
+- [ ] CF-03: Product + UX Lead — Redefinir "social" como opt-in vs broadcast. Privacy-by-default como principio de diseño.
+- [ ] CF-05: Product — Definir alcance de "gestión financiera" en la app. Si NeoWallet evita spreadsheets complejos, mobile-only funciona.
+- [ ] CF-06: Product + UX — IA configurable (modo agresivo opt-in vs silencioso por defecto). Dos personalidades como feature.
+
+### Investigación necesaria
+- [ ] CF-01: Patrones de UX para feeds con datos retrasados (T+2). Casos de éxito con estados "pendiente".
+- [ ] CF-04: Benchmarks freemium en fintech, tasas de conversión, ARPU de competidores, elasticidad de precio.
+
+### Brechas de evidencia
+- [ ] Confianza/seguridad — Solo una fuente menciona barrera de vincular cuenta principal. Entrevistas focalizadas en seguridad percibida.
+- [ ] Retención — Sin datos de churn ni retención a largo plazo. Análisis de cohortes de competidores.
+- [ ] Regulación fintech — Solo PCI-DSS conocido. Consulta con legal sobre licencias bancarias, KYC/AML.
+- [ ] TAM — Sin sizing del mercado objetivo. Análisis TAM/SAM/SOM para finanzas sociales Gen Z.
