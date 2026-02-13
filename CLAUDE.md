@@ -131,10 +131,11 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── PRD.html               Product Requirements Document
 │   └── _README.md            Layer rules for users
 ├── docs/
+│   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
-│   └── FRAMEWORK.md           Full methodology documentation
+│   ├── FRAMEWORK.md           Full methodology documentation
+│   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
 ├── CLAUDE.md                  This file
-├── BACKLOG.md                 Future work proposals
 └── README.md                  Project overview
 ```
 

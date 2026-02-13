@@ -156,10 +156,11 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 │   ├── PRD.html                  Product Requirements Document
 │   └── _README.md               Layer rules
 ├── docs/
+│   ├── BACKLOG.md                Future work proposals
 │   ├── CHANGELOG.md              Internal change log (PD-Spec development)
-│   └── FRAMEWORK.md              Full methodology reference
+│   ├── FRAMEWORK.md              Full methodology reference
+│   └── PD_BUILD_NOTES.md        PD-Build architecture & design notes
 ├── CLAUDE.md                     AI agent protocol
-├── BACKLOG.md                    Future work proposals
 └── README.md                     This file
 ```
 
