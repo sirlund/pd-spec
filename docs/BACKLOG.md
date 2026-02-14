@@ -682,6 +682,261 @@ An insight about UX pain carries more weight when voiced by end-users. A pricing
 
 ---
 
+## [BL-12] Research Dashboard — STATUS.html Redesign (v0)
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related:** BL-08 (merge /status into /analyze), BL-11 (convergence), QA-27 (performance)
+**Supersedes:** BL-08 (this is the full vision; BL-08 was the initial idea)
+
+### The gap
+
+STATUS.html is currently a flat inventory — lists of insight IDs grouped by technical category (business/technical/user-need) that tell the user nothing without opening INSIGHTS_GRAPH.md. It's a state report, not a working tool. The user needs a **research dashboard** that tells the story, enables decisions, and serves as the bridge between analysis and output generation.
+
+### Vision
+
+STATUS.html becomes the **internal master output** — the workbench where the team:
+1. Understands what the research found (narrative, not IDs)
+2. Makes decisions (approve/reject insights, resolve conflicts, confirm convergences)
+3. Generates prompts for downstream skills (/synthesis, /ship)
+4. Tracks progress (what's been processed, what's missing)
+
+Future: mini webapp with dynamic capabilities (live updates, API backend, persistent decisions).
+
+### Architecture: Static template + JSON data
+
+```
+03_Outputs/
+├── status/
+│   ├── index.html          ← Template (never regenerated)
+│   ├── style.css            ← Styles (fixed)
+│   ├── app.js               ← Logic: reads JSON, renders modules, handles actions
+│   └── data.json            ← The ONLY thing the agent writes
+```
+
+The template is **content-agnostic**. It knows how to render all module types. The agent decides which modules to use and in what order via JSON. The agent also decides the narrative grouping — "Problemas UX" in one project could be "Deuda Técnica" in another. No fixed themes.
+
+### Module catalog
+
+| Module | What it renders | Interactive? |
+|---|---|---|
+| `summary-cards` | Big counters (insights, conflicts, sources, % processed) | No |
+| `narrative` | Rich text with [IG-XX] refs inline (executive summary, context) | No |
+| `card-grid` | Grid of insight cards grouped by theme — claim visible, source ref, badge | Yes — approve/reject, add context |
+| `conflicts` | Conflict cards with resolution options | Yes — radio buttons, textarea |
+| `convergences` | (future) Insights grouped by convergence ratio % | Yes — confirm/split/merge |
+| `timeline` | Vertical timeline with events + refs | No |
+| `actors` | Map of people/roles mentioned in sources | No |
+| `evidence-gaps` | Gaps with severity + suggested next step | No |
+| `source-progress` | Progress bars per folder + collapsible file list | No |
+| `action-bar` | Prompt generator for /synthesis or /ship | Yes — generates copyable prompt |
+
+### JSON structure
+
+```json
+{
+  "meta": {
+    "project": "TIMining",
+    "generated": "2026-02-14T13:05",
+    "last_session": "2026-02-14T11:14",
+    "counts": { "insights": 115, "conflicts": 6, "sources": 54 }
+  },
+  "sidebar": [
+    { "id": "resumen", "label": "Resumen" },
+    { "id": "problemas-ux", "label": "Problemas UX" },
+    { "id": "vision-core", "label": "Visión CORE" },
+    { "id": "conflicts", "label": "Conflictos" },
+    { "id": "timeline", "label": "Timeline" },
+    { "id": "gaps", "label": "Gaps" },
+    { "id": "sources", "label": "Fuentes" }
+  ],
+  "sections": [
+    {
+      "id": "resumen",
+      "type": "narrative",
+      "title": "Resumen Ejecutivo",
+      "content": "TIMining es una plataforma de software...",
+      "refs": ["IG-40", "IG-91"]
+    },
+    {
+      "id": "problemas-ux",
+      "type": "card-grid",
+      "title": "Problemas de UX y Adopción",
+      "summary": "12 insights confirman fricción significativa...",
+      "cards": [
+        {
+          "id": "IG-05",
+          "status": "VERIFIED",
+          "category": "user-need",
+          "claim": "Los tiempos de actualización de Aware son confusos...",
+          "source": "entrevistas operaciones/analisis reu con operaciones.md",
+          "quote": "camiones real-time, mapas 3h, indicadores 30min..."
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "type": "timeline",
+      "title": "Timeline del Proyecto",
+      "events": [
+        { "date": "2023", "event": "Pivote arquitectónico", "refs": ["IG-88"] },
+        { "date": "Ene 2026", "event": "Workshop 1 + entrevistas", "refs": ["IG-40"] }
+      ]
+    }
+  ]
+}
+```
+
+### Agent vs Template responsibilities
+
+| Responsibility | Who decides |
+|---|---|
+| Which sections to include | **Agent** (via JSON `sections[]`) |
+| How to name/group themes | **Agent** (no fixed themes — context-dependent) |
+| Which module type per section | **Agent** (chooses `narrative`, `card-grid`, `timeline`, etc.) |
+| Narrative summary text | **Agent** (generated text in JSON) |
+| Section order | **Agent** (array order) |
+| How to render each module | **Template** (fixed HTML/CSS/JS) |
+| Sidebar navigation | **Template** (auto-generated from `sidebar[]`) |
+| Interactions (approve/reject/flag) | **Template** (fixed JS, generates prompts) |
+| Styles, layout, responsive | **Template** (fixed CSS) |
+| Cross-referencing between cards | **Template** (fixed JS, anchor navigation) |
+
+### Wireframe: sidebar + content
+
+```
+┌──────────────┬──────────────────────────────────┐
+│              │                                  │
+│  TIMining    │  [Active section content]        │
+│  ──────────  │                                  │
+│              │                                  │
+│  ● Resumen   │                                  │
+│  ○ Problemas │                                  │
+│  ○ Visión    │                                  │
+│  ○ Negocio   │                                  │
+│  ○ Conflictos│                                  │
+│  ○ Timeline  │                                  │
+│  ○ Actores   │                                  │
+│  ○ Gaps      │                                  │
+│  ○ Fuentes   │                                  │
+│              │                                  │
+│  ──────────  │                                  │
+│  115 insights│                                  │
+│  6 conflicts │                                  │
+│  24% sources │                                  │
+│              │                                  │
+│  [Generar    │                                  │
+│   prompt]    │                                  │
+│              │                                  │
+└──────────────┴──────────────────────────────────┘
+```
+
+### Key design changes from current STATUS.html
+
+| Current | Proposed |
+|---|---|
+| Insights grouped by technical category (business/technical/user-need) | Grouped by **narrative theme** (agent decides per project) |
+| Only IDs listed | **Claim visible** in each card, IDs as secondary reference |
+| "Key Findings" manually curated | Executive summary generated from insights, traceable |
+| No timeline | Timeline reconstructed from source dates |
+| No actors | Map of who said what |
+| Sources as checklist | **Progress bar** with % processed |
+| Flat dashboard | Sidebar navigation, narrative first, detail on demand |
+| Separate tool from analysis | **Decision point** — resolve conflicts, approve insights, then generate outputs |
+
+### Implementation checklist
+
+- [ ] Design and build static template (index.html + style.css + app.js)
+- [ ] Define JSON schema for `data.json`
+- [ ] Implement all module renderers in app.js
+- [ ] Implement sidebar navigation (auto-generated from JSON)
+- [ ] Implement interactive modules (approve/reject, conflict resolution, prompt generator)
+- [ ] Update `/analyze` SKILL.md to generate `data.json` as final step
+- [ ] Update `/synthesis` SKILL.md to regenerate `data.json` as final step
+- [ ] Remove or alias `/status` skill (dashboard is now part of /analyze and /synthesis output)
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Add CHANGELOG entry
+- [ ] Test with TIMining data on test branch
+
+---
+
+## [BL-13] `/analyze` — Automatic Research Brief
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related:** BL-12 (research dashboard)
+
+### The gap
+
+After `/analyze` runs, the user has 115 atomic insights and 6 conflicts but no narrative understanding of what was found. The user has to manually ask "give me a summary" to get the picture. The agent should automatically generate a research brief as part of the analysis output.
+
+### What the brief includes
+
+1. **Executive summary** — 3-5 paragraphs: what the project is about, what we found, what's missing
+2. **Thematic grouping** — insights organized by narrative themes (what's broken, what to improve, what to add, what works well), not by technical category
+3. **Timeline** — reconstructed from dates in source files and events mentioned in insights
+4. **Actor map** — who said what, roles, relationships between stakeholders
+5. **Evidence gaps** — what sources are missing + suggested next steps (interviews, benchmarks, analytics export, etc.)
+
+### Architecture fit
+
+This is NOT a separate skill or output file. It's **data generated into the JSON** that feeds BL-12's research dashboard:
+
+- The `narrative` sections in `data.json` contain the brief
+- The `timeline` section contains the reconstructed timeline
+- The `actors` section contains the actor map
+- The `evidence-gaps` section contains gaps + suggestions
+
+The brief lives inside the dashboard, not as a separate deliverable.
+
+### Implementation checklist
+
+- [ ] Add brief generation as final step of `/analyze` Phase 4
+- [ ] Define narrative grouping logic (agent proposes themes based on content)
+- [ ] Add timeline reconstruction from source metadata dates
+- [ ] Add actor extraction from source participants/mentions
+- [ ] Add evidence gap analysis with next step suggestions
+- [ ] All brief content written to `data.json` (BL-12 schema)
+
+---
+
+## [BL-14] `/extract` — Source Processing Progress Indicator
+
+**Status:** Proposed
+**Priority:** Medium
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related:** BL-07 (/extract skill)
+
+### The gap
+
+When `/extract` processes sources, there's no visibility into how much has been processed. With 54+ files across 6 folders, the user doesn't know if the agent read 10% or 90% of the available material.
+
+### What changes
+
+`/extract` tracks and reports processing progress:
+
+- **Per-folder progress:** `Workshop 1: 3/28 files (11%)` — including binary files described in _CONTEXT.md
+- **Overall progress:** `13/54 files processed (24%)`
+- **Written to data.json** as `source-progress` module for the research dashboard (BL-12)
+- **Reported in conversation** during extraction: "Processed 13/54 files (24%). 41 files pending — 26 are workshop photos, 6 PDFs, 3 PowerPoints."
+
+### Architecture fit
+
+- Change to `/extract` SKILL.md (BL-07) — add progress tracking
+- Progress data written to `data.json` for BL-12 dashboard
+- `source-progress` module in dashboard shows progress bars per folder
+
+### Implementation checklist
+
+- [ ] Add file counting to `/extract` discovery phase
+- [ ] Track processed vs total per folder
+- [ ] Report progress in conversation output
+- [ ] Write progress data to `data.json` for dashboard
+
+---
+
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
 
 Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)
