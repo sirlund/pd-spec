@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD-Spec Status — TIMining</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #111;
+      background: #fff;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .meta {
+      color: #666;
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .cards {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1;
+      min-width: 200px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 1.25rem;
+    }
+
+    .card .count {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .card .label {
+      font-size: 0.875rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .card .breakdown {
+      font-size: 0.75rem;
+      color: #999;
+      line-height: 1.4;
+    }
+
+    .card.has-pending {
+      border-color: #ffd700;
+    }
+
+    details {
+      border-top: 1px solid #e0e0e0;
+      padding: 1rem 0;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+      list-style: none;
+    }
+
+    summary::before {
+      content: '▸ ';
+      color: #999;
+    }
+
+    details[open] summary::before {
+      content: '▾ ';
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-verified {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-invalidated {
+      background: #f8d7da;
+      color: #721c24;
+      text-decoration: line-through;
+    }
+
+    .badge-flagged {
+      background: #ffc107;
+      color: #111;
+    }
+
+    .badge-resolved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .insight-card {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .insight-card:last-child {
+      border-bottom: none;
+    }
+
+    .insight-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      flex-wrap: wrap;
+    }
+
+    .insight-id {
+      font-weight: 600;
+      color: #444;
+      min-width: 55px;
+    }
+
+    .insight-cat {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    .insight-claim {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .insight-source {
+      margin-top: 0.5rem;
+    }
+
+    .source-ref {
+      color: #666;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .insight-source blockquote {
+      margin: 0.5rem 0 0 1rem;
+      padding: 0.5rem 0.75rem;
+      border-left: 3px solid #e0e0e0;
+      background: #fafafa;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .conflict-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .conflict-card.resolved {
+      border-color: #28a745;
+      background: #f8fff9;
+    }
+
+    .conflict-card.flagged {
+      border-color: #ffc107;
+      background: #fffef8;
+    }
+
+    .conflict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .conflict-id {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .conflict-tension {
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
+      color: #333;
+    }
+
+    .conflict-refs {
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 0.5rem;
+    }
+
+    .conflict-resolution {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f9f9f9;
+      border-left: 3px solid #28a745;
+      font-size: 0.85rem;
+      color: #155724;
+    }
+
+    .action-bar {
+      margin-top: 2rem;
+      padding: 1.25rem;
+      border: 1px solid #111;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+
+    .action-bar h2 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .generate-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.75rem;
+    }
+
+    .generate-btn:hover {
+      background: #333;
+    }
+
+    .highlight-box {
+      margin: 0.75rem 0;
+      padding: 0.75rem;
+      background: #fffef8;
+      border-left: 3px solid #ffc107;
+      font-size: 0.85rem;
+    }
+
+    @media print {
+      details[open]>summary {
+        display: none;
+      }
+
+      .action-bar,
+      .generate-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>PD-Spec Status — TIMining</h1>
+  <div class="meta">Generado 2026-02-14 13:05 · Última sesión: 2026-02-14T11:14</div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="count">115</div>
+      <div class="label">Insights</div>
+      <div class="breakdown">115 VERIFIED<br>0 PENDING<br>0 INVALIDATED</div>
+    </div>
+    <div class="card has-pending">
+      <div class="count">6</div>
+      <div class="label">Conflictos</div>
+      <div class="breakdown">2 FLAGGED<br>4 RESOLVED</div>
+    </div>
+    <div class="card">
+      <div class="count">54</div>
+      <div class="label">Fuentes</div>
+      <div class="breakdown">6 carpetas<br>13 procesadas<br>6 _CONTEXT.md</div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Insights (115 totales, todos VERIFIED)</summary>
+    <div style="padding: 1rem 0; font-size: 0.85rem; color: #666;">
+      Todos los 115 insights fueron verificados. Para ver el detalle completo, revisar
+      <code>02_Work/INSIGHTS_GRAPH.md</code>.
+      <br><br>
+      <strong>Breakdown por categoría:</strong>
+      <ul style="margin: 0.5rem 0 0 1.5rem;">
+        <li><strong>Business (36):</strong> IG-02, IG-04, IG-10, IG-20, IG-22, IG-31-35, IG-40-41, IG-43, IG-46, IG-49,
+          IG-53, IG-57, IG-60-62, IG-65, IG-84-98, IG-100-102, IG-105, IG-107-110, <strong>IG-115</strong></li>
+        <li><strong>Technical (31):</strong> IG-01, IG-11, IG-13-18, IG-36-37, IG-44, IG-54, IG-58, IG-63-64, IG-66-75,
+          IG-95-96, IG-104, <strong>IG-113</strong></li>
+        <li><strong>User-need (44):</strong> IG-03, IG-05-09, IG-12, IG-19, IG-21, IG-24-30, IG-38-39, IG-42, IG-47-48,
+          IG-50, IG-55-56, IG-59, IG-76-83, IG-99, IG-103, IG-106, <strong>IG-112, IG-114</strong></li>
+        <li><strong>Constraint (4):</strong> IG-23, IG-45, IG-51-52, <strong>IG-111</strong></li>
+      </ul>
+
+      <div class="highlight-box">
+        <strong>🎯 Insights Críticos Recientes (IG-111 a IG-115):</strong><br>
+        5 insights agregados documentando el <strong>GAP entre producto actual y visión CORE</strong>: Los 20 casos de
+        uso del Workshop son 70-80% aspiracionales (capacidades deseadas futuras), NO producto actual. Producto actual
+        tiene problemas UX, alta carga consultiva (30-36h), dependencia WhatsApp. Visión CORE = plataforma multimodal +
+        AI copilot proactivo.
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Conflictos (6 totales: 2 FLAGGED, 4 RESOLVED)</summary>
+
+    <div class="conflict-card flagged">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-01 · Aware independiente vs necesita Orchestra</span>
+        <span class="badge badge-flagged">FLAGGED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-02, IG-34</div>
+      <div class="conflict-tension">
+        Centinela compró 5 licencias Orchestra y dejaron Aware diciendo "no es gemelo", pero evidencia muestra que Aware
+        solo no puede justificar valor sin cuantificar impacto.
+      </div>
+      <div class="conflict-resolution">
+        <strong>→ Escalado a Sales + Product</strong><br>
+        Definir bundles obligatorios vs opcionales según segmento cliente.
+      </div>
+    </div>
+
+    <div class="conflict-card flagged">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-02 · Customización como valor vs riesgo</span>
+        <span class="badge badge-flagged">FLAGGED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-08, IG-22, IG-23, IG-36, IG-37, IG-39</div>
+      <div class="conflict-tension">
+        Cada faena requiere customización (métodos extracción, regulaciones) pero genera complejidad, riesgo de romper
+        configuraciones, y features que no se usan.
+      </div>
+      <div class="conflict-resolution">
+        <strong>→ Escalado a CEO + CTO</strong><br>
+        Definir trade-off customización-estabilidad y límites configuración por tier de producto.
+      </div>
+    </div>
+
+    <div class="conflict-card resolved">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-03 · Orchestra difícil de usar vs tiene buenos usuarios</span>
+        <span class="badge badge-resolved">RESOLVED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-09, IG-11, IG-12</div>
+      <div class="conflict-resolution">
+        <strong>✓ Resolución:</strong> Orchestra será descontinuada/reemplazada por agente IA (Project TIM Phase 7
+        2026). Tensión se disuelve con transición tecnológica.
+      </div>
+    </div>
+
+    <div class="conflict-card resolved">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-04 · Ventaja competitiva vs amenaza competidores</span>
+        <span class="badge badge-resolved">RESOLVED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-13, IG-14, IG-15, IG-46</div>
+      <div class="conflict-resolution">
+        <strong>✓ Resolución:</strong> Amenaza externa es motivo para acelerar innovación TIMining. No es conflicto
+        interno sino urgencia estratégica.
+      </div>
+    </div>
+
+    <div class="conflict-card resolved">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-05 · Interfaces mejores que industria vs problemas adopción</span>
+        <span class="badge badge-resolved">RESOLVED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-03, IG-06, IG-07</div>
+      <div class="conflict-resolution">
+        <strong>✓ Resolución:</strong> Vara de UX minera está baja. No debería ser consuelo. Con poco se mejora mucho la
+        experiencia.
+      </div>
+    </div>
+
+    <div class="conflict-card resolved">
+      <div class="conflict-header">
+        <span class="conflict-id">CF-06 · Valor en números nuevos vs validar existentes</span>
+        <span class="badge badge-resolved">RESOLVED</span>
+      </div>
+      <div class="conflict-refs">Refs: IG-50</div>
+      <div class="conflict-resolution">
+        <strong>✓ Resolución:</strong> Mostrar números nuevos que no ven, no gastar tiempo igualando con los suyos.
+        Estrategia "valor nuevo" sobre "validación".
+      </div>
+    </div>
+
+  </details>
+
+  <details>
+    <summary>Organización de Fuentes</summary>
+    <div style="padding: 1rem 0; font-size: 0.875rem;">
+      <p><strong>✅ Completado:</strong></p>
+      <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+        <li>54 archivos catalogados en 6 carpetas</li>
+        <li>6 archivos <code>_CONTEXT.md</code> creados (Antecedentes, Workshop 1, Visión Futuro, Propuesta ruta,
+          Entrevistas Operaciones, Root)</li>
+        <li>4 archivos markdown leídos completamente</li>
+        <li>6 archivos Word convertidos y procesados (textutil)</li>
+        <li>3 interview maps (PNG) analizadas</li>
+      </ul>
+      <p style="margin-top: 1rem;"><strong>⚠️ Pendiente (opcional):</strong></p>
+      <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.8;">
+        <li>3 PowerPoints root (Benchmark, Sello Experiencia, Workshop 01 slides)</li>
+        <li>6 PDFs (branding, strategic positioning, Gemini exercises)</li>
+        <li>26 fotos workshop (whiteboards/sticky notes) - repetitivas con Word "Casos de Uso"</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>Hallazgos Clave</summary>
+    <div style="padding: 1rem 0; font-size: 0.875rem; line-height: 1.8;">
+      <ul style="margin: 0 0 0 1.5rem;">
+        <li><strong>⚠️ GAP CRÍTICO:</strong> Casos de uso Workshop son <strong>70-80% visión futura</strong> (IG-111 a
+          IG-115), NO producto actual</li>
+        <li><strong>$10M+ valor total</strong> capturado en 3 minas Chile, $6M en campaña única</li>
+        <li><strong>AI Copilot TIM:</strong> 15 interacciones documentadas (queries pull + alerts push) -
+          <em>parcialmente implementado</em></li>
+        <li><strong>"Efecto Suiza":</strong> integrador neutro donde OEMs que no se hablan SÍ integran con TIMining</li>
+        <li><strong>"Desplanificadómetro":</strong> métrica inexistente que usuarios necesitan sin saberlo</li>
+        <li><strong>~$5M ARR actual,</strong> target 80%+ growth 2026</li>
+        <li><strong>Roadmap 2040:</strong> IROC maduro, mine-plant unificado, lenguaje natural como interfaz nativa</li>
+        <li><strong>Riesgo:</strong> conocimiento concentrado "hoy mucho en Carlo"</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="action-bar">
+    <h2>Siguiente Paso</h2>
+    <p style="font-size: 0.875rem; color: #666; margin-bottom: 0.75rem;">
+      Estado actual: <strong>115 insights VERIFIED</strong>, 2 conflictos FLAGGED pendientes de decisión stakeholder, 4
+      conflictos RESOLVED.
+    </p>
+    <p style="font-size: 0.875rem; color: #111; font-weight: 500;">
+      ✅ Ready para generar deliverables con <code>/ship</code>
+    </p>
+  </div>
+
+</body>
+
+</html>

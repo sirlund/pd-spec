@@ -2,18 +2,18 @@
 
 ## Project Context
 
-- **Project:** PD-Spec (formerly ProductLM)
-- **Product:** The Strategy & Intelligence layer of ProductDesign OS — 3-layer architecture + Claude Code skills pipeline for turning research into traceable product decisions
+- **Project:** TIMining
+- **Product:** Innovacion & Minería 4.0
 - **Team:** Niklas Lundin
-- **Started:** 2025-02-09
+- **Started:** 2026-02-13
 
 ## Project Settings
 
 > Configured by `/kickoff`. Edit manually anytime.
 
-- **project_name:** [Set by /kickoff]
-- **output_language:** en
-- **one_liner:** [Set by /kickoff]
+- **project_name:** TIMining
+- **output_language:** es
+- **one_liner:** Innovacion & Minería 4.0
 
 **Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 

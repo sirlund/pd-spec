@@ -335,7 +335,7 @@ This makes PD-Spec outputs more robust regardless of whether PD-Build exists. Th
 
 ## [BL-06] Design Implications in SYSTEM_MAP — `/synthesis` Enhancement
 
-**Status:** Proposed
+**Status:** Implemented (verified in TIMining QA test, 2026-02-14)
 **Priority:** Medium
 **Proposed in:** v3.0 session (2025-02-13)
 
@@ -383,4 +383,172 @@ This makes every downstream deliverable (PRD, report, strategy, presentation) mo
 - [ ] Update `/ship` to include design implications in PRD module sections
 - [ ] Ensure implications reference their source insights
 - [ ] Add CHANGELOG entry
-- [ ] Test with a project that has verified insights across multiple categories
+- [x] Test with a project that has verified insights across multiple categories — TIMining QA test
+
+---
+
+## [BL-07] `/extract` — Dedicated Source Extraction Skill
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related QA:** QA-04a, QA-04b, QA-09, QA-12, QA-13
+
+### The gap
+
+`/analyze` currently does two unrelated jobs: (1) reading heterogeneous file types (md, docx, pdf, pptx, png, jpg) and converting them to text, and (2) extracting insights, cross-referencing, and detecting conflicts. The extraction step is slow, error-prone, and blocks the analytical work.
+
+### What it does
+
+A dedicated skill that reads ALL files in `01_Sources/`, converts each to normalized text, and writes the result to `_CONTEXT.md` files per folder. After `/extract`, every source is represented as readable text that `/analyze` can consume directly.
+
+### File type handling
+
+| Type | Method | Notes |
+|---|---|---|
+| `.md` | Already readable | No conversion needed |
+| `.docx` | `textutil -convert txt` (macOS) | Fallback: `pandoc` |
+| `.pdf` | Read tool with `pages` param | 20 pages per call, iterate for larger |
+| `.pptx` | `unzip -p file.pptx ppt/slides/slide*.xml` then strip XML tags | No external dependencies |
+| `.png/.jpg/.jpeg/.webp/.heic` | Read tool (multimodal) | ALL images read, no filtering |
+| `.xlsx/.csv` | Read tool or `textutil` | |
+| `.mp4/.mov` | Not processable | Suggest manual transcription |
+
+### Key principle
+
+If it's in `01_Sources/`, it gets read. No prioritization, no filtering. Workshop whiteboard photos are as important as markdown transcripts.
+
+### Output format
+
+Enriches existing `_CONTEXT.md` files following `_CONTEXT_TEMPLATE.md` format. For each file:
+
+```markdown
+### filename.png
+- **Format:** PNG image
+- **Extracted:** Whiteboard with 3 columns of sticky notes. Column 1 "KEEP":
+  datos real-time, alertas WhatsApp. Column 2 "STOP": 3D viewer, reportes PDF.
+  Column 3 "START": copiloto IA, recomendaciones proactivas.
+```
+
+### Pipeline change
+
+```
+Before: /kickoff → /analyze → /status → /synthesis → /ship
+After:  /kickoff → /extract → /analyze → /synthesis → /ship
+```
+
+`/extract` runs once per source batch. Re-run when new sources are added.
+
+### Architecture fit
+
+- **Reads:** `01_Sources/*` (all files)
+- **Writes:** `01_Sources/*/_CONTEXT.md` (enriched, not created from scratch)
+- **Does NOT write to:** `02_Work/` or `03_Outputs/`
+- Respects `01_Sources/` read-only mandate: file content unchanged, only `_CONTEXT.md` metadata added
+
+### Implementation checklist
+
+- [ ] Create `.claude/skills/extract/SKILL.md`
+- [ ] Define extraction rules per file type
+- [ ] Ensure `_CONTEXT_TEMPLATE.md` format compliance (QA-10)
+- [ ] Prohibit insight derivation in _CONTEXT.md (QA-11)
+- [ ] Add parallelization hints for independent file reads (QA-08)
+- [ ] Remove file reading logic from `/analyze` SKILL.md
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Update README
+- [ ] Add CHANGELOG entry
+
+---
+
+## [BL-08] Merge `/status` Into `/analyze` and `/synthesis` Output
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related QA:** QA-21, QA-27, QA-28, QA-29
+
+### The gap
+
+`/status` is a separate skill that reads the Work layer and generates `STATUS.html`. But it's always run immediately after `/analyze` or `/synthesis` — it's never useful on its own. Running it separately adds a step, wastes time (QA-27: 4-9 minutes), and the user has to remember to invoke it.
+
+### What changes
+
+1. **`/analyze` generates STATUS.html as its final step** — after writing insights and conflicts, it generates the dashboard automatically. The user sees results immediately.
+2. **`/synthesis` regenerates STATUS.html as its final step** — after updating statuses and system map, the dashboard reflects the new state.
+3. **`/status` is removed as a standalone skill** — or kept as an alias that just regenerates the dashboard without rerunning analysis.
+
+### Performance: data/template separation (QA-27 option C)
+
+To avoid slow HTML generation:
+1. `/analyze` and `/synthesis` write a `STATUS_DATA.json` file with structured insight/conflict/module data.
+2. `STATUS.html` is a **static template** that reads `STATUS_DATA.json` via `fetch()` or inline `<script>`.
+3. The template is written once and never regenerated. Only the JSON changes.
+
+This reduces generation from writing ~500 lines of HTML to writing ~100 lines of JSON.
+
+### Architecture fit
+
+- **STATUS.html** becomes a static file in `03_Outputs/` (template, not regenerated)
+- **STATUS_DATA.json** is the dynamic file written by `/analyze` and `/synthesis`
+- Eliminates `/status` as a separate skill entry point
+- Simplifies pipeline: `/extract` → `/analyze` (includes dashboard) → `/synthesis` (updates dashboard) → `/ship`
+
+### Implementation checklist
+
+- [ ] Design STATUS_DATA.json schema (insights, conflicts, modules, gaps, metadata)
+- [ ] Create static STATUS.html template that reads JSON
+- [ ] Add JSON generation as final step of `/analyze` SKILL.md
+- [ ] Add JSON regeneration as final step of `/synthesis` SKILL.md
+- [ ] Remove or deprecate `/status` SKILL.md
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Update README
+- [ ] Add CHANGELOG entry
+
+---
+
+## [BL-09] QA Fixes from TIMining Test — Skill Hardening
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Tracking:** Full details in `memory/QA_FINDINGS.md` (29 findings)
+
+### What this covers
+
+Bug fixes and improvements identified during real-world testing with TIMining data. These are changes to existing skills, not new features. Grouped by skill:
+
+#### `/analyze` fixes
+- **QA-03, QA-20:** Strengthen cross-reference step — add examples of tensions, look for user-need vs technical/business contradictions
+- **QA-05:** Require key quote per insight (1-2 sentences from source)
+- **QA-08:** Add parallelization hints for independent reads
+- **QA-14:** Reinforce atomic claims — "a list of 10 needs is 10 insights, not 1"
+- **QA-15:** Add granularity guidance — when to split vs consolidate
+- **QA-16:** Explicit format: `PENDING` not `**PENDING**`
+- **QA-17:** Formalize `## Section` headers as official grouping mechanism
+- **QA-19:** Every conflict side must reference `[IG-XX]`
+
+#### `/status` fixes (if kept as skill, or apply to template)
+- **QA-25:** Show source refs in insight detail
+- **QA-28:** Single-level approve/reject (no confusing group+individual hierarchy)
+- **QA-29:** Group summaries must synthesize implications, not list keywords
+
+#### `/synthesis` fixes
+- **QA-24:** Validate that argument IDs exist in INSIGHTS_GRAPH.md/CONFLICTS.md before executing
+
+#### `/kickoff` + CLAUDE.md fixes
+- **QA-06:** Eliminate redundancy between Project Context and Project Settings
+- **QA-07:** Template should use `[Set by /kickoff]` for Team field
+
+#### General
+- **QA-02:** Reinforce timestamp format in MEMORY.md writes
+- **QA-10:** _CONTEXT.md must follow _CONTEXT_TEMPLATE.md format
+- **QA-11:** Prohibit insight derivation in _CONTEXT.md (layer boundary)
+
+### Implementation checklist
+
+- [ ] Apply all /analyze fixes to SKILL.md
+- [ ] Apply /status fixes to SKILL.md or static template
+- [ ] Apply /synthesis validation fix
+- [ ] Apply /kickoff + CLAUDE.md template fixes
+- [ ] Apply general fixes across skills
+- [ ] Regression test with TIMining data on clean branch
