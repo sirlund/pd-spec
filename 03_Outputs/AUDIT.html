@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Audit — TIMining CORE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #111;
+        }
+
+        body {
+            background: #F0F2F5;
+            padding: 2rem 1rem;
+        }
+
+        .page {
+            max-width: 21cm;
+            margin: 0 auto;
+            background: white;
+            padding: 2.54cm;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        p {
+            margin: 0.75rem 0;
+        }
+
+        ul,
+        ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.25rem 0;
+        }
+
+        .doc-meta {
+            background: #f9f9f9;
+            border-left: 4px solid #666;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .doc-meta strong {
+            color: #111;
+        }
+
+        .strength {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .strength h4 {
+            color: #2e7d32;
+            margin: 0 0 0.5rem;
+        }
+
+        .weakness {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .weakness h4 {
+            color: #c62828;
+            margin: 0 0 0.5rem;
+        }
+
+        .opportunity {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .opportunity h4 {
+            color: #1565c0;
+            margin: 0 0 0.5rem;
+        }
+
+        .threat {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .threat h4 {
+            color: #e65100;
+            margin: 0 0 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+        }
+
+        td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .priority-high {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .priority-medium {
+            color: #f57c00;
+            font-weight: 600;
+        }
+
+        .priority-low {
+            color: #388e3c;
+            font-weight: 600;
+        }
+
+        .ref-link {
+            color: #555;
+            text-decoration: none;
+            border-bottom: 1px dotted #999;
+        }
+
+        .ref-link:hover {
+            color: #111;
+            border-bottom-color: #111;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .page {
+                box-shadow: none;
+                padding: 1cm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="doc-meta">
+            <strong>v1.0</strong> · Generado 2026-02-14 · PD-Spec snapshot: 115 insights (115 VERIFIED), 6 conflictos
+            <details>
+                <summary>Document changelog</summary>
+                <ul>
+                    <li><strong>v1.0 (2026-02-14):</strong> Versión inicial. Product Audit completo con análisis SWOT,
+                        identificación de gaps críticos, evaluación de conflictos, y recomendaciones priorizadas.</li>
+                </ul>
+            </details>
+        </div>
+
+        <h1>Product Audit — TIMining CORE</h1>
+        <p><strong>Análisis Crítico de Producto: Fortalezas, Debilidades, Oportunidades y Amenazas</strong></p>
+        <p><em>Auditoría basada en 115 insights verificados con recomendaciones accionables priorizadas</em></p>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+
+        <h2>Resumen Ejecutivo</h2>
+
+        <p>TIMining posee una posición única en la industria minera con IP defensible ($10M+ valor capturado
+            documentado) pero enfrenta desafíos críticos de ejecución que limitan su potencial de escala. Este audit
+            identifica <strong>4 gaps críticos</strong> y <strong>2 conflictos estratégicos FLAGGED</strong> que
+            requieren decisión urgente de stakeholders.</p>
+
+        <p><strong>Veredicto:</strong> Producto con fundación sólida (IP, valor demostrado, "Efecto Suiza") pero riesgos
+            significativos en ejecución (UX adoption, fragmentación stack, concentración conocimiento). Ready para
+            escalar SI se resuelven conflictos FLAGGED y se ejecuta roadmap de unificación técnica.</p>
+
+        <h2>1. Fortalezas (Strengths)</h2>
+
+        <div class="strength">
+            <h4>✅ S1: IP Defensible — Real-Time Topography Inference</h4>
+            <p>Algoritmos propietarios que reconstruyen mina real-time desde datos existentes (sin hardware costoso como
+                drones/escáneres). Barrera de entrada: años de desarrollo multidisciplinario (Geotecnia + Operaciones +
+                Data Science). Competencia depende de hardware costoso.</p>
+            <p><strong>Impacto:</strong> Ventaja técnica de años vs competencia. Fundamental para futuro autónomo/IROC.
+            </p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-96]</p>
+        </div>
+
+        <div class="strength">
+            <h4>✅ S2: "Efecto Suiza" — Integrador Neutral</h4>
+            <p>Ventaja estructural defensible en industria de "jardines amurallados". Grandes OEMs (Caterpillar,
+                Komatsu, Hexagon) compiten entre sí y NO integran mutuamente, pero SÍ integran con TIMining. Contexto
+                unificado de datos que competidor verticalizado no puede replicar fácilmente.</p>
+            <p><strong>Impacto:</strong> Moat competitivo, ecosistema de integraciones que se auto-refuerza.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-91]</p>
+        </div>
+
+        <div class="strength">
+            <h4>✅ S3: Valor Capturado Documentado</h4>
+            <p><strong>$10M+</strong> en valor total agregado (3 minas Chile), <strong>$6M</strong> en campaña única
+                (Ene-May 2025). Métricas específicas: recuperación -15% → +7% accuracy Cu Fine en 1 mes, -2.4min cycle
+                time, +130 truck loads/día.</p>
+            <p><strong>Impacto:</strong> Proof-of-concept sólido para justificar pricing premium y expansion comercial.
+            </p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-61], [IG-62], [IG-63], [IG-64],
+                [IG-65], [IG-66]</p>
+        </div>
+
+        <div class="strength">
+            <h4>✅ S4: Adopción Bottom-Up Alta</h4>
+            <p>100+ usuarios activos mensuales por faena. Stickiness inusual para software minero: operación confía
+                porque resuelve dolores diarios. Tracción interna acelera acuerdos corporativos (efecto "leapfrog").</p>
+            <p><strong>Impacto:</strong> Validación product-market fit, reduce riesgo comercial.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-92]</p>
+        </div>
+
+        <div class="strength">
+            <h4>✅ S5: AI Copilot TIM (Parcialmente Implementado)</h4>
+            <p>15 interacciones reales documentadas con Google Gemini: queries lenguaje natural + alertas proactivas.
+                Ejemplos: reconciliación topográfica vs plan, alertas predictivas crusher idleness 15min antes,
+                geotechnical zone incursions real-time.</p>
+            <p><strong>Impacto:</strong> Diferenciador técnico, path claro hacia "Digital Co-Pilot" 2026.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-67]-[IG-75]</p>
+        </div>
+
+        <div class="strength">
+            <h4>✅ S6: Perfil Financiero Sólido</h4>
+            <p>~$5M ARR con márgenes altos, capital-efficient. Economics SaaS recurrente. Target 80%+ growth YoY 2026.
+                Transición exitosa: licencias → SaaS recurrente.</p>
+            <p><strong>Impacto:</strong> Fundación financiera para escalar globalmente.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-87], [IG-89]</p>
+        </div>
+
+        <h2>2. Debilidades (Weaknesses)</h2>
+
+        <div class="weakness">
+            <h4>❌ W1: Fragmentación de Stack Técnico</h4>
+            <p>Stack fragmentado: C++, Unity, Go, Python, web, email. No existe auth unificado. Cruces manuales de BD en
+                vez de APIs. Módulo "CORE Plataforma Unificada" está <strong>BLOCKED</strong> pendiente timeline
+                migración.</p>
+            <p><strong>Impacto:</strong> Dificulta escalabilidad, aumenta deuda técnica, ralentiza desarrollo nuevas
+                features.</p>
+            <p><strong>Riesgo:</strong> ALTO — Bloquea visión plataforma unificada.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-16], [IG-17], [IG-18]</p>
+        </div>
+
+        <div class="weakness">
+            <h4>❌ W2: Problemas de Adopción UX</h4>
+            <p>Usuarios abandonan Aware por confusión sobre timing de datos (GPS casi real-time vs mapas calor promedio
+                3h con desfase 30min). Capacitaciones largas iniciales → abandono. Orchestra solo 30% usa funciones
+                avanzadas — demasiado complejo.</p>
+            <p><strong>Impacto:</strong> Limita growth orgánico, requiere alta carga consultiva (30-36h/renovación).</p>
+            <p><strong>Riesgo:</strong> MEDIO-ALTO — Afecta stickiness y reduce adopción potencial.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-05], [IG-06], [IG-09], [IG-104]</p>
+        </div>
+
+        <div class="weakness">
+            <h4>❌ W3: Concentración de Conocimiento</h4>
+            <p>Expertise técnico muy centralizado: "hoy mucho en Carlo". Riesgo de concentración de IP crítica en una
+                persona. No existe plan documentado de desconcentración ni knowledge transfer formal.</p>
+            <p><strong>Impacto:</strong> Riesgo operacional crítico, vulnerabilidad si persona clave sale.</p>
+            <p><strong>Riesgo:</strong> ALTO — Single point of failure técnico.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-110]</p>
+        </div>
+
+        <div class="weakness">
+            <h4>❌ W4: GAP Producto Actual vs Visión CORE</h4>
+            <p>20 casos de uso documentados en Workshop son <strong>70-80% aspiracionales (visión futura)</strong>, NO
+                producto actual. Producto actual: Aware/Orchestra con problemas UX, alta carga consultiva, dependencia
+                WhatsApp. Visión CORE: plataforma multimodal + AI copilot proactivo.</p>
+            <p><strong>Impacto:</strong> Expectativas clientes vs realidad pueden generar churn si no se maneja
+                comunicación.</p>
+            <p><strong>Riesgo:</strong> MEDIO — Requiere claridad en roadmap y messaging comercial.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-111], [IG-112]</p>
+        </div>
+
+        <div class="weakness">
+            <h4>❌ W5: Carga Consultiva Alta</h4>
+            <p>30-36h por renovación, 600h en proyectos grandes. Reduce márgenes y dificulta escala. Clientes se
+                acostumbran a soporte intensivo, generando dependencia.</p>
+            <p><strong>Impacto:</strong> Limita capacidad de atender más clientes simultáneamente, presión sobre equipo.
+            </p>
+            <p><strong>Riesgo:</strong> MEDIO — Bottleneck para escalar comercialmente.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-09], [IG-21]</p>
+        </div>
+
+        <h2>3. Oportunidades (Opportunities)</h2>
+
+        <div class="opportunity">
+            <h4>💡 O1: Pricing Realignment</h4>
+            <p>Oportunidad inmediata: realinear pricing de modelo "licencia software" a modelo "valor empresarial".
+                Desconexión actual entre precio y valor estratégico como "Fuente de la Verdad". Con $10M+ valor
+                documentado, pricing premium es justificable.</p>
+            <p><strong>Potencial:</strong> Capturar porción significativamente mayor de ahorros generados.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-94]</p>
+        </div>
+
+        <div class="opportunity">
+            <h4>💡 O2: Audiencia CFO No Explotada</h4>
+            <p>TIMining debería ser crítico para CFOs (asegurar cumplimiento plan de negocio = impacto directo P&L) pero
+                actualmente no se habla con ellos. Opportunity: desarrollar go-to-market para nivel C-suite financial.
+            </p>
+            <p><strong>Potencial:</strong> Elevar conversación comercial de nivel operacional a nivel estratégico/board.
+            </p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-49]</p>
+        </div>
+
+        <div class="opportunity">
+            <h4>💡 O3: IROC Market Positioning</h4>
+            <p>Futuro minería = remote + autónomo (IROC). TIMining tiene head start de años en real-time geometry
+                inference. Competencia aún depende de hardware costoso. Opportunity: posicionarse como infrastructure
+                provider indispensable.</p>
+            <p><strong>Potencial:</strong> Convertirse en estándar de facto para IROC implementations globalmente.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-97], [IG-98]</p>
+        </div>
+
+        <div class="opportunity">
+            <h4>💡 O4: Platform Rebrand + Global Go-to-Market (2026)</h4>
+            <p>Separar plataforma CORE de producto Aware. Messaging: "Operating Brain of the Digital Mine". Expansion
+                North America + Australia ya en marcha. Aggressive global GTM con rebranding puede acelerar growth.</p>
+            <p><strong>Potencial:</strong> 80%+ ARR growth target YoY 2026 es achievable con rebrand + GTM.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-87], [IG-88]</p>
+        </div>
+
+        <div class="opportunity">
+            <h4>💡 O5: Bundles Estratégicos</h4>
+            <p>Evidencia muestra que Aware solo no justifica valor sin cuantificación de Orchestra. Opportunity: definir
+                bundles obligatorios que maximicen valor percibido y aumenten ARPU.</p>
+            <p><strong>Potencial:</strong> Reducir churn de Aware standalone, aumentar attach rate Orchestra.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-02], [IG-34], [CF-01]</p>
+        </div>
+
+        <h2>4. Amenazas (Threats)</h2>
+
+        <div class="threat">
+            <h4>⚠️ T1: Competidores Grandes Apuntando Mismo Espacio</h4>
+            <p>Grandes vendors (OEMs, software houses) podrían desarrollar capacidades similares aprovechando recursos
+                masivos. TIMining tiene ventaja de años pero no es inexpugnable si competencia invierte agresivamente.
+            </p>
+            <p><strong>Mitigación:</strong> Acelerar innovación (AI Copilot, autonomía). Aprovechar head start IP + base
+                instalada.</p>
+            <p><strong>Severidad:</strong> MEDIA — Amenaza externa identificada pero TIMining tiene moat ("Efecto
+                Suiza").</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-46], [CF-04 RESOLVED]</p>
+        </div>
+
+        <div class="threat">
+            <h4>⚠️ T2: Industria Lenta y Conservadora</h4>
+            <p>Ciclos venta 1+ año. Punto de partida debe ser razonablemente bueno — en industria lenta con ciclos
+                largos, si se parte muy offside no dejan avanzar. Resistencia a cambio, aversión a riesgo.</p>
+            <p><strong>Mitigación:</strong> Proof-of-concept sólidos ($10M+ valor), referencias clientes, adoption
+                orgánica bottom-up.</p>
+            <p><strong>Severidad:</strong> MEDIA — Limita velocidad growth pero TIMining ya tiene track record.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-22], [IG-52]</p>
+        </div>
+
+        <div class="threat">
+            <h4>⚠️ T3: Customización "Homer Car" Risk</h4>
+            <p>Cada faena minera única (método extracción, regulaciones). Clientes piden customizaciones pero luego no
+                usan features ("auto de Homero Simpson"). Riesgo de complejidad descontrolada, bugs, mantenimiento
+                costoso.</p>
+            <p><strong>Mitigación:</strong> Definir límites customización por tier (CEO/CTO decision pending [CF-02]).
+            </p>
+            <p><strong>Severidad:</strong> ALTA — Ya está ocurriendo. Requiere decisión urgente.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-22], [IG-39], [CF-02 FLAGGED]</p>
+        </div>
+
+        <div class="threat">
+            <h4>⚠️ T4: Deuda Técnica Puede Paralizar Innovación</h4>
+            <p>Stack fragmentado (C++/Unity/Go/Python) + cruces manuales BD + no auth unificado. Si no se resuelve,
+                puede llegar a punto donde agregar features nuevas es prácticamente imposible sin refactor masivo.</p>
+            <p><strong>Mitigación:</strong> Timeline migración hacia plataforma unificada (Módulo CORE blocked -
+                requiere decisión).</p>
+            <p><strong>Severidad:</strong> ALTA — Bloqueante para visión 2026-2040.</p>
+            <p class="ref-link" style="font-size: 0.85rem; margin-top: 0.5rem;">[IG-16], [IG-58]</p>
+        </div>
+
+        <h2>5. Conflictos Críticos FLAGGED</h2>
+
+        <p>2 conflictos estratégicos detectados requieren decisión urgente de stakeholders. Están bloqueando roadmap.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Conflicto</th>
+                    <th>Escalado a</th>
+                    <th>Impacto si NO se resuelve</th>
+                    <th>Refs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>[CF-01]</strong></td>
+                    <td><strong>Bundles Aware/Orchestra: ¿obligatorios o opcionales?</strong><br>Centinela dejó Aware
+                        ("no es gemelo") y solo compró Orchestra. Evidencia muestra Aware solo no justifica valor sin
+                        cuantificación Orchestra.</td>
+                    <td>Sales + Product</td>
+                    <td>Continuar perdiendo clientes que compran solo 1 producto, churn alto Aware standalone, confusión
+                        comercial sobre propuesta valor.</td>
+                    <td>[IG-02], [IG-34]</td>
+                </tr>
+                <tr>
+                    <td><strong>[CF-02]</strong></td>
+                    <td><strong>Customización: ¿límites por tier?</strong><br>Cada faena requiere customización pero
+                        genera "Homer car" (features no usadas, complejidad, riesgo bugs).</td>
+                    <td>CEO + CTO</td>
+                    <td>Complejidad descontrolada, bugs recurrentes, mantenimiento insostenible, features que nadie usa,
+                        fricción cliente esperando customizaciones imposibles.</td>
+                    <td>[IG-08], [IG-22], [IG-23], [IG-36], [IG-37], [IG-39]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>6. Recomendaciones Priorizadas</h2>
+
+        <h3>🔴 Prioridad CRÍTICA (Q1 2026)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Recomendación</th>
+                    <th>Razón</th>
+                    <th>Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="priority-high">R1</td>
+                    <td><strong>Resolver CF-01 (Bundles)</strong></td>
+                    <td>Bloqueando estrategia comercial. Churn Aware standalone. Urgente definir bundles obligatorios vs
+                        opcionales.</td>
+                    <td>Sales + Product</td>
+                </tr>
+                <tr>
+                    <td class="priority-high">R2</td>
+                    <td><strong>Resolver CF-02 (Customización)</strong></td>
+                    <td>"Homer car" risk ya materializado. Definir límites customización por tier ANTES de agregar más
+                        clientes.</td>
+                    <td>CEO + CTO</td>
+                </tr>
+                <tr>
+                    <td class="priority-high">R3</td>
+                    <td><strong>Plan Desconcentración Conocimiento</strong></td>
+                    <td>Single point of failure ("Carlo"). Documentar IP crítica, knowledge transfer formal, succession
+                        plan.</td>
+                    <td>CTO + People</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🟠 Prioridad ALTA (Q2 2026)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Recomendación</th>
+                    <th>Razón</th>
+                    <th>Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="priority-medium">R4</td>
+                    <td><strong>Timeline Migración Stack Unificado</strong></td>
+                    <td>Módulo CORE blocked. Definir roadmap técnico hacia plataforma coherente (auth unificado, APIs,
+                        eliminar cruces manuales BD).</td>
+                    <td>CTO + Engineering</td>
+                </tr>
+                <tr>
+                    <td class="priority-medium">R5</td>
+                    <td><strong>UX Quick Wins</strong></td>
+                    <td>Transparencia timing datos, capacitación in-app, métricas por turno. Relatively low effort, high
+                        impact adopción.</td>
+                    <td>Product + UX</td>
+                </tr>
+                <tr>
+                    <td class="priority-medium">R6</td>
+                    <td><strong>Pricing Realignment</strong></td>
+                    <td>$10M+ valor documentado justifica pricing premium. Shift de "licencia" a "valor empresarial".
+                    </td>
+                    <td>CEO + Sales</td>
+                </tr>
+                <tr>
+                    <td class="priority-medium">R7</td>
+                    <td><strong>Estrategia CFO</strong></td>
+                    <td>Audiencia no explotada. Elevar conversación comercial de operacional a estratégico/board level.
+                    </td>
+                    <td>Sales + Marketing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>🟢 Prioridad MEDIA (H2 2026)</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Recomendación</th>
+                    <th>Razón</th>
+                    <th>Owner</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="priority-low">R8</td>
+                    <td><strong>Platform Rebrand</strong></td>
+                    <td>Separar CORE de Aware. Messaging "Operating Brain". Acceleration 80%+ growth target.</td>
+                    <td>CEO + Marketing</td>
+                </tr>
+                <tr>
+                    <td class="priority-low">R9</td>
+                    <td><strong>Desplanificadómetro MVP</strong></td>
+                    <td>Métrica identificada en retrospectiva — medir desvío acumulado real-time desde t0. Quick win UX.
+                    </td>
+                    <td>Product</td>
+                </tr>
+                <tr>
+                    <td class="priority-low">R10</td>
+                    <td><strong>AI Copilot Expansion</strong></td>
+                    <td>Expandir de 15 interacciones actuales hacia casos de uso críticos Workshop. Diferenciador
+                        técnico.</td>
+                    <td>Product + Engineering</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>7. Conclusión</h2>
+
+        <p><strong>Veredicto Final:</strong> TIMining tiene fundación sólida (IP defendible, $10M+ valor capturado,
+            "Efecto Suiza" como moat, ~$5M ARR) pero está en punto de inflexión crítico.</p>
+
+        <p><strong>Path Forward tiene 2 opciones:</strong></p>
+
+        <ol>
+            <li><strong>Opción A — Escalar Rápido:</strong> Resolver CF-01 y CF-02, ejecutar migración stack unificado,
+                realinear pricing, rebrand CORE, target 80%+ growth 2026. <strong>Requiere decisiones urgentes Q1
+                    2026.</strong></li>
+            <li><strong>Opción B — Status Quo:</strong> Continuar con portfolio fragmentado, customizaciones ad-hoc,
+                carga consultiva alta. <strong>Riesgo: paralizar innovación por deuda técnica, perder ventana IROC
+                    market, competitors cierran gap.</strong></li>
+        </ol>
+
+        <p><strong>Recomendación:</strong> Opción A. Ventana de oportunidad para liderar IROC market es limitada.
+            TIMining tiene años de ventaja pero debe ejecutar roadmap unificación + escala comercial en próximos 12-18
+            meses.</p>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+
+        <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 2rem;">
+            <em>Product Audit generado por PD-Spec · Basado en 115 insights verificados · v1.0 · 2026-02-14</em>
+        </p>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('p, li, td, .strength, .weakness, .opportunity, .threat').forEach(el => {
+            el.innerHTML = el.innerHTML.replace(/\[(IG-\d+|CF-\d+)\]/g, '<a href="STATUS.html#$1" class="ref-link">[$1]</a>');
+        });
+    </script>
+
+</body>
+
+</html>

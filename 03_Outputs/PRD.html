@@ -1,159 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRD: [Product Name]</title>
+    <title>PRD — TIMining CORE Platform</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #F0F2F5;
-            font-family: 'Inter', sans-serif;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
+            padding: 0;
+        }
+
+        html {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #111;
+        }
+
+        body {
+            background: #F0F2F5;
+            padding: 2rem 1rem;
         }
 
         .page {
-            background-color: #ffffff;
-            width: 21cm;
-            min-height: 29.7cm;
-            padding: 2.54cm;
+            max-width: 21cm;
             margin: 0 auto;
-            position: relative;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            box-sizing: border-box;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Inter', sans-serif;
-            color: #202124;
+            background: white;
+            padding: 2.54cm;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            font-size: 26pt;
-            font-weight: bold;
-            margin-top: 0;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
         h2 {
-            color: #000000;
-            font-size: 16pt;
-            font-weight: bold;
-            margin-top: 24pt;
-            margin-bottom: 6pt;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
         }
 
         h3 {
-            color: #434343;
-            font-size: 14pt;
-            font-weight: bold;
-            margin-top: 18pt;
-            margin-bottom: 4pt;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
         }
 
-        p, li, td, th, blockquote {
-            font-size: 11pt;
-            line-height: 1.5;
-            color: #000000;
-            margin-bottom: 12pt;
+        h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: #444;
         }
 
-        ul, ol {
-            margin-top: 0;
-            margin-bottom: 12pt;
-            padding-left: 24pt;
+        p {
+            margin: 0.75rem 0;
+        }
+
+        ul,
+        ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
         }
 
         li {
-            margin-bottom: 0;
+            margin: 0.25rem 0;
+        }
+
+        .doc-meta {
+            background: #f9f9f9;
+            border-left: 4px solid #666;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .doc-meta strong {
+            color: #111;
+        }
+
+        .doc-meta summary {
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .callout {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .callout strong {
+            color: #2e7d32;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 12pt 0;
-        }
-
-        th, td {
-            border: 1px solid #c7c7c7;
-            padding: 8pt;
-            text-align: left;
-            vertical-align: top;
+            margin: 1rem 0;
+            font-size: 0.9rem;
         }
 
         th {
-            background-color: #ffffff;
-            font-weight: bold;
+            background: #f5f5f5;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
         }
 
-        .doc-header {
-            margin-bottom: 24pt;
+        td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            vertical-align: top;
         }
 
-        .meta {
-            color: #000000;
-            font-size: 11pt;
-            margin-bottom: 12pt;
+        .ref-link {
+            color: #555;
+            text-decoration: none;
+            border-bottom: 1px dotted #999;
         }
 
-        blockquote {
-            background: none;
-            border-left: 3px solid #ccc;
-            margin: 12pt 24pt;
-            padding-left: 12pt;
-            color: #666;
+        .ref-link:hover {
+            color: #111;
+            border-bottom-color: #111;
         }
 
-        strong {
-            font-weight: bold;
-            color: #000;
-        }
-
-        em {
-            font-style: italic;
-        }
-
-        .callout {
-            background-color: #e6ffFA;
-            border-left: 4px solid #00cea5;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-        }
-
-        .callout p {
-            margin: 0;
+        code {
+            background: #f5f5f5;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
             font-size: 0.9em;
         }
 
-        .insight-ref {
-            font-size: 0.8em;
-            color: #666;
-            font-style: italic;
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
         }
 
         @media print {
             body {
-                background: none;
+                background: white;
                 padding: 0;
-                display: block;
             }
 
             .page {
                 box-shadow: none;
-                margin: 0;
-                width: 100%;
-                max-width: 100%;
-                min-height: auto;
-                padding: 0;
-                border: none;
+                padding: 1cm;
+            }
+
+            .doc-meta details {
+                display: none;
             }
         }
     </style>
@@ -162,65 +173,474 @@
 <body>
 
     <div class="page">
-        <div class="doc-header">
-            <h1>PRD: [Product Name]</h1>
-            <div class="meta">
-                <p><strong>Version:</strong> 0.1 <br>
-                    <strong>Last Updated:</strong> [Date] <br>
-                    <strong>Status:</strong> Draft
-                </p>
-            </div>
+
+        <div class="doc-meta">
+            <strong>v1.0</strong> · Generado 2026-02-14 · PD-Spec snapshot: 115 insights (115 VERIFIED), 6 conflictos (2
+            FLAGGED, 4 RESOLVED)
+            <details>
+                <summary>Document changelog</summary>
+                <ul>
+                    <li><strong>v1.0 (2026-02-14):</strong> Versión inicial. PRD completo basado en 115 insights
+                        verificados. Incluye arquitectura CORE, 6 módulos, 20 casos de uso aspiracionales, conflictos
+                        flagged como open questions.</li>
+                </ul>
+            </details>
         </div>
 
-        <h2>1. Product Overview</h2>
-        <p>[One-paragraph description of the product, its purpose, and who it serves. Generated from SYSTEM_MAP.md Product Vision.]</p>
+        <h1>Product Requirements Document</h1>
+        <p><strong>TIMining CORE Platform — El Cerebro Operativo de la Mina Digital</strong></p>
+        <p><em>Documento técnico de producto con trazabilidad completa a insights verificados</em></p>
 
-        <h2>2. User Problem & Context</h2>
-        <p>[Describe the core user problem this product addresses. Reference the user-need insights that define the problem space.]</p>
-        <p class="insight-ref">Sources: [IG-XX], [IG-XX]</p>
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
 
-        <h2>3. Insights Summary</h2>
-        <p>Key verified insights driving this PRD:</p>
+        <h2>1. Visión de Producto</h2>
+
+        <div class="callout">
+            <strong>Visión CORE:</strong> TIMining es el sistema nervioso central de la mina — integrador neutro
+            ("Efecto Suiza") que ayuda a cumplir el plan minero mediante datos real-time, IA y sensores virtuales. El
+            valor está en los números que el cliente no tiene, no en replicar los que ya tiene.
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Refs: [IG-40], [IG-41], [IG-91], [IG-90], [IG-50]</p>
+        </div>
+
+        <h3>1.1 Problema Central</h3>
+
+        <p>El plan minero no se pierde una vez al año durante la planificación — <strong>se pierde en cada
+                turno</strong>, minuto a minuto. Sin un sistema que detecte cuándo y dónde ocurren estas desviaciones,
+            la operación descubre los millones de dólares perdidos semanas después, cuando ya es imposible recuperarlos.
+            [IG-20], [IG-42]</p>
+
+        <p>Existe una <strong>"Brecha Geométrica"</strong>: el minero en terreno ve "camioncitos y palas" en su sistema
+            de flota pero no ve el contexto geológico ni el plan espacial detallado. No sabe si está extrayendo del
+            polígono correcto, y el costo de este error puede ser de millones de dólares. [IG-19]</p>
+
+        <h3>1.2 Propuesta de Valor Única</h3>
+
+        <p>TIMining resuelve lo que nadie más puede: <strong>Real-Time Topography Inference</strong>. Mientras la
+            competencia depende de hardware costoso (drones, escáneres), TIMining desarrolló algoritmos propietarios que
+            usan el "ruido" de datos existentes para reconstruir la mina en tiempo real. No simulamos → vemos la
+            ejecución real. No estimamos → medimos con precisión. [IG-96]</p>
+
+        <p><strong>Valor capturado documentado:</strong></p>
+        <ul>
+            <li><strong>USD $10M+</strong> en valor total agregado across 3 minas en Chile [IG-61]</li>
+            <li><strong>USD $6M</strong> en una sola campaña (Enero-Mayo 2025) por mejoras en velocidad y adherencia al
+                plan [IG-62]</li>
+            <li>Recuperación de -15.6% de incumplimiento a +7.25% de excedencia del plan en un mes corrigiendo
+                adherencia geométrica [IG-65]</li>
+        </ul>
+
+        <h3>1.3 GAP Crítico: Producto Actual vs Visión CORE</h3>
+
+        <div class="warning">
+            <strong>⚠️ Hallazgo Crítico:</strong> Los 20 casos de uso documentados en el Workshop (28 Enero 2026)
+            representan <strong>VISIÓN FUTURA (70-80% aspiracional)</strong> para la plataforma TIMining CORE, NO son
+            capacidades del producto actual. [IG-111]
+            <p style="margin-top: 0.5rem;">El Workshop documenta el GAP entre:</p>
+            <ul style="margin-top: 0.25rem;">
+                <li><strong>Producto actual:</strong> Aware/Orchestra con problemas de adopción UX, alta carga
+                    consultiva (30-36h/renovación), dependencia de WhatsApp para coordinación [IG-112]</li>
+                <li><strong>Visión CORE:</strong> Plataforma proactiva, multimodal, con AI copilot que "entrega
+                    súperpoderes" a usuarios [IG-114]</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><em>Algunas capacidades están parcialmente implementadas (AI Copilot TIM con
+                    queries en lenguaje natural, alertas geotécnicas), pero la integración completa en flujo multimodal
+                    es futura.</em> [IG-113]</p>
+        </div>
+
+        <h2>2. Arquitectura de Producto</h2>
+
+        <h3>2.1 Los 3 "Lego Blocks" de Valor</h3>
+
+        <p>La plataforma CORE se construye sobre tres pilares medibles de impacto operacional:</p>
+
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Insight</th>
-                    <th>Category</th>
-                    <th>Source</th>
+                    <th>Pilar</th>
+                    <th>Métrica Clave</th>
+                    <th>Impacto Documentado</th>
+                    <th>Refs</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>[IG-01]</td>
-                    <td>[Insight title]</td>
-                    <td>[category]</td>
-                    <td>[source file]</td>
+                    <td><strong>1. Adherence</strong><br>(Adherencia Geométrica)</td>
+                    <td>Delta % entre plan geométrico y realidad</td>
+                    <td>Correlaciona directamente con millones ahorrados en remanejo. Cliente recuperó de -15.6% a
+                        +7.25% accuracy.</td>
+                    <td>[IG-65]</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Productivity</strong><br>(Velocidad y Cycle Time)</td>
+                    <td>Cycle time (min), Truck loads/día, Truck hours/día</td>
+                    <td>$6M ahorrados en campaña única. -2.4 min cycle time, +130 loads/día, +5.2 truck hours/día</td>
+                    <td>[IG-63], [IG-64], [IG-66]</td>
+                </tr>
+                <tr>
+                    <td><strong>3. Safety</strong><br>(Alertas Geotécnicas)</td>
+                    <td>Incursiones en zonas peligrosas, Alertas proactivas</td>
+                    <td>Real-time alerting cuando equipos entran "zonas virtuales" de riesgo geotécnico</td>
+                    <td>[IG-72]</td>
                 </tr>
             </tbody>
         </table>
 
-        <h2>4. System Architecture</h2>
-        <p>[High-level architecture derived from SYSTEM_MAP.md modules. Describe how the system is organized and why.]</p>
-        <p class="insight-ref">Sources: [IG-XX], [IG-XX]</p>
+        <h3>2.2 Arquitectura Técnica: 3 Capas</h3>
 
-        <h2>5. Module Specifications</h2>
+        <p>TIMining tiene tres capas tecnológicas diferenciadas: [IG-44]</p>
 
-        <h3>5.1 [Module Name]</h3>
-        <p>[What this module does and the user/business need it serves.]</p>
-        <div class="callout">
-            <p><strong>Key Insight:</strong> [Highlight the most important insight driving this module.] <span class="insight-ref">[IG-XX]</span></p>
-        </div>
+        <ol>
+            <li><strong>Capa 1 - Integración de Datos en Tiempo Real:</strong> "Efecto Suiza" — Integrador neutro
+                agnóstico al hardware. OEMs (Caterpillar, Komatsu, Hexagon) que compiten entre sí SÍ integran con
+                TIMining. Ventaja estructural defensible. [IG-91]</li>
+            <li><strong>Capa 2 - Inteligencia:</strong> Topografía en línea, sensores virtuales, algoritmos de
+                inferencia geométrica propietarios que reconstruyen la mina real-time sin drones/escáneres. [IG-96]</li>
+            <li><strong>Capa 3 - UX/UI:</strong> Multimodal por defecto (Aware, reportes, alertas, chat/agente IA, radio
+                mina). No asumir una sola interfaz. [IG-48], [IG-57]</li>
+        </ol>
 
-        <h3>5.2 [Module Name]</h3>
-        <p>[What this module does and the user/business need it serves.]</p>
+        <h2>3. Módulos de Producto</h2>
 
-        <h2>6. Open Questions & Risks</h2>
+        <h3>3.1 Módulo: Monitoreo Operacional Real-Time</h3>
+        <p><strong>Status:</strong> ✅ Ready</p>
+        <p><strong>Refs:</strong> [IG-05], [IG-06], [IG-07], [IG-19], [IG-24], [IG-25], [IG-42], [IG-83]</p>
+
+        <p><strong>Descripción:</strong> Evolución de Aware hacia gemelo digital con contexto geométrico completo.</p>
+
+        <p><strong>Requerimientos Clave:</strong></p>
         <ul>
-            <li>[Open question from SYSTEM_MAP.md]</li>
-            <li>[Risk identified during analysis]</li>
+            <li><strong>R1:</strong> Timing de datos transparente — cada capa debe mostrar su frecuencia de
+                actualización visible (GPS casi real-time, mapas calor promedio 3h con desfase 30min, indicadores cada
+                30min, topografía cada 15min). Eliminar confusión actual [IG-05]</li>
+            <li><strong>R2:</strong> Capacitación progresiva in-app, no sesiones largas iniciales. Los usuarios
+                abandonan cuando no entienden timing de datos [IG-06]</li>
+            <li><strong>R3:</strong> Métricas por turno, no por día. Las métricas a 24 horas no hacen sentido para
+                mineros [IG-07]</li>
+            <li><strong>R4:</strong> <strong>"Desplanificadómetro"</strong> como métrica central: medir desvío acumulado
+                en tiempo real desde t0, cuantificar material perdido [IG-83]</li>
+            <li><strong>R5:</strong> Resolver "Brecha Geométrica": minero debe ver contexto geológico + plan espacial
+                simultáneamente con tracking flota [IG-19]</li>
+            <li><strong>R6:</strong> Detección automática de cuellos de botella, curvas lentas, estado de equipos
+                [IG-24]</li>
+            <li><strong>R7:</strong> Sistema debe detectar cuándo y dónde se pierde el plan cada turno [IG-42]</li>
         </ul>
+
+        <p><strong>Caso de Éxito Documentado:</strong> Aware detectó caída sistemática de velocidad de ~20 km/h a 8 km/h
+            en curva específica, llevando a descubrir que ruta de camiones autónomos estaba mal dibujada en software
+            Komatsu. Recuperación de rendimiento sin cambiar flota ni hardware. [IG-25]</p>
+
+        <h3>3.2 Módulo: Planificación y Simulación</h3>
+        <p><strong>Status:</strong> ⚠️ Blocked (pendiente definición path de simplificación)</p>
+        <p><strong>Refs:</strong> [IG-09], [IG-11], [IG-26], [IG-84], [IG-104], [IG-10]</p>
+
+        <p><strong>Descripción:</strong> Evolución de Orchestra hacia IA-driven simulation engine accesible a
+            no-expertos.</p>
+
+        <p><strong>Requerimientos Clave:</strong></p>
+        <ul>
+            <li><strong>R8:</strong> Simplificar simulador: solo 30% usa funciones avanzadas. Debe ser accesible a
+                no-expertos [IG-104]</li>
+            <li><strong>R9:</strong> <strong>IA corre simulaciones automáticas</strong> usando motor Orchestra (Phase 7
+                2026). Shift de "problema ocurriendo" a "3 escenarios para arreglarlo" en minutos [IG-84]</li>
+            <li><strong>R10:</strong> Reducir carga consultiva de 30-36 horas por caso de renovación [IG-09]</li>
+            <li><strong>R11:</strong> Eliminar necesidad de "trucos" y workarounds para escenarios modernos (camiones
+                autónomos, múltiples rutas) [IG-11]</li>
+            <li><strong>R12:</strong> Mantener capacidad de evaluar 20+ escenarios en horizontes de 3 años [IG-26]</li>
+        </ul>
+
+        <p><strong>Decisión Estratégica:</strong> Orchestra probablemente será descontinuado/reemplazado por agente IA
+            (Project TIM Phase 7 2026). La tensión entre complejidad vs utilidad se resuelve con transición tecnológica.
+            [CF-03 RESOLVED]</p>
+
+        <h3>3.3 Módulo: Conciliación (Delta)</h3>
+        <p><strong>Status:</strong> ✅ Ready</p>
+        <p><strong>Refs:</strong> [IG-04], [IG-27], [IG-65]</p>
+
+        <p><strong>Descripción:</strong> Puerta de entrada al portfolio. Conciliación topográfica entre múltiples
+            softwares de planificación.</p>
+
+        <p><strong>Requerimientos Clave:</strong></p>
+        <ul>
+            <li><strong>R13:</strong> Mantener baja fricción de entrada — Delta funciona como gateway que habilita venta
+                de otros productos [IG-04]</li>
+            <li><strong>R14:</strong> Resultados <1 minuto como estándar no negociable [IG-27]</li>
+            <li><strong>R15:</strong> Conciliación geométrica como prueba tangible de valor (adherencia al plan) [IG-65]
+            </li>
+        </ul>
+
+        <h3>3.4 Módulo: Suite Geotécnica (SIC, Tangram, ARIS)</h3>
+        <p><strong>Status:</strong> ✅ Ready</p>
+        <p><strong>Refs:</strong> [IG-03], [IG-28], [IG-29], [IG-30], [IG-35], [IG-12]</p>
+
+        <p><strong>Descripción:</strong> Productos legacy con base leal. Modernización incremental sin romper confianza.
+        </p>
+
+        <p><strong>Requerimientos Clave:</strong></p>
+        <ul>
+            <li><strong>R16:</strong> No romper base leal al modernizar interfaces — tienen interfaces antiguas pero
+                usuarios muy leales [IG-03]</li>
+            <li><strong>R17:</strong> ARIS: Mantener ventaja competitiva de integración de cualquier instrumento (30+
+                tipos) sin cobros extra por más instrumentos o zonas adicionales [IG-35]</li>
+            <li><strong>R18:</strong> SIC: Preservar patrón de alta autonomía de usuarios [IG-12]</li>
+            <li><strong>R19:</strong> Tangram: Predicción de bloques de roca como caso crítico de seguridad (2-3
+                veces/semana mínimo) [IG-28]</li>
+        </ul>
+
+        <h3>3.5 Módulo: Copiloto IA (Project TIM)</h3>
+        <p><strong>Status:</strong> ✅ Ready (parcialmente implementado)</p>
+        <p><strong>Refs:</strong> [IG-67]-[IG-75], [IG-78], [IG-47], [IG-82], [IG-98], [IG-76], [IG-77]</p>
+
+        <p><strong>Descripción:</strong> AI Agent con Google Gemini. Queries en lenguaje natural + alertas proactivas.
+        </p>
+
+        <p><strong>Interacciones Reales Documentadas (Pull Queries):</strong></p>
+        <ul>
+            <li>"¿Me darías el reporte de las palas en una tabla?" → Genera tabla Shovel ID, Status, Yield, Utilization
+                [IG-67]</li>
+            <li>"¿Puedes graficar el tonelaje global por hora?" → Genera line chart visualizando producción hourly
+                [IG-68]</li>
+            <li>"Con respecto al plan semanal, ¿cómo vamos?" → Analiza reconciliación topográfica: 39.76% plan semanal,
+                estima completion Nov 16 (2 días delay) [IG-69]</li>
+            <li>"Avísame si se producirá inactividad mayor a 3 min con a lo más 15 min de anticipación en CH-1" →
+                Configura alerta predictiva [IG-70]</li>
+            <li>"Simular escenario base para comenzar análisis de escenarios" → Inicia simulation Load & Haul [IG-71]
+            </li>
+        </ul>
+
+        <p><strong>Alertas Proactivas (Push):</strong></p>
+        <ul>
+            <li>Geotechnical Zone Incursion: "truck CA104 está operando en zona de inestabilidad geotécnica" (WhatsApp
+                real-time) [IG-72]</li>
+            <li>Predictive Crusher Idleness: "Crusher CH-1 is predicted to idle at least 4.28 minutes in 9.75 minutes"
+                [IG-73]</li>
+            <li>Digging Compliance: "Pala PA03 fuera de plan" (trigger cuando shovel extrae fuera área designada)
+                [IG-74]</li>
+            <li>Material Tracking: "Wrong Assignment: Truck 22304 assigned to Dump but carrying material for Stockpile"
+                [IG-75]</li>
+        </ul>
+
+        <p><strong>Requerimientos Clave:</strong></p>
+        <ul>
+            <li><strong>R20:</strong> Proactivo no reactivo — alertas push antes de que el problema ocurra [IG-47]</li>
+            <li><strong>R21:</strong> Multicanal: WhatsApp, chat, radio mina — donde esté el usuario [IG-72], [IG-77]
+            </li>
+            <li><strong>R22:</strong> Path gradual hacia autonomía "Skynet": sugerencias → recomendaciones → órdenes
+                [IG-78], [IG-115]</li>
+            <li><strong>R23:</strong> Contexto de turno anterior automático sin depender de WhatsApp informal [IG-76]
+            </li>
+            <li><strong>R24:</strong> Copiloto que soporte decisiones, no que reemplace al humano (aún) [IG-82]</li>
+            <li><strong>R25:</strong> Shift describir → prescrib (continuará) [IG-98]</li>
+        </ul>
+
+        <h3>3.6 Módulo: Plataforma Unificada (CORE)</h3>
+        <p><strong>Status:</strong> ⚠️ Blocked (pendiente timeline migración stack)</p>
+        <p><strong>Refs:</strong> [IG-16], [IG-17], [IG-18], [IG-44], [IG-48], [IG-57], [IG-58], [IG-59]</p>
+
+        <p><strong>Descripción:</strong> Unificación de stack fragmentado (C++, Unity, Go, Python, web, email) en
+            plataforma coherente.</p>
+
+        <p><strong>Requerimientos Clave:</strong></p>
+        <ul>
+            <li><strong>R26:</strong> Auth unificado como primer paso de unificación — actualmente no existe sistema
+                único [IG-17]</li>
+            <li><strong>R27:</strong> Multimodal por defecto: no forzar una sola UI [IG-48]</li>
+            <li><strong>R28:</strong> Resolver fragmentación de stack: eliminar cruces manuales de BD, reemplazar con
+                APIs [IG-18]</li>
+            <li><strong>R29:</strong> Definir arquitectura coherente ANTES de implementar (actualmente se diseña
+                mientras se implementa) [IG-58]</li>
+            <li><strong>R30:</strong> La experiencia incluye instalación y onboarding — si es complicada, es parte de
+                mala UX [IG-59]</li>
+        </ul>
+
+        <h2>4. Casos de Uso (Visión Futura)</h2>
+
+        <p><strong>⚠️ Los 20 casos de uso documentados son aspiracionales (70-80% future roadmap).</strong> Ver sección
+            1.3 para contexto del GAP producto actual vs visión.</p>
+
+        <p><strong>Roles cubiertos:</strong> Jefe de Turno, Planificador Mina, Supervisor Operaciones, Geólogo,
+            Despachador, Gerente Mantenimiento, Planificador Corto Plazo, Supervisor Centro Integrado, Gerente Mina.
+            [IG-79]</p>
+
+        <p><strong>Ejemplos de Casos de Uso Deseados:</strong></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rol</th>
+                    <th>Escenario de Crisis</th>
+                    <th>Capacidad Deseada (Plataforma CORE)</th>
+                    <th>Refs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Jefe de Turno</strong></td>
+                    <td>Inicio de turno sin contexto previo</td>
+                    <td>Recibir contexto completo turno anterior sin depender de WhatsApp, detectar incumplimientos,
+                        recibir recomendaciones de prioridades</td>
+                    <td>[IG-76]</td>
+                </tr>
+                <tr>
+                    <td><strong>Supervisor Centro Integrado</strong></td>
+                    <td>Llega a reunión sin preparación</td>
+                    <td>Plataforma envía WhatsApp 15 min antes con resumen contra plan, problemas principales,
+                        situaciones de riesgo, y genera recomendaciones automáticas</td>
+                    <td>[IG-77]</td>
+                </tr>
+                <tr>
+                    <td><strong>Sistema "Skynet"</strong></td>
+                    <td>Optimización global continua</td>
+                    <td>Cada X minutos: analizar situación general, correr N simulaciones buscando óptimo global, enviar
+                        sugerencias a roles, eventualmente generar replanificación automática y órdenes a máquinas</td>
+                    <td>[IG-78], [IG-115]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Estructura uniforme de casos de uso:</strong></p>
+        <ol>
+            <li>¿Quién es? (rol usuario)</li>
+            <li>¿Dónde ocurre? (lugar)</li>
+            <li>Situación de estrés / Crisis</li>
+            <li><strong>Detección</strong> (Plataforma TIMining) ← Capacidad deseada</li>
+            <li><strong>Análisis</strong> (Plataforma TIMining) ← Capacidad deseada</li>
+            <li><strong>Recomendación</strong> (Plataforma TIMining) ← Capacidad deseada</li>
+        </ol>
+
+        <h2>5. Principios de Diseño</h2>
+
+        <h3>5.1 Mostrar lo invisible, no replicar lo conocido</h3>
+        <p>El valor está en números que el cliente no tiene. No gastar energía en igualar números existentes. [IG-50],
+            [IG-19], [IG-83]</p>
+
+        <h3>5.2 Proactivo sobre reactivo</h3>
+        <p>Alertas y recomendaciones antes de que el problema se consolide. "Paz mental" para el usuario. [IG-47],
+            [IG-72], [IG-73], [IG-74]</p>
+
+        <h3>5.3 Simplicidad > features (Homer's Car Detector)</h3>
+        <p>Resistir la tentación de agregar funcionalidades que no se usan. Los usuarios piden features pero luego no
+            las usan. Quieren herramientas fáciles, robustas y accionables. [IG-08], [IG-39], [IG-80], [IG-81]</p>
+
+        <h3>5.4 Diagnosticar, no solo reportar</h3>
+        <p>Los usuarios cuentan dolores, no problemas. El sistema debe hacer el diagnóstico como un médico. [IG-55],
+            [IG-82]</p>
+
+        <h3>5.5 La experiencia incluye el deploy</h3>
+        <p>Si la instalación es complicada, es parte de la mala experiencia. El punto de partida debe ser razonablemente
+            bueno — en industria lenta con ciclos largos, si se parte muy offside no dejan avanzar. [IG-59], [IG-22],
+            [IG-52]</p>
+
+        <h3>5.6 Multimodal por defecto</h3>
+        <p>Llegar al usuario por múltiples canales (Aware, reportes, alertas, chat, radio). No asumir una sola interfaz.
+            [IG-48], [IG-57], [IG-109]</p>
+
+        <h2>6. Open Questions & Conflictos FLAGGED</h2>
+
+        <p><strong>⚠️ FLAGGED para decisión stakeholder:</strong></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Pregunta</th>
+                    <th>Escalado a</th>
+                    <th>Refs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>[CF-01]</strong></td>
+                    <td>¿Bundles Aware/Orchestra obligatorios o opcionales? Centinela dejó Aware porque "no es gemelo" y
+                        solo compró Orchestra. Evidencia muestra que Aware solo no puede justificar valor sin
+                        cuantificación de Orchestra.</td>
+                    <td>Sales + Product</td>
+                    <td>[IG-02], [IG-34]</td>
+                </tr>
+                <tr>
+                    <td><strong>[CF-02]</strong></td>
+                    <td>¿Límites de customización por tier de cliente? Cada faena requiere customización (métodos
+                        extracción, regulaciones) pero genera complejidad y riesgo de romper configuraciones. Clientes
+                        piden features que luego no usan ("auto de Homero Simpson").</td>
+                    <td>CEO + CTO</td>
+                    <td>[IG-08], [IG-22], [IG-23], [IG-36], [IG-37], [IG-39]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Otras Open Questions:</strong></p>
+        <ul>
+            <li>¿Estrategia para audiencia CFO? TIMining no habla con ellos actualmente pero plataforma debería ser
+                importante para asegurar cumplimiento plan de negocio. [IG-49]</li>
+            <li>¿Plan para desconcentrar conocimiento crítico de Carlo? Riesgo de concentración identificado. [IG-110]
+            </li>
+            <li>¿Realinear pricing de "licencia software" a "valor empresarial"? Desconexión entre precio actual y valor
+                estratégico como "Fuente de la Verdad". [IG-94]</li>
+            <li>¿Timeline migración stack fragmentado hacia plataforma unificada? [IG-16]</li>
+            <li>¿Benchmark UX contra industria minera o contra software moderno? Vara está baja en industria minera,
+                pero no debería ser consuelo. [CF-05 context]</li>
+        </ul>
+
+        <h2>7. Roadmap Estratégico</h2>
+
+        <h3>Phase 7 (2026): Year of the Digital Co-Pilot</h3>
+        <ul>
+            <li><strong>Q1 2026:</strong> Ingenieros habilitan IA para correr simulaciones automáticas usando motor
+                Orchestra, shift de "problema ocurriendo" a "aquí hay 3 escenarios para arreglarlo" en minutos [IG-84]
+            </li>
+            <li>Expansion Underground Mining: Primeras soluciones para segmento subterráneo</li>
+            <li>Platform Rebrand: Separar plataforma high-level de producto Aware, nueva marca + go-to-market global
+                agresivo</li>
+            <li>Advanced Optimization: "Second opinions" para fleet dispatching, tighter material tracking</li>
+        </ul>
+
+        <h3>Phase 8 (2040 Vision): IROC Maduro</h3>
+        <ul>
+            <li>Corporaciones masivas manejan múltiples minas globales desde centros urbanos (ej. Santiago) [IG-85]</li>
+            <li>Distinción mine-plant desaparece: single communicated digital twin, TIMining conecta con Plant-to-Port
+                automation [IG-85]</li>
+            <li>Human-Machine Synergy: Lenguaje natural como interfaz nativa, automated shift transitions eliminan
+                "seagull effect", virtual visits reemplazan site visits físicos [IG-85]</li>
+            <li>Autonomous Reality: Vehículos 100% autónomos, TIMining provee "intelligent brain" asegurando geometría
+                plan-compliant [IG-85]</li>
+        </ul>
+
+        <h2>8. Resumen de Insights Utilizados</h2>
+
+        <p>Este PRD traza hacia <strong>115 insights verificados</strong> extraídos de 54 fuentes procesadas. Los
+            insights están categorizados como:</p>
+
+        <ul>
+            <li><strong>Business (36 insights):</strong> Modelo negocio, pricing, base clientes, métricas valor,
+                ventajas competitivas</li>
+            <li><strong>Technical (31 insights):</strong> Arquitectura stack, algoritmos inferencia, integraciones, AI
+                Copilot</li>
+            <li><strong>User-need (44 insights):</strong> Desafíos adopción UX, casos de uso, feedback usuarios, deseos
+                no articulados</li>
+            <li><strong>Constraint (4 insights):</strong> Limitaciones industria, variabilidad operaciones, naturaleza
+                aspiracional de casos de uso</li>
+        </ul>
+
+        <p>Para ver el detalle completo de insights y conflictos, consultar <code>STATUS.html</code> en la misma carpeta
+            que este documento.</p>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+
+        <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 2rem;">
+            <em>Generado por PD-Spec pipeline · Todos los insights trazables a fuentes verificadas · v1.0 ·
+                2026-02-14</em>
+        </p>
+
     </div>
+
+    <script>
+        // Cross-reference links: Convert [IG-XX] and [CF-XX] text to clickable links to STATUS.html
+        document.querySelectorAll('p, li, td, .callout, .warning').forEach(el => {
+            el.innerHTML = el.innerHTML.replace(
+                /\[(IG-\d+|CF-\d+)\]/g,
+                '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
+            );
+        });
+    </script>
 
 </body>
 

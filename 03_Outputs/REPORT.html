@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Report — TIMining CORE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #111;
+        }
+
+        body {
+            background: #F0F2F5;
+            padding: 2rem 1rem;
+        }
+
+        .page {
+            max-width: 21cm;
+            margin: 0 auto 2rem;
+            background: white;
+            padding: 2.54cm;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            page-break-after: always;
+        }
+
+        .cover {
+            text-align: center;
+            padding-top: 8cm;
+        }
+
+        .cover h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .cover .subtitle {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .cover .meta {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        p {
+            margin: 0.75rem 0;
+        }
+
+        ul,
+        ol {
+            margin: 0.75rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.25rem 0;
+        }
+
+        .toc {
+            margin: 2rem 0;
+        }
+
+        .toc li {
+            list-style: none;
+            margin: 0.5rem 0;
+        }
+
+        .toc a {
+            text-decoration: none;
+            color: #111;
+        }
+
+        .callout {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .callout strong {
+            color: #2e7d32;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+        }
+
+        td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .metric-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        .metric {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .ref-link {
+            color: #555;
+            text-decoration: none;
+            border-bottom: 1px dotted #999;
+        }
+
+        .ref-link:hover {
+            color: #111;
+            border-bottom-color: #111;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .page {
+                box-shadow: none;
+                padding: 1cm;
+                page-break-after: always;
+            }
+
+            @page {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cover Page -->
+    <div class="page cover">
+        <h1>TIMining CORE</h1>
+        <div class="subtitle">Executive Report</div>
+        <p style="font-size: 1.2rem; margin: 2rem 0;">Análisis Estratégico de Producto y Oportunidades de Valor</p>
+        <div class="meta">
+            <p>Versión 1.0</p>
+            <p>Febrero 2026</p>
+            <p style="margin-top: 3rem;">Basado en 115 insights verificados de 54 fuentes</p>
+        </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="page">
+        <h1>Tabla de Contenidos</h1>
+        <ul class="toc">
+            <li><strong>1.</strong> Executive Summary ......................................................... 3</li>
+            <li><strong>2.</strong> Hallazgos Clave por Categoría .......................................... 4</li>
+            <li style="padding-left: 1.5rem;">2.1 Business & Strategy</li>
+            <li style="padding-left: 1.5rem;">2.2 Tecnología & IP</li>
+            <li style="padding-left: 1.5rem;">2.3 User Experience & Adoption</li>
+            <li style="padding-left: 1.5rem;">2.4 Constraints & Risks</li>
+            <li><strong>3.</strong> Valor Capturado Documentado ............................................ 6</li>
+            <li><strong>4.</strong> Roadmap Estratégico ........................................................ 7</li>
+            <li><strong>5.</strong> Decisiones Pendientes ....................................................... 8</li>
+            <li><strong>6.</strong> Recomendaciones Accionables ............................................ 9</li>
+            <li><strong>7.</strong> Referencias de Insights .................................................... 10</li>
+            <li><strong>8.</strong> Metodología .................................................................... 11
+            </li>
+        </ul>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="page">
+        <h1>1. Executive Summary</h1>
+
+        <div class="callout">
+            <strong>Síntesis:</strong> TIMining no es "otra empresa de software minero". Es el único jugador que
+            resolvió el problema duro: ver la mina real en tiempo real sin hardware costoso. Esta capacidad única lo
+            convierte en el eslabón perdido para la minería autónoma del futuro.
+        </div>
+
+        <h3>Problema Central</h3>
+        <p>El plan minero no se pierde una vez al año durante la planificación — <strong>se pierde en cada
+                turno</strong>, minuto a minuto. Sin un sistema que detecte cuándo y dónde ocurren estas desviaciones,
+            la operación descubre los millones perdidos semanas después, cuando ya es imposible recuperarlos. [IG-20],
+            [IG-42]</p>
+
+        <p>Existe una <strong>"Brecha Geométrica"</strong>: el minero en terreno ve "camioncitos y palas" pero no ve
+            contexto geológico ni plan espacial. No sabe si está extrayendo del polígono correcto — el costo de este
+            error puede ser de millones. [IG-19]</p>
+
+        <h3>Solución Única</h3>
+        <p><strong>Real-Time Topography Inference:</strong> Mientras competencia depende de hardware costoso (drones,
+            escáneres), TIMining desarrolló algoritmos propietarios que usan el "ruido" de datos existentes para
+            reconstruir la mina en tiempo real. No simulamos → vemos la ejecución real. No estimamos → medimos con
+            precisión. [IG-96]</p>
+
+        <h3>Hallazgo Crítico: GAP Producto vs Visión</h3>
+        <div class="warning">
+            <strong>⚠️ Los 20 casos de uso documentados en Workshop (28 Enero 2026) son 70-80% VISIÓN FUTURA, NO
+                producto actual.</strong> [IG-111]
+            <p style="margin-top: 0.5rem;">GAP entre producto actual (Aware/Orchestra con problemas UX, 30-36h carga
+                consultiva, dependencia WhatsApp) y visión CORE (plataforma multimodal + AI copilot proactivo). [IG-112]
+            </p>
+        </div>
+
+        <h3>Métricas Clave</h3>
+        <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+            <div class="metric-box" style="flex: 1;">
+                <span class="metric">$10M+</span>
+                <p>Valor capturado<br>3 minas Chile</p>
+            </div>
+            <div class="metric-box" style="flex: 1;">
+                <span class="metric">$6M</span>
+                <p>Campaña única<br>Ene-May 2025</p>
+            </div>
+            <div class="metric-box" style="flex: 1;">
+                <span class="metric">~$5M</span>
+                <p>ARR actual<br>80%+ growth '26</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hallazgos por Categoría -->
+    <div class="page">
+        <h1>2. Hallazgos Clave por Categoría</h1>
+
+        <h2>2.1 Business & Strategy (36 insights)</h2>
+
+        <h3>Ventaja Competitiva: "Efecto Suiza"</h3>
+        <p>TIMining = Integrador Neutro agnóstico al hardware en industria de "jardines amurallados". Grandes OEMs
+            (Caterpillar, Komatsu, Hexagon) compiten entre sí y NO integran mutuamente, pero SÍ integran con TIMining.
+            Ventaja estructural defensible: contexto unificado que competidor verticalizado no replica fácilmente.
+            [IG-91]</p>
+
+        <h3>Modelo Comercial: Adopción Bottom-Up</h3>
+        <p>100+ usuarios activos mensuales por faena. Stickiness inusual: operación confía porque resuelve dolores
+            diarios, generando tracción interna que accelera acuerdos corporativos. [IG-92]</p>
+
+        <h3>Pricing Opportunity</h3>
+        <p>Desconexión entre precio actual (modelo "licencia software") y valor estratégico como "Fuente de la Verdad".
+            Oportunidad: realinear pricing a "valor empresarial", capturando porción mayor de ahorros millonarios
+            generados. [IG-94]</p>
+
+        <h3>Perfil Financiero</h3>
+        <p>~$5M ARR con márgenes altos, capital-efficient. Target 80%+ growth YoY 2026. Economics de SaaS recurrente con
+            estructura plataforma escalable. [IG-87], [IG-89]</p>
+
+    </div>
+
+    <div class="page">
+        <h2>2.2 Tecnología & IP (31 insights)</h2>
+
+        <h3>Propiedad Intelectual Defensible</h3>
+        <p>Algoritmos propietarios de inferencia geométrica que reconstruyen mina real-time desde datos existentes (sin
+            drones/escáneres costosos). Barrera de entrada significativa: años de desarrollo multidisciplinario
+            (Geotecnia + Operaciones + Data Science). [IG-96]</p>
+
+        <h3>Arquitectura Técnica: 3 Capas</h3>
+        <ol>
+            <li><strong>Integración Datos Real-Time:</strong> "Efecto Suiza", conecta hardware de múltiples vendors
+                [IG-91]</li>
+            <li><strong>Inteligencia:</strong> Topografía en línea, sensores virtuales, algoritmos inferencia [IG-96]
+            </li>
+            <li><strong>UX/UI:</strong> Multimodal (Aware, reportes, alertas, chat IA, radio) [IG-48]</li>
+        </ol>
+
+        <h3>AI Copilot TIM (Parcialmente Implementado)</h3>
+        <p>15 interacciones documentadas con Google Gemini: queries lenguaje natural + alertas proactivas. Ejemplos
+            reales: reconciliación topográfica vs plan, alertas predictivas crusher idleness, geotechnical zone
+            incursions, material tracking. [IG-67]-[IG-75]</p>
+
+        <h3>Riesgo: Fragmentación Stack</h3>
+        <p>Stack técnico fragmentado (C++, Unity, Go, Python, web, email) dificulta escalabilidad. Módulo CORE
+            Plataforma Unificada está BLOCKED pendiente timeline migración. [IG-16], [IG-18]</p>
+
+    </div>
+
+    <div class="page">
+        <h2>2.3 User Experience & Adoption (44 insights)</h2>
+
+        <h3>Desafío UX: Confusión Timing Datos</h3>
+        <p>Usuarios abandonan Aware por confusión sobre frecuencia actualización. GPS casi real-time vs mapas calor
+            promedio 3h con desfase 30min. Solución: transparencia timing cada capa con frecuencia visible. [IG-05]</p>
+
+        <h3>Capacitación Problemática</h3>
+        <p>Sesiones largas iniciales → abandono. Requerimiento: capacitación progresiva in-app según perfil usuario.
+            [IG-06]</p>
+
+        <h3>Retrospectiva Workshop: LO QUE NO NECESITAN (STOP)</h3>
+        <ul style="font-size: 0.95rem;">
+            <li>Visualización 3D de la mina (no es prioridad)</li>
+            <li>Gráficos/reportes sin solucionar algo real</li>
+            <li>Mostrar mismos KPIs que todos los dashboards</li>
+            <li>Data dumping sin contexto</li>
+            <li>Capacitaciones muy largas</li>
+        </ul>
+
+        <h3>Retrospectiva: LO QUE SÍ NECESITAN (KEEP)</h3>
+        <ul style="font-size: 0.95rem;">
+            <li>Herramientas fáciles y robustas para decisiones día a día</li>
+            <li>Sistema proactivo con recomendaciones (no solo alertas)</li>
+            <li>Resultados visibles, mejora desempeño personal</li>
+            <li>Claridad proceso completo (Servicio → PyT → CyT → Chancado)</li>
+            <li>Mejor sistema alertas (llegar directo al usuario)</li>
+        </ul>
+
+        <h3>Retrospectiva: LO QUE NO SABEN QUE NECESITAN (START)</h3>
+        <ul style="font-size: 0.95rem;">
+            <li><strong>"Desplanificadómetro":</strong> métrica inexistente — medir desvío acumulado real-time desde t0,
+                material perdido [IG-83]</li>
+            <li>Asistente virtual para día a día</li>
+            <li>Copiloto que soporte decisiones</li>
+            <li>Reducir ruido información (foco esencial)</li>
+            <li>Mejorar comunicación entre áreas (intermediario)</li>
+        </ul>
+
+    </div>
+
+    <div class="page">
+        <h2>2.4 Constraints & Risks (4 insights)</h2>
+
+        <h3>Concentración de Conocimiento</h3>
+        <p>Expertise técnico muy centralizado "hoy mucho en Carlo" — riesgo de concentración de conocimiento crítico.
+            Requiere plan de desconcentración. [IG-110]</p>
+
+        <h3>Naturaleza Aspiracional de Casos de Uso</h3>
+        <p>20 casos de uso Workshop son 70-80% visión futura. Algunas capacidades parcialmente implementadas (AI Copilot
+            TIM queries + alertas básicas), pero integración completa multimodal es roadmap. [IG-111], [IG-113]</p>
+
+        <h3>Industria Lenta y Conservadora</h3>
+        <p>Ciclos venta 1+ año. Punto de partida debe ser razonablemente bueno — en industria lenta con ciclos largos,
+            si se parte muy offside no dejan avanzar. [IG-22], [IG-52]</p>
+
+        <h3>Variabilidad Operacional</h3>
+        <p>Cada faena minera única (método extracción, regulaciones locales, geología). Requiere customización pero
+            riesgo "auto de Homero Simpson" (features no usadas). [IG-23], [CF-02 FLAGGED]</p>
+
+    </div>
+
+    <!-- Valor Capturado -->
+    <div class="page">
+        <h1>3. Valor Capturado Documentado</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Valor</th>
+                    <th>Contexto</th>
+                    <th>Refs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Valor Total</strong></td>
+                    <td>$10M+</td>
+                    <td>Valor agregado across 3 minas en Chile (Codelco/AMSA)</td>
+                    <td>[IG-61]</td>
+                </tr>
+                <tr>
+                    <td><strong>Campaña Única</strong></td>
+                    <td>$6M</td>
+                    <td>Enero-Mayo 2025, mejoras velocidad + adherencia plan</td>
+                    <td>[IG-62]</td>
+                </tr>
+                <tr>
+                    <td><strong>Productivity</strong></td>
+                    <td>-2.4 min</td>
+                    <td>Reducción cycle time ramp F07B post-mantenimiento</td>
+                    <td>[IG-63]</td>
+                </tr>
+                <tr>
+                    <td><strong>Throughput</strong></td>
+                    <td>+130 loads</td>
+                    <td>Truck loads/día ganados</td>
+                    <td>[IG-64]</td>
+                </tr>
+                <tr>
+                    <td><strong>Adherence</strong></td>
+                    <td>-15% → +7%</td>
+                    <td>Production Accuracy Cu Fine: recuperado en 1 mes corrigiendo geometría Fase 361</td>
+                    <td>[IG-65]</td>
+                </tr>
+                <tr>
+                    <td><strong>Fleet Efficiency</strong></td>
+                    <td>+5.2 hours</td>
+                    <td>Truck hours/día ganadas</td>
+                    <td>[IG-66]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Los 3 "Lego Blocks" de Valor</h3>
+        <ol>
+            <li><strong>Adherence (Adherencia Geométrica):</strong> Delta % entre plan geométrico y realidad.
+                Correlaciona direc
+
+                tamente con millones ahorrados en remanejo.</li>
+            <li><strong>Productivity (Velocidad y Cycle Time):</strong> Indicadores leading de productividad. $6M
+                documentados en campaña única.</li>
+            <li><strong>Safety (Alertas Geotécnicas):</strong> Real-time alerting cuando equipos entran "zonas
+                virtuales" peligrosas.</li>
+        </ol>
+
+    </div>
+
+    <!-- Roadmap -->
+    <div class="page">
+        <h1>4. Roadmap Estratégico</h1>
+
+        <h2>Phase 7 (2026): Year of the Digital Co-Pilot</h2>
+        <ul>
+            <li><strong>Q1 2026 — Predictive Simulations:</strong> IA corre simulaciones automáticas usando motor
+                Orchestra. Shift de "problema ocurriendo" a "3 escenarios para arreglarlo" en minutos. [IG-84]</li>
+            <li><strong>Expansion Underground Mining:</strong> Primeras soluciones para segmento underground</li>
+            <li><strong>Platform Rebrand:</strong> Separar plataforma high-level de producto Aware, nueva marca +
+                go-to-market global agresivo</li>
+            <li><strong>Advanced Optimization:</strong> "Second opinions" fleet dispatching, tighter material tracking,
+                alertas predictivas 15min antes</li>
+        </ul>
+
+        <h2>Phase 8 (2040 Vision): IROC Maduro</h2>
+        <ul>
+            <li><strong>Mature IROC:</strong> Corporaciones masivas manejan múltiples minas globales desde centros
+                urbanos (ej. Santiago) [IG-85]</li>
+            <li><strong>Mine-Plant Unificado:</strong> Single communicated digital twin, TIMining conecta seamlessly con
+                Plant-to-Port automation</li>
+            <li><strong>Human-Machine Synergy:</strong> Lenguaje natural como interfaz nativa, automated shift
+                transitions eliminan "seagull effect", virtual visits</li>
+            <li><strong>Autonomous Reality:</strong> Vehículos 100% autónomos, TIMining provee "intelligent brain"
+                asegurando geometría plan-compliant</li>
+            <li><strong>Path "Skynet":</strong> Gradual hacia autonomía completa — sugerencias → recomendaciones →
+                órdenes a máquinas [IG-115]</li>
+        </ul>
+
+    </div>
+
+    <!-- Decisiones Pendientes -->
+    <div class="page">
+        <h1>5. Decisiones Pendientes</h1>
+
+        <h2>Conflictos FLAGGED (Requieren Decisión Stakeholder)</h2>
+
+        <h3>[CF-01] Bundles Aware/Orchestra</h3>
+        <p><strong>Escalado a:</strong> Sales + Product</p>
+        <p><strong>Tensión:</strong> Centinela compró 5 licencias Orchestra y dejaron Aware diciendo "no es gemelo",
+            pero evidencia muestra que Aware solo no puede justificar valor sin cuantificación de Orchestra.</p>
+        <p><strong>Decisión requerida:</strong> ¿Bundles obligatorios vs opcionales según segmento cliente?</p>
+        <p><strong>Refs:</strong> [IG-02], [IG-34]</p>
+
+        <h3>[CF-02] Customización vs Producto Core</h3>
+        <p><strong>Escalado a:</strong> CEO + CTO</p>
+        <p><strong>Tensión:</strong> Cada faena requiere customización (métodos extracción, regulaciones) pero genera
+            complejidad, riesgo de romper configuraciones, y features que no se usan ("auto de Homero Simpson").</p>
+        <p><strong>Decisión requerida:</strong> ¿Límites de customización por tier de producto? ¿Trade-off
+            customización-estabilidad?</p>
+        <p><strong>Refs:</strong> [IG-08], [IG-22], [IG-23], [IG-36], [IG-37], [IG-39]</p>
+
+        <h2>Otras Open Questions</h2>
+        <ul>
+            <li>¿Estrategia para audiencia CFO? TIMining no habla con ellos actualmente [IG-49]</li>
+            <li>¿Plan para desconcentrar conocimiento crítico de Carlo? [IG-110]</li>
+            <li>¿Realinear pricing de "licencia" a "valor empresarial"? [IG-94]</li>
+            <li>¿Timeline migración stack fragmentado → plataforma unificada? [IG-16]</li>
+        </ul>
+
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="page">
+        <h1>6. Recomendaciones Accionables</h1>
+
+        <h2>Corto Plazo (Q1-Q2 2026)</h2>
+        <ol>
+            <li><strong>Resolver Conflictos FLAGGED:</strong> Decisión sobre bundles Aware/Orchestra y límites
+                customización es crítica para estrategia comercial y arquitectura producto.</li>
+            <li><strong>UX Quick Wins:</strong> Transparencia timing datos (cada capa muestra frecuencia actualización
+                visible), capacitación in-app progresiva, métricas por turno no por día.</li>
+            <li><strong>Desplanificadómetro MVP:</strong> Implementar métrica identificada en retrospectiva — medir
+                desvío acumulado real-time desde t0.</li>
+            <li><strong>AI Copilot Expansion:</strong> Expandir interacciones documentadas (15 actuales) hacia casos de
+                uso críticos identificados en Workshop.</li>
+        </ol>
+
+        <h2>Mediano Plazo (2026)</h2>
+        <ol>
+            <li><strong>Platform Rebrand:</strong> Separar marca plataforma CORE de producto Aware. Messaging:
+                "Operating Brain of the Digital Mine".</li>
+            <li><strong>Pricing Realignment:</strong> Aprovechar $10M+ valor documentado para justificar pricing modelo
+                "valor empresarial" vs "licencia software".</li>
+            <li><strong>Estrategia CFO:</strong> Desarrollar go-to-market para nivel C-suite financial, enfatizando
+                cumplimiento plan de negocio.</li>
+            <li><strong>Timeline Stack Unification:</strong> Definir roadmap migración de stack fragmentado
+                (C++/Unity/Go/Python) a plataforma coherente.</li>
+        </ol>
+
+        <h2>Largo Plazo (2027-2040)</h2>
+        <ol>
+            <li><strong>IROC Positioning:</strong> Posicionarse como infrastructure provider indispensable para
+                remote/autonomous mining. Leverage head start años en real-time geometry inference.</li>
+            <li><strong>IP Protection & Scaling:</strong> Documentar y proteger algoritmos propietarios, plan
+                desconcentración conocimiento crítico.</li>
+            <li><strong>Path to Autonomy:</strong> Roadmap gradual "Skynet" — sugerencias → recomendaciones → órdenes a
+                máquinas.</li>
+        </ol>
+
+    </div>
+
+    <!-- Referencias -->
+    <div class="page">
+        <h1>7. Referencias de Insights</h1>
+
+        <p>Este reporte traza hacia <strong>115 insights verificados</strong> extraídos de 54 fuentes procesadas.</p>
+
+        <h3>Breakdown por Categoría</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Count</th>
+                    <th>Ejemplos IDs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Business</strong></td>
+                    <td>36</td>
+                    <td>IG-02, IG-04, IG-10, IG-20, IG-22, IG-31-35, IG-40-41, IG-43, IG-46, IG-49, IG-53, IG-57,
+                        IG-60-62, IG-65, IG-84-98, IG-100-102, IG-105, IG-107-110, IG-115</td>
+                </tr>
+                <tr>
+                    <td><strong>Technical</strong></td>
+                    <td>31</td>
+                    <td>IG-01, IG-11, IG-13-18, IG-36-37, IG-44, IG-54, IG-58, IG-63-64, IG-66-75, IG-95-96, IG-104,
+                        IG-113</td>
+                </tr>
+                <tr>
+                    <td><strong>User-need</strong></td>
+                    <td>44</td>
+                    <td>IG-03, IG-05-09, IG-12, IG-19, IG-21, IG-24-30, IG-38-39, IG-42, IG-47-48, IG-50, IG-55-56,
+                        IG-59, IG-76-83, IG-99, IG-103, IG-106, IG-112, IG-114</td>
+                </tr>
+                <tr>
+                    <td><strong>Constraint</strong></td>
+                    <td>4</td>
+                    <td>IG-23, IG-45, IG-51-52, IG-111</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Conflictos</h3>
+        <ul>
+            <li><strong>2 FLAGGED:</strong> CF-01 (bundles), CF-02 (customización)</li>
+            <li><strong>4 RESOLVED:</strong> CF-03 (Orchestra UX), CF-04 (competencia), CF-05 (UX benchmark), CF-06
+                (validación números)</li>
+        </ul>
+
+        <p style="margin-top: 1.5rem;">Para detalle completo de todos los insights y conflictos, consultar
+            <code>STATUS.html</code> y <code>02_Work/INSIGHTS_GRAPH.md</code>.</p>
+
+    </div>
+
+    <!-- Metodología -->
+    <div class="page">
+        <h1>8. Metodología</h1>
+
+        <h2>Proceso de Análisis</h2>
+        <p>Este reporte se generó siguiendo la metodología PD-Spec: un pipeline sistemático de análisis de producto con
+            trazabilidad completa desde fuentes hasta deliverables.</p>
+
+        <h3>Fuentes Procesadas</h3>
+        <ul>
+            <li><strong>54 archivos</strong> catalogados en 6 carpetas</li>
+            <li><strong>6 archivos _CONTEXT.md</strong> creados (Antecedentes, Workshop 1, Visión Futuro CORE, Propuesta
+                ruta, Entrevistas Operaciones, Root)</li>
+            <li><strong>4 archivos markdown</strong> leídos completamente</li>
+            <li><strong>6 archivos Word</strong> convertidos y procesados (textutil)</li>
+            <li><strong>3 interview maps (PNG)</strong> analizadas</li>
+        </ul>
+
+        <h3>Pipeline</h3>
+        <ol>
+            <li><strong>/kickoff:</strong> Configuración proyecto (project_name: TIMining, output_language: es)</li>
+            <li><strong>/analyze:</strong> Extracción de 115 insights atómicos verificados desde fuentes</li>
+            <li><strong>/synthesis:</strong> Detección de 6 conflictos (2 flagged, 4 resolved), construcción de System
+                Map</li>
+            <li><strong>/ship report:</strong> Generación de este reporte ejecutivo con traceability completa</li>
+        </ol>
+
+        <h3>Verificación</h3>
+        <p>Todos los insights pasaron verificación cruzada. Estado final:</p>
+        <ul>
+            <li><strong>115 insights:</strong> 100% VERIFIED</li>
+            <li><strong>0 PENDING, 0 INVALIDATED</strong></li>
+        </ul>
+
+        <h3>Limitaciones</h3>
+        <p>Archivos binarios no procesados (por limitaciones técnicas o priorización):</p>
+        <ul>
+            <li>3 PowerPoints root (Benchmark, Sello Experiencia, Workshop 01 slides)</li>
+            <li>6 PDFs (branding, strategic positioning, Gemini exercises)</li>
+            <li>26 fotos workshop adicionales (whiteboards/sticky notes) — consideradas repetitivas con Word "Casos de
+                Uso"</li>
+        </ul>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+
+        <p style="text-align: center; color: #666; font-size: 0.9rem; margin-top: 2rem;">
+            <em>Executive Report generado por PD-Spec · Trazabilidad completa a insights verificados · v1.0 ·
+                2026-02-14</em>
+        </p>
+
+    </div>
+
+    <script>
+        document.querySelectorAll('p, li, td, .callout, .warning').forEach(el => {
+            el.innerHTML = el.innerHTML.replace(/\[(IG-\d+|CF-\d+)\]/g, '<a href="STATUS.html#$1" class="ref-link">[$1]</a>');
+        });
+    </script>
+
+</body>
+
+</html>

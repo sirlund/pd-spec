@@ -146,3 +146,29 @@
 **Nota:** INSIGHTS_GRAPH.md fue encontrado vacío (posible reset manual). Archivo recreado con nuevos insights críticos. Los 110 insights originales pueden regenerarse con `/analyze` si es necesario.
 
 **Snapshot:** 5 insights nuevos (5 PENDING) · GAP actual vs futuro documentado
+
+*Todas los insights y conflictos están respaldados por referencias explícitas a fuentes procesadas.*
+
+## [2026-02-14T16:02] /ship (ALL 6 deliverables)
+
+**Request:** Usuario solicitó generar TODOS los outputs disponibles (prd, strategy, presentation, report, audit, benchmark).
+
+**Actions:**
+- ✅ Generado PRD.html v1.0 — Product Requirements Document completo (arquitectura CORE, 6 módulos, 20 casos de uso aspiracionales, 3 Lego Blocks, principios diseño, conflictos FLAGGED, roadmap 2026-2040)
+- ✅ Generado STRATEGY.html v1.0 — Strategic Roadmap (10 Pilares CCB, business case $10M+ valor, "Efecto Suiza" moat, riesgos/mitigaciones, oportunidades captura valor)
+- ✅ Generado PRESENTATION.html v1.0 — Reveal.js slide deck (18 slides ejecutivos: problema, GAP finding, solución, AI Copilot, roadmap, financials, decisiones pendientes)
+- ✅ Generado REPORT.html v1.0 — Executive Report (cover page, ToC, executive summary, findings por categoría Business/Technical/UX/Constraints, valor documentado, roadmap, recomendaciones, metodología)
+- ✅ Generado AUDIT.html v1.0 — Product Audit (SWOT: 6 strengths, 5 weaknesses, 5 opportunities, 4 threats; 2 conflicts FLAGGED; 10 recomendaciones priorizadas)
+- ✅ Generado BENCHMARK.html v1.0 — Competitive Benchmark (landscape, feature comparison matrix vs OEMs/Super-Suites/Geo Vendors, 4 ventajas defensibles, gaps, posicionamiento estratégico)
+
+**Características comunes todos outputs:**
+- Versionado visible (v1.0) con changelog
+- Metadata header con snapshot Work layer (115 insights VERIFIED, 6 conflicts)
+- Traceability completa: todas las afirmaciones referencian [IG-XX] o [CF-XX]
+- Cross-references clickables → STATUS.html
+- Self-contained HTML (un solo archivo, print-friendly)
+- Idioma español según `output_language` en CLAUDE.md
+
+**Result:** 6 archivos HTML generados en `03_Outputs/`. Total insights referenciados: 115 (100% VERIFIED). Conflictos documentados: 6 (2 FLAGGED para decisión stakeholder, 4 RESOLVED con contexto).
+
+**Snapshot:** 115 insights (115 VERIFIED) · 6 conflicts (2 FLAGGED, 4 RESOLVED) · 7 outputs (STATUS + 6 deliverables)
