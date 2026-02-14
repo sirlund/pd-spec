@@ -626,17 +626,21 @@ Add two optional fields to insights in `/analyze`:
 ### [IG-42] (user-need) PENDING
 El plan minero se pierde en todos los turnos.
 Refs: transcript.md, reu_coo.md, entrevista_carolina.png
-Convergence: 3/5 sources
+Convergence: 60% (3/5 relevant sources)
 Voices: end-user (2), domain-expert (1)
 ```
 
 #### Convergence
 
-`Convergence: N/M sources` — how many of the total sources corroborate this claim. `/analyze` detects when the same pain/need/fact appears in multiple sources and aggregates into one insight with the convergence count.
+Convergence is a **ratio**, not an absolute number. `3/5 = 60%` normalizes signal strength across different set sizes — whether it's 3/5 controlled interviews or 9/15 mixed sources.
 
-- **N ≥ 3:** Strong signal — multiple independent sources confirm
-- **N = 2:** Moderate signal — corroborated once
-- **N = 1:** Single source — treat as hypothesis until corroborated
+`Convergence: X% (N/M relevant sources)` — percentage of **relevant** sources that corroborate this claim. The denominator M is "sources where this topic could appear", not "total files in the project." A workshop transcript about UX is a relevant source for a UX insight; a pricing spreadsheet is not.
+
+`/analyze` detects when the same pain/need/fact appears in multiple sources and aggregates into one insight with the convergence ratio.
+
+- **≥ 60%:** Strong signal — clear pattern across sources
+- **30-59%:** Moderate signal — corroborated but not dominant
+- **< 30%:** Weak signal — single-source or low corroboration, treat as hypothesis until validated
 
 #### Source Authority (Voices)
 
@@ -653,10 +657,10 @@ An insight about UX pain carries more weight when voiced by end-users. A pricing
 
 ### Downstream impact
 
-- **`/status` dashboard:** Sort/filter insights by convergence. High-convergence insights highlighted.
-- **`/synthesis`:** Convergence as factor in conflict resolution — "3 users say X, 1 CEO says Y" is useful context.
-- **`/ship` PRD:** Priority sections can reference convergence ("reported by 4/5 users" vs "single stakeholder request").
-- **Prevents premature prioritization:** Single-mention insights stay as hypotheses until validated by more sources.
+- **`/status` dashboard:** Sort/filter insights by convergence %. High-convergence insights highlighted.
+- **`/synthesis`:** Convergence ratio as factor in conflict resolution — "60% of users say X, 1 CEO says Y" is useful context.
+- **`/ship` PRD:** Priority sections can reference convergence ("reported by 60% of relevant sources" vs "single stakeholder mention").
+- **Prevents premature prioritization:** Low-convergence insights (<30%) flagged as hypotheses needing validation before driving product decisions.
 
 ### Architecture fit
 
