@@ -606,6 +606,78 @@ Concepto "Skynet": sistema analiza mina, corre N simulaciones, envía órdenes a
 
 ---
 
+## [BL-11] Convergence Tracking + Source Authority
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+
+### The gap
+
+All insights are treated as equal regardless of how many sources corroborate them or who said it. A pain point mentioned by 1 person in passing has the same weight as one reported by 4 out of 5 interviewees. Similarly, an observation from an end-user, a CEO, and a tech lead carry identical weight even though their authority on different topics varies.
+
+This matters for prioritization: in quantitative research, if 3+ of 5 users report the same pain, that's a strong signal. A single mention is a hypothesis. The pipeline currently has no way to express this.
+
+### What changes
+
+Add two optional fields to insights in `/analyze`:
+
+```markdown
+### [IG-42] (user-need) PENDING
+El plan minero se pierde en todos los turnos.
+Refs: transcript.md, reu_coo.md, entrevista_carolina.png
+Convergence: 3/5 sources
+Voices: end-user (2), domain-expert (1)
+```
+
+#### Convergence
+
+`Convergence: N/M sources` — how many of the total sources corroborate this claim. `/analyze` detects when the same pain/need/fact appears in multiple sources and aggregates into one insight with the convergence count.
+
+- **N ≥ 3:** Strong signal — multiple independent sources confirm
+- **N = 2:** Moderate signal — corroborated once
+- **N = 1:** Single source — treat as hypothesis until corroborated
+
+#### Source Authority (Voices)
+
+`Voices: role (count), role (count)` — who said it, categorized by their authority domain:
+
+| Voice type | Authority on | Examples |
+|---|---|---|
+| `end-user` | Pain points, workflows, usability | Operators, site managers, daily users |
+| `domain-expert` | Technical feasibility, architecture | CTOs, engineers, tech leads |
+| `business-stakeholder` | Strategy, pricing, market | CEOs, VPs, product managers |
+| `external` | Market context, competitive landscape | Consultants, analysts, benchmarks |
+
+An insight about UX pain carries more weight when voiced by end-users. A pricing insight carries more weight from business-stakeholders. The mismatch (CEO opining on UX, user opining on pricing) isn't invalid but signals lower authority.
+
+### Downstream impact
+
+- **`/status` dashboard:** Sort/filter insights by convergence. High-convergence insights highlighted.
+- **`/synthesis`:** Convergence as factor in conflict resolution — "3 users say X, 1 CEO says Y" is useful context.
+- **`/ship` PRD:** Priority sections can reference convergence ("reported by 4/5 users" vs "single stakeholder request").
+- **Prevents premature prioritization:** Single-mention insights stay as hypotheses until validated by more sources.
+
+### Architecture fit
+
+- Change to `/analyze` SKILL.md (add convergence/voices during extraction)
+- Change to `/status` and `/ship` (consume fields for display/sorting)
+- No new files or layers
+- Fields are optional — backward compatible with existing insights
+
+### Implementation checklist
+
+- [ ] Add convergence detection to `/analyze` SKILL.md cross-reference step
+- [ ] Add voice/role tagging to `/analyze` SKILL.md extraction
+- [ ] Define role taxonomy (end-user, domain-expert, business-stakeholder, external)
+- [ ] Update insight format spec in SKILL.md
+- [ ] Update `/status` template to display convergence/voices
+- [ ] Update `/ship` to reference convergence in priority justification
+- [ ] Update FRAMEWORK.md
+- [ ] Add CHANGELOG entry
+
+---
+
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
 
 Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)
