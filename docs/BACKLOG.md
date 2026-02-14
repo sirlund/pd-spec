@@ -335,7 +335,7 @@ This makes PD-Spec outputs more robust regardless of whether PD-Build exists. Th
 
 ## [BL-06] Design Implications in SYSTEM_MAP — `/synthesis` Enhancement
 
-**Status:** Proposed
+**Status:** Implemented (verified in TIMining QA test, 2026-02-14)
 **Priority:** Medium
 **Proposed in:** v3.0 session (2025-02-13)
 
@@ -383,4 +383,362 @@ This makes every downstream deliverable (PRD, report, strategy, presentation) mo
 - [ ] Update `/ship` to include design implications in PRD module sections
 - [ ] Ensure implications reference their source insights
 - [ ] Add CHANGELOG entry
-- [ ] Test with a project that has verified insights across multiple categories
+- [x] Test with a project that has verified insights across multiple categories — TIMining QA test
+
+---
+
+## [BL-07] `/extract` — Dedicated Source Extraction Skill
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related QA:** QA-04a, QA-04b, QA-09, QA-12, QA-13
+
+### The gap
+
+`/analyze` currently does two unrelated jobs: (1) reading heterogeneous file types (md, docx, pdf, pptx, png, jpg) and converting them to text, and (2) extracting insights, cross-referencing, and detecting conflicts. The extraction step is slow, error-prone, and blocks the analytical work.
+
+### What it does
+
+A dedicated skill that reads ALL files in `01_Sources/`, converts each to normalized text, and writes the result to `_CONTEXT.md` files per folder. After `/extract`, every source is represented as readable text that `/analyze` can consume directly.
+
+### File type handling
+
+| Type | Method | Notes |
+|---|---|---|
+| `.md` | Already readable | No conversion needed |
+| `.docx` | `textutil -convert txt` (macOS) | Fallback: `pandoc` |
+| `.pdf` | Read tool with `pages` param | 20 pages per call, iterate for larger |
+| `.pptx` | `unzip -p file.pptx ppt/slides/slide*.xml` then strip XML tags | No external dependencies |
+| `.png/.jpg/.jpeg/.webp/.heic` | Read tool (multimodal) | ALL images read, no filtering |
+| `.xlsx/.csv` | Read tool or `textutil` | |
+| `.mp4/.mov` | Not processable | Suggest manual transcription |
+
+### Key principle
+
+If it's in `01_Sources/`, it gets read. No prioritization, no filtering. Workshop whiteboard photos are as important as markdown transcripts.
+
+### Output format
+
+Enriches existing `_CONTEXT.md` files following `_CONTEXT_TEMPLATE.md` format. For each file:
+
+```markdown
+### filename.png
+- **Format:** PNG image
+- **Extracted:** Whiteboard with 3 columns of sticky notes. Column 1 "KEEP":
+  datos real-time, alertas WhatsApp. Column 2 "STOP": 3D viewer, reportes PDF.
+  Column 3 "START": copiloto IA, recomendaciones proactivas.
+```
+
+### Pipeline change
+
+```
+Before: /kickoff → /analyze → /status → /synthesis → /ship
+After:  /kickoff → /extract → /analyze → /synthesis → /ship
+```
+
+`/extract` runs once per source batch. Re-run when new sources are added.
+
+### Architecture fit
+
+- **Reads:** `01_Sources/*` (all files)
+- **Writes:** `01_Sources/*/_CONTEXT.md` (enriched, not created from scratch)
+- **Does NOT write to:** `02_Work/` or `03_Outputs/`
+- Respects `01_Sources/` read-only mandate: file content unchanged, only `_CONTEXT.md` metadata added
+
+### Implementation checklist
+
+- [ ] Create `.claude/skills/extract/SKILL.md`
+- [ ] Define extraction rules per file type
+- [ ] Ensure `_CONTEXT_TEMPLATE.md` format compliance (QA-10)
+- [ ] Prohibit insight derivation in _CONTEXT.md (QA-11)
+- [ ] Add parallelization hints for independent file reads (QA-08)
+- [ ] Remove file reading logic from `/analyze` SKILL.md
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Update README
+- [ ] Add CHANGELOG entry
+
+---
+
+## [BL-08] Merge `/status` Into `/analyze` and `/synthesis` Output
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Related QA:** QA-21, QA-27, QA-28, QA-29
+
+### The gap
+
+`/status` is a separate skill that reads the Work layer and generates `STATUS.html`. But it's always run immediately after `/analyze` or `/synthesis` — it's never useful on its own. Running it separately adds a step, wastes time (QA-27: 4-9 minutes), and the user has to remember to invoke it.
+
+### What changes
+
+1. **`/analyze` generates STATUS.html as its final step** — after writing insights and conflicts, it generates the dashboard automatically. The user sees results immediately.
+2. **`/synthesis` regenerates STATUS.html as its final step** — after updating statuses and system map, the dashboard reflects the new state.
+3. **`/status` is removed as a standalone skill** — or kept as an alias that just regenerates the dashboard without rerunning analysis.
+
+### Performance: data/template separation (QA-27 option C)
+
+To avoid slow HTML generation:
+1. `/analyze` and `/synthesis` write a `STATUS_DATA.json` file with structured insight/conflict/module data.
+2. `STATUS.html` is a **static template** that reads `STATUS_DATA.json` via `fetch()` or inline `<script>`.
+3. The template is written once and never regenerated. Only the JSON changes.
+
+This reduces generation from writing ~500 lines of HTML to writing ~100 lines of JSON.
+
+### Architecture fit
+
+- **STATUS.html** becomes a static file in `03_Outputs/` (template, not regenerated)
+- **STATUS_DATA.json** is the dynamic file written by `/analyze` and `/synthesis`
+- Eliminates `/status` as a separate skill entry point
+- Simplifies pipeline: `/extract` → `/analyze` (includes dashboard) → `/synthesis` (updates dashboard) → `/ship`
+
+### Implementation checklist
+
+- [ ] Design STATUS_DATA.json schema (insights, conflicts, modules, gaps, metadata)
+- [ ] Create static STATUS.html template that reads JSON
+- [ ] Add JSON generation as final step of `/analyze` SKILL.md
+- [ ] Add JSON regeneration as final step of `/synthesis` SKILL.md
+- [ ] Remove or deprecate `/status` SKILL.md
+- [ ] Update CLAUDE.md skills pipeline table
+- [ ] Update README
+- [ ] Add CHANGELOG entry
+
+---
+
+## [BL-09] QA Fixes — Skill Hardening (29 findings)
+
+**Status:** Proposed
+**Priority:** High
+**Proposed in:** TIMining QA session (2026-02-14)
+**Tracking:** Full findings listed in Appendix A
+
+### What this covers
+
+Bug fixes and improvements identified during real-world testing with TIMining data (mining software, 63 source files, 110 insights, 6 conflicts). Grouped by skill:
+
+#### `/analyze` fixes
+- **QA-03, QA-20:** Strengthen cross-reference — add tension examples, look for user-need vs technical/business contradictions
+- **QA-05:** Require key quote per insight (1-2 sentences from source)
+- **QA-08:** Add parallelization hints for independent reads
+- **QA-14:** Reinforce atomic claims — "a list of 10 needs is 10 insights, not 1"
+- **QA-15:** Add granularity guidance — when to split vs consolidate
+- **QA-16:** Explicit format: `PENDING` not `**PENDING**`
+- **QA-17:** Formalize `## Section` headers as official grouping mechanism
+- **QA-19:** Every conflict side must reference `[IG-XX]`
+
+#### `/status` fixes (apply to template if BL-08 merges status)
+- **QA-25:** Show source refs in insight detail
+- **QA-28:** Single-level approve/reject (no confusing group+individual hierarchy)
+- **QA-29:** Group summaries must synthesize implications, not list keywords
+
+#### `/synthesis` fixes
+- **QA-24:** Validate argument IDs exist in INSIGHTS_GRAPH.md/CONFLICTS.md before executing
+
+#### `/kickoff` + CLAUDE.md fixes
+- **QA-06:** Eliminate redundancy between Project Context and Project Settings
+- **QA-07:** Template should use `[Set by /kickoff]` for Team field
+
+#### General
+- **QA-02:** Reinforce timestamp format in MEMORY.md writes
+- **QA-10:** _CONTEXT.md must follow _CONTEXT_TEMPLATE.md format
+- **QA-11:** Prohibit insight derivation in _CONTEXT.md (layer boundary)
+
+### Implementation checklist
+
+- [ ] Apply all /analyze fixes to SKILL.md
+- [ ] Apply /status fixes to SKILL.md or static template
+- [ ] Apply /synthesis validation fix
+- [ ] Apply /kickoff + CLAUDE.md template fixes
+- [ ] Apply general fixes across skills
+- [ ] Regression test with TIMining data on clean branch
+
+---
+
+## [BL-10] Insight Temporal Tag — `current` vs `aspirational`
+
+**Status:** Proposed
+**Priority:** Medium
+**Proposed in:** TIMining QA session (2026-02-14)
+
+### The gap
+
+All insights share the same status lifecycle (PENDING → VERIFIED) but don't distinguish between **what exists today** and **what stakeholders want to build**. In the TIMining test, insights from operations interviews describe the current product (IG-01 to IG-39), while workshop insights describe future aspirations (IG-40+, IG-76-79 "Skynet" concept). Both are VERIFIED but mean very different things for product decisions.
+
+A PRD that mixes "users currently lose the mining plan every shift" with "we want the system to auto-run simulations and send orders to machines" without distinction is misleading.
+
+### What changes
+
+Add an optional temporal tag to insights in `/analyze`:
+
+```markdown
+### [IG-42] (user-need) PENDING `current`
+Plan minero se pierde en todos los turnos, sin sistema no se detecta cuándo ni dónde.
+
+### [IG-78] (user-need) PENDING `aspirational`
+Concepto "Skynet": sistema analiza mina, corre N simulaciones, envía órdenes a personas/máquinas.
+```
+
+- **`current`** — describes existing product behavior, user pain, or measured reality
+- **`aspirational`** — describes desired future state, vision, or proposed solution
+
+### Downstream impact
+
+- `/status` dashboard can filter/group by temporal tag
+- `/ship` PRD can separate "Current State" from "Target State" sections
+- `/synthesis` can flag conflicts between current constraints and aspirational goals (e.g., "users want Skynet but industry has 1+ year sales cycles")
+
+### Architecture fit
+
+- Change to `/analyze` SKILL.md (add tag during extraction)
+- Change to `/status` and `/ship` (consume tag for grouping/filtering)
+- No new files or layers
+- Tag is optional — backward compatible with existing insights
+
+### Implementation checklist
+
+- [ ] Add temporal tag to insight format in `/analyze` SKILL.md
+- [ ] Define tagging criteria with examples
+- [ ] Update `/status` to filter/group by tag
+- [ ] Update `/ship` PRD template to separate current vs aspirational
+- [ ] Update FRAMEWORK.md
+- [ ] Add CHANGELOG entry
+
+---
+
+# Appendix A: QA Findings — TIMining Test (2026-02-14)
+
+Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)
+Sources: Real TIMining documentation (mining software, 63 files)
+
+### QA-01: Cursor multi-agent worktree (N/A)
+- **Severity:** N/A — Cursor behavior, not PD-Spec
+- **What:** Cursor multi-agent mode creates isolated worktrees. `01_Sources/` was empty in the worktree; agent escaped to main repo path to find sources.
+
+### QA-02: MEMORY.md timestamp incompleto
+- **Severity:** Minor
+- **Fix in:** `/analyze` SKILL.md
+- **What:** Agent wrote `[2025-02-13]` instead of `[2025-02-13THH:MM]` as the template requires.
+
+### QA-03: 0 conflicts detected in 33 insights
+- **Severity:** Review
+- **Fix in:** `/analyze` SKILL.md (cross-reference step)
+- **What:** 33 insights from a complex product, 0 conflicts. Obvious tensions exist but were not detected.
+
+### QA-04a: PNG images not read (agent is multimodal)
+- **Severity:** Medium
+- **Fix in:** `/analyze` SKILL.md Phase 1
+- **What:** Agent skipped PNGs that could have been analyzed directly via multimodal Read tool.
+
+### QA-04b: .docx files not converted
+- **Severity:** Medium
+- **Fix in:** `/analyze` SKILL.md Phase 1
+- **What:** .docx files skipped. `textutil -convert txt` available on macOS.
+
+### QA-05: No key quotes in insights
+- **Severity:** Minor
+- **Fix in:** `/analyze` SKILL.md Phase 3
+- **What:** /status expects blockquote per insight but /analyze doesn't require them.
+
+### QA-06: Redundancia entre Project Context y Project Settings
+- **Severity:** Medium
+- **Fix in:** CLAUDE.md template + `/kickoff` SKILL.md
+- **What:** `project_name` and `one_liner` duplicated in two sections.
+
+### QA-07: Team hardcodeado en template
+- **Severity:** Medium
+- **Fix in:** CLAUDE.md template + `/kickoff` SKILL.md
+- **What:** `Team: Niklas Lundin` hardcoded. New users inherit it.
+
+### QA-01b: Kickoff duplicación
+- **Severity:** Closed
+- **What:** Composer 1.5 duplicated CLAUDE.md sections. Not reproducible with other agents.
+
+### QA-08: Skills no señalan pasos paralelizables
+- **Severity:** Enhancement
+- **Fix in:** All SKILL.md files
+- **What:** /analyze processes sources linearly. Independent reads could be parallelized.
+
+### QA-09: Falta skill de extracción → BL-07
+- **Severity:** Feature request
+- **What:** No mechanism to read binaries and generate _CONTEXT.md automatically.
+
+### QA-10: _CONTEXT.md no sigue _CONTEXT_TEMPLATE.md
+- **Severity:** Medium
+- **What:** Agent wrote free-form _CONTEXT.md instead of template format.
+
+### QA-11: "Insights Derivados" en _CONTEXT.md — blurs layer boundary
+- **Severity:** Medium
+- **What:** Agent put insights in 01_Sources/ instead of 02_Work/.
+
+### QA-12: Fotos de workshop no leídas (multimodal desaprovechado)
+- **Severity:** Medium
+- **What:** 21 JPEGs + 5 HEICs of whiteboards marked "not reviewed individually."
+
+### QA-13: PDFs legibles pero no leídos
+- **Severity:** Minor
+- **What:** Read tool handles PDFs natively but agent treated them as unreadable binaries.
+
+### QA-14: Insights no atómicos (KEEP-STOP-START)
+- **Severity:** Medium
+- **What:** IG-80 lists ~10 items in one insight. Should be ~10 separate insights.
+
+### QA-15: Insights demasiado granulares (Project TIM)
+- **Severity:** Minor
+- **What:** 9 individual TIM capability insights could be 2-3. Tension with QA-14.
+
+### QA-16: Status format con bold rompe parsing
+- **Severity:** Medium
+- **What:** `**PENDING**` instead of `PENDING` breaks extraction.
+
+### QA-17: Secciones temáticas no especificadas
+- **Severity:** Low
+- **What:** Agent added `## Section` headers. Useful but not in spec.
+
+### QA-18: Line breaks mid-word
+- **Severity:** Minor
+- **What:** "priori\nzado" split across lines. Agent behavior.
+
+### QA-19: Conflictos sin [IG-XX] references
+- **Severity:** Medium
+- **What:** Conflicts cite evidence without insight IDs. Not traceable.
+
+### QA-20: Solo 6 conflictos para 110 insights
+- **Severity:** Review
+- **What:** Obvious tensions missed (IG-80 no-3D vs IG-44 3D-layer).
+
+### QA-21: /status dio texto plano en vez de HTML
+- **Severity:** High
+- **What:** Antigravity doesn't load .claude/skills/ automatically.
+
+### QA-22: Agente usa Python para generar STATUS.html
+- **Severity:** Low
+- **What:** Agent used python3 instead of Write tool. Reasonable but violates tool constraints.
+
+### QA-23: 110 insights inviable para review manual
+- **Severity:** High (UX)
+- **What:** Approve/reject 110 items one by one is not viable. Need bulk operations.
+
+### QA-24: /synthesis cargado con argumentos de otro proyecto
+- **Severity:** High (trust/safety)
+- **What:** Session continuation leaked arguments from a different project (NeoWallet).
+
+### QA-25: Source refs no visibles en detalle
+- **Severity:** Medium
+- **What:** Dashboard shows claims without source reference.
+
+### QA-26: Agrupación mezcla contextos → resolved by QA-27A
+- **Severity:** Minor
+- **What:** Ad-hoc regrouping mixed insights from different sources.
+
+### QA-27: /status tarda 4-9 minutos
+- **Severity:** High (performance)
+- **What:** HTML generation too slow. Fix: formalize /analyze sections + data/template separation.
+
+### QA-28: Dos niveles approve/reject confusos
+- **Severity:** Medium
+- **What:** Group + individual buttons without clear hierarchy.
+
+### QA-29: Resúmenes de grupo son listas de keywords
+- **Severity:** Medium
+- **What:** Summaries repeat insight keywords instead of synthesizing implications.
