@@ -19,6 +19,6 @@
   their own metadata. Markdown files can still use _SOURCE_TEMPLATE.md
   for internal metadata.
 
-  The /analyze skill reads this file to understand folder contents
+  The /extract skill reads this file to understand folder contents
   and apply context to all files in the folder.
 -->
