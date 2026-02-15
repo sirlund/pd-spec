@@ -1,5 +1,46 @@
 # Changelog
 
+## [4.0.1] — 2026-02-15
+
+### Highlights
+
+**Stress-tested with real data.** 57 files across 6 folders (interviews, workshops, PDFs, PPTX, HEIC photos, videos) exposed 12 bugs in extraction and analysis. All fixed. The agent now processes every file or tells you exactly why it couldn't.
+
+### Extraction reliability
+
+- **Every file, no exceptions.** The agent can no longer silently skip files. Every source discovered is either processed or explicitly reported as unprocessable with a reason. A completeness check at the end compares the output against the original file list.
+- **Better PDF handling.** Large PDFs are read in 20-page chunks. Image-only PDFs (scans without text) are detected and flagged with guidance instead of silently failing.
+- **iPhone photos supported.** HEIC images are converted automatically via macOS native tools. Video and audio files are reported as unsupported with a suggestion to provide transcripts.
+- **Source paths preserved.** When Office files are converted to temporary formats for reading, the extraction always references the original file in `01_Sources/`, not the temp file.
+- **Per-folder progress reports.** The extraction summary now breaks down every folder individually — files processed, files skipped, claims extracted, and a completeness check against the discovery list.
+
+### Analysis quality
+
+- **Who said it matters.** Every insight now carries a `Voice` (user, stakeholder, document, researcher) and `Authority` level (direct quote, observation, hypothesis, vision, fact). A user's pain point no longer looks the same as a CEO's aspiration.
+- **Smarter deduplication.** Before creating new insights, the agent checks for semantic duplicates against all existing insights. Duplicates boost the convergence count on the existing insight instead of creating a new ID.
+- **Format consistency.** When old and new insights coexist in different formats, the agent detects and reports the mismatch. New insights always follow the current spec.
+- **Stable ID convention.** Insight IDs use two-digit minimum: `IG-01` through `IG-99`, then `IG-100`+. No three-digit zero-padding (`IG-001`) that breaks cross-reference anchors.
+
+### Pipeline flow
+
+- **`/analyze` → `/status` → `/synthesis`.** After analysis, the agent now recommends `/status` (the visual dashboard) as the review step, not `/synthesis` directly. You see your insights before you commit to them.
+- **Quick observations without the pipeline.** The "Add Context" button in STATUS.html now generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note — no need to run the full `/extract` → `/analyze` cycle for a single observation.
+- **Ad-hoc changes logged.** Any state change to Work layer files (approving insights in conversation, manual edits, direct injections) is now logged to MEMORY.md, not just formal skill runs.
+
+<details>
+<summary>QA reference numbers</summary>
+
+From QA v2 testing on test-timining branch (57 files, 6 folders):
+- Extraction: BUG-01, BUG-04, BUG-05, BUG-06, BUG-07
+- Analysis: BUG-08, BUG-09, BUG-10, BUG-14
+- Pipeline: BUG-11, BUG-13, BUG-15
+- Not fixable via skill edits (systemic): BUG-02, BUG-03, BUG-12, PERF-01
+- Architectural proposals pending: ARCH-01, ARCH-02, ARCH-03
+
+</details>
+
+---
+
 ## [4.0.0] — 2026-02-15
 
 ### Highlights
