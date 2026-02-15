@@ -3,7 +3,7 @@ name: ship
 description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|audit|strategy]"
+argument-hint: "[prd|presentation|report|lean-canvas|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -36,6 +36,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` — Product Requirements Document (default).
    - `presentation` — Reveal.js slide deck with key insights and decisions.
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
+   - `lean-canvas` — Business model on one page (9-block Lean Canvas). See step 15.
    - `benchmark` — **Deprecated.** See step 11 note.
    - `audit` / `strategy` — Specialized documents.
 
@@ -149,7 +150,26 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
 
     **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-14. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+15. **For lean-canvas** (`/ship lean-canvas`):
+    - Output: `03_Outputs/LEAN_CANVAS.html` (via Template+JSON)
+    - Template: `_templates/lean-canvas.html`
+    - Schema: `_schemas/lean-canvas.schema.json`
+    - Uses a `canvas` object instead of `sections` — each key is a canvas block with `items` (array of strings), `refs` (array of `[IG-XX]`), and optional `gap: true`.
+    - Derive from business and constraint insights in `INSIGHTS_GRAPH.md`:
+      1. **Problem** (top 3 problems) — from user-need insights.
+      2. **Solution** (top 3 features) — from system map modules.
+      3. **Key Metrics** — from business insights.
+      4. **Unique Value Proposition** — from business + user-need insights.
+      5. **Unfair Advantage** — from technical/business insights.
+      6. **Channels** — from business insights or mark `gap: true`.
+      7. **Customer Segments** — from user-need insights (link to personas if available).
+      8. **Cost Structure** — from business/constraint insights or mark `gap: true`.
+      9. **Revenue Streams** — from business insights or mark `gap: true`.
+    - Each block must reference `[IG-XX]` or use `gap: true` marker.
+    - One-page format optimized for print.
+    - Traceability: propose the canvas to the user before generating (same approval flow as other types).
+
+16. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]

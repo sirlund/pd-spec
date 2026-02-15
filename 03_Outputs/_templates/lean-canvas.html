@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lean Canvas</title>
+  <link rel="stylesheet" href="_base.css">
+  <style>
+    /* Lean Canvas Grid — single page */
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 0;
+      border: 2px solid #202124;
+      margin-top: 16pt;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .canvas-cell {
+      border: 1px solid #c7c7c7;
+      padding: 10px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-cell h3 {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #202124;
+      margin: 0 0 6px;
+      padding: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .canvas-cell ul {
+      margin: 0;
+      padding-left: 14px;
+      flex: 1;
+    }
+
+    .canvas-cell li {
+      font-size: 9pt;
+      line-height: 1.35;
+      margin-bottom: 3px;
+      color: #333;
+    }
+
+    .canvas-cell .cell-refs {
+      margin-top: auto;
+      padding-top: 6px;
+      font-size: 7.5pt;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* Grid positions — classic Lean Canvas layout */
+    /* Row 1: Problem | Solution | UVP | Unfair Advantage | Customer Segments */
+    /* Problem and Customer Segments span 2 sub-rows */
+    .cell-problem        { grid-column: 1; grid-row: 1 / 3; }
+    .cell-solution        { grid-column: 2; grid-row: 1; }
+    .cell-key-metrics     { grid-column: 2; grid-row: 2; }
+    .cell-uvp             { grid-column: 3; grid-row: 1 / 3; }
+    .cell-unfair-advantage { grid-column: 4; grid-row: 1; }
+    .cell-channels        { grid-column: 4; grid-row: 2; }
+    .cell-customer-segments { grid-column: 5; grid-row: 1 / 3; }
+
+    /* Row 2 (bottom): Cost Structure | Revenue Streams */
+    .cell-cost-structure  { grid-column: 1 / 3; grid-row: 3; min-height: 80px; }
+    .cell-revenue-streams { grid-column: 3 / 6; grid-row: 3; min-height: 80px; }
+
+    /* GAP styling */
+    .canvas-cell.is-gap {
+      background: #fffdf0;
+    }
+    .canvas-cell.is-gap h3::after {
+      content: " [GAP]";
+      font-size: 7.5pt;
+      color: #856404;
+      font-weight: 500;
+    }
+
+    /* Print: force single page */
+    @media print {
+      .page { padding: 1.5cm; }
+      h1 { font-size: 20pt; margin-bottom: 6px; }
+      .doc-meta { margin-bottom: 10pt; padding: 8px 12px; }
+      .canvas-cell { min-height: 90px; }
+      .cell-cost-structure, .cell-revenue-streams { min-height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page" id="content">
+    <!-- Rendered by JS from embedded JSON -->
+  </div>
+
+  <script id="pd-data" type="application/json">{}</script>
+
+  <script src="_base.js"></script>
+  <script>
+  (function() {
+    var data = PDSpec.loadData();
+    if (!data) return;
+
+    document.title = data.title || 'Lean Canvas';
+    if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
+
+    var content = document.getElementById('content');
+
+    // Title
+    var h1 = document.createElement('h1');
+    h1.textContent = data.title || 'Lean Canvas';
+    content.appendChild(h1);
+
+    // Doc meta
+    PDSpec.renderDocMeta(data.meta, content);
+
+    // Canvas grid
+    if (!data.canvas) return;
+    var c = data.canvas;
+
+    var blocks = [
+      { key: 'problem',            cls: 'cell-problem',            label: 'Problem' },
+      { key: 'solution',           cls: 'cell-solution',           label: 'Solution' },
+      { key: 'key_metrics',        cls: 'cell-key-metrics',        label: 'Key Metrics' },
+      { key: 'uvp',                cls: 'cell-uvp',                label: 'Unique Value Proposition' },
+      { key: 'unfair_advantage',   cls: 'cell-unfair-advantage',   label: 'Unfair Advantage' },
+      { key: 'channels',           cls: 'cell-channels',           label: 'Channels' },
+      { key: 'customer_segments',  cls: 'cell-customer-segments',  label: 'Customer Segments' },
+      { key: 'cost_structure',     cls: 'cell-cost-structure',     label: 'Cost Structure' },
+      { key: 'revenue_streams',    cls: 'cell-revenue-streams',    label: 'Revenue Streams' }
+    ];
+
+    var grid = document.createElement('div');
+    grid.className = 'canvas-grid';
+
+    blocks.forEach(function(b) {
+      var block = c[b.key] || { items: [] };
+      var cell = document.createElement('div');
+      cell.className = 'canvas-cell ' + b.cls;
+      if (block.gap) cell.className += ' is-gap';
+
+      var h3 = document.createElement('h3');
+      h3.textContent = b.label;
+      cell.appendChild(h3);
+
+      if (block.items && block.items.length) {
+        var ul = document.createElement('ul');
+        block.items.forEach(function(item) {
+          var li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+        cell.appendChild(ul);
+      }
+
+      if (block.refs && block.refs.length) {
+        var refs = document.createElement('div');
+        refs.className = 'cell-refs ref-link-target';
+        refs.textContent = block.refs.map(function(r) { return '[' + r + ']'; }).join(' ');
+        cell.appendChild(refs);
+      }
+
+      grid.appendChild(cell);
+    });
+
+    content.appendChild(grid);
+    PDSpec.convertRefs(content, false);
+  })();
+  </script>
+</body>
+</html>
