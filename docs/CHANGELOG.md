@@ -27,6 +27,10 @@
 - **Quick observations without the pipeline.** The "Add Context" button in STATUS.html now generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note — no need to run the full `/extract` → `/analyze` cycle for a single observation.
 - **Ad-hoc changes logged.** Any state change to Work layer files (approving insights in conversation, manual edits, direct injections) is now logged to MEMORY.md, not just formal skill runs.
 
+### Performance
+
+- **Image batching.** Workshop photos (the biggest token cost in extraction) are now processed in batches of 3-4 images per call instead of one at a time. This reduces per-image overhead and lets the agent see cross-image context — e.g., a sequence of whiteboard photos that form a connected flow. Full parallelism (per-folder agents) is planned for BL-17.
+
 ### Resilience (context overflow mitigations)
 
 - **Checkpoint after each folder.** Extraction results are written to disk after each subfolder completes, not at the end. If the context window compacts mid-extraction, already-processed folders are safe on disk and the agent can continue from where it left off.
@@ -40,6 +44,7 @@ From QA v2 testing on test-timining branch (57 files, 6 folders):
 - Extraction: BUG-01, BUG-04, BUG-05, BUG-06, BUG-07
 - Analysis: BUG-08, BUG-09, BUG-10, BUG-14
 - Pipeline: BUG-11, BUG-13, BUG-15
+- Performance: PERF-01
 - Mitigated (workarounds): BUG-02, BUG-03, BUG-12
 - Architectural proposals pending: ARCH-01, ARCH-02, ARCH-03
 
