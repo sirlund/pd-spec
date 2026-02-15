@@ -202,11 +202,19 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
     - Output: `03_Outputs/LEAN_CANVAS.html` (via Template+JSON)
     - Template: `_templates/lean-canvas.html`
     - Schema: `_schemas/lean-canvas.schema.json`
-    - Derive canvas blocks from business, user-need, and constraint insights.
-    - Standard 9 blocks: Problem, Solution, Key Metrics, Unique Value Proposition, Unfair Advantage, Channels, Customer Segments, Cost Structure, Revenue Streams.
-    - Each block uses `{content, refs}` with `[IG-XX]` references.
-    - Blocks without insight backing use `[GAP]` marker.
-    - JSON uses `blocks` object keyed by block ID.
+    - Uses a `canvas` object instead of `sections` — each key is a canvas block with `items` (array of strings), `refs` (array of `[IG-XX]`), and optional `gap: true`.
+    - Derive from business and constraint insights in `INSIGHTS_GRAPH.md`:
+      1. **Problem** (top 3 problems) — from user-need insights.
+      2. **Solution** (top 3 features) — from system map modules.
+      3. **Key Metrics** — from business insights.
+      4. **Unique Value Proposition** — from business + user-need insights.
+      5. **Unfair Advantage** — from technical/business insights.
+      6. **Channels** — from business insights or mark `gap: true`.
+      7. **Customer Segments** — from user-need insights (link to personas if available).
+      8. **Cost Structure** — from business/constraint insights or mark `gap: true`.
+      9. **Revenue Streams** — from business insights or mark `gap: true`.
+    - Each block must reference `[IG-XX]` or use `gap: true` marker.
+    - One-page format optimized for print.
 
 17. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.

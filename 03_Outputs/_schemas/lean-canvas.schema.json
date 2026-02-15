@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "lean-canvas.schema.json",
+  "description": "JSON Schema for PD-Spec Lean Canvas output data",
+  "type": "object",
+  "required": ["meta", "title", "canvas"],
+  "properties": {
+    "meta": {
+      "$ref": "base.schema.json#/$defs/meta",
+      "properties": {
+        "type": { "const": "lean-canvas" }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title (in output_language)"
+    },
+    "canvas": {
+      "type": "object",
+      "required": ["problem", "solution", "key_metrics", "uvp", "unfair_advantage", "channels", "customer_segments", "cost_structure", "revenue_streams"],
+      "properties": {
+        "problem": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Top 3 problems — from user-need insights"
+        },
+        "solution": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Top 3 features — from system map modules"
+        },
+        "key_metrics": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Key metrics — from business insights"
+        },
+        "uvp": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Unique Value Proposition — from business + user-need insights"
+        },
+        "unfair_advantage": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Unfair Advantage — from technical/business insights"
+        },
+        "channels": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Channels — from business insights or [GAP]"
+        },
+        "customer_segments": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Customer Segments — from user-need insights"
+        },
+        "cost_structure": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Cost Structure — from business/constraint insights or [GAP]"
+        },
+        "revenue_streams": {
+          "$ref": "#/$defs/canvasBlock",
+          "description": "Revenue Streams — from business insights or [GAP]"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "canvasBlock": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of entries for this canvas block"
+        },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" },
+          "description": "Insight/conflict references"
+        },
+        "gap": {
+          "type": "boolean",
+          "description": "True if this block lacks source backing"
+        }
+      }
+    }
+  }
+}
