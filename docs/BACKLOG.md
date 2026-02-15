@@ -976,6 +976,236 @@ Visual and interaction improvements across all 10 HTML templates:
 
 ---
 
+## [BL-16] PROJECT.md — Separate Project Settings from Engine Config (ARCH-01)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-01 (QA v2, 2026-02-15)
+**Related:** BL-07 (/extract), all skills that read `output_language`
+
+### User stories
+
+**US-1: Merge without conflicts**
+> As a PD-Spec user maintaining a project branch, I want project settings (name, language, one-liner) to live in a separate file from engine config, so that merging PD-Spec updates from main never conflicts with my project setup.
+
+**Acceptance criteria:**
+- [ ] `PROJECT.md` exists at repo root, created by `/kickoff`
+- [ ] Contains: `project_name`, `output_language`, `one_liner`, `team`, `started`
+- [ ] `CLAUDE.md` no longer has `## Project Settings` section
+- [ ] All skills read settings from `PROJECT.md` instead of `CLAUDE.md`
+- [ ] Merging `main` into a project branch touches zero lines in `PROJECT.md`
+- [ ] `.gitignore` does NOT exclude `PROJECT.md` — it's tracked per branch
+
+**US-2: Kickoff writes to the right place**
+> As a new user running `/kickoff`, I want my answers saved to `PROJECT.md`, so that `CLAUDE.md` stays clean engine config that I never edit.
+
+**Acceptance criteria:**
+- [ ] `/kickoff` creates `PROJECT.md` if missing, updates if exists
+- [ ] `/kickoff` no longer writes to `CLAUDE.md` Project Settings
+- [ ] Existing projects with settings in `CLAUDE.md` get a one-time migration prompt: "Detected settings in CLAUDE.md. Move to PROJECT.md?"
+
+**US-3: Skills find settings reliably**
+> As a skill (/extract, /analyze, /ship, etc.), I need to find `output_language` and `project_name` in a predictable location, so that I generate content in the correct language regardless of CLAUDE.md version.
+
+**Acceptance criteria:**
+- [ ] All 10 skills read `output_language` from `PROJECT.md`
+- [ ] If `PROJECT.md` is missing, skills fall back to defaults (`en`, no project name) and suggest running `/kickoff`
+- [ ] Skills never write to `PROJECT.md` (read-only for all except `/kickoff`)
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `PROJECT.md` | NEW — project settings template |
+| `CLAUDE.md` | Remove `## Project Settings`, add `## Project Settings → PROJECT.md` pointer |
+| `.claude/skills/kickoff/SKILL.md` | Write to `PROJECT.md` instead of `CLAUDE.md` |
+| `.claude/skills/extract/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/analyze/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/synthesis/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/ship/SKILL.md` | Read `output_language` + `project_name` from `PROJECT.md` |
+| `.claude/skills/status/SKILL.md` | Read `output_language` + `project_name` from `PROJECT.md` |
+| `.claude/skills/audit/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/seed/SKILL.md` | Read `output_language` from `PROJECT.md` |
+
+### Risks
+
+- **Migration friction** — existing projects must migrate. Mitigate with one-time prompt in `/kickoff`.
+- **Two files to maintain** — but `PROJECT.md` is set-and-forget (written once by `/kickoff`).
+
+---
+
+## [BL-17] SOURCE_MAP.md — Incremental Extraction State (ARCH-02)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-02 (QA v2, 2026-02-15)
+**Related:** BUG-01 (file skipping), BUG-02 (context overflow), PERF-01 (performance)
+
+### User stories
+
+**US-1: Don't reprocess unchanged files**
+> As a researcher adding 3 new interview files to a project with 57 existing sources, I want `/extract` to process only the 3 new files, so that extraction takes 2 minutes instead of 25.
+
+**Acceptance criteria:**
+- [ ] `02_Work/SOURCE_MAP.md` tracks: file path, format, status (pending/processed/error), claim count, md5 hash, last processed timestamp
+- [ ] `/extract` computes md5 hash per file (`md5 -q`, macOS native)
+- [ ] New files (not in map) → processed and appended to EXTRACTIONS.md
+- [ ] Unchanged files (hash matches) → skipped, claims preserved
+- [ ] Modified files (hash differs) → reprocessed, section replaced in EXTRACTIONS.md
+- [ ] Deleted files (in map but not on disk) → section removed from EXTRACTIONS.md, marked as orphan in SOURCE_MAP
+- [ ] Full re-extract still possible: `md5 -q` fails or user passes `--full` flag
+
+**US-2: Know what failed and retry**
+> As a researcher whose extraction hit a context limit, I want to see which files failed and re-run only those, so that I don't start over from scratch.
+
+**Acceptance criteria:**
+- [ ] SOURCE_MAP marks files as `error` with a reason when extraction fails
+- [ ] Next `/extract` run retries all `error` and `pending` files
+- [ ] SOURCE_MAP is human-readable (markdown table, not JSON)
+- [ ] `/extract` report shows: N processed, N skipped (unchanged), N errors (with filenames)
+
+**US-3: Recover from partial deletion**
+> As a user who accidentally deleted EXTRACTIONS.md, I want to recover without reprocessing all 57 files, so that I don't waste 25 minutes.
+
+**Acceptance criteria:**
+- [ ] If EXTRACTIONS.md is missing but SOURCE_MAP exists → `/extract` knows which files were processed and re-extracts only those (informed re-extract)
+- [ ] If SOURCE_MAP is missing but EXTRACTIONS.md exists → parse `## [folder/file]` headers to reconstruct SOURCE_MAP
+- [ ] If both missing → full re-extract (same as today)
+
+### SOURCE_MAP.md format
+
+```markdown
+# Source Map
+
+> Per-file extraction state. Maintained by /extract. Do not edit manually.
+
+| File | Format | Status | Claims | Hash | Last Processed |
+|---|---|---|---|---|---|
+| entrevistas-operaciones/entrevista-01.md | md | processed | 45 | a1b2c3d4 | 2026-02-15T14:30 |
+| Workshop 1/foto-01.jpg | jpg | processed | 8 | e5f6g7h8 | 2026-02-15T14:31 |
+| Workshop 1/video-01.mp4 | mp4 | error | 0 | i9j0k1l2 | 2026-02-15T14:31 |
+| Antecedentes/nuevo-doc.docx | docx | pending | — | — | — |
+```
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/SOURCE_MAP.md` | NEW — extraction state registry |
+| `.claude/skills/extract/SKILL.md` | Phase 1: read SOURCE_MAP, compute hashes, diff. Phase 2: process only delta. Phase 3: update map. |
+| `CLAUDE.md` | Add SOURCE_MAP.md to Sources of Truth table |
+
+### Risks
+
+- **md5 performance** — hashing 57 files is fast (<1s). Hashing large videos (150MB) may take a few seconds. Acceptable.
+- **Map corruption** — if `/extract` crashes mid-write, SOURCE_MAP could be inconsistent. Mitigate: write map after EXTRACTIONS.md (worst case: map says "pending" for already-extracted files → re-extracts them, no data loss).
+- **Complexity** — adds state management to a previously stateless skill. But the alternative is BUG-01 + PERF-01 on every run.
+
+---
+
+## [BL-18] Observation → Insight Synthesis Layer (ARCH-03)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-03 (QA v2, 2026-02-15)
+**Related:** BUG-08 (attribution), BUG-10 (deduplication), RESEARCH_BRIEF.md
+
+### User stories
+
+**US-1: See 25 insights, not 142 observations**
+> As a product stakeholder reviewing the research dashboard, I want to see ~20-30 synthesized insights (patterns with multi-source convergence), not 142 atomic observations, so that I can make decisions without drowning in data.
+
+**Acceptance criteria:**
+- [ ] `/analyze` writes observations to `02_Work/OBSERVATIONS.md` (renamed from INSIGHTS_GRAPH.md) with `[OB-XX]` IDs
+- [ ] A synthesis step (in `/synthesis` or new phase) groups observations by convergence and thematic proximity → produces ~20-30 real insights in `02_Work/INSIGHTS_GRAPH.md` with `[IG-XX]` IDs
+- [ ] Each insight references the observations that support it: `Refs: [OB-12], [OB-45], [OB-89]`
+- [ ] An insight requires convergence from 2+ sources minimum (single-source claims stay as observations)
+- [ ] STATUS.html shows insights as primary view, observations expandable as evidence
+- [ ] The count in summary cards shows insights (25), not observations (142)
+
+**US-2: Approve patterns, not individual claims**
+> As a researcher using `/status` to approve/reject, I want to approve 25 synthesized insights instead of 142 atomic claims, so that the review step is viable in under 5 minutes.
+
+**Acceptance criteria:**
+- [ ] `/status` dashboard shows insights with their supporting observations collapsed underneath
+- [ ] Approve/reject operates on insights, not observations
+- [ ] Rejecting an insight flags its observations for re-evaluation, not deletion
+- [ ] The `/synthesis` prompt generated by STATUS includes insight-level decisions
+
+**US-3: Preserve the evidence chain**
+> As an auditor checking traceability, I want to trace any product decision back through insight → observations → raw claims → source file, so that the full evidence chain is intact.
+
+**Acceptance criteria:**
+- [ ] Traceability chain: `SYSTEM_MAP [IG-XX]` → `INSIGHTS_GRAPH [IG-XX] Refs: [OB-12], [OB-45]` → `OBSERVATIONS [OB-12] Ref: folder/file.md` → `EXTRACTIONS.md claims` → `01_Sources/folder/file.md`
+- [ ] `/ship` outputs reference `[IG-XX]` (insights), not `[OB-XX]` (observations)
+- [ ] `/audit` validates the full chain: every IG has OB refs, every OB has source refs
+
+**US-4: Research Brief as insight preview**
+> As a researcher, I want the auto-generated Research Brief to reflect the synthesized insights (not the 142 observations), so that stakeholders get the distilled picture.
+
+**Acceptance criteria:**
+- [ ] RESEARCH_BRIEF.md sections map to synthesized insights, not observation categories
+- [ ] Each brief section references `[IG-XX]` IDs, not `[OB-XX]`
+- [ ] Brief generation moves from `/analyze` (which produces observations) to post-synthesis (which produces insights)
+
+### The hierarchy
+
+```
+01_Sources/file.md          Raw source files (read-only)
+    ↓ /extract
+02_Work/EXTRACTIONS.md      862 raw claims (verbatim quotes)
+    ↓ /analyze
+02_Work/OBSERVATIONS.md     ~142 atomic observations [OB-XX] (categorized, attributed)
+    ↓ /synthesis (new phase)
+02_Work/INSIGHTS_GRAPH.md   ~25 synthesized insights [IG-XX] (convergence, multi-source)
+    ↓ /synthesis (existing)
+02_Work/SYSTEM_MAP.md       Product decisions + design implications
+    ↓ /ship
+03_Outputs/*.html           Deliverables referencing [IG-XX]
+```
+
+### Synthesis rules
+
+The synthesis step converts observations into insights by:
+
+1. **Convergence grouping** — observations from 2+ sources about the same topic merge into one insight
+2. **Thematic clustering** — RESEARCH_BRIEF.md already does this correctly ("la brecha geométrica", "customización como trampa de valor") — those thematic groups ARE the insights
+3. **Weight preservation** — insight inherits the strongest Voice/Authority from its observations (a direct user quote outweighs a document mention)
+4. **Single-source flagging** — observations with no convergence stay as `[OB-XX]` only, noted as "unconfirmed" — they don't graduate to insights until corroborated
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/OBSERVATIONS.md` | NEW (or renamed from INSIGHTS_GRAPH.md) — observation store |
+| `02_Work/INSIGHTS_GRAPH.md` | CHANGED — now holds synthesized insights with `[OB-XX]` refs |
+| `.claude/skills/analyze/SKILL.md` | Writes to OBSERVATIONS.md instead of INSIGHTS_GRAPH.md |
+| `.claude/skills/synthesis/SKILL.md` | New Phase 1b: synthesize observations → insights |
+| `.claude/skills/status/SKILL.md` | Show insights primary, observations as expandable evidence |
+| `.claude/skills/ship/SKILL.md` | Reference `[IG-XX]` (unchanged — but IGs now mean something different) |
+| `.claude/skills/audit/SKILL.md` | Validate full OB → IG chain |
+| `03_Outputs/_templates/status.html` | Two-level view: insights with collapsible observations |
+| `03_Outputs/_schemas/status.schema.json` | Add observations array, insight.obs_refs field |
+| `CLAUDE.md` | Update Sources of Truth, pipeline reference, file descriptions |
+
+### Risks
+
+- **Breaking change** — existing projects have `[IG-XX]` in INSIGHTS_GRAPH.md that are really observations. Need migration path: rename to `[OB-XX]`, then synthesize.
+- **Synthesis quality** — the agent must produce genuinely insightful groupings, not just mechanical clusters. RESEARCH_BRIEF.md proves it can (the thematic sections are excellent), but it needs to do this consistently.
+- **Complexity** — adds a layer to the pipeline. Mitigate: synthesis is a new phase within `/synthesis`, not a new skill. The pipeline stays `/extract` → `/analyze` → `/synthesis` → `/ship`.
+- **Backward compatibility** — old projects with `[IG-XX]` observations referenced in SYSTEM_MAP and outputs. Need `/migrate` one-time script or gradual adoption.
+
+### Implementation order
+
+1. Add `OBSERVATIONS.md` template to `02_Work/`
+2. Update `/analyze` to write `[OB-XX]` to OBSERVATIONS.md
+3. Add synthesis phase to `/synthesis` — read observations, produce insights
+4. Update `/status` template for two-level view
+5. Update `/audit` for full chain validation
+6. Migration script for existing projects
+
+---
+
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
 
 Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)
