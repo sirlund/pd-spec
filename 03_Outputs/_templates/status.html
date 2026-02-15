@@ -3,39 +3,256 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PD-Spec Status</title>
+  <title>PD-Spec Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Status dashboard uses its own CSS (not _base.css) — different layout system */
+    /* === Reset === */
     html { scroll-behavior: smooth; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Target highlight for cross-referencing */
-    .insight-card:target { background: #fffde7; border-left: 3px solid #ffc107; padding-left: calc(0.5rem - 3px); transition: background 0.3s; }
-    .conflict-card:target { box-shadow: 0 0 0 2px #ffc107; transition: box-shadow 0.3s; }
+    /* === Layout === */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #111;
+      background: #f8f8f8;
+      display: flex;
+      min-height: 100vh;
+    }
 
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.6; color: #111; background: #fff; max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
-    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .meta { color: #666; font-size: 0.875rem; margin-bottom: 2rem; }
+    /* === Sidebar === */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: #fff;
+      border-right: 1px solid #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .sidebar-header h1 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .sidebar-header .meta {
+      font-size: 0.7rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 0.5rem 0;
+      overflow-y: auto;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      color: #444;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .sidebar-nav a:hover { background: #f5f5f5; }
+    .sidebar-nav a.active {
+      background: #f0f0f0;
+      color: #111;
+      border-left-color: #111;
+      font-weight: 600;
+    }
+    .sidebar-nav a .nav-count {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: #999;
+      font-weight: 400;
+    }
+    .sidebar-sep {
+      height: 1px;
+      background: #e5e5e5;
+      margin: 0.5rem 1rem;
+    }
+    .sidebar-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #e5e5e5;
+      font-size: 0.7rem;
+      color: #999;
+    }
+    .sidebar-footer .decision-badge {
+      display: inline-block;
+      background: #111;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      margin-left: 0.25rem;
+    }
 
-    /* Summary cards */
-    .cards { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
-    .card { flex: 1; min-width: 120px; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; }
-    .card .count { font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-    .card .label { font-size: 0.875rem; color: #666; }
-    .card .breakdown { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
-    .card.card-warn { border-color: #f0d080; }
-    .card.card-ok { border-color: #a3d9a5; }
-    .card.card-error { border-color: #e8a0a0; }
+    /* Mobile toggle */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 200;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 0.375rem 0.625rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
 
-    /* Sections */
-    details { border-top: 1px solid #e5e5e5; }
-    summary { padding: 0.75rem 0; font-weight: 500; cursor: pointer; list-style: none; }
-    summary::-webkit-details-marker { display: none; }
-    summary::before { content: '▸ '; color: #999; }
-    details[open] summary::before { content: '▾ '; }
+    /* === Main === */
+    .main {
+      flex: 1;
+      margin-left: 220px;
+      padding: 2rem;
+      max-width: 900px;
+    }
 
-    /* Badges */
-    .badge { display: inline-block; font-size: 0.7rem; font-weight: 500; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+    /* === Module Sections === */
+    .module { display: none; }
+    .module.active { display: block; }
+
+    /* === Summary Cards (Overview) === */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .summary-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    .summary-card .count {
+      font-size: 2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .summary-card .label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.125rem;
+    }
+    .summary-card .breakdown {
+      font-size: 0.7rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    .summary-card.card-ok { border-left: 3px solid #a3d9a5; }
+    .summary-card.card-warn { border-left: 3px solid #f0d080; }
+    .summary-card.card-error { border-left: 3px solid #e8a0a0; }
+
+    /* Progress bar */
+    .progress-section { margin-bottom: 1.5rem; }
+    .progress-section h3 { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: #444; }
+    .progress-bar {
+      height: 8px;
+      background: #e5e5e5;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+    .progress-bar .seg-verified { background: #a3d9a5; }
+    .progress-bar .seg-pending { background: #f0d080; }
+    .progress-bar .seg-invalidated { background: #e8a0a0; }
+    .progress-legend {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.375rem;
+      font-size: 0.7rem;
+      color: #666;
+    }
+    .progress-legend span::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 0.25rem;
+      vertical-align: middle;
+    }
+    .progress-legend .leg-verified::before { background: #a3d9a5; }
+    .progress-legend .leg-pending::before { background: #f0d080; }
+    .progress-legend .leg-invalidated::before { background: #e8a0a0; }
+
+    /* === Section Headers === */
+    .module h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #111;
+    }
+    .module h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+      color: #333;
+    }
+
+    /* === Toolbar (filter/search) === */
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toolbar input[type="text"] {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.375rem 0.625rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      outline: none;
+    }
+    .toolbar input[type="text"]:focus { border-color: #999; }
+    .filter-btn {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 0.375rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+    }
+    .filter-btn:hover { background: #f5f5f5; }
+    .filter-btn.active { background: #111; color: #fff; border-color: #111; }
+
+    /* === Badges === */
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
     .badge-pending { background: #fef3cd; color: #856404; }
     .badge-verified { background: #d4edda; color: #155724; }
     .badge-merged { background: #d1ecf1; color: #0c5460; }
@@ -43,73 +260,395 @@
     .badge-resolved { background: #d4edda; color: #155724; }
     .badge-flagged { background: #fef3cd; color: #856404; }
     .badge-research { background: #d1ecf1; color: #0c5460; }
+    .badge-ready { background: #d4edda; color: #155724; }
+    .badge-blocked { background: #f8d7da; color: #721c24; }
+    .badge-gap { background: #fff3cd; color: #856404; border: 1px dashed #856404; }
+    .badge-cat {
+      background: none;
+      border: 1px solid #ddd;
+      color: #888;
+      font-weight: 400;
+      font-size: 0.6rem;
+    }
 
-    /* Insight cards */
-    .insight-card { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; }
-    .insight-card:last-child { border-bottom: none; }
-    .insight-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap; }
-    .insight-id { font-weight: 600; font-size: 0.8rem; color: #444; }
-    .insight-cat { font-size: 0.75rem; color: #999; }
-    .insight-claim { flex: 1; min-width: 200px; }
-    .insight-source blockquote { margin: 0.375rem 0 0.5rem; padding: 0.5rem 0.75rem; border-left: 3px solid #e5e5e5; background: #fafafa; font-size: 0.8rem; color: #444; line-height: 1.5; }
-    .source-ref { color: #999; font-size: 0.8rem; cursor: pointer; }
-
-    /* Insight action buttons */
-    .insight-action { display: flex; gap: 0.25rem; }
-    .insight-btn { background: none; border: 1px solid #e5e5e5; border-radius: 3px; padding: 0.1rem 0.35rem; font-size: 0.7rem; cursor: pointer; color: #666; }
+    /* === Insight Cards === */
+    .insight-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+    .insight-card:target {
+      background: #fffde7;
+      border-left: 3px solid #ffc107;
+      padding-left: calc(1rem - 3px);
+    }
+    .insight-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .insight-id { font-weight: 700; font-size: 0.8rem; color: #333; }
+    .insight-claim { flex: 1; min-width: 200px; font-size: 0.85rem; }
+    .insight-source {
+      margin-top: 0.375rem;
+    }
+    .insight-source summary {
+      font-size: 0.75rem;
+      color: #999;
+      cursor: pointer;
+      list-style: none;
+    }
+    .insight-source summary::-webkit-details-marker { display: none; }
+    .insight-source summary::before { content: '▸ '; }
+    .insight-source[open] summary::before { content: '▾ '; }
+    .insight-source blockquote {
+      margin: 0.375rem 0 0;
+      padding: 0.5rem 0.75rem;
+      border-left: 3px solid #e5e5e5;
+      background: #fafafa;
+      font-size: 0.8rem;
+      color: #444;
+      line-height: 1.5;
+      border-radius: 0 4px 4px 0;
+    }
+    .insight-action {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .insight-btn {
+      background: none;
+      border: 1px solid #e5e5e5;
+      border-radius: 3px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: #666;
+      font-family: inherit;
+    }
     .insight-btn:hover { background: #f5f5f5; }
     .insight-btn.selected-approve { background: #d4edda; color: #155724; border-color: #a3d9a5; }
     .insight-btn.selected-reject { background: #f8d7da; color: #721c24; border-color: #e8a0a0; text-decoration: line-through; }
+    .insight-card.hidden { display: none; }
 
-    /* Conflict cards */
-    .conflict-card { border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+    /* === Conflict Cards === */
+    .conflict-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .conflict-card:target {
+      box-shadow: 0 0 0 2px #ffc107;
+    }
     .conflict-card.resolved { border-color: #a3d9a5; background: #fafff9; }
-    .conflict-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .conflict-id { font-weight: 600; font-size: 0.875rem; }
-    .conflict-refs { font-size: 0.75rem; color: #999; margin-bottom: 0.5rem; }
-    .conflict-tension { font-size: 0.875rem; margin-bottom: 0.75rem; }
-    .conflict-resolution { font-size: 0.875rem; color: #155724; padding: 0.5rem 0.75rem; background: #d4edda; border-radius: 4px; }
+    .conflict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.375rem;
+    }
+    .conflict-id { font-weight: 700; font-size: 0.875rem; }
+    .conflict-refs { font-size: 0.75rem; color: #999; margin-bottom: 0.375rem; }
+    .conflict-tension { font-size: 0.85rem; margin-bottom: 0.75rem; }
+    .conflict-resolution {
+      font-size: 0.85rem;
+      color: #155724;
+      padding: 0.5rem 0.75rem;
+      background: #d4edda;
+      border-radius: 4px;
+    }
     .conflict-options { display: flex; flex-direction: column; gap: 0.375rem; }
-    .conflict-option { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; }
+    .conflict-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
     .conflict-option input[type="radio"] { margin-top: 0.3rem; }
     .conflict-option .option-label { font-weight: 500; }
-    .conflict-note { width: 100%; margin-top: 0.5rem; padding: 0.375rem 0.5rem; border: 1px solid #e5e5e5; border-radius: 4px; font-family: inherit; font-size: 0.8rem; resize: vertical; display: none; }
+    .conflict-note {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.375rem 0.5rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      resize: vertical;
+      display: none;
+    }
     .conflict-note.visible { display: block; }
+    .conflict-card.hidden { display: none; }
 
-    /* System map */
-    .module-item { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; font-size: 0.875rem; }
-    .module-name { font-weight: 600; }
-    .module-refs { font-size: 0.75rem; color: #999; }
-    .module-status { font-size: 0.8rem; color: #666; margin-top: 0.125rem; }
-    .oq-item { padding: 0.375rem 0; font-size: 0.875rem; color: #444; }
-    .gap-item { padding: 0.75rem 0; border-bottom: 1px solid #f5f5f5; }
-    .gap-action { color: #666; font-size: 0.875rem; font-style: italic; margin-top: 0.25rem; }
+    /* === Source Coverage === */
+    .source-folder {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .source-folder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .source-folder-name { font-weight: 600; font-size: 0.85rem; }
+    .source-folder-meta { font-size: 0.75rem; color: #666; }
+    .source-types {
+      display: flex;
+      gap: 0.375rem;
+      margin-top: 0.375rem;
+      flex-wrap: wrap;
+    }
+    .source-type-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+      background: #f5f5f5;
+      color: #666;
+    }
+    .source-diversity {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+    }
+    .source-diversity h3 { margin-top: 0; }
+    .diversity-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .diversity-item {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #e5e5e5;
+    }
+    .diversity-item.present { background: #d4edda; border-color: #a3d9a5; color: #155724; }
+    .diversity-item.missing { background: #fff; border-style: dashed; color: #999; }
 
-    /* Action bar */
-    .action-bar { margin-top: 2rem; padding: 1rem; border: 1px solid #111; border-radius: 6px; }
-    .action-bar h2 { font-size: 0.875rem; font-weight: 600; }
-    .action-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    /* === Evidence Gaps === */
+    .gap-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-left: 3px solid #f0d080;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .gap-type {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #856404;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.25rem;
+    }
+    .gap-desc { font-size: 0.85rem; }
+    .gap-suggestion {
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    /* === System Map === */
+    .sysmap-vision {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .module-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .module-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .module-card-name { font-weight: 600; font-size: 0.875rem; }
+    .module-card-refs { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
+    .module-card-implications {
+      margin-top: 0.375rem;
+      font-size: 0.8rem;
+      color: #444;
+    }
+    .module-card-implications li { margin-bottom: 0.125rem; }
+    .module-card-blocker {
+      margin-top: 0.375rem;
+      font-size: 0.8rem;
+      color: #721c24;
+      font-weight: 500;
+    }
+    .oq-list { list-style: none; padding: 0; }
+    .oq-item {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.625rem 1rem;
+      margin-bottom: 0.375rem;
+      font-size: 0.85rem;
+      color: #444;
+    }
+    .principles-list { list-style: none; padding: 0; }
+    .principle-item {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.625rem 1rem;
+      margin-bottom: 0.375rem;
+      font-size: 0.85rem;
+    }
+
+    /* === Action Bar === */
+    .action-bar {
+      background: #fff;
+      border: 2px solid #111;
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .action-bar h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0; }
+    .action-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
     .decision-count { font-size: 0.75rem; color: #666; }
-    .generate-btn { display: block; width: 100%; padding: 0.625rem; background: #111; color: #fff; border: none; border-radius: 4px; font-family: inherit; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+    .generate-btn {
+      display: block;
+      width: 100%;
+      padding: 0.625rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
     .generate-btn:hover { background: #333; }
-    .prompt-output { margin-top: 0.75rem; padding: 0.75rem; background: #fafafa; border: 1px solid #e5e5e5; border-radius: 4px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; white-space: pre-wrap; display: none; position: relative; }
+    .prompt-output {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f8f8;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
     .prompt-output.visible { display: block; }
-    .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: #111; color: #fff; border: none; border-radius: 3px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; }
-    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #111; color: #fff; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* === Toast === */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 300;
+    }
     .toast.show { opacity: 1; }
 
+    /* === Empty state === */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: block; }
+      .main { margin-left: 0; padding: 1rem; padding-top: 3rem; }
+      .summary-cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* === Print === */
     @media print {
-      details[open] > summary { display: none; }
-      details { border: none; }
-      .action-bar, .insight-btn, .conflict-options { display: none; }
+      body { display: block; background: #fff; }
+      .sidebar, .sidebar-toggle { display: none; }
+      .main { margin-left: 0; max-width: 100%; padding: 0; }
+      .module { display: block !important; margin-bottom: 2rem; }
+      .action-bar, .insight-btn, .conflict-options, .toolbar { display: none; }
+      .insight-card, .conflict-card, .source-folder, .gap-card, .module-card, .oq-item, .principle-item, .summary-card, .sysmap-vision {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+      .insight-source { display: block; }
+      .insight-source[open] summary { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <div id="dashboard">
-    <!-- Rendered from JSON -->
-  </div>
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">Menu</button>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1 id="sidebarTitle">PD-Spec Dashboard</h1>
+      <div class="meta" id="sidebarMeta"></div>
+    </div>
+    <div class="sidebar-nav" id="sidebarNav">
+      <!-- Populated by JS -->
+    </div>
+    <div class="sidebar-footer" id="sidebarFooter">
+      <span id="sidebarDecisions">0 decisions</span>
+    </div>
+  </nav>
+
+  <main class="main" id="main">
+    <!-- Modules rendered by JS -->
+  </main>
 
   <div class="toast" id="toast">Copied!</div>
 
@@ -118,6 +657,8 @@
   <script>
   (function() {
     'use strict';
+
+    // === Load Data ===
     var el = document.getElementById('pd-data');
     if (!el) return;
     var data;
@@ -126,10 +667,14 @@
 
     if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
 
-    var db = document.getElementById('dashboard');
+    // === State ===
     var insightDecisions = {};
     var conflictDecisions = {};
+    var activeModule = 'overview';
+    var activeFilters = { status: null, category: null, temporal: null };
+    var searchQuery = '';
 
+    // === Helpers ===
     function esc(str) {
       if (typeof str !== 'string') return '';
       var e = document.createElement('span');
@@ -137,174 +682,413 @@
       return e.innerHTML;
     }
 
-    // Header
+    function $(id) { return document.getElementById(id); }
+
+    // === Sidebar ===
+    var modules = [
+      { id: 'overview', label: 'Overview', count: null },
+      { id: 'insights', label: 'Insights', count: data.insights ? data.insights.length : 0 },
+      { id: 'conflicts', label: 'Conflicts', count: data.conflicts ? data.conflicts.length : 0 },
+      { id: 'sources', label: 'Sources', count: data.sources ? data.sources.length : 0 },
+      { id: 'gaps', label: 'Evidence Gaps', count: data.evidence_gaps ? data.evidence_gaps.length : 0 },
+      { id: 'systemmap', label: 'System Map', count: null },
+      { id: 'actions', label: 'Actions', count: null }
+    ];
+
     var meta = data.meta || {};
-    db.innerHTML = '<h1>' + esc(data.title || 'PD-Spec Status') + '</h1>' +
-      '<div class="meta">Generated ' + esc(meta.generated || '—') +
-      (meta.last_session ? ' · Last session: ' + esc(meta.last_session) : '') + '</div>';
+    $('sidebarTitle').textContent = data.title || 'PD-Spec Dashboard';
+    $('sidebarMeta').textContent = 'Generated ' + (meta.generated || '—');
 
-    // Summary cards
-    var stats = data.summary || {};
-    var cardsHtml = '<div class="cards">';
-    (data.cards || []).forEach(function(card) {
-      var cls = card.style ? ' card-' + card.style : '';
-      cardsHtml += '<div class="card' + cls + '">';
-      cardsHtml += '<div class="count">' + esc(String(card.count)) + '</div>';
-      cardsHtml += '<div class="label">' + esc(card.label) + '</div>';
-      if (card.breakdown) cardsHtml += '<div class="breakdown">' + esc(card.breakdown) + '</div>';
-      cardsHtml += '</div>';
+    var navHtml = '';
+    modules.forEach(function(m) {
+      var countStr = m.count !== null ? '<span class="nav-count">' + m.count + '</span>' : '';
+      navHtml += '<a href="#" data-module="' + m.id + '"' + (m.id === 'overview' ? ' class="active"' : '') + '>' + esc(m.label) + countStr + '</a>';
+      if (m.id === 'gaps') navHtml += '<div class="sidebar-sep"></div>';
     });
-    cardsHtml += '</div>';
-    db.insertAdjacentHTML('beforeend', cardsHtml);
+    $('sidebarNav').innerHTML = navHtml;
 
-    // === Insights Section ===
-    if (data.insights && data.insights.length) {
-      var iHtml = '<details><summary>Insights (' + data.insights.length + ')</summary><div>';
-      // Sort: PENDING first, then VERIFIED, then INVALIDATED
-      var sortOrder = {PENDING: 0, VERIFIED: 1, MERGED: 2, INVALIDATED: 3};
-      var sorted = data.insights.slice().sort(function(a,b) {
+    // Navigation click
+    $('sidebarNav').addEventListener('click', function(e) {
+      var link = e.target.closest('a[data-module]');
+      if (!link) return;
+      e.preventDefault();
+      showModule(link.dataset.module);
+      // Close sidebar on mobile
+      $('sidebar').classList.remove('open');
+    });
+
+    // Mobile toggle
+    $('sidebarToggle').addEventListener('click', function() {
+      $('sidebar').classList.toggle('open');
+    });
+
+    function showModule(id) {
+      activeModule = id;
+      document.querySelectorAll('.module').forEach(function(m) { m.classList.remove('active'); });
+      var target = $('mod-' + id);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.sidebar-nav a').forEach(function(a) {
+        a.classList.toggle('active', a.dataset.module === id);
+      });
+    }
+
+    // === Render Modules ===
+    var main = $('main');
+
+    // --- Overview ---
+    (function() {
+      var html = '<div class="module active" id="mod-overview">';
+      html += '<h2>Overview</h2>';
+      html += '<div class="summary-cards">';
+      (data.cards || []).forEach(function(card) {
+        var cls = card.style ? ' card-' + card.style : '';
+        html += '<div class="summary-card' + cls + '">';
+        html += '<div class="count">' + esc(String(card.count)) + '</div>';
+        html += '<div class="label">' + esc(card.label) + '</div>';
+        if (card.breakdown) html += '<div class="breakdown">' + esc(card.breakdown) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+
+      // Progress bar
+      var insights = data.insights || [];
+      if (insights.length > 0) {
+        var verified = 0, pending = 0, invalidated = 0;
+        insights.forEach(function(ig) {
+          if (ig.status === 'VERIFIED' || ig.status === 'MERGED') verified++;
+          else if (ig.status === 'INVALIDATED') invalidated++;
+          else pending++;
+        });
+        var total = insights.length;
+        html += '<div class="progress-section">';
+        html += '<h3>Research Maturity</h3>';
+        html += '<div class="progress-bar">';
+        if (verified) html += '<div class="seg-verified" style="width:' + (verified/total*100) + '%"></div>';
+        if (pending) html += '<div class="seg-pending" style="width:' + (pending/total*100) + '%"></div>';
+        if (invalidated) html += '<div class="seg-invalidated" style="width:' + (invalidated/total*100) + '%"></div>';
+        html += '</div>';
+        html += '<div class="progress-legend">';
+        html += '<span class="leg-verified">Verified ' + verified + '</span>';
+        html += '<span class="leg-pending">Pending ' + pending + '</span>';
+        html += '<span class="leg-invalidated">Invalidated ' + invalidated + '</span>';
+        html += '</div></div>';
+      }
+
+      // Quick stats
+      if (meta.last_session) {
+        html += '<div style="font-size:0.8rem;color:#666;margin-top:0.5rem;">Last session: ' + esc(meta.last_session) + '</div>';
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Insights ---
+    (function() {
+      var html = '<div class="module" id="mod-insights">';
+      html += '<h2>Insights</h2>';
+
+      var insights = data.insights || [];
+      if (insights.length === 0) {
+        html += '<div class="empty-state">No insights yet. Run /extract and /analyze first.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Toolbar
+      html += '<div class="toolbar">';
+      html += '<input type="text" id="insightSearch" placeholder="Search insights..." oninput="filterInsights()">';
+      html += '<button class="filter-btn" data-filter="status" data-value="all" onclick="toggleFilter(this)">All</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="PENDING" onclick="toggleFilter(this)">Pending</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="VERIFIED" onclick="toggleFilter(this)">Verified</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="INVALIDATED" onclick="toggleFilter(this)">Invalidated</button>';
+      html += '</div>';
+
+      // Sort: PENDING first
+      var sortOrder = { PENDING: 0, VERIFIED: 1, MERGED: 2, INVALIDATED: 3 };
+      var sorted = insights.slice().sort(function(a, b) {
         return (sortOrder[a.status] || 9) - (sortOrder[b.status] || 9);
       });
+
+      html += '<div id="insightsList">';
       sorted.forEach(function(ig) {
         var id = esc(ig.id);
         var statusLower = (ig.status || 'pending').toLowerCase();
-        iHtml += '<div class="insight-card" data-insight="' + id + '">';
-        iHtml += '<div class="insight-row">';
-        iHtml += '<span class="badge badge-' + esc(statusLower) + '">' + esc(ig.status) + '</span>';
-        iHtml += '<span class="insight-id">' + id + '</span>';
-        if (ig.category) iHtml += '<span class="insight-cat">' + esc(ig.category) + '</span>';
-        iHtml += '<span class="insight-claim">' + esc(ig.claim) + '</span>';
+        html += '<div class="insight-card" data-insight="' + id + '" data-status="' + esc(ig.status) + '" data-category="' + esc(ig.category || '') + '" data-temporal="' + esc(ig.temporal || '') + '">';
+        html += '<div class="insight-row">';
+        html += '<span class="insight-id">' + id + '</span>';
+        html += '<span class="badge badge-' + esc(statusLower) + '">' + esc(ig.status) + '</span>';
+        if (ig.category) html += '<span class="badge badge-cat">' + esc(ig.category) + '</span>';
+        if (ig.temporal) html += '<span class="badge badge-cat">' + esc(ig.temporal) + '</span>';
+        html += '<span class="insight-claim">' + esc(ig.claim) + '</span>';
         if (ig.status === 'PENDING') {
-          iHtml += '<div class="insight-action">';
-          iHtml += '<button class="insight-btn" data-action="approve" onclick="toggleInsight(this,\'approve\')">Approve</button>';
-          iHtml += '<button class="insight-btn" data-action="reject" onclick="toggleInsight(this,\'reject\')">Reject</button>';
-          iHtml += '</div>';
+          html += '<div class="insight-action">';
+          html += '<button class="insight-btn" data-action="approve" onclick="toggleInsight(this,\'approve\')">Approve</button>';
+          html += '<button class="insight-btn" data-action="reject" onclick="toggleInsight(this,\'reject\')">Reject</button>';
+          html += '</div>';
         }
-        iHtml += '</div>';
+        html += '</div>';
         if (ig.source || ig.quote) {
-          iHtml += '<details class="insight-source"><summary class="source-ref">' + esc(ig.source || '') + '</summary>';
-          if (ig.quote) iHtml += '<blockquote>' + esc(ig.quote) + '</blockquote>';
-          iHtml += '</details>';
+          html += '<details class="insight-source"><summary>' + esc(ig.source || 'Source') + '</summary>';
+          if (ig.quote) html += '<blockquote>' + esc(ig.quote) + '</blockquote>';
+          html += '</details>';
         }
-        iHtml += '</div>';
+        html += '</div>';
       });
-      iHtml += '</div></details>';
-      db.insertAdjacentHTML('beforeend', iHtml);
-    }
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
 
-    // === Conflicts Section ===
-    if (data.conflicts && data.conflicts.length) {
-      var cHtml = '<details><summary>Conflicts (' + data.conflicts.length + ')</summary><div>';
-      data.conflicts.forEach(function(cf) {
+    // --- Conflicts ---
+    (function() {
+      var html = '<div class="module" id="mod-conflicts">';
+      html += '<h2>Conflicts</h2>';
+
+      var conflicts = data.conflicts || [];
+      if (conflicts.length === 0) {
+        html += '<div class="empty-state">No conflicts detected.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Toolbar
+      html += '<div class="toolbar">';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="all" onclick="toggleCfFilter(this)">All</button>';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="PENDING" onclick="toggleCfFilter(this)">Pending</button>';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="RESOLVED" onclick="toggleCfFilter(this)">Resolved</button>';
+      html += '</div>';
+
+      html += '<div id="conflictsList">';
+      conflicts.forEach(function(cf) {
         var id = esc(cf.id);
         var cfKey = cf.id.replace(/-/g, '').toLowerCase();
         if (cf.status === 'RESOLVED') {
-          cHtml += '<div class="conflict-card resolved" data-conflict="' + id + '">';
-          cHtml += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
-          cHtml += '<span class="badge badge-resolved">Resolved</span></div>';
-          if (cf.refs) cHtml += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
-          if (cf.tension) cHtml += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
-          if (cf.resolution) cHtml += '<div class="conflict-resolution">' + esc(cf.resolution) + '</div>';
-          cHtml += '</div>';
+          html += '<div class="conflict-card resolved" data-conflict="' + id + '" data-cfstatus="RESOLVED">';
+          html += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          html += '<span class="badge badge-resolved">Resolved</span></div>';
+          if (cf.refs) html += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) html += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          if (cf.resolution) html += '<div class="conflict-resolution">' + esc(cf.resolution) + '</div>';
+          html += '</div>';
         } else {
-          cHtml += '<div class="conflict-card" data-conflict="' + id + '">';
-          cHtml += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
-          cHtml += '<span class="badge badge-pending">Pending</span></div>';
-          if (cf.refs) cHtml += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
-          if (cf.tension) cHtml += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
-          cHtml += '<div class="conflict-options">';
-          // Option A: Flag
+          html += '<div class="conflict-card" data-conflict="' + id + '" data-cfstatus="PENDING">';
+          html += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          html += '<span class="badge badge-pending">Pending</span></div>';
+          if (cf.refs) html += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) html += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          html += '<div class="conflict-options">';
           var flagLabel = cf.flag_label || 'Flag for discussion';
-          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '" onchange="onConflictChange(this)">';
-          cHtml += '<label for="' + cfKey + 'a"><span class="option-label">Flag for discussion</span> — ' + esc(flagLabel) + '</label></div>';
-          // Option B: Research
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '" onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'a"><span class="option-label">Flag for discussion</span> — ' + esc(flagLabel) + '</label></div>';
           var researchLabel = cf.research_label || 'Needs more research';
-          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '" onchange="onConflictChange(this)">';
-          cHtml += '<label for="' + cfKey + 'b"><span class="option-label">Needs more research</span> — ' + esc(researchLabel) + '</label></div>';
-          // Option C: Context
-          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'c" value="I have context" onchange="onConflictChange(this)">';
-          cHtml += '<label for="' + cfKey + 'c"><span class="option-label">I have context</span> — add notes below</label></div>';
-          cHtml += '<textarea class="conflict-note" data-for="' + cfKey + '" placeholder="What context?"></textarea>';
-          cHtml += '</div></div>';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '" onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'b"><span class="option-label">Needs more research</span> — ' + esc(researchLabel) + '</label></div>';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'c" value="I have context" onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'c"><span class="option-label">I have context</span> — add notes below</label></div>';
+          html += '<textarea class="conflict-note" data-for="' + cfKey + '" placeholder="What context?"></textarea>';
+          html += '</div></div>';
         }
       });
-      cHtml += '</div></details>';
-      db.insertAdjacentHTML('beforeend', cHtml);
-    }
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
 
-    // === Source Issues ===
-    if (data.source_issues && data.source_issues.length) {
-      var siHtml = '<details><summary>Source Issues (' + data.source_issues.length + ')</summary><div>';
-      data.source_issues.forEach(function(issue) {
-        siHtml += '<div class="gap-item"><div>' + esc(issue.description) + '</div>';
-        if (issue.action) siHtml += '<div class="gap-action">' + esc(issue.action) + '</div>';
-        siHtml += '</div>';
+    // --- Sources ---
+    (function() {
+      var html = '<div class="module" id="mod-sources">';
+      html += '<h2>Source Coverage</h2>';
+
+      var sources = data.sources || [];
+      if (sources.length === 0) {
+        html += '<div class="empty-state">No sources found in 01_Sources/.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      sources.forEach(function(src) {
+        html += '<div class="source-folder">';
+        html += '<div class="source-folder-header">';
+        html += '<span class="source-folder-name">' + esc(src.folder) + '</span>';
+        html += '<span class="source-folder-meta">' + (src.files || 0) + ' files';
+        if (src.extraction_status) html += ' · ' + esc(src.extraction_status);
+        html += '</span></div>';
+        if (src.types && src.types.length) {
+          html += '<div class="source-types">';
+          src.types.forEach(function(t) {
+            html += '<span class="source-type-tag">' + esc(t) + '</span>';
+          });
+          html += '</div>';
+        }
+        html += '</div>';
       });
-      siHtml += '</div></details>';
-      db.insertAdjacentHTML('beforeend', siHtml);
-    }
 
-    // === Evidence Gaps ===
-    if (data.evidence_gaps && data.evidence_gaps.length) {
-      var egHtml = '<details><summary>Evidence Gaps (' + data.evidence_gaps.length + ')</summary><div>';
-      data.evidence_gaps.forEach(function(gap) {
-        egHtml += '<div class="gap-item"><div>' + esc(gap.description) + '</div>';
-        if (gap.action) egHtml += '<div class="gap-action">' + esc(gap.action) + '</div>';
-        egHtml += '</div>';
+      // Source diversity
+      if (data.source_diversity) {
+        html += '<div class="source-diversity">';
+        html += '<h3>Source Diversity</h3>';
+        html += '<div class="diversity-grid">';
+        (data.source_diversity || []).forEach(function(d) {
+          var cls = d.present ? 'present' : 'missing';
+          html += '<div class="diversity-item ' + cls + '">' + esc(d.type) + '</div>';
+        });
+        html += '</div></div>';
+      }
+
+      // Source issues
+      if (data.source_issues && data.source_issues.length) {
+        html += '<h3>Issues</h3>';
+        data.source_issues.forEach(function(issue) {
+          html += '<div class="gap-card">';
+          html += '<div class="gap-desc">' + esc(issue.description) + '</div>';
+          if (issue.action) html += '<div class="gap-suggestion">' + esc(issue.action) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Evidence Gaps ---
+    (function() {
+      var html = '<div class="module" id="mod-gaps">';
+      html += '<h2>Evidence Gaps</h2>';
+
+      var gaps = data.evidence_gaps || [];
+      if (gaps.length === 0) {
+        html += '<div class="empty-state">No evidence gaps detected.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Group by type
+      var grouped = {};
+      gaps.forEach(function(g) {
+        var type = g.type || 'general';
+        if (!grouped[type]) grouped[type] = [];
+        grouped[type].push(g);
       });
-      egHtml += '</div></details>';
-      db.insertAdjacentHTML('beforeend', egHtml);
-    }
 
-    // === System Map ===
-    if (data.system_map) {
+      Object.keys(grouped).forEach(function(type) {
+        html += '<h3>' + esc(type.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); })) + '</h3>';
+        grouped[type].forEach(function(gap) {
+          html += '<div class="gap-card">';
+          html += '<div class="gap-type">' + esc(gap.type || 'gap') + '</div>';
+          html += '<div class="gap-desc">' + esc(gap.description) + '</div>';
+          if (gap.suggestion) html += '<div class="gap-suggestion">' + esc(gap.suggestion) + '</div>';
+          html += '</div>';
+        });
+      });
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- System Map ---
+    (function() {
+      var html = '<div class="module" id="mod-systemmap">';
+      html += '<h2>System Map</h2>';
+
       var sm = data.system_map;
-      var smHtml = '<details><summary>System Map</summary><div>';
-      if (sm.modules && sm.modules.length) {
-        sm.modules.forEach(function(mod) {
-          smHtml += '<div class="module-item"><span class="module-name">' + esc(mod.name) + '</span>';
-          if (mod.status) smHtml += ' <span class="badge badge-' + esc(mod.status.toLowerCase()) + '">' + esc(mod.status) + '</span>';
-          if (mod.refs) smHtml += '<div class="module-refs">' + esc(mod.refs) + '</div>';
-          if (mod.blocker) smHtml += '<div class="module-status">Blocker: ' + esc(mod.blocker) + '</div>';
-          smHtml += '</div>';
-        });
+      if (!sm) {
+        html += '<div class="empty-state">No system map data. Run /synthesis first.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
       }
-      if (sm.open_questions && sm.open_questions.length) {
-        smHtml += '<h3 style="margin:1rem 0 0.5rem;font-size:0.9rem;">Open Questions</h3>';
-        sm.open_questions.forEach(function(q) {
-          smHtml += '<div class="oq-item">• ' + esc(q) + '</div>';
-        });
-      }
-      smHtml += '</div></details>';
-      db.insertAdjacentHTML('beforeend', smHtml);
-    }
 
-    // === Action Bar ===
-    db.insertAdjacentHTML('beforeend',
-      '<div class="action-bar">' +
-      '<div class="action-bar-header"><h2>Generate /synthesis prompt</h2>' +
-      '<span class="decision-count" id="decisionCount">0 decisions made</span></div>' +
-      '<button class="generate-btn" onclick="generatePrompt()">Generate prompt</button>' +
-      '<div class="prompt-output" id="promptOutput">' +
-      '<button class="copy-btn" onclick="copyPrompt()">Copy</button>' +
-      '<pre id="promptText"></pre>' +
-      '</div></div>'
-    );
+      if (sm.vision) {
+        html += '<div class="sysmap-vision">' + esc(sm.vision) + '</div>';
+      }
+
+      // Modules
+      if (sm.modules && sm.modules.length) {
+        html += '<h3>Modules</h3>';
+        sm.modules.forEach(function(mod) {
+          html += '<div class="module-card">';
+          html += '<div class="module-card-header">';
+          html += '<span class="module-card-name">' + esc(mod.name) + '</span>';
+          if (mod.status) html += '<span class="badge badge-' + esc(mod.status.toLowerCase()) + '">' + esc(mod.status) + '</span>';
+          html += '</div>';
+          if (mod.refs) html += '<div class="module-card-refs">' + esc(mod.refs) + '</div>';
+          if (mod.implications && mod.implications.length) {
+            html += '<ul class="module-card-implications">';
+            mod.implications.forEach(function(imp) {
+              html += '<li>' + esc(typeof imp === 'string' ? imp : imp.text || '');
+              if (imp.ref) html += ' <span style="color:#999;font-size:0.75rem;">[' + esc(imp.ref) + ']</span>';
+              html += '</li>';
+            });
+            html += '</ul>';
+          }
+          if (mod.blocker) html += '<div class="module-card-blocker">Blocker: ' + esc(mod.blocker) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      // Principles
+      if (sm.principles && sm.principles.length) {
+        html += '<h3>Design Principles</h3>';
+        html += '<ul class="principles-list">';
+        sm.principles.forEach(function(p) {
+          html += '<li class="principle-item">' + esc(typeof p === 'string' ? p : p.text || '') + '</li>';
+        });
+        html += '</ul>';
+      }
+
+      // Open questions
+      if (sm.open_questions && sm.open_questions.length) {
+        html += '<h3>Open Questions</h3>';
+        html += '<ul class="oq-list">';
+        sm.open_questions.forEach(function(q) {
+          html += '<li class="oq-item">' + esc(q) + '</li>';
+        });
+        html += '</ul>';
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Actions ---
+    (function() {
+      var html = '<div class="module" id="mod-actions">';
+      html += '<h2>Actions</h2>';
+      html += '<div class="action-bar">';
+      html += '<div class="action-bar-header"><h2>Generate /synthesis prompt</h2>';
+      html += '<span class="decision-count" id="decisionCount">0 decisions made</span></div>';
+      html += '<button class="generate-btn" onclick="generatePrompt()">Generate prompt</button>';
+      html += '<div class="prompt-output" id="promptOutput">';
+      html += '<button class="copy-btn" onclick="copyPrompt()">Copy</button>';
+      html += '<pre id="promptText"></pre>';
+      html += '</div></div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
 
     // === Cross-referencing: assign IDs ===
     document.querySelectorAll('[data-insight]').forEach(function(el) { el.id = el.dataset.insight; });
     document.querySelectorAll('[data-conflict]').forEach(function(el) { el.id = el.dataset.conflict; });
 
-    // Auto-open parent details on anchor navigation
+    // Auto-open module and scroll on anchor navigation
     function openAnchor() {
-      if (location.hash) {
-        var target = document.querySelector(location.hash);
-        if (target) {
-          var det = target.closest('details');
-          if (det) det.open = true;
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      if (!location.hash) return;
+      var hash = location.hash.substring(1);
+      var target = document.getElementById(hash);
+      if (!target) return;
+
+      // Determine which module contains the target
+      var modEl = target.closest('.module');
+      if (modEl) {
+        var modId = modEl.id.replace('mod-', '');
+        showModule(modId);
       }
+
+      setTimeout(function() {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
     }
     openAnchor();
     window.addEventListener('hashchange', openAnchor);
@@ -314,7 +1098,6 @@
       var card = btn.closest('.insight-card');
       var id = card.dataset.insight;
       var btns = card.querySelectorAll('.insight-btn');
-      // Toggle off if already selected
       if (btn.classList.contains('selected-' + action)) {
         btn.classList.remove('selected-' + action);
         delete insightDecisions[id];
@@ -341,9 +1124,53 @@
 
     function updateCount() {
       var count = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length;
-      document.getElementById('decisionCount').textContent = count + ' decisions made';
+      var el = $('decisionCount');
+      if (el) el.textContent = count + ' decisions made';
+      $('sidebarDecisions').textContent = count + ' decisions';
     }
 
+    // === Insight filtering ===
+    window.toggleFilter = function(btn) {
+      var value = btn.dataset.value;
+      // Clear all filter buttons in the same group
+      btn.parentElement.querySelectorAll('.filter-btn[data-filter="status"]').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      activeFilters.status = value === 'all' ? null : value;
+      applyInsightFilters();
+    };
+
+    window.filterInsights = function() {
+      searchQuery = ($('insightSearch') || {}).value || '';
+      applyInsightFilters();
+    };
+
+    function applyInsightFilters() {
+      var cards = document.querySelectorAll('#insightsList .insight-card');
+      var query = searchQuery.toLowerCase();
+      cards.forEach(function(card) {
+        var matchStatus = !activeFilters.status || card.dataset.status === activeFilters.status;
+        var matchSearch = !query || card.textContent.toLowerCase().indexOf(query) !== -1;
+        card.classList.toggle('hidden', !(matchStatus && matchSearch));
+      });
+    }
+
+    // === Conflict filtering ===
+    window.toggleCfFilter = function(btn) {
+      var value = btn.dataset.value;
+      btn.parentElement.querySelectorAll('.filter-btn[data-filter="cfstatus"]').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      var filter = value === 'all' ? null : value;
+      document.querySelectorAll('#conflictsList .conflict-card').forEach(function(card) {
+        var match = !filter || card.dataset.cfstatus === filter;
+        card.classList.toggle('hidden', !match);
+      });
+    };
+
+    // === Prompt Generator ===
     window.generatePrompt = function() {
       var lines = ['/synthesis with these inputs:', ''];
       var flags = [], research = [], context = [];
@@ -372,19 +1199,20 @@
       if (approved.length) lines.push('Approve insights: ' + approved.join(', '));
       if (rejected.length) lines.push('Reject insights: ' + rejected.join(', '));
 
-      var output = document.getElementById('promptOutput');
-      document.getElementById('promptText').textContent = lines.join('\n');
+      var output = $('promptOutput');
+      $('promptText').textContent = lines.join('\n');
       output.classList.add('visible');
     };
 
     window.copyPrompt = function() {
-      var text = document.getElementById('promptText').textContent;
+      var text = $('promptText').textContent;
       navigator.clipboard.writeText(text).then(function() {
-        var toast = document.getElementById('toast');
+        var toast = $('toast');
         toast.classList.add('show');
         setTimeout(function() { toast.classList.remove('show'); }, 1500);
       });
     };
+
   })();
   </script>
 </body>
