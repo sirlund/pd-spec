@@ -1,15 +1,17 @@
 ---
 name: analyze
-description: Scan sources in 01_Sources/, extract atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md
+description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 ---
 
-# /analyze — Source Ingestion & Insight Extraction
+# /analyze — Insight Extraction & Cross-Referencing
 
 ## What this skill does
 
-Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross-references them against existing verified insights, and logs any contradictions found.
+Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), converts them into atomic insights, cross-references them against existing verified insights, and logs any contradictions found.
+
+**Prerequisite:** Run `/extract` first to populate `02_Work/EXTRACTIONS.md` with raw claims from source files.
 
 ## Instructions
 
@@ -19,38 +21,15 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
 **Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
-### Phase 1: Discovery & Validation
+### Phase 1: Load Extractions
 
-1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
+1. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
-2. **Read folder context** — For each subfolder, check for a `_CONTEXT.md` file. If present:
-   - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata. The `_CONTEXT.md` provides type, date, participants, and per-file descriptions.
-   - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
-   - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue — that content belongs in an insight, not in metadata.
-
-3. **Validate source organization** — For each source file, check:
-   - Does the file's metadata (type, date, context) match the folder it's in?
-   - Is any file misplaced (e.g., a benchmark in an interviews folder)?
-   - Does the file date conflict with the folder date prefix?
-   - Are there missing metadata fields (Type, Date, Participants, Context)?
-   - Are there non-standard date formats (expected: `YYYY-MM-DD`)?
-   - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
-   - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
-
-4. **Read each source** — For every source file, extract atomic claims and facts. Each claim should be a single, verifiable statement.
-
-   **Non-markdown files** — The agent can read images (PNG, JPG) and PDFs directly using the Read tool. Use this capability:
-   - **Images** (photos, screenshots, whiteboard captures) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
-   - **PDFs** — Read using the Read tool with `pages` parameter for large documents. Extract claims from text content.
-   - **Files described in `_CONTEXT.md`** — If a non-readable file (spreadsheet, .docx, proprietary format) is described in `_CONTEXT.md`, extract claims from the descriptions provided there.
-
-   **Large source sets** — When `01_Sources/` contains many files (>20), process them in batches by subfolder. Report progress to the user between batches (e.g., "Processed `entrevistas-operadores/` — 12 insights extracted. Moving to `benchmark-inicial/`...").
-
-5. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+2. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
 
 ### Phase 2: Analysis (Draft)
 
-6. **Prepare new insights** — For each new claim not already captured:
+3. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, zero-padded).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
@@ -68,7 +47,7 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
    **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
 
-7. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+4. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
    - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
      - Direct contradictions ("users love X" vs "users avoid X").
      - Tensions ("team wants simplicity" vs "client demands customization").
@@ -76,7 +55,7 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
      - Temporal conflicts ("currently using tool Y" vs "already migrated to Z").
    - For each potential conflict, cite the specific claims from both sides.
 
-8. **Detect evidence gaps** — Two levels of gap detection:
+5. **Detect evidence gaps** — Two levels of gap detection:
 
    **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
 
@@ -99,7 +78,7 @@ All insights are written as `PENDING`. The real approval happens downstream — 
 
 > **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-9. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+6. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, zero-padded)
    - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
@@ -107,23 +86,23 @@ All insights are written as `PENDING`. The real approval happens downstream — 
    - Source reference: `Ref: [file path]`
    - Status: `PENDING` (plain text, no formatting)
 
-10. **Log conflicts** — For each detected contradiction:
+7. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+8. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze
     - **Request:** [what the user asked]
-    - **Actions:** [files scanned, organization issues found]
+    - **Actions:** [extractions processed, cross-referencing performed]
     - **Result:** [insights added, conflicts logged, gaps flagged]
     - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
     ```
 
 ### Phase 4: Report
 
-12. **Summarize to the user** what was written:
+9. **Summarize to the user** what was written:
     - Source organization issues found (list each one).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).

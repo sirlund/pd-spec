@@ -71,7 +71,8 @@ The folder name provides context that individual files inherit. The agent valida
 | Skill | Command | What it does |
 |---|---|---|
 | Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
-| Analyze | `/analyze` | Scan sources, extract insights, detect conflicts |
+| Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
+| Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
 | Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
@@ -92,6 +93,7 @@ The folder name provides context that individual files inherit. The agent valida
 | File | Role | Editable? |
 |---|---|---|
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
+| `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
@@ -105,7 +107,8 @@ The folder name provides context that individual files inherit. The agent valida
 ```
 ├── .claude/skills/
 │   ├── kickoff/SKILL.md       /kickoff — project setup wizard
-│   ├── analyze/SKILL.md       /analyze — ingest sources
+│   ├── extract/SKILL.md      /extract — read sources, extract raw claims
+│   ├── analyze/SKILL.md       /analyze — process extractions into insights
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
 │   ├── ship/SKILL.md          /ship — generate deliverables
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
@@ -117,6 +120,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
 │   └── _README.md            Onboarding guide for users
 ├── 02_Work/                   Knowledge base (agent-managed, do not edit manually)
+│   ├── EXTRACTIONS.md          Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
 │   ├── SYSTEM_MAP.md          Product architecture decisions
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
