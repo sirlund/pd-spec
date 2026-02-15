@@ -28,7 +28,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and schema field names stay in English. Set `meta.language` in the JSON to the output language code.
+**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If PROJECT.md is missing, default to `en` / "Untitled Project" and suggest running `/kickoff`. Write all deliverable content (headings, body text, callouts, table labels) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and schema field names stay in English. Set `meta.language` and `meta.project` in the JSON to the values from PROJECT.md.
 
 ### Phase 1: Load & Validate
 

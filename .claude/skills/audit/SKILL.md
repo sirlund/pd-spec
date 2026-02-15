@@ -24,7 +24,7 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. This is context only — `/audit` does not write to MEMORY.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all scorecard labels, descriptions, and recommendations in that language. System IDs and status labels stay in English.
+**Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all scorecard labels, descriptions, and recommendations in that language. System IDs and status labels stay in English.
 
 ### Phase 1: Load Work Layer
 

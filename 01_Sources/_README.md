@@ -23,4 +23,4 @@ Create subfolders by milestone or category:
 
 - **Never modify a source after creation.** Sources are immutable evidence.
 - **One folder = one context.** Group files that share the same event, milestone, or theme.
-- After adding sources, run `/analyze` to extract insights.
+- After adding sources, run `/extract` to pull raw claims, then `/analyze` to generate insights.

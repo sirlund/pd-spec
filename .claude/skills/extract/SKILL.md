@@ -18,7 +18,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/` files. If discrepancies are found, report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
+**Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
 
 ### Phase 1: Discover Sources
 
@@ -47,6 +47,8 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 5. **Read each source** — For every source file, read it and extract raw claims and factual statements.
 
+   **MANDATORY: NEVER SKIP FILES.** Every file discovered in Phase 1 must be either (a) processed with claims extracted, or (b) explicitly listed in the final report as unprocessable with a reason. The agent must NOT silently omit files. If context window pressure builds, process files in batches (by folder) — write partial results to EXTRACTIONS.md between batches — but never skip. The Glob results from Phase 1 are the authoritative file list; every path in that list must appear in the output or the unprocessable report.
+
    - Each extracted claim is a verbatim quote or close factual paraphrase — **NO interpretation, NO categorization, NO judgment**.
    - Include ALL claims, even seemingly minor ones — `/analyze` decides relevance.
    - One claim per line. If a paragraph contains multiple distinct facts, separate them.
@@ -69,7 +71,15 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    *Directly readable (Read tool):*
    - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
-   - **PDFs** — Read using the Read tool with `pages` parameter for large documents (>10 pages). Extract claims from text content.
+   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out /tmp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the /tmp/ path.
+
+   **Image batching** — Images are token-expensive (each photo can consume 1-2k input tokens for visual reading). To reduce overhead, batch images from the same folder:
+   1. **Group** all image files (PNG, JPG, converted HEIC→JPG) within a subfolder.
+   2. **Read in batches of 3-4 images** per Read call (use multiple `file_path` calls in the same message). Provide shared context: "These are photos from [folder-name]. Extract visible text, post-it notes, diagrams, and spatial relationships from each image."
+   3. **Extract claims for all images in the batch** in a single pass — write one `## [folder/image.ext]` section per image, but process them together so the agent sees the full visual context (e.g., a sequence of whiteboard photos that form a connected flow).
+   4. **Shared context benefit** — workshop photos often form a series (whiteboard evolution, post-it clusters from the same session). Batching lets the agent understand cross-image connections (e.g., "photo 3 continues the flow from photo 1") that are invisible when processing one image at a time.
+   5. **Still produce per-file sections** — each image gets its own `## [folder/filename.ext]` header in EXTRACTIONS.md, even if processed in a batch.
+   - **PDFs** — Read using the Read tool with `pages` parameter (mandatory for >10 pages, max 20 pages per request). For large PDFs, read in chunks: pages `1-20`, then `21-40`, etc. **If a PDF returns empty or garbled content** (likely an image-only scan without text layer), report it as: "PDF appears to be image-only (no text layer). Export with OCR or provide a `_CONTEXT.md` description." Never silently skip a PDF — always attempt to read it, and always report the outcome.
    - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
 
    *Office files (DOCX, PPTX, XLSX) — convert-then-read:*
@@ -124,6 +134,10 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
      " > /tmp/file_data.txt
      ```
 
+   *Unsupported formats (report, do not skip):*
+   - **Video files** (MP4, WEBM, MOV, AVI) — Cannot be processed by the agent. Report each video file in the final summary as "unsupported format (video)" and suggest: "Export audio transcript or provide a `_CONTEXT.md` description for this file."
+   - **Audio files** (MP3, WAV, M4A) — Cannot be processed. Same handling as video.
+
    *Fallback:*
    - **Other formats** — If a file cannot be read or converted, check `_CONTEXT.md` for descriptions. If no `_CONTEXT.md` exists, report the file as unreadable and suggest the user export it to PDF, CSV, or markdown.
 
@@ -160,13 +174,22 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    - If EXTRACTIONS.md already has content, **replace it entirely** with the new extraction. Each `/extract` run produces a fresh, complete extraction.
    - Preserve the header and description at the top of the file.
+   - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
+   - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report
 
 7. **Summarize to the user:**
-   - Files processed (count, by subfolder).
-   - Claims extracted per file.
+   - **Per-folder breakdown** — For EVERY folder discovered in Phase 1, report:
+     - Folder name
+     - Files processed (count and filenames)
+     - Files NOT processed (count, filenames, and reason for each — unsupported format, conversion error, etc.)
+     - Claims extracted (count)
+   - If a folder from Phase 1 discovery has zero entries in this report, that is a bug — report it.
    - Source organization issues found (list each one).
+   - **Total:** Files processed, files not processed, total claims extracted.
+   - **Verify counts from disk, not memory.** After all writing is complete, re-read `02_Work/EXTRACTIONS.md` and count: (a) section headers (`## [`) = files processed, (b) numbered claim lines = total claims. Use THESE numbers in the report and MEMORY.md, not in-memory counters. Context compaction can corrupt in-memory counts — the file on disk is the source of truth.
+   - **Completeness check** — Compare the list of files in EXTRACTIONS.md (section headers) against the full file list from Phase 1 (Glob results). Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
    - **Remind the user:** "Run `/analyze` to process extractions into insights."
 
 ### Phase 5: Write to MEMORY.md

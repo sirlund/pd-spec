@@ -19,7 +19,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, and `02_Work/SYSTEM_MAP.md`. If discrepancies are found (entries not logged in MEMORY, unexpected files in `02_Work/`), report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
+**Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
 ### Phase 1: Load Extractions
 
@@ -27,13 +27,33 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 2. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
 
+3. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
+
 ### Phase 2: Analysis (Draft)
 
-3. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
-   - Determine the next available `[IG-XX]` ID (sequential, zero-padded).
+4. **Deduplication check** — Before creating any new insight, compare each candidate claim against ALL existing insights (not just their IDs — read the actual claim text). A claim is a duplicate if:
+   - It makes the same factual assertion as an existing insight, even if worded differently (semantic match, not string match).
+   - It describes the same user need, pain point, or constraint from the same perspective.
+   - **NOT a duplicate if:** the same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
+   - When a duplicate is found: do NOT create a new insight. Instead, increment the convergence count on the existing insight and add the new source ref. If the new source has a better quote, update the quote.
+   - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
+
+5. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
+   - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
    - **Key quote** — Include 1-2 sentences from the source that best support the claim. This is the evidence trail — without it, the insight is an assertion without proof.
+   - **Voice** — Who is the source of this claim? Preserve from EXTRACTIONS.md metadata (Participants field). Use one of:
+     - `user` — end-user, operator, or person who uses the product
+     - `stakeholder` — internal decision-maker (CEO, CTO, PM, sales)
+     - `document` — written artifact with no personal attribution (spec, report, benchmark)
+     - `researcher` — field note or observation by the research team
+   - **Authority** — What kind of claim is this? Determines evidentiary weight:
+     - `direct-quote` — verbatim user/stakeholder statement from interview or workshop
+     - `observation` — researcher or document describes something observed/measured
+     - `hypothesis` — someone proposes something unvalidated ("we think X", "users probably Y")
+     - `vision` — aspirational statement about the future ("in 2040 we will...", "the goal is...")
+     - `fact` — verifiable data point (metric, date, technical spec, contractual term)
    - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
    - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
      - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
@@ -52,7 +72,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
    **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
 
-4. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+6. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
    - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
      - Direct contradictions ("users love X" vs "users avoid X").
      - Tensions ("team wants simplicity" vs "client demands customization").
@@ -61,7 +81,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    - For each potential conflict, cite the specific claims from both sides.
    - **Convergence boost** — When multiple new claims from different sources converge on the same point, note the convergence ratio. High convergence (>50% of sources) is a strong signal worth highlighting. Single-source insights are fragile and should be noted as such.
 
-5. **Detect evidence gaps** — Two levels of gap detection:
+7. **Detect evidence gaps** — Two levels of gap detection:
 
    **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
 
@@ -107,22 +127,24 @@ All insights are written as `PENDING`. The real approval happens downstream — 
 
 > **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-6. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
-   - `[IG-XX]` ID (sequential, zero-padded)
+8. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+   - `[IG-XX]` ID (sequential, two-digit minimum: `IG-01`…`IG-99`, then `IG-100`+)
    - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
    - Key quote — 1-2 sentences from the source (in a blockquote)
+   - Voice: `user` / `stakeholder` / `document` / `researcher`
+   - Authority: `direct-quote` / `observation` / `hypothesis` / `vision` / `fact`
    - Convergence ratio: `Convergence: X/Y sources`
    - Source reference: `Ref: [file path]`
    - Status: `PENDING` (plain text, no formatting)
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
-7. **Log conflicts** — For each detected contradiction:
+9. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-8. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze
     - **Request:** [what the user asked]
@@ -179,8 +201,9 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 
 ### Phase 4: Report
 
-9. **Summarize to the user** what was written:
+11. **Summarize to the user** what was written:
     - Source organization issues found (list each one).
+    - **Deduplication** — how many candidate claims were deduplicated into existing insights (count + which IDs absorbed them).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
     - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
@@ -189,4 +212,4 @@ After writing insights and conflicts, generate a Research Brief — a short exec
       - How many insights have convergence >50% of sources (strong signals).
       - How many insights are single-source (fragile — may need additional validation).
       - Highlight the highest-convergence insights as strongest findings.
-    - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."
+    - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/status` to review insights and conflicts visually, make approval decisions, and generate the `/synthesis` prompt."

@@ -17,7 +17,7 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all resolution notes, system map content, and design principles in that language. System IDs and status labels stay in English.
+**Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all resolution notes, system map content, and design principles in that language. System IDs and status labels stay in English.
 
 ### Phase 1: Load & Analyze
 

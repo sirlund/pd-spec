@@ -1,16 +1,11 @@
 # CLAUDE.md — AI Agent Protocol
 
-## Project Settings
+## Project Settings → PROJECT.md
 
-> Configured by `/kickoff`. Edit manually anytime.
+Project-specific configuration (name, language, one-liner) lives in `PROJECT.md` at repo root.
+This keeps `CLAUDE.md` as clean engine config that never conflicts during PD-Spec updates.
 
-- **project_name:** TIMining
-- **output_language:** es
-- **one_liner:** Innovacion & Minería 4.0
-- **team:** Niklas Lundin
-- **started:** 2026-02-13
-
-**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
+**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language` (defined in `PROJECT.md`). System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 
 ## The Truth Stack
 
@@ -93,6 +88,7 @@ The folder name provides context that individual files inherit. The agent valida
 
 | File | Role | Editable? |
 |---|---|---|
+| `PROJECT.md` | Project settings (name, language, one-liner) | Yes (via `/kickoff` or manual) |
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
@@ -166,6 +162,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
 │   ├── FRAMEWORK.md           Full methodology documentation
 │   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+├── PROJECT.md                 Project settings (name, language, one-liner)
 ├── CLAUDE.md                  This file
 └── README.md                  Project overview
 ```
@@ -183,12 +180,20 @@ At the start of every session (new conversation), the agent must:
 
 After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
 
+**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
+- Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
+- Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
+- Direct insight injection (e.g., from `/status` Add Context flow)
+- Batch operations (approve/reject multiple insights)
+
+If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
+
 ## Current State
 
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2025-02-10
-- **Status:** v3.0 — Renamed to PD-Spec (formerly ProductLM). Strategy layer of ProductDesign OS. 4-skill pipeline, project memory, propose-first workflows.
+- **Last updated:** 2026-02-15
+- **Status:** v4.1.0 — 10-skill pipeline, Template+JSON outputs, /extract with Office+image+PDF support, Voice/Authority metadata, deduplication, image batching. QA v2 complete (13 fixed, 4 mitigated).
 - **Insights count:** 0
 - **Conflicts count:** 0

@@ -29,7 +29,7 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
 ## Instructions
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all dashboard labels, section headings, card descriptions, and button labels in that language. System IDs and status labels stay in English.
+**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If PROJECT.md is missing, default to `en` / "Untitled Project" and suggest running `/kickoff`. Write all dashboard labels, section headings, card descriptions, and button labels in that language. System IDs and status labels stay in English. Set `meta.language` and `meta.project` in the JSON accordingly.
 
 ### Phase 1: Load
 
@@ -155,12 +155,14 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
 8. **Write** — Write the combined file to `03_Outputs/STATUS.html`.
 
+9. **Self-check** — After writing, re-read `03_Outputs/STATUS.html` and verify it contains `<script id="pd-data" type="application/json">` with valid JSON inside. If the file does NOT contain this tag, the write was incorrect — re-read the template from `03_Outputs/_templates/status.html` and retry the injection. **CRITICAL: Never write STATUS.html as monolithic inline HTML/CSS/JS. Always use the template.**
+
 ### Phase 4: Report
 
-9. **Tell the user** the file was generated:
+10. **Tell the user** the file was generated:
    > Dashboard generated at `03_Outputs/STATUS.html`. Open it in your browser to review and make decisions.
 
-10. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
+11. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
 
 ## Dashboard Features (handled by template)
 
@@ -173,7 +175,10 @@ The template provides these interactive features — the agent only needs to sup
 - **Sources module** — folder coverage map + source diversity visualization
 - **Evidence Gaps module** — grouped by type (claim-level, source-diversity)
 - **System Map module** — vision, modules with implications, principles, open questions
-- **Add Context module** — textarea for quick researcher notes (field notes). The user types an observation, selects a confidence level, and clicks "Generate". The template formats it as a field note entry and includes it in the `/synthesis` prompt with a reminder to save to `01_Sources/`. This is a prompt-based mechanism — the dashboard generates text for the user to copy-paste, it does not write files directly.
+- **Add Context module** — textarea for quick researcher notes. The user types an observation, selects a confidence level, and clicks "Generate". The template generates a prompt with **dual-write instructions**:
+     1. **Direct insight** — inject a `PENDING` insight to `02_Work/INSIGHTS_GRAPH.md` with `Voice: researcher`, `Authority: observation`, `Source confidence: [selected level]`, and `Ref: field-note`. This makes the observation immediately visible in the knowledge base without requiring a full pipeline run.
+     2. **Field note** — save the observation to `01_Sources/[relevant-folder]/_FIELD_NOTES.md` for traceability and future `/extract` runs.
+     The prompt also includes a reminder to log the action in `02_Work/MEMORY.md` (per BUG-13 ad-hoc logging rule). This is a prompt-based mechanism — the dashboard generates text for the user to copy-paste, it does not write files directly.
 - **Actions module** — prompt generator that collects all decisions and formats `/synthesis` prompt
 - **Cross-referencing anchors** — `STATUS.html#IG-XX` auto-opens the correct module and scrolls to the card
 - **Decision counter** — tracks decisions in sidebar footer and action bar

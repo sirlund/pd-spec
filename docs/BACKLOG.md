@@ -13,7 +13,7 @@ Documented proposals for future features. Each entry includes rationale, archite
 
 ## [BL-02] `/audit` — Strategic Quality Gate
 
-**Status:** Proposed
+**Status:** Implemented (diverged) — Skill exists but implements data-quality audit (traceability, coverage, convergence), not the strategic audit described here (user validation depth, blind spots, prioritization). Both are complementary.
 **Priority:** Medium-High
 **Proposed in:** v2.4 session (2025-02-10)
 **Inspired by:** voltagent/ux-researcher skill
@@ -92,7 +92,7 @@ Implement `/audit` when:
 
 ## [BL-03] UX & Strategy Artifact Catalog — New `/ship` Types
 
-**Status:** Proposed
+**Status:** Partially Implemented (5/6 types) — persona, journey-map, lean-canvas, user-stories, benchmark-ux all have template+schema+skill instructions. Missing: `service-blueprint`, `success-metrics`.
 **Priority:** High
 **Proposed in:** v2.4 session (2025-02-10), expanded v3.0 session (2025-02-13)
 **Inspired by:** aitmpl/ux-researcher-designer skill, Gemini v2.5/v3.0 artifact catalog discussion
@@ -198,7 +198,7 @@ If thresholds aren't met, `/ship [type]` reports what's missing and suggests nex
 
 ## [BL-04] Human Calibration Layer — "Add Context" + Field Notes
 
-**Status:** Proposed
+**Status:** Partially Implemented (~80%) — Confidence tagging in /analyze done. Add Context exists as module in dashboard but NOT inline on individual insight cards. Field notes template exists in 01_Sources/_SOURCE_TEMPLATE.md.
 **Priority:** Medium-High
 **Proposed in:** v3.0 session (2025-02-13)
 **Inspired by:** Gemini's `/calibrate` concept (data-informed, human-led)
@@ -281,7 +281,7 @@ Gemini proposed `/calibrate` as a dedicated skill with `DECISION_LOG.md`. This d
 
 ## [BL-05] Source Diversity Gap Detection — `/analyze` Enhancement
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — 6 source types, diversity matrix, score N/6, gap suggestions. All in /analyze Phase 2.
 **Priority:** Medium
 **Proposed in:** v3.0 session (2025-02-13)
 
@@ -389,7 +389,7 @@ This makes every downstream deliverable (PRD, report, strategy, presentation) mo
 
 ## [BL-07] `/extract` — Dedicated Source Extraction Skill
 
-**Status:** Proposed
+**Status:** Implemented (~95%) — Skill exists (.claude/skills/extract/SKILL.md, 200+ lines), all file types handled, fallbacks defined, writes to 02_Work/EXTRACTIONS.md. Minor: quick-reference table missing (cosmetic).
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related QA:** QA-04a, QA-04b, QA-09, QA-12, QA-13
@@ -462,7 +462,7 @@ After:  /kickoff → /extract → /analyze → /synthesis → /ship
 
 ## [BL-08] Merge `/status` Into `/analyze` and `/synthesis` Output
 
-**Status:** Proposed
+**Status:** Absorbed by BL-12 — Template+JSON architecture implemented. /status remains as standalone skill but uses the data/template separation pattern proposed here. Dashboard auto-generation not yet merged into /analyze and /synthesis final steps.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related QA:** QA-21, QA-27, QA-28, QA-29
@@ -508,7 +508,7 @@ This reduces generation from writing ~500 lines of HTML to writing ~100 lines of
 
 ## [BL-09] QA Fixes — Skill Hardening (29 findings)
 
-**Status:** Proposed
+**Status:** Implemented — Timestamp ISO format enforced, ID validation in /synthesis, atomicity guidance in /analyze, conflict refs required, status format without bold. Reflected across skill files.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Tracking:** Full findings listed in Appendix A
@@ -557,7 +557,7 @@ Bug fixes and improvements identified during real-world testing with TIMining da
 
 ## [BL-10] Insight Temporal Tag — `current` vs `aspirational`
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — `(current)` and `(aspirational)` tags defined with criteria and examples.
 **Priority:** Medium
 **Proposed in:** TIMining QA session (2026-02-14)
 
@@ -608,7 +608,7 @@ Concepto "Skynet": sistema analiza mina, corre N simulaciones, envía órdenes a
 
 ## [BL-11] Convergence Tracking + Source Authority
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — Voice types (4: end-user, domain-expert, business-stakeholder, external), Authority levels (5 tiers), Convergence ratio X/Y with threshold guidance (≥60%, 30-59%, <30%).
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 
@@ -684,7 +684,7 @@ An insight about UX pain carries more weight when voiced by end-users. A pricing
 
 ## [BL-12] Research Dashboard — STATUS.html Redesign (v0)
 
-**Status:** Proposed
+**Status:** Partially Implemented (~85%) — Template+JSON architecture built (status.html + _base.css + _base.js + status.schema.json). 8 modules working: summary-cards, narrative, card-grid, conflicts, evidence-gaps, source-progress, convergences, action-bar. Sidebar navigation, filters, prompt generator functional. **Missing:** dedicated Timeline module, Actors aggregate module, inline Add Context on cards.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-08 (merge /status into /analyze), BL-11 (convergence), QA-27 (performance)
@@ -863,7 +863,7 @@ The template is **content-agnostic**. It knows how to render all module types. T
 
 ## [BL-13] `/analyze` — Automatic Research Brief
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — 5 sections (executive summary, thematic grouping, timeline, actors, evidence gaps), 500 words/section, writes to 02_Work/RESEARCH_BRIEF.md. Listed in CLAUDE.md Sources of Truth.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-12 (research dashboard)
@@ -904,7 +904,7 @@ The brief lives inside the dashboard, not as a separate deliverable.
 
 ## [BL-14] `/extract` — Source Processing Progress Indicator
 
-**Status:** Proposed
+**Status:** Partially Implemented (~60%) — Per-folder and overall progress reporting in conversation and MEMORY.md: done. **Missing:** writing progress data to data.json for dashboard integration (source-progress module in BL-12).
 **Priority:** Medium
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-07 (/extract skill)
@@ -934,6 +934,417 @@ When `/extract` processes sources, there's no visibility into how much has been 
 - [ ] Track processed vs total per folder
 - [ ] Report progress in conversation output
 - [ ] Write progress data to `data.json` for dashboard
+
+---
+
+## [BL-15] Visual & Interaction Polish — HTML Template Upgrade
+
+**Status:** Proposed
+**Priority:** Low
+**Proposed in:** QA v2 session (2026-02-15)
+**Related:** BL-12 (Research Dashboard), all /ship output types
+
+### The gap
+
+All HTML templates (`03_Outputs/_templates/`) are functional but visually generic — typical "AI-generated" look with safe fonts, minimal animations, and flat layouts. The Template+JSON architecture makes this fixable without touching skills: upgrade the templates once, all outputs benefit immediately.
+
+### What changes
+
+Visual and interaction improvements across all 10 HTML templates:
+
+- **Typography:** Move beyond Inter/system fonts — consider distinctive, characterful choices per output type
+- **Micro-interactions:** Hover states, transitions, expand/collapse animations, smooth scrolling
+- **Data visualization:** Sparklines, progress bars, convergence indicators, heat maps for coverage
+- **Dashboard (STATUS):** Sidebar polish, card transitions, filter animations, keyboard navigation
+- **Print/PDF:** Page break refinement, print-specific styles, cover page design
+- **Accessibility:** Color contrast, focus states, screen reader labels, reduced-motion support
+- **Responsive:** Mobile/tablet layouts for outputs shared via link
+
+### Architecture fit
+
+- **Zero skill changes** — templates are static HTML/CSS/JS, agent writes JSON only
+- **Zero pipeline changes** — same data, better presentation
+- Claude Code `frontend-design` plugin could guide the redesign
+- Could be done incrementally: one template at a time, starting with STATUS (most used)
+
+### Implementation approach
+
+1. Install `frontend-design` plugin for design guidance
+2. Define a visual identity for PD-Spec outputs (typography, color palette, spacing system)
+3. Upgrade `_base.css` shared styles first (all templates inherit)
+4. Polish each template individually, starting with STATUS → PRD → Report
+
+---
+
+## [BL-16] PROJECT.md — Separate Project Settings from Engine Config (ARCH-01)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-01 (QA v2, 2026-02-15)
+**Related:** BL-07 (/extract), all skills that read `output_language`
+
+### User stories
+
+**US-1: Merge without conflicts**
+> As a PD-Spec user maintaining a project branch, I want project settings (name, language, one-liner) to live in a separate file from engine config, so that merging PD-Spec updates from main never conflicts with my project setup.
+
+**Acceptance criteria:**
+- [ ] `PROJECT.md` exists at repo root, created by `/kickoff`
+- [ ] Contains: `project_name`, `output_language`, `one_liner`, `team`, `started`
+- [ ] `CLAUDE.md` no longer has `## Project Settings` section
+- [ ] All skills read settings from `PROJECT.md` instead of `CLAUDE.md`
+- [ ] Merging `main` into a project branch touches zero lines in `PROJECT.md`
+- [ ] `.gitignore` does NOT exclude `PROJECT.md` — it's tracked per branch
+
+**US-2: Kickoff writes to the right place**
+> As a new user running `/kickoff`, I want my answers saved to `PROJECT.md`, so that `CLAUDE.md` stays clean engine config that I never edit.
+
+**Acceptance criteria:**
+- [ ] `/kickoff` creates `PROJECT.md` if missing, updates if exists
+- [ ] `/kickoff` no longer writes to `CLAUDE.md` Project Settings
+- [ ] Existing projects with settings in `CLAUDE.md` get a one-time migration prompt: "Detected settings in CLAUDE.md. Move to PROJECT.md?"
+
+**US-3: Skills find settings reliably**
+> As a skill (/extract, /analyze, /ship, etc.), I need to find `output_language` and `project_name` in a predictable location, so that I generate content in the correct language regardless of CLAUDE.md version.
+
+**Acceptance criteria:**
+- [ ] All 10 skills read `output_language` from `PROJECT.md`
+- [ ] If `PROJECT.md` is missing, skills fall back to defaults (`en`, no project name) and suggest running `/kickoff`
+- [ ] Skills never write to `PROJECT.md` (read-only for all except `/kickoff`)
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `PROJECT.md` | NEW — project settings template |
+| `CLAUDE.md` | Remove `## Project Settings`, add `## Project Settings → PROJECT.md` pointer |
+| `.claude/skills/kickoff/SKILL.md` | Write to `PROJECT.md` instead of `CLAUDE.md` |
+| `.claude/skills/extract/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/analyze/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/synthesis/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/ship/SKILL.md` | Read `output_language` + `project_name` from `PROJECT.md` |
+| `.claude/skills/status/SKILL.md` | Read `output_language` + `project_name` from `PROJECT.md` |
+| `.claude/skills/audit/SKILL.md` | Read `output_language` from `PROJECT.md` |
+| `.claude/skills/seed/SKILL.md` | Read `output_language` from `PROJECT.md` |
+
+### Risks
+
+- **Migration friction** — existing projects must migrate. Mitigate with one-time prompt in `/kickoff`.
+- **Two files to maintain** — but `PROJECT.md` is set-and-forget (written once by `/kickoff`).
+
+---
+
+## [BL-17] SOURCE_MAP.md — Incremental Extraction State (ARCH-02)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-02 (QA v2, 2026-02-15)
+**Related:** BUG-01 (file skipping), BUG-02 (context overflow), PERF-01 (performance)
+
+### User stories
+
+**US-1: Don't reprocess unchanged files**
+> As a researcher adding 3 new interview files to a project with 57 existing sources, I want `/extract` to process only the 3 new files, so that extraction takes 2 minutes instead of 25.
+
+**Acceptance criteria:**
+- [ ] `02_Work/SOURCE_MAP.md` tracks: file path, format, status (pending/processed/error), claim count, md5 hash, last processed timestamp
+- [ ] `/extract` computes md5 hash per file (`md5 -q`, macOS native)
+- [ ] New files (not in map) → processed and appended to EXTRACTIONS.md
+- [ ] Unchanged files (hash matches) → skipped, claims preserved
+- [ ] Modified files (hash differs) → reprocessed, section replaced in EXTRACTIONS.md
+- [ ] Deleted files (in map but not on disk) → section removed from EXTRACTIONS.md, marked as orphan in SOURCE_MAP
+- [ ] Full re-extract still possible: `md5 -q` fails or user passes `--full` flag
+
+**US-2: Know what failed and retry**
+> As a researcher whose extraction hit a context limit, I want to see which files failed and re-run only those, so that I don't start over from scratch.
+
+**Acceptance criteria:**
+- [ ] SOURCE_MAP marks files as `error` with a reason when extraction fails
+- [ ] Next `/extract` run retries all `error` and `pending` files
+- [ ] SOURCE_MAP is human-readable (markdown table, not JSON)
+- [ ] `/extract` report shows: N processed, N skipped (unchanged), N errors (with filenames)
+
+**US-3: Recover from partial deletion**
+> As a user who accidentally deleted EXTRACTIONS.md, I want to recover without reprocessing all 57 files, so that I don't waste 25 minutes.
+
+**Acceptance criteria:**
+- [ ] If EXTRACTIONS.md is missing but SOURCE_MAP exists → `/extract` knows which files were processed and re-extracts only those (informed re-extract)
+- [ ] If SOURCE_MAP is missing but EXTRACTIONS.md exists → parse `## [folder/file]` headers to reconstruct SOURCE_MAP
+- [ ] If both missing → full re-extract (same as today)
+
+### SOURCE_MAP.md format
+
+```markdown
+# Source Map
+
+> Per-file extraction state. Maintained by /extract. Do not edit manually.
+
+| File | Format | Status | Claims | Hash | Last Processed |
+|---|---|---|---|---|---|
+| entrevistas-operaciones/entrevista-01.md | md | processed | 45 | a1b2c3d4 | 2026-02-15T14:30 |
+| Workshop 1/foto-01.jpg | jpg | processed | 8 | e5f6g7h8 | 2026-02-15T14:31 |
+| Workshop 1/video-01.mp4 | mp4 | error | 0 | i9j0k1l2 | 2026-02-15T14:31 |
+| Antecedentes/nuevo-doc.docx | docx | pending | — | — | — |
+```
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/SOURCE_MAP.md` | NEW — extraction state registry |
+| `.claude/skills/extract/SKILL.md` | Phase 1: read SOURCE_MAP, compute hashes, diff. Phase 2: process only delta. Phase 3: update map. |
+| `CLAUDE.md` | Add SOURCE_MAP.md to Sources of Truth table |
+
+### Risks
+
+- **md5 performance** — hashing 57 files is fast (<1s). Hashing large videos (150MB) may take a few seconds. Acceptable.
+- **Map corruption** — if `/extract` crashes mid-write, SOURCE_MAP could be inconsistent. Mitigate: write map after EXTRACTIONS.md (worst case: map says "pending" for already-extracted files → re-extracts them, no data loss).
+- **Complexity** — adds state management to a previously stateless skill. But the alternative is BUG-01 + PERF-01 on every run.
+
+---
+
+## [BL-18] Observation → Insight Synthesis Layer (ARCH-03)
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** ARCH-03 (QA v2, 2026-02-15)
+**Related:** BUG-08 (attribution), BUG-10 (deduplication), RESEARCH_BRIEF.md
+
+### User stories
+
+**US-1: See 25 insights, not 142 observations**
+> As a product stakeholder reviewing the research dashboard, I want to see ~20-30 synthesized insights (patterns with multi-source convergence), not 142 atomic observations, so that I can make decisions without drowning in data.
+
+**Acceptance criteria:**
+- [ ] `/analyze` writes observations to `02_Work/OBSERVATIONS.md` (renamed from INSIGHTS_GRAPH.md) with `[OB-XX]` IDs
+- [ ] A synthesis step (in `/synthesis` or new phase) groups observations by convergence and thematic proximity → produces ~20-30 real insights in `02_Work/INSIGHTS_GRAPH.md` with `[IG-XX]` IDs
+- [ ] Each insight references the observations that support it: `Refs: [OB-12], [OB-45], [OB-89]`
+- [ ] An insight requires convergence from 2+ sources minimum (single-source claims stay as observations)
+- [ ] STATUS.html shows insights as primary view, observations expandable as evidence
+- [ ] The count in summary cards shows insights (25), not observations (142)
+
+**US-2: Approve patterns, not individual claims**
+> As a researcher using `/status` to approve/reject, I want to approve 25 synthesized insights instead of 142 atomic claims, so that the review step is viable in under 5 minutes.
+
+**Acceptance criteria:**
+- [ ] `/status` dashboard shows insights with their supporting observations collapsed underneath
+- [ ] Approve/reject operates on insights, not observations
+- [ ] Rejecting an insight flags its observations for re-evaluation, not deletion
+- [ ] The `/synthesis` prompt generated by STATUS includes insight-level decisions
+
+**US-3: Preserve the evidence chain**
+> As an auditor checking traceability, I want to trace any product decision back through insight → observations → raw claims → source file, so that the full evidence chain is intact.
+
+**Acceptance criteria:**
+- [ ] Traceability chain: `SYSTEM_MAP [IG-XX]` → `INSIGHTS_GRAPH [IG-XX] Refs: [OB-12], [OB-45]` → `OBSERVATIONS [OB-12] Ref: folder/file.md` → `EXTRACTIONS.md claims` → `01_Sources/folder/file.md`
+- [ ] `/ship` outputs reference `[IG-XX]` (insights), not `[OB-XX]` (observations)
+- [ ] `/audit` validates the full chain: every IG has OB refs, every OB has source refs
+
+**US-4: Research Brief as insight preview**
+> As a researcher, I want the auto-generated Research Brief to reflect the synthesized insights (not the 142 observations), so that stakeholders get the distilled picture.
+
+**Acceptance criteria:**
+- [ ] RESEARCH_BRIEF.md sections map to synthesized insights, not observation categories
+- [ ] Each brief section references `[IG-XX]` IDs, not `[OB-XX]`
+- [ ] Brief generation moves from `/analyze` (which produces observations) to post-synthesis (which produces insights)
+
+### The hierarchy
+
+```
+01_Sources/file.md          Raw source files (read-only)
+    ↓ /extract
+02_Work/EXTRACTIONS.md      862 raw claims (verbatim quotes)
+    ↓ /analyze
+02_Work/OBSERVATIONS.md     ~142 atomic observations [OB-XX] (categorized, attributed)
+    ↓ /synthesis (new phase)
+02_Work/INSIGHTS_GRAPH.md   ~25 synthesized insights [IG-XX] (convergence, multi-source)
+    ↓ /synthesis (existing)
+02_Work/SYSTEM_MAP.md       Product decisions + design implications
+    ↓ /ship
+03_Outputs/*.html           Deliverables referencing [IG-XX]
+```
+
+### Synthesis rules
+
+The synthesis step converts observations into insights by:
+
+1. **Convergence grouping** — observations from 2+ sources about the same topic merge into one insight
+2. **Thematic clustering** — RESEARCH_BRIEF.md already does this correctly ("la brecha geométrica", "customización como trampa de valor") — those thematic groups ARE the insights
+3. **Weight preservation** — insight inherits the strongest Voice/Authority from its observations (a direct user quote outweighs a document mention)
+4. **Single-source flagging** — observations with no convergence stay as `[OB-XX]` only, noted as "unconfirmed" — they don't graduate to insights until corroborated
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/OBSERVATIONS.md` | NEW (or renamed from INSIGHTS_GRAPH.md) — observation store |
+| `02_Work/INSIGHTS_GRAPH.md` | CHANGED — now holds synthesized insights with `[OB-XX]` refs |
+| `.claude/skills/analyze/SKILL.md` | Writes to OBSERVATIONS.md instead of INSIGHTS_GRAPH.md |
+| `.claude/skills/synthesis/SKILL.md` | New Phase 1b: synthesize observations → insights |
+| `.claude/skills/status/SKILL.md` | Show insights primary, observations as expandable evidence |
+| `.claude/skills/ship/SKILL.md` | Reference `[IG-XX]` (unchanged — but IGs now mean something different) |
+| `.claude/skills/audit/SKILL.md` | Validate full OB → IG chain |
+| `03_Outputs/_templates/status.html` | Two-level view: insights with collapsible observations |
+| `03_Outputs/_schemas/status.schema.json` | Add observations array, insight.obs_refs field |
+| `CLAUDE.md` | Update Sources of Truth, pipeline reference, file descriptions |
+
+### Risks
+
+- **Breaking change** — existing projects have `[IG-XX]` in INSIGHTS_GRAPH.md that are really observations. Need migration path: rename to `[OB-XX]`, then synthesize.
+- **Synthesis quality** — the agent must produce genuinely insightful groupings, not just mechanical clusters. RESEARCH_BRIEF.md proves it can (the thematic sections are excellent), but it needs to do this consistently.
+- **Complexity** — adds a layer to the pipeline. Mitigate: synthesis is a new phase within `/synthesis`, not a new skill. The pipeline stays `/extract` → `/analyze` → `/synthesis` → `/ship`.
+- **Backward compatibility** — old projects with `[IG-XX]` observations referenced in SYSTEM_MAP and outputs. Need `/migrate` one-time script or gradual adoption.
+
+### Implementation order
+
+1. Add `OBSERVATIONS.md` template to `02_Work/`
+2. Update `/analyze` to write `[OB-XX]` to OBSERVATIONS.md
+3. Add synthesis phase to `/synthesis` — read observations, produce insights
+4. Update `/status` template for two-level view
+5. Update `/audit` for full chain validation
+6. Migration script for existing projects
+
+---
+
+## [BL-19] README.md Sync — Outdated Documentation
+
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+
+### The gap
+
+README.md was ~2 versions behind CLAUDE.md. Fixed discrepancies:
+
+| Issue | Severity |
+|---|---|
+| Missing `/extract` and `/audit` skills entirely | CRITICAL |
+| Pipeline shows `/analyze → /synthesis` instead of `/extract → /analyze → /synthesis` | CRITICAL |
+| Says "Four skills" but lists 8 (should be 10) | HIGH |
+| Lists only 6 `/ship` types (missing persona, journey-map, lean-canvas, user-stories, benchmark-ux) | HIGH |
+| Repo Structure section missing extract/, audit/, EXTRACTIONS.md, RESEARCH_BRIEF.md | HIGH |
+| Says "benchmark" instead of "benchmark-ux" | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `README.md` | Update skills count (10), add /extract and /audit, fix pipeline, list all 9 ship types, update repo structure |
+
+---
+
+## [BL-20] Layer READMEs Sync — Outdated Documentation
+
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19
+
+### The gap
+
+The three layer `_README.md` files (01_Sources, 02_Work, 03_Outputs) were outdated — missing files, skills, and pipeline steps added since v3.0.
+
+### Fixed discrepancies
+
+| File | Issue | Severity |
+|---|---|---|
+| `02_Work/_README.md` | Missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` in file table | HIGH |
+| `02_Work/_README.md` | Pipeline omits `/extract` — says "run `/analyze`" directly | HIGH |
+| `02_Work/_README.md` | No mention of `/audit` readiness check | MEDIUM |
+| `03_Outputs/_README.md` | No list of output types (10 `/ship` types undocumented) | HIGH |
+| `03_Outputs/_README.md` | No mention of Template+JSON architecture | HIGH |
+| `03_Outputs/_README.md` | Missing `/status` and `/visualize` as generators | MEDIUM |
+| `03_Outputs/_README.md` | Pipeline omits `/extract` and `/audit` | MEDIUM |
+| `01_Sources/_README.md` | Says "run `/analyze`" instead of `/extract` then `/analyze` | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/_README.md` | Add EXTRACTIONS.md + RESEARCH_BRIEF.md to table, fix pipeline, add /audit |
+| `03_Outputs/_README.md` | Add full output types table, Template+JSON note, /status + /visualize, fix pipeline |
+| `01_Sources/_README.md` | Fix pipeline instruction to include /extract |
+
+---
+
+## ~~[BL-21] FRAMEWORK.md Sync — Major Documentation Debt~~ — RESOLVED
+
+**Status:** Resolved — content was redundant with README.md and CLAUDE.md. File cleared and reserved for future PD-OS methodology documentation.
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19, BL-20
+
+### The gap
+
+`docs/FRAMEWORK.md` is the most outdated documentation file — approximately 2 versions behind CLAUDE.md. It serves as the methodology reference but describes a pipeline and feature set from ~v2.0.
+
+### Discrepancies found
+
+| Issue | Severity |
+|---|---|
+| Says "four Claude Code skills" — missing 6 of 10 (`/extract`, `/audit`, `/kickoff`, `/status`, `/reset`, `/seed`) | CRITICAL |
+| Pipeline shows `/analyze → /synthesis → /ship` without `/extract` | HIGH |
+| Lists only 6 `/ship` types (missing persona, journey-map, lean-canvas, user-stories, benchmark-ux) | HIGH |
+| Work layer describes only 4 files — missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` | HIGH |
+| No mention of Template+JSON architecture | HIGH |
+| No mention of convergence tracking, source authority, temporal tags, or design implications | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `docs/FRAMEWORK.md` | Major rewrite: update skills count to 10, add all missing skills, fix pipeline, add all ship types, add EXTRACTIONS.md + RESEARCH_BRIEF.md to Work layer, document Template+JSON, add convergence/authority/temporal/implications |
+
+## [BL-22] RAG Layer — Scale Source Ingestion Beyond Context Window
+
+**Status:** Proposed
+**Priority:** Low (becomes High at 100+ sources)
+**Origin:** QA v2 session (2026-02-15), PERF-01 analysis
+**Related:** BL-17 (SOURCE_MAP.md — prerequisite), PERF-01 (performance)
+**Depends on:** BL-17
+
+### Problem
+
+PD-Spec reads all sources/claims sequentially into one context window. Works for 10-20 sources. At 57+ files (TIMining QA), the system compacted 3 times in one session, lost state, produced wrong counts, and skipped files. NotebookLM handles 100+ sources effortlessly via RAG — index everything, retrieve what's relevant per query.
+
+### What RAG would solve
+
+1. **/extract** wouldn't need to hold all files in context — index claims as they're extracted
+2. **/analyze** cross-referencing wouldn't load all claims — query "find claims similar to X" and get top-K
+3. **/analyze** deduplication — "is this claim already captured?" → semantic search vs reading all insights
+4. **/ship** context loading — "what insights relate to this module?" → query by topic, not load entire Work layer
+5. **/synthesis** conflict detection — "what evidence contradicts this?" → targeted retrieval
+
+### Architecture options
+
+| Option | Approach | Deps | Pro | Con |
+|---|---|---|---|---|
+| A | BM25 keyword search | zero (pure Python or `rank_bm25`) | Simple, fast | Keyword-only, misses semantic similarity across languages |
+| B | Embeddings + vector store | `sentence-transformers` + `chromadb`/`lancedb` | Best quality, multilingual | ~500MB model download |
+| C | MCP server wrapping A or B | Option A/B + MCP infra | Native Claude Code integration | More infrastructure |
+| D | Claude's native file indexing | none (future platform feature) | Zero maintenance | Doesn't exist yet |
+
+**Recommended path:** Start with **A** (BM25, zero deps) to prove the pattern. If multilingual quality is insufficient, upgrade to **B**. Wrap in **C** (MCP) when the tool interface stabilizes.
+
+### What changes in PD-Spec
+
+- `/extract` builds index after writing EXTRACTIONS.md (new Phase 3b)
+- `/analyze` queries index instead of reading full EXTRACTIONS.md into context
+- SOURCE_MAP.md (BL-17) tracks index state alongside extraction state
+- Index stored in `02_Work/_index/` (gitignored, regenerable from EXTRACTIONS.md)
+- Skills get a new allowed tool: `search_claims(query, top_k)` or MCP equivalent
+
+### User stories
+
+1. **As a researcher with 200+ source files,** I want /analyze to find relevant claims via search instead of loading everything into context, so that cross-referencing works at scale without context overflow.
+
+2. **As a researcher adding a new source,** I want the index to update incrementally (not rebuild from scratch), so that adding one file doesn't re-index 200 others.
+
+3. **As a researcher working in Spanish and English,** I want semantic search that understands both languages, so that a Spanish claim matches an English insight about the same topic.
+
+### Implementation order
+
+Natural progression: BL-17 (state management) → BL-17 parallel extract → **BL-22 RAG** (retrieval at scale)
 
 ---
 
