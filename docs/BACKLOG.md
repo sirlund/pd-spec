@@ -13,7 +13,7 @@ Documented proposals for future features. Each entry includes rationale, archite
 
 ## [BL-02] `/audit` — Strategic Quality Gate
 
-**Status:** Proposed
+**Status:** Implemented (diverged) — Skill exists but implements data-quality audit (traceability, coverage, convergence), not the strategic audit described here (user validation depth, blind spots, prioritization). Both are complementary.
 **Priority:** Medium-High
 **Proposed in:** v2.4 session (2025-02-10)
 **Inspired by:** voltagent/ux-researcher skill
@@ -92,7 +92,7 @@ Implement `/audit` when:
 
 ## [BL-03] UX & Strategy Artifact Catalog — New `/ship` Types
 
-**Status:** Proposed
+**Status:** Partially Implemented (5/6 types) — persona, journey-map, lean-canvas, user-stories, benchmark-ux all have template+schema+skill instructions. Missing: `service-blueprint`, `success-metrics`.
 **Priority:** High
 **Proposed in:** v2.4 session (2025-02-10), expanded v3.0 session (2025-02-13)
 **Inspired by:** aitmpl/ux-researcher-designer skill, Gemini v2.5/v3.0 artifact catalog discussion
@@ -198,7 +198,7 @@ If thresholds aren't met, `/ship [type]` reports what's missing and suggests nex
 
 ## [BL-04] Human Calibration Layer — "Add Context" + Field Notes
 
-**Status:** Proposed
+**Status:** Partially Implemented (~80%) — Confidence tagging in /analyze done. Add Context exists as module in dashboard but NOT inline on individual insight cards. Field notes template exists in 01_Sources/_SOURCE_TEMPLATE.md.
 **Priority:** Medium-High
 **Proposed in:** v3.0 session (2025-02-13)
 **Inspired by:** Gemini's `/calibrate` concept (data-informed, human-led)
@@ -281,7 +281,7 @@ Gemini proposed `/calibrate` as a dedicated skill with `DECISION_LOG.md`. This d
 
 ## [BL-05] Source Diversity Gap Detection — `/analyze` Enhancement
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — 6 source types, diversity matrix, score N/6, gap suggestions. All in /analyze Phase 2.
 **Priority:** Medium
 **Proposed in:** v3.0 session (2025-02-13)
 
@@ -389,7 +389,7 @@ This makes every downstream deliverable (PRD, report, strategy, presentation) mo
 
 ## [BL-07] `/extract` — Dedicated Source Extraction Skill
 
-**Status:** Proposed
+**Status:** Implemented (~95%) — Skill exists (.claude/skills/extract/SKILL.md, 200+ lines), all file types handled, fallbacks defined, writes to 02_Work/EXTRACTIONS.md. Minor: quick-reference table missing (cosmetic).
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related QA:** QA-04a, QA-04b, QA-09, QA-12, QA-13
@@ -462,7 +462,7 @@ After:  /kickoff → /extract → /analyze → /synthesis → /ship
 
 ## [BL-08] Merge `/status` Into `/analyze` and `/synthesis` Output
 
-**Status:** Proposed
+**Status:** Absorbed by BL-12 — Template+JSON architecture implemented. /status remains as standalone skill but uses the data/template separation pattern proposed here. Dashboard auto-generation not yet merged into /analyze and /synthesis final steps.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related QA:** QA-21, QA-27, QA-28, QA-29
@@ -508,7 +508,7 @@ This reduces generation from writing ~500 lines of HTML to writing ~100 lines of
 
 ## [BL-09] QA Fixes — Skill Hardening (29 findings)
 
-**Status:** Proposed
+**Status:** Implemented — Timestamp ISO format enforced, ID validation in /synthesis, atomicity guidance in /analyze, conflict refs required, status format without bold. Reflected across skill files.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Tracking:** Full findings listed in Appendix A
@@ -557,7 +557,7 @@ Bug fixes and improvements identified during real-world testing with TIMining da
 
 ## [BL-10] Insight Temporal Tag — `current` vs `aspirational`
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — `(current)` and `(aspirational)` tags defined with criteria and examples.
 **Priority:** Medium
 **Proposed in:** TIMining QA session (2026-02-14)
 
@@ -608,7 +608,7 @@ Concepto "Skynet": sistema analiza mina, corre N simulaciones, envía órdenes a
 
 ## [BL-11] Convergence Tracking + Source Authority
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — Voice types (4: end-user, domain-expert, business-stakeholder, external), Authority levels (5 tiers), Convergence ratio X/Y with threshold guidance (≥60%, 30-59%, <30%).
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 
@@ -684,7 +684,7 @@ An insight about UX pain carries more weight when voiced by end-users. A pricing
 
 ## [BL-12] Research Dashboard — STATUS.html Redesign (v0)
 
-**Status:** Proposed
+**Status:** Partially Implemented (~85%) — Template+JSON architecture built (status.html + _base.css + _base.js + status.schema.json). 8 modules working: summary-cards, narrative, card-grid, conflicts, evidence-gaps, source-progress, convergences, action-bar. Sidebar navigation, filters, prompt generator functional. **Missing:** dedicated Timeline module, Actors aggregate module, inline Add Context on cards.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-08 (merge /status into /analyze), BL-11 (convergence), QA-27 (performance)
@@ -863,7 +863,7 @@ The template is **content-agnostic**. It knows how to render all module types. T
 
 ## [BL-13] `/analyze` — Automatic Research Brief
 
-**Status:** Proposed
+**Status:** Implemented (verified in /analyze SKILL.md) — 5 sections (executive summary, thematic grouping, timeline, actors, evidence gaps), 500 words/section, writes to 02_Work/RESEARCH_BRIEF.md. Listed in CLAUDE.md Sources of Truth.
 **Priority:** High
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-12 (research dashboard)
@@ -904,7 +904,7 @@ The brief lives inside the dashboard, not as a separate deliverable.
 
 ## [BL-14] `/extract` — Source Processing Progress Indicator
 
-**Status:** Proposed
+**Status:** Partially Implemented (~60%) — Per-folder and overall progress reporting in conversation and MEMORY.md: done. **Missing:** writing progress data to data.json for dashboard integration (source-progress module in BL-12).
 **Priority:** Medium
 **Proposed in:** TIMining QA session (2026-02-14)
 **Related:** BL-07 (/extract skill)
@@ -1203,6 +1203,97 @@ The synthesis step converts observations into insights by:
 4. Update `/status` template for two-level view
 5. Update `/audit` for full chain validation
 6. Migration script for existing projects
+
+---
+
+## [BL-19] README.md Sync — Outdated Documentation
+
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+
+### The gap
+
+README.md was ~2 versions behind CLAUDE.md. Fixed discrepancies:
+
+| Issue | Severity |
+|---|---|
+| Missing `/extract` and `/audit` skills entirely | CRITICAL |
+| Pipeline shows `/analyze → /synthesis` instead of `/extract → /analyze → /synthesis` | CRITICAL |
+| Says "Four skills" but lists 8 (should be 10) | HIGH |
+| Lists only 6 `/ship` types (missing persona, journey-map, lean-canvas, user-stories, benchmark-ux) | HIGH |
+| Repo Structure section missing extract/, audit/, EXTRACTIONS.md, RESEARCH_BRIEF.md | HIGH |
+| Says "benchmark" instead of "benchmark-ux" | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `README.md` | Update skills count (10), add /extract and /audit, fix pipeline, list all 9 ship types, update repo structure |
+
+---
+
+## [BL-20] Layer READMEs Sync — Outdated Documentation
+
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19
+
+### The gap
+
+The three layer `_README.md` files (01_Sources, 02_Work, 03_Outputs) were outdated — missing files, skills, and pipeline steps added since v3.0.
+
+### Fixed discrepancies
+
+| File | Issue | Severity |
+|---|---|---|
+| `02_Work/_README.md` | Missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` in file table | HIGH |
+| `02_Work/_README.md` | Pipeline omits `/extract` — says "run `/analyze`" directly | HIGH |
+| `02_Work/_README.md` | No mention of `/audit` readiness check | MEDIUM |
+| `03_Outputs/_README.md` | No list of output types (10 `/ship` types undocumented) | HIGH |
+| `03_Outputs/_README.md` | No mention of Template+JSON architecture | HIGH |
+| `03_Outputs/_README.md` | Missing `/status` and `/visualize` as generators | MEDIUM |
+| `03_Outputs/_README.md` | Pipeline omits `/extract` and `/audit` | MEDIUM |
+| `01_Sources/_README.md` | Says "run `/analyze`" instead of `/extract` then `/analyze` | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/_README.md` | Add EXTRACTIONS.md + RESEARCH_BRIEF.md to table, fix pipeline, add /audit |
+| `03_Outputs/_README.md` | Add full output types table, Template+JSON note, /status + /visualize, fix pipeline |
+| `01_Sources/_README.md` | Fix pipeline instruction to include /extract |
+
+---
+
+## [BL-21] FRAMEWORK.md Sync — Major Documentation Debt
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19, BL-20
+
+### The gap
+
+`docs/FRAMEWORK.md` is the most outdated documentation file — approximately 2 versions behind CLAUDE.md. It serves as the methodology reference but describes a pipeline and feature set from ~v2.0.
+
+### Discrepancies found
+
+| Issue | Severity |
+|---|---|
+| Says "four Claude Code skills" — missing 6 of 10 (`/extract`, `/audit`, `/kickoff`, `/status`, `/reset`, `/seed`) | CRITICAL |
+| Pipeline shows `/analyze → /synthesis → /ship` without `/extract` | HIGH |
+| Lists only 6 `/ship` types (missing persona, journey-map, lean-canvas, user-stories, benchmark-ux) | HIGH |
+| Work layer describes only 4 files — missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` | HIGH |
+| No mention of Template+JSON architecture | HIGH |
+| No mention of convergence tracking, source authority, temporal tags, or design implications | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `docs/FRAMEWORK.md` | Major rewrite: update skills count to 10, add all missing skills, fix pipeline, add all ship types, add EXTRACTIONS.md + RESEARCH_BRIEF.md to Work layer, document Template+JSON, add convergence/authority/temporal/implications |
 
 ---
 
