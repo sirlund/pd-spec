@@ -3,7 +3,7 @@ name: ship
 description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|benchmark|audit|strategy]"
+argument-hint: "[prd|presentation|report|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -18,7 +18,7 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels) in that language. System IDs (`[IG-XX]`, `[CF-XX]`) and `doc-meta` field names stay in English.
+**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels, HTML `<title>` tag) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and `doc-meta` field names stay in English.
 
 ### Phase 1: Load & Validate
 
@@ -26,7 +26,8 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
    - `prd` — Product Requirements Document (default).
    - `presentation` — Reveal.js slide deck with key insights and decisions.
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
-   - `benchmark` / `audit` / `strategy` — Specialized documents.
+   - `benchmark` — **Deprecated.** See step 11 note.
+   - `audit` / `strategy` — Specialized documents.
 
 2. **Load knowledge base** — Read:
    - `02_Work/SYSTEM_MAP.md` for product architecture and decisions.
@@ -56,6 +57,11 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
      - Gray background (`#F0F2F5`), white page
      - Print media query for clean PDF export
    - Green callout boxes (`.callout`) for key insights.
+   - For multi-page documents: use separate `.page` divs with `page-break-after: always` between major sections for clean PDF export via Print > Save as PDF.
+
+**Emoji policy** — Only functional emojis that convey information the text alone cannot: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis (💸💎💡🎯🚀😢👍✅❌) that are redundant with text or purely ornamental.
+
+**No redundancy** — Do not repeat the same information in different sections of the same document. Each fact or claim should appear once, in the most relevant section.
 
 6. **Document versioning** — Every output carries visible version metadata so stakeholders always know what they're reading:
    - **Check existing output** — If the file already exists, read its current version number and changelog.
@@ -76,8 +82,9 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
      ```
    - **Changelog entries** describe what changed in the document (added sections, updated insights, removed modules) — not internal pipeline details.
    - **Rationale:** Outputs may be shared with stakeholders via link or file. If the document changes between viewings without visible versioning, stakeholders lose trust. No silent updates.
+   - **Applies to ALL output types** — PRD, report, presentation, strategy, audit, benchmark. No exceptions.
 
-7. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. Include an Insights Summary table listing the key insights used.
+7. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. If a section has no insight references, either find relevant insights or mark the section with an explicit gap indicator: `[GAP — no source backing, inferred from context]`. Sections without refs and without a GAP marker are not acceptable. Include an Insights Summary table listing the key insights used.
 
 8. **Cross-referencing** — All `[IG-XX]` and `[CF-XX]` references in the HTML body must be clickable links to STATUS.html anchors. This applies to all output types.
    - **CSS** — Add to the document `<style>`:
@@ -120,10 +127,12 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
     - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
     - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-11. **For other document types** (benchmark, audit, strategy):
+11. **For other document types** (audit, strategy):
     - Use `03_Outputs/PRD.html` as the CSS and layout reference.
     - Adapt the section structure to the document type.
     - Maintain the same traceability requirements.
+
+    **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `[GAP]` marker.
 
 12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown

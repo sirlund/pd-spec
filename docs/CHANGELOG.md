@@ -1,5 +1,44 @@
 # Changelog
 
+## [3.2.0] — 2026-02-14
+
+### Fixed — /ship (Track 1: 8 fixes from QA-30 to QA-61)
+- `<title>` tag must respect `output_language` — was generating English titles in Spanish projects (QA-39, QA-45, QA-50, QA-56)
+- Emoji policy enforced — only functional emojis (✓✗⚠️🔴🟠🟢▲▼), decorative ones (💸💎💡🎯🚀😢👍) prohibited (QA-40, QA-42, QA-51, QA-58)
+- Traceability: every section must have `[IG-XX]` refs or explicit `[GAP]` marker — no silent gaps (QA-32, QA-37, QA-38, QA-43, QA-44, QA-53)
+- No redundancy rule — same information must not repeat across sections of a document (QA-41)
+- Language mixing prohibited — headings, labels, all visible text must be in `output_language` (QA-48, QA-49, QA-57)
+- Multi-page outputs: separate `.page` divs with `page-break-after: always` for clean PDF export (QA-52, QA-59)
+- `doc-meta` with changelog now mandatory for ALL output types, no exceptions (QA-46)
+- `/ship benchmark` deprecated — anti-hallucination rule for competitor claims without `[IG-XX]` source. Will be reconverted to `benchmark-ux` in Ola 4 (QA-54)
+
+### Fixed — /analyze (Track 2: 7 fixes from QA-01 to QA-29)
+- Cross-referencing strengthened — actively seek contradictions, tensions, temporal conflicts, not just obvious opposites (QA-03, QA-20)
+- Key quote required per insight — 1-2 sentences from source as evidence trail (QA-05)
+- Atomicity enforced — "a list of 10 needs = 10 insights, not 1" (QA-14)
+- Granularity guidance added — when to separate vs. consolidate insights (QA-15)
+- Status labels as plain text (`PENDING`), not bold or backtick-wrapped (QA-16)
+- `## Section` headers formalized as grouping mechanism in INSIGHTS_GRAPH.md (QA-17)
+- Both sides of a conflict must reference `[IG-XX]` IDs (QA-19)
+
+### Fixed — Other skills (Track 3)
+- `/synthesis`: validate that argument IDs (IG-XX, CF-XX) exist before processing — no phantom resolutions (QA-24)
+- `/kickoff` + CLAUDE.md: unified `## Project Context` and `## Project Settings` into a single section — eliminates redundancy (QA-06)
+- CLAUDE.md: `team` and `started` fields as `[Set by /kickoff]` placeholders in template (QA-07)
+- Session Protocol: timestamp format must be ISO `YYYY-MM-DDTHH:MM` — enforced centrally (QA-02)
+- `/analyze`: `_CONTEXT.md` must follow `_CONTEXT_TEMPLATE.md` structure (QA-10)
+- `/analyze`: prohibit insight derivation in `_CONTEXT.md` — metadata only, no analysis (QA-11)
+
+### Added — Gemini learnings (Track 4)
+- Temporal tag `(current)`/`(aspirational)` on insights in `/analyze` — distinguishes present state from desired future (BL-10)
+- Memorable naming for Design Principles in `/synthesis` — e.g., "Quiet UI", "The Delta" alongside `[IG-XX]` refs (Gemini doc)
+- `/ship benchmark` marked for reconversion to `benchmark-ux` — inter-industry design referents, not competitive analysis (Gemini doc + QA-54)
+
+### Added — Multimodal & performance (from QA backlog)
+- `/analyze`: direct image reading (PNG, JPG, whiteboard photos) — extract text, diagrams, post-it notes (QA-04, QA-12)
+- `/analyze`: direct PDF reading via `pages` parameter for large documents (QA-13)
+- `/analyze`: batch progress reporting for large source sets (>20 files) (QA-08)
+
 ## [3.1.0] — 2026-02-11
 
 ### Added

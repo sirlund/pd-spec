@@ -1,12 +1,5 @@
 # CLAUDE.md — AI Agent Protocol
 
-## Project Context
-
-- **Project:** PD-Spec (formerly ProductLM)
-- **Product:** The Strategy & Intelligence layer of ProductDesign OS — 3-layer architecture + Claude Code skills pipeline for turning research into traceable product decisions
-- **Team:** Niklas Lundin
-- **Started:** 2025-02-09
-
 ## Project Settings
 
 > Configured by `/kickoff`. Edit manually anytime.
@@ -14,6 +7,8 @@
 - **project_name:** [Set by /kickoff]
 - **output_language:** en
 - **one_liner:** [Set by /kickoff]
+- **team:** [Set by /kickoff]
+- **started:** [Set by /kickoff]
 
 **Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 
@@ -150,7 +145,7 @@ At the start of every session (new conversation), the agent must:
    - Any discrepancies are reported to the user before proceeding.
 3. **Resume context** — use MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
-After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot.
+After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
 
 ## Current State
 

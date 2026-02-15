@@ -23,7 +23,10 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
 1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
 
-2. **Read folder context** — For each subfolder, check for a `_CONTEXT.md` file. If present, use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata. The `_CONTEXT.md` provides type, date, participants, and per-file descriptions.
+2. **Read folder context** — For each subfolder, check for a `_CONTEXT.md` file. If present:
+   - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata. The `_CONTEXT.md` provides type, date, participants, and per-file descriptions.
+   - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
+   - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue — that content belongs in an insight, not in metadata.
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -34,7 +37,14 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
    - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
    - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
 
-4. **Read each source** — For every source file, extract atomic claims and facts. Each claim should be a single, verifiable statement. For non-markdown files described in `_CONTEXT.md`, extract claims from the descriptions provided.
+4. **Read each source** — For every source file, extract atomic claims and facts. Each claim should be a single, verifiable statement.
+
+   **Non-markdown files** — The agent can read images (PNG, JPG) and PDFs directly using the Read tool. Use this capability:
+   - **Images** (photos, screenshots, whiteboard captures) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
+   - **PDFs** — Read using the Read tool with `pages` parameter for large documents. Extract claims from text content.
+   - **Files described in `_CONTEXT.md`** — If a non-readable file (spreadsheet, .docx, proprietary format) is described in `_CONTEXT.md`, extract claims from the descriptions provided there.
+
+   **Large source sets** — When `01_Sources/` contains many files (>20), process them in batches by subfolder. Report progress to the user between batches (e.g., "Processed `entrevistas-operadores/` — 12 insights extracted. Moving to `benchmark-inicial/`...").
 
 5. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
 
@@ -44,11 +54,27 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
    - Determine the next available `[IG-XX]` ID (sequential, zero-padded).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
-   - **Status: always `PENDING`.** Insights are never born as VERIFIED. Verification happens later through cross-referencing in `/synthesis` or explicit user validation.
-   - Aim for **one insight per atomic claim**. "Users want X and hate Y" is two insights, not one.
+   - **Key quote** — Include 1-2 sentences from the source that best support the claim. This is the evidence trail — without it, the insight is an assertion without proof.
+   - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
+   - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
+     - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
+     - `(aspirational)` — describes a desired future state ("users want X", "the product should do Y")
+     - If ambiguous, default to `(current)`. The tag goes after the category: `(user-need, aspirational)`.
+   - **Atomicity** — One insight per atomic claim. "Users want X and hate Y" is two insights, not one. A source that lists 10 needs produces 10 insights. Do not bundle multiple claims into a single insight.
+   - **Granularity guidance** — When to separate vs. consolidate:
+     - **Separate** when claims have different sources, different categories, or could be independently verified/invalidated.
+     - **Consolidate** when two claims are really the same observation stated differently (deduplicate, not merge).
+     - When in doubt, **separate**. It's easier to merge later than to split.
 
-7. **Cross-reference** — Compare new claims against all existing VERIFIED insights.
-   - Look for contradictions, tensions, or incompatible statements.
+   **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
+
+7. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+   - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
+     - Direct contradictions ("users love X" vs "users avoid X").
+     - Tensions ("team wants simplicity" vs "client demands customization").
+     - Incompatible assumptions ("small user base" vs "must handle 10K concurrent users").
+     - Temporal conflicts ("currently using tool Y" vs "already migrated to Z").
+   - For each potential conflict, cite the specific claims from both sides.
 
 8. **Detect evidence gaps** — Two levels of gap detection:
 
@@ -75,14 +101,16 @@ All insights are written as `PENDING`. The real approval happens downstream — 
 
 9. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, zero-padded)
-   - Category in parentheses: `(user-need)`, `(technical)`, `(business)`, `(constraint)`
+   - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
+   - Key quote — 1-2 sentences from the source (in a blockquote)
    - Source reference: `Ref: [file path]`
-   - All insights are `PENDING`
+   - Status: `PENDING` (plain text, no formatting)
 
 10. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
-    - Append the conflict as `PENDING` with a description of the tension and references to the conflicting insight IDs.
+    - Append the conflict as `PENDING` with a description of the tension.
+    - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
 11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
