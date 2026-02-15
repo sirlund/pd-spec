@@ -1,9 +1,9 @@
 ---
 name: ship
-description: Generate HTML deliverables in 03_Outputs/ from verified insights. Types: prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, audit, strategy.
+description: Generate HTML deliverables in 03_Outputs/ from verified insights. Types: prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|benchmark-ux|persona|journey-map|lean-canvas|audit|strategy]"
+argument-hint: "[prd|presentation|report|benchmark-ux|persona|journey-map|lean-canvas|user-stories|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -40,6 +40,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `persona` — User persona cards grounded in verified insights.
    - `journey-map` — User journey map with phases, touchpoints, emotions, and pain points.
    - `lean-canvas` — Business model synthesis on one page.
+   - `user-stories` — JTBD-framed user stories with acceptance criteria (bridge to PD-Build).
    - `audit` / `strategy` — Specialized documents.
    - `benchmark` — **Deprecated.** See step 19 note.
 
@@ -72,6 +73,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `persona` → `_templates/persona.html`
    - `journey-map` → `_templates/journey-map.html`
    - `lean-canvas` → `_templates/lean-canvas.html`
+   - `user-stories` → `_templates/user-stories.html`
    - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
 6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
@@ -216,16 +218,46 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
     - Each block must reference `[IG-XX]` or use `gap: true` marker.
     - One-page format optimized for print.
 
-17. **For other document types** (audit, strategy):
+17. **For user-stories** (`/ship user-stories`):
+    - Output: `03_Outputs/USER_STORIES.html` (via Template+JSON)
+    - Template: `_templates/user-stories.html`
+    - Schema: `_schemas/user-stories.schema.json`
+    - **JSON structure uses `modules` array (not `sections`)** — each module groups related stories by product module or user flow.
+    - Derive stories from:
+      - **Personas** — from `/ship persona` output (`03_Outputs/PERSONAS.html`), if available. Extract persona IDs to link stories.
+      - **User-need insights** in `INSIGHTS_GRAPH.md` — the primary source for JTBD statements.
+      - **Modules and design implications** in `SYSTEM_MAP.md` — the primary source for acceptance criteria and story grouping.
+    - **JTBD format:** Each story uses a `jtbd` object with three fields:
+      - `situation` — "When [triggering context]"
+      - `motivation` — "I want to [user action]"
+      - `outcome` — "So I can [expected benefit]"
+    - Each story includes:
+      - `id` — Story ID (`US-XX`)
+      - `persona` — Which persona this story serves (P-XX reference or descriptive label)
+      - `jtbd` — JTBD statement object (situation, motivation, outcome)
+      - `acceptance_criteria` — Array of `{text, ref}` objects derived from SYSTEM_MAP design implications
+      - `priority` — `High` / `Medium` / `Low` based on insight convergence and business weight
+      - `refs` — Array of `[IG-XX]` references backing this story
+    - **Grouping:** Organize stories by module or user flow. Each module has an `id`, `name`, and `stories` array.
+    - **If personas don't exist yet:** derive user context directly from user-need insights. Use a descriptive label (e.g., "Operations team") instead of P-XX reference.
+    - **Traceability matrix:** Include a `traceability` array in the JSON — each entry maps `story_id` → `insights` → `sources` (source file names that back the referenced insights).
+    - **Priority logic:**
+      - `High` — story backed by 3+ converging insights or directly tied to a business-critical constraint.
+      - `Medium` — story backed by 1–2 insights with clear user need.
+      - `Low` — story inferred from a single insight or gap-filling.
+    - **Scope boundary:** This is PD-Spec's output (strategy), not PD-Build's input (execution). Stories describe *what* and *why*, never *how* to implement. No technical implementation details, no sprint estimates, no component names.
+    - The **Propose phase** (step 4) should present: module groupings, story count per module, persona coverage, key insights used, and any gaps.
+
+18. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.
     - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
-18. **Note on `audit`:** See `/audit` skill (`.claude/skills/audit/SKILL.md`) for the dedicated quality gate. `/ship audit` generates a formatted report; `/audit` runs the validation checks.
+19. **Note on `audit`:** See `/audit` skill (`.claude/skills/audit/SKILL.md`) for the dedicated quality gate. `/ship audit` generates a formatted report; `/audit` runs the validation checks.
 
-19. **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
+20. **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-20. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+21. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
