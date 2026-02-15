@@ -1,9 +1,9 @@
 ---
 name: ship
-description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
+description: Generate HTML deliverables (prd, presentation, report, journey-map, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|audit|strategy]"
+argument-hint: "[prd|presentation|report|journey-map|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -36,7 +36,8 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` — Product Requirements Document (default).
    - `presentation` — Reveal.js slide deck with key insights and decisions.
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
-   - `benchmark` — **Deprecated.** See step 11 note.
+   - `journey-map` — User journey map with phases, touchpoints, emotions, and pain points.
+   - `benchmark` — **Deprecated.** See step 14 note.
    - `audit` / `strategy` — Specialized documents.
 
 2. **Load knowledge base** — Read:
@@ -64,6 +65,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` → `_templates/prd.html`
    - `report` → `_templates/report.html`
    - `presentation` → `_templates/presentation.html`
+   - `journey-map` → `_templates/journey-map.html`
    - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
 6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
@@ -136,20 +138,33 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - Include `"notes"` field per section for speaker notes.
    - Navigation: arrow keys, presenter mode (press `S`).
 
-12. **For report** (`/ship report`):
+12. **For journey-map** (`/ship journey-map`):
+    - Output: `03_Outputs/JOURNEY_MAP.html` (via Template+JSON)
+    - Template: `_templates/journey-map.html`
+    - Schema: `_schemas/journey-map.schema.json`
+    - Derive journey from user-need and constraint insights in `02_Work/INSIGHTS_GRAPH.md`.
+    - Structure: phases (columns) × layers (rows)
+      - **Phases** (e.g., Awareness, Onboarding, Daily Use, Advanced Use, Support) — derive from actual product context.
+      - **Layers per phase:** User Actions, Touchpoints, Emotions, Pain Points, Opportunities.
+    - Each cell's `content` references `[IG-XX]` insights. Cells without insight backing use `[GAP]` marker.
+    - Highlight critical pain points (negative emotions) and moments of delight (positive emotions).
+    - If personas exist (from `/ship persona`), link journey to the primary persona in the `persona` field of the JSON.
+    - JSON structure uses a `phases` array where each phase has a `layers` object keyed by layer type.
+
+13. **For report** (`/ship report`):
     - Output: `03_Outputs/REPORT.html`
     - Structure: Cover page (auto from `title` + `meta`) → Table of Contents (auto from sections) → sections.
     - Optimized for Print → Save as PDF: template handles page breaks between sections.
     - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-13. **For other document types** (audit, strategy):
+14. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.
     - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
     **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-14. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+15. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
