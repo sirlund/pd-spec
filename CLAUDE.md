@@ -90,6 +90,7 @@ The folder name provides context that individual files inherit. The agent valida
 |---|---|---|
 | `PROJECT.md` | Project settings (name, language, one-liner) | Yes (via `/kickoff` or manual) |
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
+| `02_Work/SOURCE_MAP.md` | Per-file extraction state (hash, status, timestamp) | Yes (via `/extract`, auto-maintained) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
@@ -125,6 +126,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
 │   └── _README.md            Onboarding guide for users
 ├── 02_Work/                   Knowledge base (agent-managed, do not edit manually)
+│   ├── SOURCE_MAP.md           Per-file extraction state (hash, status, timestamp)
 │   ├── EXTRACTIONS.md          Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
 │   ├── SYSTEM_MAP.md          Product architecture decisions
