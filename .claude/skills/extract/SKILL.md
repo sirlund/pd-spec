@@ -2,7 +2,7 @@
 name: extract
 description: Read and extract raw claims from source files in 01_Sources/. Writes structured extractions to 02_Work/EXTRACTIONS.md for /analyze to process.
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Write
+allowed-tools: Read, Grep, Glob, Write, Bash
 argument-hint: "[folder-name]"
 ---
 
@@ -65,10 +65,67 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    Field notes are treated as any other source — no higher or lower priority. The confidence tag is preserved for `/analyze` to use during insight processing.
 
-   **Non-markdown files** — The agent can read images (PNG, JPG) and PDFs directly using the Read tool:
-   - **Images** (photos, screenshots, whiteboard captures) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
+   **Non-markdown files** — The agent handles all common file types. Use the best available tool, with zero-dependency fallbacks.
+
+   *Directly readable (Read tool):*
+   - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
    - **PDFs** — Read using the Read tool with `pages` parameter for large documents (>10 pages). Extract claims from text content.
-   - **Files described in `_CONTEXT.md`** — If a non-readable file (spreadsheet, .docx, proprietary format) is described in `_CONTEXT.md`, extract claims from the descriptions provided there.
+   - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
+
+   *Office files (DOCX, PPTX, XLSX) — convert-then-read:*
+
+   **Strategy:** Try `markitdown` first (best output). If not installed, fall back to zero-dependency tools.
+
+   ```
+   Detection: Run `python3 -m markitdown --help` once at the start of Phase 2.
+   If it succeeds → use markitdown for all office files.
+   If it fails   → use fallbacks below.
+   ```
+
+   **With markitdown** (optional dependency — `pip install markitdown`):
+   - Any office file: `python3 -m markitdown "file.ext" > /tmp/file.md`
+   - Produces structured markdown with tables, lists, slide separators preserved.
+   - Works for: DOCX, PPTX, XLSX, HTML, and more.
+
+   **Without markitdown** (zero dependencies):
+   - **DOCX** — `textutil -convert txt "file.docx" -output /tmp/file.txt` (macOS native). Then read the `.txt`.
+   - **PPTX** — Extract slide text via Python stdlib:
+     ```bash
+     python3 -c "
+     import zipfile, xml.etree.ElementTree as ET
+     with zipfile.ZipFile('file.pptx') as z:
+       for name in sorted(z.namelist()):
+         if name.startswith('ppt/slides/slide') and name.endswith('.xml'):
+           root = ET.parse(z.open(name)).getroot()
+           texts = [t.text for t in root.iter('{http://schemas.openxmlformats.org/drawingml/2006/main}t') if t.text]
+           if texts: print(f'--- {name} ---'); print('\n'.join(texts))
+     " > /tmp/file_slides.txt
+     ```
+   - **XLSX** — Extract cell data via Python stdlib:
+     ```bash
+     python3 -c "
+     import zipfile, xml.etree.ElementTree as ET
+     with zipfile.ZipFile('file.xlsx') as z:
+       ss = []; ns = '{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+       if 'xl/sharedStrings.xml' in z.namelist():
+         root = ET.parse(z.open('xl/sharedStrings.xml')).getroot()
+         ss = [''.join(t.text or '' for t in si.iter(ns+'t')) for si in root.iter(ns+'si')]
+       for sheet in sorted(n for n in z.namelist() if n.startswith('xl/worksheets/sheet') and n.endswith('.xml')):
+         print(f'--- {sheet} ---')
+         root = ET.parse(z.open(sheet)).getroot()
+         for row in root.iter(ns+'row'):
+           cells = []
+           for c in row.iter(ns+'c'):
+             v = c.find(ns+'v')
+             val = v.text if v is not None else ''
+             if c.get('t') == 's' and val: val = ss[int(val)]
+             cells.append(val)
+           print('\t'.join(cells))
+     " > /tmp/file_data.txt
+     ```
+
+   *Fallback:*
+   - **Other formats** — If a file cannot be read or converted, check `_CONTEXT.md` for descriptions. If no `_CONTEXT.md` exists, report the file as unreadable and suggest the user export it to PDF, CSV, or markdown.
 
    **Progress reporting** — Report progress to the user throughout extraction:
 
