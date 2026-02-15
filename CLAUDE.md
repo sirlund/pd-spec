@@ -97,6 +97,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
+| `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
 | `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
 | `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
