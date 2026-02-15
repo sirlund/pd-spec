@@ -1208,13 +1208,13 @@ The synthesis step converts observations into insights by:
 
 ## [BL-19] README.md Sync — Outdated Documentation
 
-**Status:** Proposed
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
 **Priority:** High
 **Origin:** Cross-reference audit (2026-02-15)
 
 ### The gap
 
-README.md is ~2 versions behind CLAUDE.md. Critical discrepancies:
+README.md was ~2 versions behind CLAUDE.md. Fixed discrepancies:
 
 | Issue | Severity |
 |---|---|
