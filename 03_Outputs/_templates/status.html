@@ -518,6 +518,50 @@
       font-size: 0.85rem;
     }
 
+    /* === Add Context === */
+    .context-form { background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; }
+    .context-form label { font-size: 0.8rem; font-weight: 500; display: block; margin-bottom: 0.375rem; color: #333; }
+    .context-form textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.5rem 0.625rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      resize: vertical;
+      margin-bottom: 0.75rem;
+    }
+    .context-form textarea:focus { border-color: #999; outline: none; }
+    .confidence-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .confidence-row span { font-size: 0.8rem; font-weight: 500; color: #333; margin-right: 0.25rem; }
+    .confidence-btn {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+    }
+    .confidence-btn:hover { background: #f5f5f5; }
+    .confidence-btn.active { background: #111; color: #fff; border-color: #111; }
+    .context-output {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f8f8;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
+    .context-output.visible { display: block; }
+
     /* === Action Bar === */
     .action-bar {
       background: #fff;
@@ -692,6 +736,7 @@
       { id: 'sources', label: 'Sources', count: data.sources ? data.sources.length : 0 },
       { id: 'gaps', label: 'Evidence Gaps', count: data.evidence_gaps ? data.evidence_gaps.length : 0 },
       { id: 'systemmap', label: 'System Map', count: null },
+      { id: 'context', label: 'Add Context', count: null },
       { id: 'actions', label: 'Actions', count: null }
     ];
 
@@ -703,7 +748,7 @@
     modules.forEach(function(m) {
       var countStr = m.count !== null ? '<span class="nav-count">' + m.count + '</span>' : '';
       navHtml += '<a href="#" data-module="' + m.id + '"' + (m.id === 'overview' ? ' class="active"' : '') + '>' + esc(m.label) + countStr + '</a>';
-      if (m.id === 'gaps') navHtml += '<div class="sidebar-sep"></div>';
+      if (m.id === 'gaps' || m.id === 'systemmap') navHtml += '<div class="sidebar-sep"></div>';
     });
     $('sidebarNav').innerHTML = navHtml;
 
@@ -1053,6 +1098,32 @@
       main.insertAdjacentHTML('beforeend', html);
     })();
 
+    // --- Add Context ---
+    (function() {
+      var html = '<div class="module" id="mod-context">';
+      html += '<h2>Add Context</h2>';
+      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a field note entry for you to save to <code>01_Sources/</code>.</p>';
+      html += '<div class="context-form">';
+      html += '<label for="contextTopic">Topic</label>';
+      html += '<input type="text" id="contextTopic" placeholder="e.g. CEO alignment, user onboarding, pricing model" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
+      html += '<label for="contextNote">Your observation</label>';
+      html += '<textarea id="contextNote" placeholder="What did you notice? Can be 1 sentence or a paragraph."></textarea>';
+      html += '<div class="confidence-row"><span>Confidence:</span>';
+      ['high', 'medium', 'low', 'hunch'].forEach(function(level) {
+        html += '<button class="confidence-btn" data-confidence="' + level + '" onclick="selectConfidence(this)">' + level + '</button>';
+      });
+      html += '</div>';
+      html += '<label for="contextTrigger">What triggered this? <span style="font-weight:400;color:#999;">(optional)</span></label>';
+      html += '<input type="text" id="contextTrigger" placeholder="e.g. Interview with Maria, reviewing competitor X" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
+      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate field note</button>';
+      html += '<div class="context-output" id="contextOutput">';
+      html += '<button class="copy-btn" onclick="copyContext()">Copy</button>';
+      html += '<pre id="contextText"></pre>';
+      html += '</div>';
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
     // --- Actions ---
     (function() {
       var html = '<div class="module" id="mod-actions">';
@@ -1123,7 +1194,7 @@
     };
 
     function updateCount() {
-      var count = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length;
+      var count = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length + (fieldNoteText ? 1 : 0);
       var el = $('decisionCount');
       if (el) el.textContent = count + ' decisions made';
       $('sidebarDecisions').textContent = count + ' decisions';
@@ -1199,9 +1270,58 @@
       if (approved.length) lines.push('Approve insights: ' + approved.join(', '));
       if (rejected.length) lines.push('Reject insights: ' + rejected.join(', '));
 
+      if (fieldNoteText) {
+        lines.push('');
+        lines.push('## Field note to save');
+        lines.push('Save the following entry to a _FIELD_NOTES.md file in the appropriate 01_Sources/ subfolder:');
+        lines.push('');
+        lines.push(fieldNoteText);
+      }
+
       var output = $('promptOutput');
       $('promptText').textContent = lines.join('\n');
       output.classList.add('visible');
+    };
+
+    // === Add Context Functions ===
+    var selectedConfidence = 'medium';
+
+    window.selectConfidence = function(btn) {
+      btn.parentElement.querySelectorAll('.confidence-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedConfidence = btn.dataset.confidence;
+    };
+
+    var fieldNoteText = '';
+
+    window.generateFieldNote = function() {
+      var topic = ($('contextTopic') || {}).value || '';
+      var note = ($('contextNote') || {}).value || '';
+      var trigger = ($('contextTrigger') || {}).value || '';
+      if (!note.trim()) { alert('Please write an observation.'); return; }
+      var today = (meta.generated || new Date().toISOString().slice(0, 10));
+      var lines = [];
+      lines.push('### ' + today + ' ' + (topic || 'Untitled'));
+      lines.push('**Confidence:** ' + selectedConfidence);
+      if (trigger.trim()) lines.push('**Context:** ' + trigger.trim());
+      lines.push('');
+      lines.push(note.trim());
+      lines.push('');
+      lines.push('---');
+      fieldNoteText = lines.join('\n');
+      var output = $('contextOutput');
+      $('contextText').textContent = fieldNoteText + '\n\nSave this entry to a _FIELD_NOTES.md file in the appropriate 01_Sources/ subfolder.';
+      output.classList.add('visible');
+      updateCount();
+    };
+
+    window.copyContext = function() {
+      var text = $('contextText').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var toast = $('toast');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 1500);
+      });
     };
 
     window.copyPrompt = function() {

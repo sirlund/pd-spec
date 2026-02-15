@@ -22,7 +22,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 ### Phase 1: Discover Sources
 
-1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
+1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_FIELD_NOTES_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
 
    If an argument was provided (e.g., `/extract benchmark-inicial`), only process files within `01_Sources/[argument]/`. If the folder doesn't exist, report the error and stop.
 
@@ -50,6 +50,20 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - Each extracted claim is a verbatim quote or close factual paraphrase — **NO interpretation, NO categorization, NO judgment**.
    - Include ALL claims, even seemingly minor ones — `/analyze` decides relevance.
    - One claim per line. If a paragraph contains multiple distinct facts, separate them.
+
+   **Field notes** (`_FIELD_NOTES.md` files) — These are researcher observation files following `_FIELD_NOTES_TEMPLATE.md`. Each dated entry (`### YYYY-MM-DD Topic`) is a separate claim. Extract each entry individually, preserving the confidence level (`high`, `medium`, `low`, `hunch`) as metadata in the extraction:
+
+   ```markdown
+   ## [source-folder/_FIELD_NOTES.md]
+   - Type: field_notes
+   - Date: [date from entry header]
+
+   ### Raw Claims
+   1. "[note content]" (Confidence: high)
+   2. "[note content]" (Confidence: hunch)
+   ```
+
+   Field notes are treated as any other source — no higher or lower priority. The confidence tag is preserved for `/analyze` to use during insight processing.
 
    **Non-markdown files** — The agent can read images (PNG, JPG) and PDFs directly using the Read tool:
    - **Images** (photos, screenshots, whiteboard captures) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).

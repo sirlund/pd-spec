@@ -173,6 +173,7 @@ The template provides these interactive features — the agent only needs to sup
 - **Sources module** — folder coverage map + source diversity visualization
 - **Evidence Gaps module** — grouped by type (claim-level, source-diversity)
 - **System Map module** — vision, modules with implications, principles, open questions
+- **Add Context module** — textarea for quick researcher notes (field notes). The user types an observation, selects a confidence level, and clicks "Generate". The template formats it as a field note entry and includes it in the `/synthesis` prompt with a reminder to save to `01_Sources/`. This is a prompt-based mechanism — the dashboard generates text for the user to copy-paste, it does not write files directly.
 - **Actions module** — prompt generator that collects all decisions and formats `/synthesis` prompt
 - **Cross-referencing anchors** — `STATUS.html#IG-XX` auto-opens the correct module and scrolls to the card
 - **Decision counter** — tracks decisions in sidebar footer and action bar

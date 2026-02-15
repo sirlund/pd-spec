@@ -41,6 +41,10 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - If ambiguous, default to `(current)`. The tag goes after the category: `(user-need, aspirational)`.
    - **Convergence** — After extracting a claim, check if similar claims appear in other source files processed in `02_Work/EXTRACTIONS.md`. Record the convergence ratio: `Convergence: X/Y sources` where X = number of sources mentioning this or a substantially similar claim, Y = total sources processed. A claim from 1 source has convergence 1/Y. A claim echoed across 3 sources has 3/Y.
    - **Atomicity** — One insight per atomic claim. "Users want X and hate Y" is two insights, not one. A source that lists 10 needs produces 10 insights. Do not bundle multiple claims into a single insight.
+   - **Field notes confidence** — When a claim comes from a `_FIELD_NOTES.md` source and carries a confidence tag (`high`, `medium`, `low`, `hunch`), include it in the insight metadata as `Source confidence: [level]`. Processing rules by confidence level:
+     - `high` / `medium` — Treat as normal claims. Process into PENDING insights like any other source.
+     - `low` — Process into PENDING insights but add a note: `Source confidence: low — consider cross-referencing before verification`.
+     - `hunch` — Do NOT create a regular insight. Instead, generate an open question for the system map: `"[IG-XX claim rephrased as question] (from field note hunch)"`. Log as a PENDING insight with the note `Source confidence: hunch — logged as open question, not assertion`.
    - **Granularity guidance** — When to separate vs. consolidate:
      - **Separate** when claims have different sources, different categories, or could be independently verified/invalidated.
      - **Consolidate** when two claims are really the same observation stated differently (deduplicate, not merge).
@@ -111,6 +115,7 @@ All insights are written as `PENDING`. The real approval happens downstream — 
    - Convergence ratio: `Convergence: X/Y sources`
    - Source reference: `Ref: [file path]`
    - Status: `PENDING` (plain text, no formatting)
+   - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
 7. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
