@@ -118,6 +118,7 @@ launch_agent() {
 
   (
     cd "$worktree_path"
+    unset CLAUDECODE
     claude -p "$(cat "$prompt_file")" --verbose > "$log_file" 2>&1
     echo "EXIT_CODE=$?" >> "$log_file"
   ) &
