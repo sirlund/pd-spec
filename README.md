@@ -20,7 +20,7 @@ PD-Spec replaces that workflow with a single rule: **every claim in every delive
 
 | The chaos before | PD-Spec |
 |---|---|
-| Research grounded but not structured | `01_Sources/` + `/analyze` with explicit `[IG-XX]` refs |
+| Research grounded but not structured | `01_Sources/` + `/extract` + `/analyze` with explicit `[IG-XX]` refs |
 | Scattered AI conversations | `02_Work/MEMORY.md` + session continuity |
 | AI silently resolves contradictions | `CONFLICTS.md` + `/synthesis` with explicit user approval |
 | Deliverables without traceability | `03_Outputs/` with clickable `[IG-XX]` links to STATUS dashboard |
@@ -51,41 +51,47 @@ Information flows in one direction: Sources → Work → Outputs. This is the co
 **Sources** (`01_Sources/`) contain raw, unprocessed input: interview transcripts, briefs, technical docs, quantitative data, images, PDFs, spreadsheets — any format. Once a source is captured, it is never modified. Sources are organized in subfolders by milestone or category (e.g., `2026-02-workshop-gerencia/`, `benchmark-inicial/`). Markdown files carry their own metadata; non-markdown files are described by a `_CONTEXT.md` in their folder.
 
 **Work** (`02_Work/`) is the project's brain — **agent-managed, not user-edited**:
-- `INSIGHTS_GRAPH.md` — Atomic claims extracted from sources, each with an `[IG-XX]` ID, a status (PENDING → VERIFIED/MERGED/INVALIDATED), and a source reference.
+- `EXTRACTIONS.md` — Raw claims extracted from sources by `/extract`. Input for `/analyze`.
+- `INSIGHTS_GRAPH.md` — Atomic insights processed from extractions, each with an `[IG-XX]` ID, a status (PENDING → VERIFIED/MERGED/INVALIDATED), and a source reference.
 - `CONFLICTS.md` — Contradictions between insights. Two sources disagree? It gets logged here with a `[CF-XX]` ID and stays PENDING until explicitly resolved.
-- `SYSTEM_MAP.md` — Product architecture decisions. Every entry references the insights that justify it.
+- `SYSTEM_MAP.md` — Product architecture decisions with design implications. Every entry references the insights that justify it.
+- `RESEARCH_BRIEF.md` — Auto-generated narrative summary (executive summary, thematic grouping, timeline, actors, evidence gaps). Written by `/analyze`.
 - `MEMORY.md` — Session log and state tracker. Written after every skill execution, read at session start to resume context and detect manual edits.
 
 **Outputs** (`03_Outputs/`) are generated artifacts (PRD, benchmarks, strategy docs) — **agent-managed, not user-edited**. They are *derived*, never authored from scratch. If a section needs to change, you update the source layer and re-run the pipeline.
 
 ### The Skills Pipeline
 
-Four Claude Code skills form the pipeline:
+Ten Claude Code skills form the pipeline:
 
 ```
 /kickoff              →  Project setup — name, language (en/es), description
-/analyze              →  Scan sources, extract insights, detect contradictions
-/synthesis            →  Resolve conflicts, update system map
-/ship [type]          →  Generate deliverables (prd, presentation, report, benchmark, audit, strategy)
+/extract [folder]     →  Read sources, convert non-markdown files, write raw claims to EXTRACTIONS.md
+/analyze              →  Process extractions into insights, detect contradictions, generate research brief
+/synthesis            →  Resolve conflicts, update system map with design implications
+/ship [type]          →  Generate deliverables (9 output types — see below)
+/audit                →  Quality gate — evaluate Work layer readiness before /ship
 /visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
+/status               →  Generate interactive research dashboard (open in browser to review)
 /reset [scope]        →  Reset generated layers to template state (preserves sources)
 /seed [domain]        →  Generate synthetic sources for testing and onboarding
-/status               →  Generate Work layer dashboard (open in browser to review)
 ```
 
-Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
+The core pipeline is: `/extract` → `/analyze` → `/synthesis` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
 
 | Skill | Reads | Writes |
 |---|---|---|
-| `/analyze` | `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
+| `/extract` | `01_Sources/*` | `02_Work/EXTRACTIONS.md`, `02_Work/MEMORY.md` |
+| `/analyze` | `02_Work/EXTRACTIONS.md`, `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/RESEARCH_BRIEF.md`, `02_Work/MEMORY.md` |
 | `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
 | `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
+| `/audit` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md` | `02_Work/MEMORY.md` (report in conversation) |
 | `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
+| `/status` | `02_Work/*`, `01_Sources/*` | `03_Outputs/STATUS.html` (data.json) |
 | `/reset` | `02_Work/*`, `03_Outputs/*` | `02_Work/*` (templates), `03_Outputs/*` (clean) |
-| `/status` | `02_Work/*`, `01_Sources/*` | `03_Outputs/STATUS.html` |
 | `/seed` | — | `01_Sources/seed-*` (synthetic data) |
 
-`/ship` supports multiple output types: `prd` (default), `presentation` (Reveal.js slides), `report` (A4 PDF-ready), `benchmark`, `audit`, `strategy`.
+`/ship` supports 9 output types: `prd` (default), `presentation` (Reveal.js slides), `report` (A4 PDF-ready), `benchmark-ux`, `persona`, `journey-map`, `lean-canvas`, `user-stories`, `strategy`.
 
 Every skill starts with a **Phase 0: integrity check** — reading MEMORY.md to detect manual edits since the last session. Every skill ends by appending its actions to MEMORY.md.
 
@@ -134,34 +140,44 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 
 ```
 ├── .claude/skills/
-│   ├── kickoff/SKILL.md          /kickoff skill definition
-│   ├── analyze/SKILL.md          /analyze skill definition
-│   ├── synthesis/SKILL.md        /synthesis skill definition
-│   ├── ship/SKILL.md             /ship skill definition
-│   ├── visualize/SKILL.md       /visualize skill definition
-│   ├── reset/SKILL.md           /reset skill definition
-│   ├── seed/SKILL.md            /seed skill definition
-│   └── status/SKILL.md          /status skill definition
-├── 01_Sources/                   Raw inputs (immutable, any format)
-│   ├── _SOURCE_TEMPLATE.md      Metadata template for markdown sources
-│   ├── _CONTEXT_TEMPLATE.md     Metadata template for non-markdown files
-│   └── _README.md               Onboarding guide
-├── 02_Work/                      Agent-managed knowledge base
-│   ├── INSIGHTS_GRAPH.md         [IG-XX] atomic insights
-│   ├── SYSTEM_MAP.md             Product architecture decisions
-│   ├── CONFLICTS.md              [CF-XX] contradiction log
-│   ├── MEMORY.md                 Session log & state tracker
-│   └── _README.md               Layer rules
-├── 03_Outputs/                   Agent-managed deliverables
-│   ├── PRD.html                  Product Requirements Document
-│   └── _README.md               Layer rules
+│   ├── kickoff/SKILL.md          /kickoff — project setup wizard
+│   ├── extract/SKILL.md          /extract — read sources, extract raw claims
+│   ├── analyze/SKILL.md          /analyze — process extractions into insights
+│   ├── synthesis/SKILL.md        /synthesis — resolve conflicts, update system map
+│   ├── ship/SKILL.md             /ship — generate deliverables (9 output types)
+│   ├── audit/SKILL.md            /audit — quality gate before /ship
+│   ├── visualize/SKILL.md        /visualize — generate Mermaid diagrams
+│   ├── status/SKILL.md           /status — interactive research dashboard
+│   ├── reset/SKILL.md            /reset — reset generated layers
+│   └── seed/SKILL.md             /seed — generate synthetic sources
+├── 01_Sources/                    Raw inputs (immutable, any format)
+│   ├── _SOURCE_TEMPLATE.md       Metadata template for markdown sources
+│   ├── _CONTEXT_TEMPLATE.md      Metadata template for non-markdown files
+│   └── _README.md                Onboarding guide
+├── 02_Work/                       Agent-managed knowledge base
+│   ├── EXTRACTIONS.md             Raw claims from sources (input for /analyze)
+│   ├── INSIGHTS_GRAPH.md          [IG-XX] atomic insights
+│   ├── SYSTEM_MAP.md              Product architecture decisions
+│   ├── CONFLICTS.md               [CF-XX] contradiction log
+│   ├── RESEARCH_BRIEF.md          Auto-generated narrative summary
+│   ├── MEMORY.md                  Session log & state tracker
+│   └── _README.md                Layer rules
+├── 03_Outputs/                    Agent-managed deliverables
+│   ├── _templates/                Static HTML templates (Template+JSON architecture)
+│   ├── _schemas/                  JSON Schema definitions for output data
+│   ├── PRD.html                   Product Requirements Document
+│   ├── PERSONAS.html              User persona cards
+│   ├── JOURNEY_MAP.html           User journey map
+│   ├── LEAN_CANVAS.html           Lean Canvas (business model)
+│   ├── USER_STORIES.html          JTBD user stories
+│   └── _README.md                Layer rules
 ├── docs/
-│   ├── BACKLOG.md                Future work proposals
-│   ├── CHANGELOG.md              Internal change log (PD-Spec development)
-│   ├── FRAMEWORK.md              Full methodology reference
-│   └── PD_BUILD_NOTES.md        PD-Build architecture & design notes
-├── CLAUDE.md                     AI agent protocol
-└── README.md                     This file
+│   ├── BACKLOG.md                 Future work proposals
+│   ├── CHANGELOG.md               Internal change log (PD-Spec development)
+│   ├── FRAMEWORK.md               Full methodology reference
+│   └── PD_BUILD_NOTES.md         PD-Build architecture & design notes
+├── CLAUDE.md                      AI agent protocol
+└── README.md                      This file
 ```
 
 ## Getting Started
@@ -181,11 +197,14 @@ cd my-project
 #    Or run /seed to generate synthetic test data first
 
 # 4. Run the pipeline
-/analyze                # Extract insights
-/synthesis              # Resolve conflicts
+/extract                # Read sources, extract raw claims
+/analyze                # Process into insights, detect contradictions
+/synthesis              # Resolve conflicts, update system map
+/audit                  # (Optional) Check readiness before shipping
 /ship                   # Generate PRD
 /ship presentation      # Generate slide deck
-/ship report            # Generate PDF-ready report
+/ship persona           # Generate user persona cards
+/ship user-stories      # Generate JTBD user stories
 /visualize              # Generate system map diagram
 ```
 
