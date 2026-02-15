@@ -1,8 +1,8 @@
 ---
 name: kickoff
-description: Project setup wizard. Asks project name, language (en/es), and one-liner. Writes to CLAUDE.md Project Settings. Run once after cloning.
+description: Project setup wizard. Asks project name, language (en/es), and one-liner. Writes to PROJECT.md. Run once after cloning.
 user-invocable: true
-allowed-tools: Read, Edit, Glob
+allowed-tools: Read, Edit, Write, Glob
 argument-hint: ""
 ---
 
@@ -10,7 +10,7 @@ argument-hint: ""
 
 ## What this skill does
 
-Guides the user through initial project configuration after cloning the PD-Spec template. Asks 3 questions, writes the answers to `CLAUDE.md`, and orients the user on next steps.
+Guides the user through initial project configuration after cloning the PD-Spec template. Asks 3 questions, writes the answers to `PROJECT.md`, and orients the user on next steps.
 
 ## When to use
 
@@ -21,15 +21,15 @@ Guides the user through initial project configuration after cloning the PD-Spec 
 
 ### Phase 0: Check Existing Settings
 
-1. **Read `CLAUDE.md`** — look for the `## Project Settings` section.
+1. **Read `PROJECT.md`** — check if it exists and has configured values (not placeholders like `[Set by /kickoff]`).
 
-2. **If settings already exist** (values are not placeholders like `[Set by /kickoff]`):
+2. **If PROJECT.md exists with configured values**:
    - Show the current settings to the user.
    - Ask: "Project already configured. Want to re-configure?"
-   - If no → skip to Phase 2 (orientation only).
+   - If no → skip to Phase 3 (orientation only).
    - If yes → proceed to Phase 1.
 
-3. **If settings are placeholders or section is missing** → proceed to Phase 1.
+3. **If PROJECT.md is missing or has placeholders** → proceed to Phase 1.
 
 ### Phase 1: Ask Questions
 
@@ -51,23 +51,22 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
 
 ### Phase 2: Write Settings
 
-**Critical: use the Edit tool to replace existing content in-place.** CLAUDE.md has a single `## Project Settings` block. Find it and replace it entirely.
-
-7. **Replace `## Project Settings` in-place** — Use Edit to find the existing `## Project Settings` block (from the `## Project Settings` heading through the `started` line) and replace it with:
+7. **If PROJECT.md exists** — Use Edit to replace the settings section:
 
    ```markdown
-   ## Project Settings
+   # Project Settings
 
-   > Configured by `/kickoff`. Edit manually anytime.
+   > Project-specific configuration. Created by `/kickoff`.
+   > Edit manually anytime. This file is tracked per branch.
 
    - **project_name:** [user's answer]
    - **output_language:** en | es
    - **one_liner:** [user's answer]
-   - **team:** [leave as-is or ask if user wants to set]
+   - **team:** [user's answer or leave as placeholder]
    - **started:** [today's date in YYYY-MM-DD]
    ```
 
-   **Do NOT** add new sections, headings, or duplicate blocks. Only replace the existing one.
+8. **If PROJECT.md doesn't exist** — Use Write to create it with the template above.
 
 ### Phase 3: Orient
 
@@ -91,7 +90,7 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
 
 ### Important constraints
 
-- **Only writes to `CLAUDE.md`** — never touches layers (01_Sources, 02_Work, 03_Outputs).
+- **Only writes to `PROJECT.md`** — never touches CLAUDE.md or layers (01_Sources, 02_Work, 03_Outputs).
 - **Idempotent** — running `/kickoff` again detects existing settings and asks before overwriting.
 - **No MEMORY.md entry** — this is a setup skill, not a pipeline skill. It doesn't append to the session log.
-- **Language scope** — the `output_language` setting controls content language in Work and Output layers. It does NOT change: skill instructions (always English), system identifiers (`[IG-XX]`, `VERIFIED`, `PENDING`), template structure, or CLAUDE.md itself.
+- **Language scope** — the `output_language` setting controls content language in Work and Output layers. It does NOT change: skill instructions (always English), system identifiers (`[IG-XX]`, `VERIFIED`, `PENDING`), template structure, or CLAUDE.md/PROJECT.md file structure.

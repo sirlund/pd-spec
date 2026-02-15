@@ -18,7 +18,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/` files. If discrepancies are found, report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
+**Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
 
 ### Phase 1: Discover Sources
 
