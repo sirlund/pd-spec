@@ -1233,6 +1233,70 @@ README.md was ~2 versions behind CLAUDE.md. Fixed discrepancies:
 
 ---
 
+## [BL-20] Layer READMEs Sync — Outdated Documentation
+
+**Status:** Implemented (updated in branch claude/summarize-recent-commits-eKvQS, 2026-02-15)
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19
+
+### The gap
+
+The three layer `_README.md` files (01_Sources, 02_Work, 03_Outputs) were outdated — missing files, skills, and pipeline steps added since v3.0.
+
+### Fixed discrepancies
+
+| File | Issue | Severity |
+|---|---|---|
+| `02_Work/_README.md` | Missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` in file table | HIGH |
+| `02_Work/_README.md` | Pipeline omits `/extract` — says "run `/analyze`" directly | HIGH |
+| `02_Work/_README.md` | No mention of `/audit` readiness check | MEDIUM |
+| `03_Outputs/_README.md` | No list of output types (10 `/ship` types undocumented) | HIGH |
+| `03_Outputs/_README.md` | No mention of Template+JSON architecture | HIGH |
+| `03_Outputs/_README.md` | Missing `/status` and `/visualize` as generators | MEDIUM |
+| `03_Outputs/_README.md` | Pipeline omits `/extract` and `/audit` | MEDIUM |
+| `01_Sources/_README.md` | Says "run `/analyze`" instead of `/extract` then `/analyze` | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `02_Work/_README.md` | Add EXTRACTIONS.md + RESEARCH_BRIEF.md to table, fix pipeline, add /audit |
+| `03_Outputs/_README.md` | Add full output types table, Template+JSON note, /status + /visualize, fix pipeline |
+| `01_Sources/_README.md` | Fix pipeline instruction to include /extract |
+
+---
+
+## [BL-21] FRAMEWORK.md Sync — Major Documentation Debt
+
+**Status:** Proposed
+**Priority:** High
+**Origin:** Cross-reference audit (2026-02-15)
+**Related:** BL-19, BL-20
+
+### The gap
+
+`docs/FRAMEWORK.md` is the most outdated documentation file — approximately 2 versions behind CLAUDE.md. It serves as the methodology reference but describes a pipeline and feature set from ~v2.0.
+
+### Discrepancies found
+
+| Issue | Severity |
+|---|---|
+| Says "four Claude Code skills" — missing 6 of 10 (`/extract`, `/audit`, `/kickoff`, `/status`, `/reset`, `/seed`) | CRITICAL |
+| Pipeline shows `/analyze → /synthesis → /ship` without `/extract` | HIGH |
+| Lists only 6 `/ship` types (missing persona, journey-map, lean-canvas, user-stories, benchmark-ux) | HIGH |
+| Work layer describes only 4 files — missing `EXTRACTIONS.md` and `RESEARCH_BRIEF.md` | HIGH |
+| No mention of Template+JSON architecture | HIGH |
+| No mention of convergence tracking, source authority, temporal tags, or design implications | MEDIUM |
+
+### Scope
+
+| File | Changes |
+|---|---|
+| `docs/FRAMEWORK.md` | Major rewrite: update skills count to 10, add all missing skills, fix pipeline, add all ship types, add EXTRACTIONS.md + RESEARCH_BRIEF.md to Work layer, document Template+JSON, add convergence/authority/temporal/implications |
+
+---
+
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
 
 Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)
