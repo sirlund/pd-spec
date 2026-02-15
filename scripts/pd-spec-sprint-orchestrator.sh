@@ -84,13 +84,19 @@ create_worktree() {
   local branch_name="$1"
   local worktree_path="${WORKTREE_BASE}/${branch_name}"
 
+  if $DRY_RUN; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} git worktree add '$worktree_path' -b '$branch_name'" >&2
+    echo "$worktree_path"
+    return
+  fi
+
   if [ -d "$worktree_path" ]; then
     warn "Worktree $branch_name ya existe, limpiando..."
     git worktree remove "$worktree_path" --force 2>/dev/null || true
     git branch -D "$branch_name" 2>/dev/null || true
   fi
 
-  run_cmd "git worktree add '$worktree_path' -b '$branch_name'"
+  git worktree add "$worktree_path" -b "$branch_name"
   echo "$worktree_path"
 }
 
@@ -103,7 +109,8 @@ launch_agent() {
   log "Lanzando agente: ${BLUE}${agent_name}${NC}"
 
   if $DRY_RUN; then
-    echo -e "  ${YELLOW}[DRY-RUN]${NC} cd $worktree_path && claude -p <$prompt_file> > $log_file"
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} claude -p <${prompt_file}> in ${worktree_path}" >&2
+    echo "DRY"
     return
   fi
 
@@ -119,6 +126,13 @@ launch_agent() {
 wait_for_agents() {
   local agent_names=("${!1}")
   local pids=("${!2}")
+
+  if $DRY_RUN; then
+    for name in "${agent_names[@]}"; do
+      ok "[DRY-RUN] $name (skipped)"
+    done
+    return 0
+  fi
 
   log "Esperando ${#pids[@]} agentes..."
   echo ""
@@ -149,18 +163,20 @@ merge_wave() {
   shift
   local branches=("$@")
 
-  if $SKIP_MERGE; then
-    warn "Skip merge activado. Branches pendientes: ${branches[*]}"
+  if $SKIP_MERGE || $DRY_RUN; then
+    for branch in "${branches[@]}"; do
+      ok "[DRY-RUN/SKIP] $branch merge skipped"
+    done
     return 0
   fi
 
   log "Mergeando $wave_name a $MAIN_BRANCH..."
   cd "$REPO_ROOT"
-  run_cmd "git checkout $MAIN_BRANCH"
+  git checkout "$MAIN_BRANCH"
 
   for branch in "${branches[@]}"; do
     log "  Mergeando $branch..."
-    if ! run_cmd "git merge '$branch' --no-ff -m 'merge: ${wave_name} — ${branch}'"; then
+    if ! git merge "$branch" --no-ff -m "merge: ${wave_name} — ${branch}"; then
       err "Conflicto en merge de $branch."
       err "Resuelve manualmente, commitea, y re-ejecuta con --ola <siguiente>"
       return 1
@@ -173,12 +189,17 @@ merge_wave() {
 
 cleanup_worktrees() {
   local branches=("$@")
-  log "Limpiando worktrees..."
 
+  if $DRY_RUN; then
+    ok "[DRY-RUN] Cleanup skipped"
+    return
+  fi
+
+  log "Limpiando worktrees..."
   for branch in "${branches[@]}"; do
     local worktree_path="${WORKTREE_BASE}/${branch}"
-    run_cmd "git worktree remove '$worktree_path' --force 2>/dev/null || true"
-    run_cmd "git branch -d '$branch' 2>/dev/null || true"
+    git worktree remove "$worktree_path" --force 2>/dev/null || true
+    git branch -d "$branch" 2>/dev/null || true
   done
 
   ok "Worktrees limpiados"
