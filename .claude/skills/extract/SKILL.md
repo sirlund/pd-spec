@@ -2,8 +2,8 @@
 name: extract
 description: Read and extract raw claims from source files in 01_Sources/. Writes structured extractions to 02_Work/EXTRACTIONS.md for /analyze to process.
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Write, Bash
-argument-hint: "[folder-name]"
+allowed-tools: Read, Grep, Glob, Write, Edit, Bash
+argument-hint: "[folder-name] [--full]"
 ---
 
 # /extract — Source Reading & Claim Extraction
@@ -43,9 +43,50 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 4. **Report progress** — Log overall scope before starting:
    - "Starting extraction: X folders, Y total files"
 
+### Phase 1b: Compute Delta (Incremental Extraction)
+
+**Purpose:** Only process new, modified, or failed files. Skip unchanged files to save time.
+
+5. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1.
+
+6. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
+   - If missing → treat all files as NEW, proceed to Phase 2
+   - If exists → parse the table to build a map of known files with their status and hash
+
+7. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
+   ```bash
+   md5 -q "path/to/file"
+   ```
+   - On macOS, `md5` is native (zero deps)
+   - Store in memory: `{file_path: hash}`
+
+8. **Classify files** — Compare discovered files against SOURCE_MAP:
+   - **NEW** — file not in SOURCE_MAP → process
+   - **UNCHANGED** — file in map, hash matches → skip (preserve existing claims in EXTRACTIONS.md)
+   - **MODIFIED** — file in map, hash differs → reprocess (replace section in EXTRACTIONS.md)
+   - **RETRY** — file in map with status=`error` → reprocess
+   - **DELETED** — file in map but not discovered → remove section from EXTRACTIONS.md, mark as orphan
+
+9. **Report delta to user** — Before processing, show:
+   ```
+   Delta computation complete:
+   - NEW: 3 files (will process)
+   - MODIFIED: 1 file (will reprocess)
+   - UNCHANGED: 53 files (will skip)
+   - RETRY: 0 files (errors from last run)
+   - DELETED: 0 files (orphaned)
+
+   Total to process: 4 files
+   ```
+   Wait for user confirmation before proceeding.
+
+10. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
+
 ### Phase 2: Read & Extract
 
-5. **Read each source** — For every source file, read it and extract raw claims and factual statements.
+11. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
+
+   **If Phase 1b was skipped** (--full flag or SOURCE_MAP missing), process all files from Phase 1.
 
    **MANDATORY: NEVER SKIP FILES.** Every file discovered in Phase 1 must be either (a) processed with claims extracted, or (b) explicitly listed in the final report as unprocessable with a reason. The agent must NOT silently omit files. If context window pressure builds, process files in batches (by folder) — write partial results to EXTRACTIONS.md between batches — but never skip. The Glob results from Phase 1 are the authoritative file list; every path in that list must appear in the output or the unprocessable report.
 
@@ -150,17 +191,21 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 ### Phase 3: Write Extractions
 
-6. **Write to `02_Work/EXTRACTIONS.md`** — Structure the output as follows:
+12. **Update `02_Work/EXTRACTIONS.md`** — Apply changes based on delta:
 
+   **If full re-extract** (--full flag or SOURCE_MAP missing):
+   - Replace EXTRACTIONS.md entirely with new extraction (same as before)
+
+   **If incremental extraction** (delta computed in Phase 1b):
+   - **Read existing EXTRACTIONS.md** to understand current structure
+   - **For NEW files** — append new sections to EXTRACTIONS.md
+   - **For MODIFIED files** — use Edit tool to replace the existing `## [file-path]` section with updated claims
+   - **For UNCHANGED files** — leave their sections untouched
+   - **For DELETED files** — use Edit tool to remove the `## [file-path]` section entirely
+   - **Preserve file order** — maintain alphabetical or folder-based ordering
+
+   **Section format:**
    ```markdown
-   # Source Extractions
-
-   Raw claims extracted from source files by /extract. Each claim is a verbatim quote or factual statement — no interpretation.
-
-   This file is the input for /analyze. Do not edit manually.
-
-   ---
-
    ## [source-folder/filename.md]
    - Type: [from metadata or _CONTEXT.md]
    - Date: [from metadata]
@@ -172,14 +217,13 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    ...
    ```
 
-   - If EXTRACTIONS.md already has content, **replace it entirely** with the new extraction. Each `/extract` run produces a fresh, complete extraction.
    - Preserve the header and description at the top of the file.
    - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
    - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report
 
-7. **Summarize to the user:**
+13. **Summarize to the user:**
    - **Per-folder breakdown** — For EVERY folder discovered in Phase 1, report:
      - Folder name
      - Files processed (count and filenames)
@@ -192,9 +236,41 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - **Completeness check** — Compare the list of files in EXTRACTIONS.md (section headers) against the full file list from Phase 1 (Glob results). Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
    - **Remind the user:** "Run `/analyze` to process extractions into insights."
 
+### Phase 4b: Update SOURCE_MAP
+
+14. **Update `02_Work/SOURCE_MAP.md`** — Record the state of each file processed:
+
+   **If SOURCE_MAP.md doesn't exist** — create it with the template header and table.
+
+   **For each file processed:**
+   - Extract format from file extension (md, png, pdf, docx, etc.)
+   - Count claims extracted (number of lines in the `### Raw Claims` section)
+   - Compute or reuse the md5 hash from Phase 1b
+   - Set timestamp to current time (ISO format: YYYY-MM-DDTHH:MM)
+   - Set status:
+     - `processed` — file was successfully extracted
+     - `error` — file failed to process (note reason in a comment or separate column)
+
+   **Table format:**
+   ```markdown
+   | File | Format | Status | Claims | Hash | Last Processed |
+   |---|---|---|---|---|---|
+   | entrevistas/entrevista-01.md | md | processed | 45 | a1b2c3d4e5f6 | 2026-02-15T14:30 |
+   | workshop/foto-01.jpg | jpg | processed | 8 | f6e5d4c3b2a1 | 2026-02-15T14:31 |
+   | docs/brief.pdf | pdf | error | 0 | 1234567890ab | 2026-02-15T14:31 |
+   ```
+
+   **For DELETED files** (from Phase 1b):
+   - Keep the row but change status to `orphan` — this indicates the file was processed before but is now missing from disk
+
+   **For UNCHANGED files** (from Phase 1b):
+   - Keep the existing row unchanged (no need to update)
+
+   **Use Edit tool** to update individual rows or append new ones. Do not rewrite the entire table unless necessary.
+
 ### Phase 5: Write to MEMORY.md
 
-8. **Append entry to `02_Work/MEMORY.md`:**
+15. **Append entry to `02_Work/MEMORY.md`:**
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /extract
    - **Request:** [what the user asked]
