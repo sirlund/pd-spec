@@ -80,24 +80,26 @@ echo ""
 # FUNCIONES DE ORQUESTACION
 # ============================================================================
 
+# Global return values (avoids subshell issues with $() capture)
+_WT_PATH=""
+_AGENT_PID=""
+
 create_worktree() {
   local branch_name="$1"
-  local worktree_path="${WORKTREE_BASE}/${branch_name}"
+  _WT_PATH="${WORKTREE_BASE}/${branch_name}"
 
   if $DRY_RUN; then
-    echo -e "  ${YELLOW}[DRY-RUN]${NC} git worktree add '$worktree_path' -b '$branch_name'" >&2
-    echo "$worktree_path"
+    log "[DRY-RUN] git worktree add '${_WT_PATH}' -b '$branch_name'"
     return
   fi
 
-  if [ -d "$worktree_path" ]; then
-    warn "Worktree $branch_name ya existe, limpiando..." >&2
-    git worktree remove "$worktree_path" --force 2>/dev/null || true
+  if [ -d "$_WT_PATH" ]; then
+    warn "Worktree $branch_name ya existe, limpiando..."
+    git worktree remove "$_WT_PATH" --force 2>/dev/null || true
     git branch -D "$branch_name" 2>/dev/null || true
   fi
 
-  git worktree add "$worktree_path" -b "$branch_name" > /dev/null 2>&1
-  echo "$worktree_path"
+  git worktree add "$_WT_PATH" -b "$branch_name" > /dev/null 2>&1
 }
 
 launch_agent() {
@@ -106,11 +108,11 @@ launch_agent() {
   local prompt_file="$3"
   local log_file="${LOG_DIR}/${TIMESTAMP}_${agent_name}.md"
 
-  log "Lanzando agente: ${BLUE}${agent_name}${NC}" >&2
+  log "Lanzando agente: ${BLUE}${agent_name}${NC}"
 
   if $DRY_RUN; then
-    echo -e "  ${YELLOW}[DRY-RUN]${NC} claude -p <${prompt_file}> in ${worktree_path}" >&2
-    echo "DRY"
+    log "[DRY-RUN] claude -p <${prompt_file}> in ${worktree_path}"
+    _AGENT_PID="DRY"
     return
   fi
 
@@ -120,7 +122,7 @@ launch_agent() {
     echo "EXIT_CODE=$?" >> "$log_file"
   ) &
 
-  echo $!
+  _AGENT_PID=$!
 }
 
 wait_for_agents() {
@@ -354,9 +356,9 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_A1
 
-  local wt=$(create_worktree "ola2-extract")
-  local pid=$(launch_agent "$wt" "ola2-extract" "${PROMPT_DIR}/a1.md")
-  local pids_a=("$pid")
+  create_worktree "ola2-extract"
+  launch_agent "$_WT_PATH" "ola2-extract" "${PROMPT_DIR}/a1.md"
+  local pids_a=("$_AGENT_PID")
   local names_a=("ola2-extract")
 
   wait_for_agents names_a[@] pids_a[@]
@@ -578,9 +580,9 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_A2
 
-  wt=$(create_worktree "ola2-template-json")
-  pid=$(launch_agent "$wt" "ola2-template-json" "${PROMPT_DIR}/a2.md")
-  local pids_b=("$pid")
+  create_worktree "ola2-template-json"
+  launch_agent "$_WT_PATH" "ola2-template-json" "${PROMPT_DIR}/a2.md"
+  local pids_b=("$_AGENT_PID")
   local names_b=("ola2-template-json")
 
   wait_for_agents names_b[@] pids_b[@]
@@ -720,9 +722,9 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_A3
 
-  wt=$(create_worktree "ola2-dashboard")
-  pid=$(launch_agent "$wt" "ola2-dashboard" "${PROMPT_DIR}/a3.md")
-  local pids_c=("$pid")
+  create_worktree "ola2-dashboard"
+  launch_agent "$_WT_PATH" "ola2-dashboard" "${PROMPT_DIR}/a3.md"
+  local pids_c=("$_AGENT_PID")
   local names_c=("ola2-dashboard")
 
   wait_for_agents names_c[@] pids_c[@]
@@ -797,11 +799,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_I2
 
-  local wt=$(create_worktree "ola3-source-diversity")
+  create_worktree "ola3-source-diversity"
   branches+=("ola3-source-diversity")
   agent_names+=("ola3-source-diversity")
-  local pid=$(launch_agent "$wt" "ola3-source-diversity" "${PROMPT_DIR}/i2.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola3-source-diversity" "${PROMPT_DIR}/i2.md"
+  pids+=("$_AGENT_PID")
 
   # I4: Convergence tracking
   cat > "${PROMPT_DIR}/i4.md" << 'PROMPT_I4'
@@ -856,11 +858,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_I4
 
-  wt=$(create_worktree "ola3-convergence")
+  create_worktree "ola3-convergence"
   branches+=("ola3-convergence")
   agent_names+=("ola3-convergence")
-  pid=$(launch_agent "$wt" "ola3-convergence" "${PROMPT_DIR}/i4.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola3-convergence" "${PROMPT_DIR}/i4.md"
+  pids+=("$_AGENT_PID")
 
   # I5: /extract progress indicator
   cat > "${PROMPT_DIR}/i5.md" << 'PROMPT_I5'
@@ -917,11 +919,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_I5
 
-  wt=$(create_worktree "ola3-extract-progress")
+  create_worktree "ola3-extract-progress"
   branches+=("ola3-extract-progress")
   agent_names+=("ola3-extract-progress")
-  pid=$(launch_agent "$wt" "ola3-extract-progress" "${PROMPT_DIR}/i5.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola3-extract-progress" "${PROMPT_DIR}/i5.md"
+  pids+=("$_AGENT_PID")
 
   wait_for_agents agent_names[@] pids[@]
   merge_wave "Ola 3a — Independientes" "${branches[@]}"
@@ -1018,11 +1020,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_I1
 
-  wt=$(create_worktree "ola3-auto-brief")
+  create_worktree "ola3-auto-brief"
   branches+=("ola3-auto-brief")
   agent_names+=("ola3-auto-brief")
-  pid=$(launch_agent "$wt" "ola3-auto-brief" "${PROMPT_DIR}/i1.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola3-auto-brief" "${PROMPT_DIR}/i1.md"
+  pids+=("$_AGENT_PID")
 
   # I3: Human calibration layer
   cat > "${PROMPT_DIR}/i3.md" << 'PROMPT_I3'
@@ -1099,11 +1101,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_I3
 
-  wt=$(create_worktree "ola3-human-calibration")
+  create_worktree "ola3-human-calibration"
   branches+=("ola3-human-calibration")
   agent_names+=("ola3-human-calibration")
-  pid=$(launch_agent "$wt" "ola3-human-calibration" "${PROMPT_DIR}/i3.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola3-human-calibration" "${PROMPT_DIR}/i3.md"
+  pids+=("$_AGENT_PID")
 
   wait_for_agents agent_names[@] pids[@]
   merge_wave "Ola 3b — Dependientes" "${branches[@]}"
@@ -1213,11 +1215,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O1
 
-  local wt=$(create_worktree "ola4-benchmark-ux")
+  create_worktree "ola4-benchmark-ux"
   branches+=("ola4-benchmark-ux")
   agent_names+=("ola4-benchmark-ux")
-  local pid=$(launch_agent "$wt" "ola4-benchmark-ux" "${PROMPT_DIR}/o1.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-benchmark-ux" "${PROMPT_DIR}/o1.md"
+  pids+=("$_AGENT_PID")
 
   # O2: persona
   cat > "${PROMPT_DIR}/o2.md" << 'PROMPT_O2'
@@ -1272,11 +1274,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O2
 
-  wt=$(create_worktree "ola4-persona")
+  create_worktree "ola4-persona"
   branches+=("ola4-persona")
   agent_names+=("ola4-persona")
-  pid=$(launch_agent "$wt" "ola4-persona" "${PROMPT_DIR}/o2.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-persona" "${PROMPT_DIR}/o2.md"
+  pids+=("$_AGENT_PID")
 
   # O3: journey-map
   cat > "${PROMPT_DIR}/o3.md" << 'PROMPT_O3'
@@ -1326,11 +1328,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O3
 
-  wt=$(create_worktree "ola4-journey")
+  create_worktree "ola4-journey"
   branches+=("ola4-journey")
   agent_names+=("ola4-journey")
-  pid=$(launch_agent "$wt" "ola4-journey" "${PROMPT_DIR}/o3.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-journey" "${PROMPT_DIR}/o3.md"
+  pids+=("$_AGENT_PID")
 
   # O4: lean-canvas
   cat > "${PROMPT_DIR}/o4.md" << 'PROMPT_O4'
@@ -1384,11 +1386,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O4
 
-  wt=$(create_worktree "ola4-lean-canvas")
+  create_worktree "ola4-lean-canvas"
   branches+=("ola4-lean-canvas")
   agent_names+=("ola4-lean-canvas")
-  pid=$(launch_agent "$wt" "ola4-lean-canvas" "${PROMPT_DIR}/o4.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-lean-canvas" "${PROMPT_DIR}/o4.md"
+  pids+=("$_AGENT_PID")
 
   # O6: /audit
   cat > "${PROMPT_DIR}/o6.md" << 'PROMPT_O6'
@@ -1471,11 +1473,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O6
 
-  wt=$(create_worktree "ola4-audit")
+  create_worktree "ola4-audit"
   branches+=("ola4-audit")
   agent_names+=("ola4-audit")
-  pid=$(launch_agent "$wt" "ola4-audit" "${PROMPT_DIR}/o6.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-audit" "${PROMPT_DIR}/o6.md"
+  pids+=("$_AGENT_PID")
 
   wait_for_agents agent_names[@] pids[@]
   merge_wave "Ola 4a — Outputs independientes" "${branches[@]}"
@@ -1544,11 +1546,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```
 PROMPT_O5
 
-  wt=$(create_worktree "ola4-user-stories")
+  create_worktree "ola4-user-stories"
   branches+=("ola4-user-stories")
   agent_names+=("ola4-user-stories")
-  pid=$(launch_agent "$wt" "ola4-user-stories" "${PROMPT_DIR}/o5.md")
-  pids+=("$pid")
+  launch_agent "$_WT_PATH" "ola4-user-stories" "${PROMPT_DIR}/o5.md"
+  pids+=("$_AGENT_PID")
 
   wait_for_agents agent_names[@] pids[@]
   merge_wave "Ola 4b — User Stories" "${branches[@]}"
