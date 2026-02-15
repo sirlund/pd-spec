@@ -937,6 +937,45 @@ When `/extract` processes sources, there's no visibility into how much has been 
 
 ---
 
+## [BL-15] Visual & Interaction Polish — HTML Template Upgrade
+
+**Status:** Proposed
+**Priority:** Low
+**Proposed in:** QA v2 session (2026-02-15)
+**Related:** BL-12 (Research Dashboard), all /ship output types
+
+### The gap
+
+All HTML templates (`03_Outputs/_templates/`) are functional but visually generic — typical "AI-generated" look with safe fonts, minimal animations, and flat layouts. The Template+JSON architecture makes this fixable without touching skills: upgrade the templates once, all outputs benefit immediately.
+
+### What changes
+
+Visual and interaction improvements across all 10 HTML templates:
+
+- **Typography:** Move beyond Inter/system fonts — consider distinctive, characterful choices per output type
+- **Micro-interactions:** Hover states, transitions, expand/collapse animations, smooth scrolling
+- **Data visualization:** Sparklines, progress bars, convergence indicators, heat maps for coverage
+- **Dashboard (STATUS):** Sidebar polish, card transitions, filter animations, keyboard navigation
+- **Print/PDF:** Page break refinement, print-specific styles, cover page design
+- **Accessibility:** Color contrast, focus states, screen reader labels, reduced-motion support
+- **Responsive:** Mobile/tablet layouts for outputs shared via link
+
+### Architecture fit
+
+- **Zero skill changes** — templates are static HTML/CSS/JS, agent writes JSON only
+- **Zero pipeline changes** — same data, better presentation
+- Claude Code `frontend-design` plugin could guide the redesign
+- Could be done incrementally: one template at a time, starting with STATUS (most used)
+
+### Implementation approach
+
+1. Install `frontend-design` plugin for design guidance
+2. Define a visual identity for PD-Spec outputs (typography, color palette, spacing system)
+3. Upgrade `_base.css` shared styles first (all templates inherit)
+4. Polish each template individually, starting with STATUS → PRD → Report
+
+---
+
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
 
 Test branch: `test-timining` · Agent 1: Cursor Composer 1.5 · Agent 2: Sonnet 4.5 via Antigravity · Agent 3: Claude Code (Opus 4.6)

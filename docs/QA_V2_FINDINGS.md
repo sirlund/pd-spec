@@ -18,9 +18,11 @@
 | BUG-09 | Bug | NOTED | Format inconsistency between old and new insights |
 | BUG-10 | Bug | NOTED | Duplicate insights — deduplication failed post-compaction |
 | BUG-11 | Bug | NOTED | /analyze skips /status — user has no visual review before /synthesis |
+| BUG-12 | Bug | NOTED | /status generates old monolithic HTML — ignores Template+JSON (CRITICAL) |
 | PERF-01 | Perf | NOTED | 24+ min / 30k tokens for 60 files (linear processing) |
 | ARCH-01 | Arch | PENDING | Project settings in CLAUDE.md cause merge conflicts |
 | ARCH-02 | Arch | PROPOSED | SOURCE_MAP.md — state management for /extract |
+| ARCH-03 | Arch | PROPOSED | 142 "insights" no son insights — falta capa de síntesis real |
 
 ---
 
@@ -172,6 +174,22 @@
   ```
 - **Status:** NOTED
 
+### BUG-12: /status generates old monolithic HTML — ignores Template+JSON — CRITICAL
+- **Problem:** /status generates 476-line monolithic HTML (inline CSS + JS) instead of using the Template+JSON architecture built during v4.0 sprint. The templates and schemas exist but are completely ignored.
+- **Observed:**
+  - STATUS.html: 476 lines, inline styles, no `DATA_JSON`, no `_base.css`/`_base.js` references
+  - `03_Outputs/_templates/status.html` exists (1200+ lines, full Template+JSON dashboard with sidebar, modular components)
+  - `03_Outputs/_schemas/status.schema.json` exists (JSON schema for dashboard data)
+  - Neither is referenced by the generated file
+- **Root cause:** /status SKILL.md was never updated during the v4.0 sprint to use Template+JSON. It still describes writing self-contained HTML with inline CSS/JS. The sprint created the templates/schemas (A3 agent) but didn't update the skill instructions to use them.
+- **Impact:** CRITICAL —
+  - STATUS is the central review hub (anchor for all [IG-XX]/[CF-XX] cross-references from other outputs)
+  - Other /ship outputs use Template+JSON and expect STATUS.html to have the new format with proper anchor IDs
+  - The old monolithic format won't have the sidebar, modular components, or interactive features designed in the v4.0 template
+  - Visual inconsistency between STATUS (old) and all other outputs (new Template+JSON)
+- **Fix:** Update /status SKILL.md to use Template+JSON: agent writes JSON data block, template handles rendering. Same pattern as all /ship types.
+- **Status:** NOTED
+
 ### PERF-01: /extract performance — 24+ min for 60 files
 - **Problem:** /extract processes files linearly (read → LLM extract → next). For 60 files (including 26 workshop photos, Office docs, PDFs), extraction took 24+ minutes and 29.7k tokens, triggering context compaction mid-process.
 - **Observed:** Sonnet session hit 24m 38s before compaction. Images are especially token-expensive (visual reading). Linear processing means no parallelism.
@@ -205,4 +223,28 @@
     - Source file added → SOURCE_MAP detects new → process and append
     - Source file modified → hash mismatch → reprocess and replace section
   - **Single file preferred** over multi-file (_extractions/*.md) to reduce fragility and keep the same mental model users already have.
+- **Status:** PROPOSED
+
+### ARCH-03: "Insights" no son insights — falta capa de síntesis UX real
+- **Problem:** PD-Spec llama "insights" a lo que en UX research son **observaciones o hallazgos**. Un insight real de UX research es un patrón destilado con convergencia multi-fuente, no un claim atómico individual.
+- **Observed:**
+  - 142 "insights" en INSIGHTS_GRAPH.md — un UX researcher generaría ~20-30 de ese volumen de datos
+  - 90.8% son single-source (convergencia 1/18) — un insight real por definición tiene convergencia
+  - RESEARCH_BRIEF.md ya hace la síntesis correcta: agrupa observaciones en temas como "la brecha geométrica", "customización como trampa de valor", "carga consultiva insostenible" — **esos** son insights reales
+  - Las 4 categorías actuales (`user-need`, `technical`, `business`, `constraint`) son clasificación de claims, no síntesis
+- **La jerarquía que debería existir:**
+  ```
+  Claims/Citas (862 en EXTRACTIONS.md)
+    → Observaciones/Hallazgos (~142 en FINDINGS.md)
+    → Insights (~20-30 en INSIGHTS_GRAPH.md)
+    → Implicaciones de diseño (~10-15 en SYSTEM_MAP.md)
+  ```
+- **Impacto:** El pipeline trata 142 observaciones crudas como verdades verificadas. /synthesis las aprueba en bloque (no es viable revisar 142 una por una). /ship las referencia como `[IG-XX]` sin distinción de peso — un pain repetido de 5 operadores pesa igual que una mención casual de un doc interno.
+- **Decisión: Opción 2 — agregar capa de síntesis.**
+  - /analyze extrae observaciones (≈142) en un archivo renombrado (OBSERVATIONS.md o FINDINGS.md)
+  - Nueva fase en /synthesis o nuevo skill agrupa observaciones por convergencia y peso → ~20-30 insights reales
+  - Cada insight referencia las observaciones que lo soportan: `[IG-05] Refs: [OB-12], [OB-45], [OB-89]`
+  - RESEARCH_BRIEF ya modela el output correcto — las secciones temáticas son los insights reales
+  - No rompe el pipeline actual — agrega una capa intermedia
+- **Relación:** Complementa BUG-08 (attribution) y BUG-10 (duplicación). Con síntesis real, duplicados se fusionan naturalmente y la atribución se preserva como evidencia de soporte.
 - **Status:** PROPOSED
