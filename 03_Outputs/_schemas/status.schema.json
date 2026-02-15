@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "status.schema.json",
+  "description": "JSON Schema for PD-Spec Status dashboard data",
+  "type": "object",
+  "required": ["meta", "title", "cards"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["type", "generated"],
+      "properties": {
+        "type": { "const": "status" },
+        "generated": { "type": "string" },
+        "language": { "type": "string" },
+        "last_session": { "type": "string", "description": "Timestamp of last MEMORY.md entry" }
+      }
+    },
+    "title": { "type": "string" },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["count", "label"],
+        "properties": {
+          "count": { "type": "integer" },
+          "label": { "type": "string" },
+          "breakdown": { "type": "string" },
+          "style": { "type": "string", "enum": ["ok", "warn", "error"] }
+        }
+      },
+      "description": "Summary cards (insights, conflicts, sources)"
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "claim"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^IG-\\d+$" },
+          "status": { "type": "string", "enum": ["PENDING", "VERIFIED", "MERGED", "INVALIDATED"] },
+          "category": { "type": "string" },
+          "claim": { "type": "string" },
+          "source": { "type": "string" },
+          "quote": { "type": "string" }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^CF-\\d+$" },
+          "status": { "type": "string", "enum": ["PENDING", "RESOLVED"] },
+          "title": { "type": "string" },
+          "refs": { "type": "string", "description": "e.g. 'IG-01 vs IG-05'" },
+          "tension": { "type": "string" },
+          "resolution": { "type": "string", "description": "Only for RESOLVED conflicts" },
+          "flag_label": { "type": "string", "description": "Context for 'Flag for discussion' option" },
+          "research_label": { "type": "string", "description": "Context for 'Needs more research' option" }
+        }
+      }
+    },
+    "source_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    },
+    "system_map": {
+      "type": "object",
+      "properties": {
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "status": { "type": "string" },
+              "refs": { "type": "string" },
+              "blocker": { "type": "string" }
+            }
+          }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

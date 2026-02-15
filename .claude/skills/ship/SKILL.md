@@ -12,13 +12,23 @@ argument-hint: "[prd|presentation|report|audit|strategy]"
 
 Generates or updates HTML deliverables in `03_Outputs/` with full traceability to verified insights. Default target is `PRD.html`.
 
+## Architecture: Template + JSON
+
+Each output is a single HTML file that contains:
+1. A **static template** (HTML + CSS + JS) from `03_Outputs/_templates/` — handles all rendering
+2. A **JSON data block** in `<script id="pd-data" type="application/json">` — the agent writes this
+
+The agent's job is: read Work layer → produce JSON → inject into template. The agent does **not** write CSS, HTML structure, or JS. It only writes JSON data.
+
+**JSON schemas** are in `03_Outputs/_schemas/` for reference. Use them to validate structure.
+
 ## Instructions
 
 ### Phase 0: Session Resume & Integrity Check
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels, HTML `<title>` tag) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and `doc-meta` field names stay in English.
+**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all deliverable content (headings, body text, callouts, table labels) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and schema field names stay in English. Set `meta.language` in the JSON to the output language code.
 
 ### Phase 1: Load & Validate
 
@@ -43,102 +53,107 @@ Generates or updates HTML deliverables in `03_Outputs/` with full traceability t
 
 4. **Present deliverable outline** — Before generating, show:
    - Document type and target file.
-   - Proposed section structure.
+   - Proposed section structure (as a list of section IDs and headings).
    - Key insights that will be referenced (by ID).
    - Any gaps where sections lack sufficient insight backing.
    - **Wait for user approval before generating.**
 
-### Phase 3: Generate (After Approval)
+### Phase 3: Generate (After Approval) — Template + JSON
 
-5. **Generate or update the HTML deliverable** in `03_Outputs/`:
-   - Use the A4 CSS system from `03_Outputs/PRD.html` as the style reference:
-     - Inter font (Google Fonts)
-     - `.page` container: 21cm width, 2.54cm padding
-     - Gray background (`#F0F2F5`), white page
-     - Print media query for clean PDF export
-   - Green callout boxes (`.callout`) for key insights.
-   - For multi-page documents: use separate `.page` divs with `page-break-after: always` between major sections for clean PDF export via Print > Save as PDF.
+5. **Read the template** — Read the appropriate template from `03_Outputs/_templates/`:
+   - `prd` → `_templates/prd.html`
+   - `report` → `_templates/report.html`
+   - `presentation` → `_templates/presentation.html`
+   - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
-**Emoji policy** — Only functional emojis that convey information the text alone cannot: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis (💸💎💡🎯🚀😢👍✅❌) that are redundant with text or purely ornamental.
+6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
 
-**No redundancy** — Do not repeat the same information in different sections of the same document. Each fact or claim should appear once, in the most relevant section.
+   ```json
+   {
+     "meta": {
+       "type": "prd",
+       "version": "v1.0",
+       "generated": "YYYY-MM-DD",
+       "language": "en",
+       "project": "ProjectName",
+       "snapshot": {
+         "insights_total": 0,
+         "insights_verified": 0,
+         "conflicts_pending": 0,
+         "outputs_count": 0
+       },
+       "changelog": [
+         {"version": "v1.0", "date": "YYYY-MM-DD", "description": "Initial version"}
+       ]
+     },
+     "title": "Document Title",
+     "sections": [
+       {
+         "id": "section-id",
+         "heading": "Section Heading",
+         "type": "text|callout|table|module-list|open-questions|gap",
+         "content": "Text content...",
+         "refs": ["IG-01", "IG-05"]
+       }
+     ]
+   }
+   ```
 
-6. **Document versioning** — Every output carries visible version metadata so stakeholders always know what they're reading:
-   - **Check existing output** — If the file already exists, read its current version number and changelog.
+   **Section types:**
+   - `"text"` — Paragraph content with optional refs.
+   - `"callout"` — Highlighted insight or finding. Uses `content` and `refs`.
+   - `"table"` — Uses `headers` (array of strings) and `rows` (array of string arrays).
+   - `"module-list"` — Uses `items` array with objects: `{name, status, refs, implications: [{text, ref}]}`.
+   - `"open-questions"` — Uses `items` array of strings or `{text}` objects.
+   - `"gap"` — Section without source backing. Uses `content` for explanation.
+
+   **For presentations**, add `"notes"` field to sections for speaker notes.
+
+7. **Document versioning** — The version metadata lives in `meta`:
+   - **Check existing output** — If `03_Outputs/TYPE.html` already exists, read it to extract the current JSON data's `meta.version` and `meta.changelog`.
    - **Increment version** — First generation: `v1.0`. Each regeneration: increment minor (`v1.1`, `v1.2`). Major increment (`v2.0`) only if the user requests a full rewrite.
-   - **Visible metadata header** — Every HTML output must include a `doc-meta` block at the top of the body, visible to the reader:
-     ```html
-     <div class="doc-meta">
-       <strong>v1.2</strong> · Generated YYYY-MM-DD · PD-Spec snapshot: X insights (N verified), Y conflicts
-       <details>
-         <summary>Document changelog</summary>
-         <ul>
-           <li>v1.2 (YYYY-MM-DD): [what changed and why]</li>
-           <li>v1.1 (YYYY-MM-DD): [what changed and why]</li>
-           <li>v1.0 (YYYY-MM-DD): Initial version.</li>
-         </ul>
-       </details>
-     </div>
-     ```
    - **Changelog entries** describe what changed in the document (added sections, updated insights, removed modules) — not internal pipeline details.
-   - **Rationale:** Outputs may be shared with stakeholders via link or file. If the document changes between viewings without visible versioning, stakeholders lose trust. No silent updates.
-   - **Applies to ALL output types** — PRD, report, presentation, strategy, audit, benchmark. No exceptions.
+   - **Rationale:** Outputs may be shared with stakeholders. If the document changes without visible versioning, stakeholders lose trust.
+   - **Applies to ALL output types.** No exceptions.
 
-7. **Ensure traceability** — Every section of the deliverable must reference `[IG-XX]` source IDs. If a section has no insight references, either find relevant insights or mark the section with an explicit gap indicator: `[GAP — no source backing, inferred from context]`. Sections without refs and without a GAP marker are not acceptable. Include an Insights Summary table listing the key insights used.
+8. **Inject JSON into template** — Read the template file, find the `<script id="pd-data" type="application/json">` tag, and replace its contents with the generated JSON. For the final output file:
+   - **Inline CSS and JS** — Read `_templates/_base.css` and `_templates/_base.js`, then replace the `<link rel="stylesheet" href="_base.css">` with an inline `<style>` tag and `<script src="_base.js">` with an inline `<script>` tag. This makes the output file self-contained and portable.
+   - **Exception:** Presentation template links to Reveal.js CDN — keep those as external links.
+   - Write the combined file to `03_Outputs/TYPE.html` (e.g., `PRD.html`, `REPORT.html`, `PRESENTATION.html`).
 
-8. **Cross-referencing** — All `[IG-XX]` and `[CF-XX]` references in the HTML body must be clickable links to STATUS.html anchors. This applies to all output types.
-   - **CSS** — Add to the document `<style>`:
-     ```css
-     .ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
-     .ref-link:hover { color: #111; border-bottom-color: #111; }
-     ```
-   - **JS** — Add before `</body>`:
-     ```js
-     document.querySelectorAll('.insight-ref, td, p, li').forEach(el => {
-       el.innerHTML = el.innerHTML.replace(
-         /\[(IG-\d+|CF-\d+)\]/g,
-         '<a href="STATUS.html#$1" class="ref-link">[$1]</a>'
-       );
-     });
-     ```
-   - This converts text like `[IG-07]` into `<a href="STATUS.html#IG-07" class="ref-link">[IG-07]</a>`.
-   - The user clicks a reference → lands on STATUS.html at the exact insight/conflict card with a yellow highlight.
-   - **Exception:** Reveal.js presentations (`/ship presentation`) should use `target="_blank"` on links to avoid breaking the slide navigation.
+**Emoji policy** — Only functional emojis in JSON content: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis (💸💎💡🎯🚀😢👍✅❌) that are redundant with text or purely ornamental.
 
-9. **For presentation** (`/ship presentation`):
+**No redundancy** — Do not repeat the same information in different sections. Each fact or claim should appear once, in the most relevant section.
+
+9. **Ensure traceability** — Every section's `refs` array must contain `[IG-XX]` source IDs. If a section has no insight references, either find relevant insights or use section type `"gap"` with content explaining the gap. Sections without refs and without type `"gap"` are not acceptable. Include a section of type `"table"` as an Insights Summary listing the key insights used.
+
+10. **Cross-referencing** — The templates handle converting `[IG-XX]` and `[CF-XX]` text in JSON content to clickable `STATUS.html#ID` links automatically via `_base.js`. The agent just writes plain `[IG-XX]` references in JSON string values. For presentations, the template uses `target="_blank"` on ref links.
+
+11. **For presentation** (`/ship presentation`):
    - Output: `03_Outputs/PRESENTATION.html`
-   - Use Reveal.js (CDN) in a single self-contained HTML file.
-   - Structure: Title slide → Problem/Context → Key Insights (1 per slide, with `[IG-XX]` refs) → System Map summary → Decisions → Open Questions → Next Steps.
+   - Structure: Title slide (auto from `title` + `meta`) → sections become slides.
    - Keep slides minimal — one idea per slide, large text, insight callouts.
-   - Include speaker notes (`<aside class="notes">`) with supporting detail.
+   - Include `"notes"` field per section for speaker notes.
    - Navigation: arrow keys, presenter mode (press `S`).
-   - Use the same color palette as PRD.html (Inter font, green callouts, `#F0F2F5` background).
-   - HTML structure:
-     ```html
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
-     <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
-     ```
 
-10. **For report** (`/ship report`):
+12. **For report** (`/ship report`):
     - Output: `03_Outputs/REPORT.html`
-    - Use the same A4 CSS system as PRD.html (Inter font, `.page` container, print media query).
-    - Structure: Cover page (title, date, author) → Table of Contents → Executive Summary → Findings by category → Insight References → Methodology Notes.
-    - Optimized for Print → Save as PDF: page breaks between sections, no interactive elements.
+    - Structure: Cover page (auto from `title` + `meta`) → Table of Contents (auto from sections) → sections.
+    - Optimized for Print → Save as PDF: template handles page breaks between sections.
     - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-11. **For other document types** (audit, strategy):
-    - Use `03_Outputs/PRD.html` as the CSS and layout reference.
-    - Adapt the section structure to the document type.
+13. **For other document types** (audit, strategy):
+    - Use `_templates/prd.html` template.
+    - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
-    **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `[GAP]` marker.
+    **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+14. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
-   - **Actions:** [deliverable generated/updated, sections written]
+   - **Actions:** [deliverable generated/updated, sections written, JSON data size]
    - **Result:** [file created, insights referenced count]
    - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
    ```

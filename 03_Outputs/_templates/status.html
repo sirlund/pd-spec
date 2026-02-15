@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD-Spec Status</title>
+  <style>
+    /* Status dashboard uses its own CSS (not _base.css) — different layout system */
+    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Target highlight for cross-referencing */
+    .insight-card:target { background: #fffde7; border-left: 3px solid #ffc107; padding-left: calc(0.5rem - 3px); transition: background 0.3s; }
+    .conflict-card:target { box-shadow: 0 0 0 2px #ffc107; transition: box-shadow 0.3s; }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.6; color: #111; background: #fff; max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .meta { color: #666; font-size: 0.875rem; margin-bottom: 2rem; }
+
+    /* Summary cards */
+    .cards { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .card { flex: 1; min-width: 120px; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; }
+    .card .count { font-size: 2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .card .label { font-size: 0.875rem; color: #666; }
+    .card .breakdown { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
+    .card.card-warn { border-color: #f0d080; }
+    .card.card-ok { border-color: #a3d9a5; }
+    .card.card-error { border-color: #e8a0a0; }
+
+    /* Sections */
+    details { border-top: 1px solid #e5e5e5; }
+    summary { padding: 0.75rem 0; font-weight: 500; cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▸ '; color: #999; }
+    details[open] summary::before { content: '▾ '; }
+
+    /* Badges */
+    .badge { display: inline-block; font-size: 0.7rem; font-weight: 500; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .badge-pending { background: #fef3cd; color: #856404; }
+    .badge-verified { background: #d4edda; color: #155724; }
+    .badge-merged { background: #d1ecf1; color: #0c5460; }
+    .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+    .badge-resolved { background: #d4edda; color: #155724; }
+    .badge-flagged { background: #fef3cd; color: #856404; }
+    .badge-research { background: #d1ecf1; color: #0c5460; }
+
+    /* Insight cards */
+    .insight-card { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; }
+    .insight-card:last-child { border-bottom: none; }
+    .insight-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; flex-wrap: wrap; }
+    .insight-id { font-weight: 600; font-size: 0.8rem; color: #444; }
+    .insight-cat { font-size: 0.75rem; color: #999; }
+    .insight-claim { flex: 1; min-width: 200px; }
+    .insight-source blockquote { margin: 0.375rem 0 0.5rem; padding: 0.5rem 0.75rem; border-left: 3px solid #e5e5e5; background: #fafafa; font-size: 0.8rem; color: #444; line-height: 1.5; }
+    .source-ref { color: #999; font-size: 0.8rem; cursor: pointer; }
+
+    /* Insight action buttons */
+    .insight-action { display: flex; gap: 0.25rem; }
+    .insight-btn { background: none; border: 1px solid #e5e5e5; border-radius: 3px; padding: 0.1rem 0.35rem; font-size: 0.7rem; cursor: pointer; color: #666; }
+    .insight-btn:hover { background: #f5f5f5; }
+    .insight-btn.selected-approve { background: #d4edda; color: #155724; border-color: #a3d9a5; }
+    .insight-btn.selected-reject { background: #f8d7da; color: #721c24; border-color: #e8a0a0; text-decoration: line-through; }
+
+    /* Conflict cards */
+    .conflict-card { border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+    .conflict-card.resolved { border-color: #a3d9a5; background: #fafff9; }
+    .conflict-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .conflict-id { font-weight: 600; font-size: 0.875rem; }
+    .conflict-refs { font-size: 0.75rem; color: #999; margin-bottom: 0.5rem; }
+    .conflict-tension { font-size: 0.875rem; margin-bottom: 0.75rem; }
+    .conflict-resolution { font-size: 0.875rem; color: #155724; padding: 0.5rem 0.75rem; background: #d4edda; border-radius: 4px; }
+    .conflict-options { display: flex; flex-direction: column; gap: 0.375rem; }
+    .conflict-option { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; }
+    .conflict-option input[type="radio"] { margin-top: 0.3rem; }
+    .conflict-option .option-label { font-weight: 500; }
+    .conflict-note { width: 100%; margin-top: 0.5rem; padding: 0.375rem 0.5rem; border: 1px solid #e5e5e5; border-radius: 4px; font-family: inherit; font-size: 0.8rem; resize: vertical; display: none; }
+    .conflict-note.visible { display: block; }
+
+    /* System map */
+    .module-item { padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; font-size: 0.875rem; }
+    .module-name { font-weight: 600; }
+    .module-refs { font-size: 0.75rem; color: #999; }
+    .module-status { font-size: 0.8rem; color: #666; margin-top: 0.125rem; }
+    .oq-item { padding: 0.375rem 0; font-size: 0.875rem; color: #444; }
+    .gap-item { padding: 0.75rem 0; border-bottom: 1px solid #f5f5f5; }
+    .gap-action { color: #666; font-size: 0.875rem; font-style: italic; margin-top: 0.25rem; }
+
+    /* Action bar */
+    .action-bar { margin-top: 2rem; padding: 1rem; border: 1px solid #111; border-radius: 6px; }
+    .action-bar h2 { font-size: 0.875rem; font-weight: 600; }
+    .action-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .decision-count { font-size: 0.75rem; color: #666; }
+    .generate-btn { display: block; width: 100%; padding: 0.625rem; background: #111; color: #fff; border: none; border-radius: 4px; font-family: inherit; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+    .generate-btn:hover { background: #333; }
+    .prompt-output { margin-top: 0.75rem; padding: 0.75rem; background: #fafafa; border: 1px solid #e5e5e5; border-radius: 4px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; white-space: pre-wrap; display: none; position: relative; }
+    .prompt-output.visible { display: block; }
+    .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: #111; color: #fff; border: none; border-radius: 3px; padding: 0.2rem 0.5rem; font-size: 0.7rem; cursor: pointer; }
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #111; color: #fff; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+
+    @media print {
+      details[open] > summary { display: none; }
+      details { border: none; }
+      .action-bar, .insight-btn, .conflict-options { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="dashboard">
+    <!-- Rendered from JSON -->
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script id="pd-data" type="application/json">{}</script>
+
+  <script>
+  (function() {
+    'use strict';
+    var el = document.getElementById('pd-data');
+    if (!el) return;
+    var data;
+    try { data = JSON.parse(el.textContent); } catch(e) { return; }
+    if (!data) return;
+
+    if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
+
+    var db = document.getElementById('dashboard');
+    var insightDecisions = {};
+    var conflictDecisions = {};
+
+    function esc(str) {
+      if (typeof str !== 'string') return '';
+      var e = document.createElement('span');
+      e.textContent = str;
+      return e.innerHTML;
+    }
+
+    // Header
+    var meta = data.meta || {};
+    db.innerHTML = '<h1>' + esc(data.title || 'PD-Spec Status') + '</h1>' +
+      '<div class="meta">Generated ' + esc(meta.generated || '—') +
+      (meta.last_session ? ' · Last session: ' + esc(meta.last_session) : '') + '</div>';
+
+    // Summary cards
+    var stats = data.summary || {};
+    var cardsHtml = '<div class="cards">';
+    (data.cards || []).forEach(function(card) {
+      var cls = card.style ? ' card-' + card.style : '';
+      cardsHtml += '<div class="card' + cls + '">';
+      cardsHtml += '<div class="count">' + esc(String(card.count)) + '</div>';
+      cardsHtml += '<div class="label">' + esc(card.label) + '</div>';
+      if (card.breakdown) cardsHtml += '<div class="breakdown">' + esc(card.breakdown) + '</div>';
+      cardsHtml += '</div>';
+    });
+    cardsHtml += '</div>';
+    db.insertAdjacentHTML('beforeend', cardsHtml);
+
+    // === Insights Section ===
+    if (data.insights && data.insights.length) {
+      var iHtml = '<details><summary>Insights (' + data.insights.length + ')</summary><div>';
+      // Sort: PENDING first, then VERIFIED, then INVALIDATED
+      var sortOrder = {PENDING: 0, VERIFIED: 1, MERGED: 2, INVALIDATED: 3};
+      var sorted = data.insights.slice().sort(function(a,b) {
+        return (sortOrder[a.status] || 9) - (sortOrder[b.status] || 9);
+      });
+      sorted.forEach(function(ig) {
+        var id = esc(ig.id);
+        var statusLower = (ig.status || 'pending').toLowerCase();
+        iHtml += '<div class="insight-card" data-insight="' + id + '">';
+        iHtml += '<div class="insight-row">';
+        iHtml += '<span class="badge badge-' + esc(statusLower) + '">' + esc(ig.status) + '</span>';
+        iHtml += '<span class="insight-id">' + id + '</span>';
+        if (ig.category) iHtml += '<span class="insight-cat">' + esc(ig.category) + '</span>';
+        iHtml += '<span class="insight-claim">' + esc(ig.claim) + '</span>';
+        if (ig.status === 'PENDING') {
+          iHtml += '<div class="insight-action">';
+          iHtml += '<button class="insight-btn" data-action="approve" onclick="toggleInsight(this,\'approve\')">Approve</button>';
+          iHtml += '<button class="insight-btn" data-action="reject" onclick="toggleInsight(this,\'reject\')">Reject</button>';
+          iHtml += '</div>';
+        }
+        iHtml += '</div>';
+        if (ig.source || ig.quote) {
+          iHtml += '<details class="insight-source"><summary class="source-ref">' + esc(ig.source || '') + '</summary>';
+          if (ig.quote) iHtml += '<blockquote>' + esc(ig.quote) + '</blockquote>';
+          iHtml += '</details>';
+        }
+        iHtml += '</div>';
+      });
+      iHtml += '</div></details>';
+      db.insertAdjacentHTML('beforeend', iHtml);
+    }
+
+    // === Conflicts Section ===
+    if (data.conflicts && data.conflicts.length) {
+      var cHtml = '<details><summary>Conflicts (' + data.conflicts.length + ')</summary><div>';
+      data.conflicts.forEach(function(cf) {
+        var id = esc(cf.id);
+        var cfKey = cf.id.replace(/-/g, '').toLowerCase();
+        if (cf.status === 'RESOLVED') {
+          cHtml += '<div class="conflict-card resolved" data-conflict="' + id + '">';
+          cHtml += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          cHtml += '<span class="badge badge-resolved">Resolved</span></div>';
+          if (cf.refs) cHtml += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) cHtml += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          if (cf.resolution) cHtml += '<div class="conflict-resolution">' + esc(cf.resolution) + '</div>';
+          cHtml += '</div>';
+        } else {
+          cHtml += '<div class="conflict-card" data-conflict="' + id + '">';
+          cHtml += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          cHtml += '<span class="badge badge-pending">Pending</span></div>';
+          if (cf.refs) cHtml += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) cHtml += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          cHtml += '<div class="conflict-options">';
+          // Option A: Flag
+          var flagLabel = cf.flag_label || 'Flag for discussion';
+          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '" onchange="onConflictChange(this)">';
+          cHtml += '<label for="' + cfKey + 'a"><span class="option-label">Flag for discussion</span> — ' + esc(flagLabel) + '</label></div>';
+          // Option B: Research
+          var researchLabel = cf.research_label || 'Needs more research';
+          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '" onchange="onConflictChange(this)">';
+          cHtml += '<label for="' + cfKey + 'b"><span class="option-label">Needs more research</span> — ' + esc(researchLabel) + '</label></div>';
+          // Option C: Context
+          cHtml += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'c" value="I have context" onchange="onConflictChange(this)">';
+          cHtml += '<label for="' + cfKey + 'c"><span class="option-label">I have context</span> — add notes below</label></div>';
+          cHtml += '<textarea class="conflict-note" data-for="' + cfKey + '" placeholder="What context?"></textarea>';
+          cHtml += '</div></div>';
+        }
+      });
+      cHtml += '</div></details>';
+      db.insertAdjacentHTML('beforeend', cHtml);
+    }
+
+    // === Source Issues ===
+    if (data.source_issues && data.source_issues.length) {
+      var siHtml = '<details><summary>Source Issues (' + data.source_issues.length + ')</summary><div>';
+      data.source_issues.forEach(function(issue) {
+        siHtml += '<div class="gap-item"><div>' + esc(issue.description) + '</div>';
+        if (issue.action) siHtml += '<div class="gap-action">' + esc(issue.action) + '</div>';
+        siHtml += '</div>';
+      });
+      siHtml += '</div></details>';
+      db.insertAdjacentHTML('beforeend', siHtml);
+    }
+
+    // === Evidence Gaps ===
+    if (data.evidence_gaps && data.evidence_gaps.length) {
+      var egHtml = '<details><summary>Evidence Gaps (' + data.evidence_gaps.length + ')</summary><div>';
+      data.evidence_gaps.forEach(function(gap) {
+        egHtml += '<div class="gap-item"><div>' + esc(gap.description) + '</div>';
+        if (gap.action) egHtml += '<div class="gap-action">' + esc(gap.action) + '</div>';
+        egHtml += '</div>';
+      });
+      egHtml += '</div></details>';
+      db.insertAdjacentHTML('beforeend', egHtml);
+    }
+
+    // === System Map ===
+    if (data.system_map) {
+      var sm = data.system_map;
+      var smHtml = '<details><summary>System Map</summary><div>';
+      if (sm.modules && sm.modules.length) {
+        sm.modules.forEach(function(mod) {
+          smHtml += '<div class="module-item"><span class="module-name">' + esc(mod.name) + '</span>';
+          if (mod.status) smHtml += ' <span class="badge badge-' + esc(mod.status.toLowerCase()) + '">' + esc(mod.status) + '</span>';
+          if (mod.refs) smHtml += '<div class="module-refs">' + esc(mod.refs) + '</div>';
+          if (mod.blocker) smHtml += '<div class="module-status">Blocker: ' + esc(mod.blocker) + '</div>';
+          smHtml += '</div>';
+        });
+      }
+      if (sm.open_questions && sm.open_questions.length) {
+        smHtml += '<h3 style="margin:1rem 0 0.5rem;font-size:0.9rem;">Open Questions</h3>';
+        sm.open_questions.forEach(function(q) {
+          smHtml += '<div class="oq-item">• ' + esc(q) + '</div>';
+        });
+      }
+      smHtml += '</div></details>';
+      db.insertAdjacentHTML('beforeend', smHtml);
+    }
+
+    // === Action Bar ===
+    db.insertAdjacentHTML('beforeend',
+      '<div class="action-bar">' +
+      '<div class="action-bar-header"><h2>Generate /synthesis prompt</h2>' +
+      '<span class="decision-count" id="decisionCount">0 decisions made</span></div>' +
+      '<button class="generate-btn" onclick="generatePrompt()">Generate prompt</button>' +
+      '<div class="prompt-output" id="promptOutput">' +
+      '<button class="copy-btn" onclick="copyPrompt()">Copy</button>' +
+      '<pre id="promptText"></pre>' +
+      '</div></div>'
+    );
+
+    // === Cross-referencing: assign IDs ===
+    document.querySelectorAll('[data-insight]').forEach(function(el) { el.id = el.dataset.insight; });
+    document.querySelectorAll('[data-conflict]').forEach(function(el) { el.id = el.dataset.conflict; });
+
+    // Auto-open parent details on anchor navigation
+    function openAnchor() {
+      if (location.hash) {
+        var target = document.querySelector(location.hash);
+        if (target) {
+          var det = target.closest('details');
+          if (det) det.open = true;
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+    openAnchor();
+    window.addEventListener('hashchange', openAnchor);
+
+    // === Interactive Functions ===
+    window.toggleInsight = function(btn, action) {
+      var card = btn.closest('.insight-card');
+      var id = card.dataset.insight;
+      var btns = card.querySelectorAll('.insight-btn');
+      // Toggle off if already selected
+      if (btn.classList.contains('selected-' + action)) {
+        btn.classList.remove('selected-' + action);
+        delete insightDecisions[id];
+      } else {
+        btns.forEach(function(b) { b.classList.remove('selected-approve', 'selected-reject'); });
+        btn.classList.add('selected-' + action);
+        insightDecisions[id] = action;
+      }
+      updateCount();
+    };
+
+    window.onConflictChange = function(radio) {
+      var card = radio.closest('.conflict-card');
+      var id = card.dataset.conflict;
+      var note = card.querySelector('.conflict-note');
+      if (radio.value === 'I have context') {
+        if (note) note.classList.add('visible');
+      } else {
+        if (note) note.classList.remove('visible');
+      }
+      conflictDecisions[id] = radio.value;
+      updateCount();
+    };
+
+    function updateCount() {
+      var count = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length;
+      document.getElementById('decisionCount').textContent = count + ' decisions made';
+    }
+
+    window.generatePrompt = function() {
+      var lines = ['/synthesis with these inputs:', ''];
+      var flags = [], research = [], context = [];
+
+      Object.keys(conflictDecisions).forEach(function(id) {
+        var val = conflictDecisions[id];
+        if (val.indexOf('Flag') === 0) flags.push(id + ': ' + val);
+        else if (val.indexOf('Needs') === 0) research.push(id + ': ' + val);
+        else if (val === 'I have context') {
+          var card = document.querySelector('[data-conflict="' + id + '"]');
+          var note = card ? card.querySelector('.conflict-note') : null;
+          var text = note ? note.value.trim() : '';
+          context.push(id + ': Context: ' + (text || '[no notes provided]'));
+        }
+      });
+
+      if (flags.length) { lines.push('## Flag for stakeholder discussion'); flags.forEach(function(f) { lines.push(f); }); lines.push(''); }
+      if (research.length) { lines.push('## Needs more research'); research.forEach(function(r) { lines.push(r); }); lines.push(''); }
+      if (context.length) { lines.push('## Resolution context provided'); context.forEach(function(c) { lines.push(c); }); lines.push(''); }
+
+      var approved = [], rejected = [];
+      Object.keys(insightDecisions).forEach(function(id) {
+        if (insightDecisions[id] === 'approve') approved.push(id);
+        else rejected.push(id);
+      });
+      if (approved.length) lines.push('Approve insights: ' + approved.join(', '));
+      if (rejected.length) lines.push('Reject insights: ' + rejected.join(', '));
+
+      var output = document.getElementById('promptOutput');
+      document.getElementById('promptText').textContent = lines.join('\n');
+      output.classList.add('visible');
+    };
+
+    window.copyPrompt = function() {
+      var text = document.getElementById('promptText').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 1500);
+      });
+    };
+  })();
+  </script>
+</body>
+</html>

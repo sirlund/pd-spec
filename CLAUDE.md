@@ -98,6 +98,8 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
+| `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
+| `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
 | `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
@@ -127,7 +129,19 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── MEMORY.md              Session log & state tracker
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
-│   ├── PRD.html               Product Requirements Document
+│   ├── _templates/            Static HTML templates (Template+JSON architecture)
+│   │   ├── _base.css          Shared CSS (Inter font, A4 page system, badges, print)
+│   │   ├── _base.js           Shared JS (JSON loader, section renderers, ref-link converter)
+│   │   ├── prd.html           PRD template
+│   │   ├── report.html        Report template
+│   │   ├── presentation.html  Reveal.js presentation template
+│   │   └── status.html        Dashboard template
+│   ├── _schemas/              JSON Schema definitions for output data
+│   │   ├── base.schema.json   Shared definitions (meta, sections, refs)
+│   │   ├── prd.schema.json    PRD data schema
+│   │   ├── report.schema.json Report data schema
+│   │   └── status.schema.json Status dashboard data schema
+│   ├── PRD.html               Product Requirements Document (template + embedded JSON)
 │   └── _README.md            Layer rules for users
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
