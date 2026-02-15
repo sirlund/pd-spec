@@ -1102,7 +1102,7 @@
     (function() {
       var html = '<div class="module" id="mod-context">';
       html += '<h2>Add Context</h2>';
-      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a field note entry for you to save to <code>01_Sources/</code>.</p>';
+      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note for traceability. No full pipeline run needed.</p>';
       html += '<div class="context-form">';
       html += '<label for="contextTopic">Topic</label>';
       html += '<input type="text" id="contextTopic" placeholder="e.g. CEO alignment, user onboarding, pricing model" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
@@ -1115,7 +1115,7 @@
       html += '</div>';
       html += '<label for="contextTrigger">What triggered this? <span style="font-weight:400;color:#999;">(optional)</span></label>';
       html += '<input type="text" id="contextTrigger" placeholder="e.g. Interview with Maria, reviewing competitor X" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
-      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate field note</button>';
+      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate prompt</button>';
       html += '<div class="context-output" id="contextOutput">';
       html += '<button class="copy-btn" onclick="copyContext()">Copy</button>';
       html += '<pre id="contextText"></pre>';
@@ -1300,17 +1300,48 @@
       var trigger = ($('contextTrigger') || {}).value || '';
       if (!note.trim()) { alert('Please write an observation.'); return; }
       var today = (meta.generated || new Date().toISOString().slice(0, 10));
-      var lines = [];
-      lines.push('### ' + today + ' ' + (topic || 'Untitled'));
-      lines.push('**Confidence:** ' + selectedConfidence);
-      if (trigger.trim()) lines.push('**Context:** ' + trigger.trim());
-      lines.push('');
-      lines.push(note.trim());
-      lines.push('');
-      lines.push('---');
-      fieldNoteText = lines.join('\n');
+
+      // Find next IG-XX ID from existing insights
+      var maxId = 0;
+      (data.insights || []).forEach(function(ig) {
+        var num = parseInt((ig.id || '').replace('IG-', ''), 10);
+        if (num > maxId) maxId = num;
+      });
+      var nextId = 'IG-' + (maxId + 1 < 10 ? '0' + (maxId + 1) : (maxId + 1));
+
+      // Build field note entry
+      var fnLines = [];
+      fnLines.push('### ' + today + ' ' + (topic || 'Untitled'));
+      fnLines.push('**Confidence:** ' + selectedConfidence);
+      if (trigger.trim()) fnLines.push('**Context:** ' + trigger.trim());
+      fnLines.push('');
+      fnLines.push(note.trim());
+      fnLines.push('');
+      fnLines.push('---');
+      fieldNoteText = fnLines.join('\n');
+
+      // Build dual-write prompt
+      var prompt = [];
+      prompt.push('Please do two things:\n');
+      prompt.push('## 1. Inject PENDING insight to 02_Work/INSIGHTS_GRAPH.md\n');
+      prompt.push('### [' + nextId + '] (user-need, current) PENDING');
+      prompt.push(note.trim());
+      prompt.push('> "' + note.trim() + '"');
+      prompt.push('Voice: researcher');
+      prompt.push('Authority: observation');
+      prompt.push('Source confidence: ' + selectedConfidence);
+      prompt.push('Convergence: 1/1 sources');
+      prompt.push('Ref: field-note');
+      if (trigger.trim()) prompt.push('Trigger: ' + trigger.trim());
+      prompt.push('');
+      prompt.push('## 2. Save field note to 01_Sources/[relevant-folder]/_FIELD_NOTES.md\n');
+      prompt.push(fieldNoteText);
+      prompt.push('');
+      prompt.push('## 3. Log to 02_Work/MEMORY.md');
+      prompt.push('Append entry: /status Add Context — injected ' + nextId + ' (PENDING, researcher observation, confidence: ' + selectedConfidence + ')');
+
       var output = $('contextOutput');
-      $('contextText').textContent = fieldNoteText + '\n\nSave this entry to a _FIELD_NOTES.md file in the appropriate 01_Sources/ subfolder.';
+      $('contextText').textContent = prompt.join('\n');
       output.classList.add('visible');
       updateCount();
     };

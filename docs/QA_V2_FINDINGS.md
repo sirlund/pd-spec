@@ -7,21 +7,24 @@
 | ID | Type | Status | Summary |
 |---|---|---|---|
 | FIX-01 | Fix | FIXED | /extract can't read Office files |
-| BUG-01 | Bug | FIXING | /extract skips 42/57 files silently, reported only 27 |
+| BUG-01 | Bug | FIXED | /extract skips 42/57 files silently, reported only 27 |
 | BUG-02 | Bug | NOTED | Skills fill context window on large projects (systemic) |
 | BUG-03 | Bug | CONFIRMED | Claim count 862 real vs 476 reported (post-compaction) |
-| BUG-04 | Bug | NOTED | Entire folder "Propuesta ruta/" omitted from report |
+| BUG-04 | Bug | FIXED | Entire folder "Propuesta ruta/" omitted from report |
 | BUG-05 | Bug | NOTED | 3 PDFs "not readable" — Read tool should handle them |
-| BUG-06 | Bug | NOTED | HEIC images + video files unsupported, not reported |
-| BUG-07 | Bug | NOTED | Insight refs point to /tmp/ files, not real sources |
-| BUG-08 | Bug | NOTED | /analyze loses source attribution — who said what, with what authority |
-| BUG-09 | Bug | NOTED | Format inconsistency between old and new insights |
+| BUG-06 | Bug | FIXED | HEIC images + video files unsupported, not reported |
+| BUG-07 | Bug | FIXED | Insight refs point to /tmp/ files, not real sources |
+| BUG-08 | Bug | FIXED | /analyze loses source attribution — who said what, with what authority |
+| BUG-09 | Bug | FIXED | Format inconsistency between old and new insights |
 | BUG-10 | Bug | NOTED | Duplicate insights — deduplication failed post-compaction |
-| BUG-11 | Bug | NOTED | /analyze skips /status — user has no visual review before /synthesis |
+| BUG-11 | Bug | FIXED | /analyze skips /status — user has no visual review before /synthesis |
 | BUG-12 | Bug | NOTED | /status generates old monolithic HTML — ignores Template+JSON (CRITICAL) |
 | PERF-01 | Perf | NOTED | 24+ min / 30k tokens for 60 files (linear processing) |
 | ARCH-01 | Arch | PENDING | Project settings in CLAUDE.md cause merge conflicts |
 | ARCH-02 | Arch | PROPOSED | SOURCE_MAP.md — state management for /extract |
+| BUG-13 | Bug | FIXED | MEMORY.md no registra todas las acciones — IG-111-115 verificados sin log |
+| BUG-14 | Bug | FIXED | ID convention mismatch — IG-001 (zero-padded) vs IG-01 (original) rompe anchors |
+| BUG-15 | Bug | FIXED | Add Context flow roto — field note requiere extract+analyze para ser insight |
 | ARCH-03 | Arch | PROPOSED | 142 "insights" no son insights — falta capa de síntesis real |
 
 ---
@@ -188,6 +191,28 @@
   - The old monolithic format won't have the sidebar, modular components, or interactive features designed in the v4.0 template
   - Visual inconsistency between STATUS (old) and all other outputs (new Template+JSON)
 - **Fix:** Update /status SKILL.md to use Template+JSON: agent writes JSON data block, template handles rendering. Same pattern as all /ship types.
+- **Status:** NOTED
+
+### BUG-13: MEMORY.md no registra todas las acciones del agente
+- **Problem:** Acciones tomadas por el agente no quedan registradas en MEMORY.md cuando ocurren entre compactaciones o en interacciones ad-hoc fuera del pipeline formal.
+- **Observed:** IG-111 a IG-115 fueron verificados en una interacción anterior donde el usuario testeó si el agente distinguía visión futura vs estado actual (workshop + casos de uso). Esa verificación no quedó en MEMORY.md.
+- **Consecuencia:** En la siguiente sesión, el conteo de 115 VERIFIED parece incorrecto (usuario aprobó 110, pero 5 ya estaban VERIFIED). Sin el log en MEMORY, no hay forma de reconstruir qué pasó.
+- **Root cause:** El Session Protocol dice "after every skill execution, append to MEMORY.md", pero las verificaciones ad-hoc (fuera de un skill formal) no tienen esa obligación. Además, post-compaction el agente pierde la instrucción de loguear.
+- **Relación:** Consecuencia directa de BUG-02 (compaction). El estado se pierde y MEMORY.md no lo captura.
+- **Fix:** Ampliar Session Protocol — no solo "after skill execution" sino "after any state change to Work layer files". Si un insight cambia de PENDING a VERIFIED, debe quedar en MEMORY.md independientemente de si fue un skill formal o una conversación.
+- **Status:** NOTED
+
+### BUG-15: Add Context flow roto — field note no se convierte en insight sin pipeline completo
+- **Problem:** El módulo "Add Context" de STATUS.html genera una field note formateada y dice "Save this to _FIELD_NOTES.md". El usuario copia el texto, lo pasa al agente, el agente lo guarda en 01_Sources/. Pero para que esa observación se convierta en insight, hay que correr /extract (reprocesa TODO) → /analyze. Para una nota de 3 líneas, esto es absurdo.
+- **Observed:** Usuario escribió "Visión sesgada CTO — Carlos está muy confiado del diseño de TIMining vs industria minera". Sonnet guardó en _FIELD_NOTES.md. Luego el usuario preguntó: "¿extract procesará todo nuevamente o solo esa nota?" — Sonnet confirma: reprocesa todo.
+- **Root cause:** Add Context fue diseñado como generador de fuentes (01_Sources), no de insights. El pipeline asume que toda información entra por 01_Sources → /extract → /analyze. No hay camino corto para inyectar observaciones puntuales.
+- **Impacto:** El flujo de "investigador agrega observación rápida" es inviable. Un UX researcher quiere anotar algo en 10 segundos, no esperar 25 minutos de pipeline.
+- **Propuesta: Insight directo.** Add Context debería escribir un `[IG-XX]` PENDING directamente a INSIGHTS_GRAPH.md con:
+  - `source_confidence: high/medium/low/hunch` (ya existe en schema)
+  - `source: "field-note"` como tipo de fuente
+  - Opcionalmente, también guardar la field note en 01_Sources/ para traceability
+  - El usuario valida el insight en /synthesis como cualquier otro PENDING
+- **Relación:** ARCH-02 (SOURCE_MAP con incremental extract) mitiga parcialmente pero no resuelve — incluso con incremental, requiere extract+analyze. El insight directo es el camino más corto.
 - **Status:** NOTED
 
 ### PERF-01: /extract performance — 24+ min for 60 files

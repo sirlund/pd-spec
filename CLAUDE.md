@@ -183,6 +183,14 @@ At the start of every session (new conversation), the agent must:
 
 After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
 
+**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
+- Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
+- Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
+- Direct insight injection (e.g., from `/status` Add Context flow)
+- Batch operations (approve/reject multiple insights)
+
+If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
+
 ## Current State
 
 > Update this section as the project evolves.

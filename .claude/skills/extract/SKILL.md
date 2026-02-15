@@ -47,6 +47,8 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 5. **Read each source** — For every source file, read it and extract raw claims and factual statements.
 
+   **MANDATORY: NEVER SKIP FILES.** Every file discovered in Phase 1 must be either (a) processed with claims extracted, or (b) explicitly listed in the final report as unprocessable with a reason. The agent must NOT silently omit files. If context window pressure builds, process files in batches (by folder) — write partial results to EXTRACTIONS.md between batches — but never skip. The Glob results from Phase 1 are the authoritative file list; every path in that list must appear in the output or the unprocessable report.
+
    - Each extracted claim is a verbatim quote or close factual paraphrase — **NO interpretation, NO categorization, NO judgment**.
    - Include ALL claims, even seemingly minor ones — `/analyze` decides relevance.
    - One claim per line. If a paragraph contains multiple distinct facts, separate them.
@@ -69,6 +71,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    *Directly readable (Read tool):*
    - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
+   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out /tmp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the /tmp/ path.
    - **PDFs** — Read using the Read tool with `pages` parameter for large documents (>10 pages). Extract claims from text content.
    - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
 
@@ -124,6 +127,10 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
      " > /tmp/file_data.txt
      ```
 
+   *Unsupported formats (report, do not skip):*
+   - **Video files** (MP4, WEBM, MOV, AVI) — Cannot be processed by the agent. Report each video file in the final summary as "unsupported format (video)" and suggest: "Export audio transcript or provide a `_CONTEXT.md` description for this file."
+   - **Audio files** (MP3, WAV, M4A) — Cannot be processed. Same handling as video.
+
    *Fallback:*
    - **Other formats** — If a file cannot be read or converted, check `_CONTEXT.md` for descriptions. If no `_CONTEXT.md` exists, report the file as unreadable and suggest the user export it to PDF, CSV, or markdown.
 
@@ -160,13 +167,20 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    - If EXTRACTIONS.md already has content, **replace it entirely** with the new extraction. Each `/extract` run produces a fresh, complete extraction.
    - Preserve the header and description at the top of the file.
+   - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report
 
 7. **Summarize to the user:**
-   - Files processed (count, by subfolder).
-   - Claims extracted per file.
+   - **Per-folder breakdown** — For EVERY folder discovered in Phase 1, report:
+     - Folder name
+     - Files processed (count and filenames)
+     - Files NOT processed (count, filenames, and reason for each — unsupported format, conversion error, etc.)
+     - Claims extracted (count)
+   - If a folder from Phase 1 discovery has zero entries in this report, that is a bug — report it.
    - Source organization issues found (list each one).
+   - **Total:** Files processed, files not processed, total claims extracted.
+   - **Completeness check** — Compare the list of files in EXTRACTIONS.md (section headers) against the full file list from Phase 1 (Glob results). Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
    - **Remind the user:** "Run `/analyze` to process extractions into insights."
 
 ### Phase 5: Write to MEMORY.md
