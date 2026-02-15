@@ -1,16 +1,11 @@
 # CLAUDE.md — AI Agent Protocol
 
-## Project Settings
+## Project Settings → PROJECT.md
 
-> Configured by `/kickoff`. Edit manually anytime.
+Project-specific configuration (name, language, one-liner) lives in `PROJECT.md` at repo root.
+This keeps `CLAUDE.md` as clean engine config that never conflicts during PD-Spec updates.
 
-- **project_name:** [Set by /kickoff]
-- **output_language:** en
-- **one_liner:** [Set by /kickoff]
-- **team:** [Set by /kickoff]
-- **started:** [Set by /kickoff]
-
-**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
+**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language` (defined in `PROJECT.md`). System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 
 ## The Truth Stack
 
@@ -93,6 +88,7 @@ The folder name provides context that individual files inherit. The agent valida
 
 | File | Role | Editable? |
 |---|---|---|
+| `PROJECT.md` | Project settings (name, language, one-liner) | Yes (via `/kickoff` or manual) |
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
@@ -166,6 +162,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
 │   ├── FRAMEWORK.md           Full methodology documentation
 │   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+├── PROJECT.md                 Project settings (name, language, one-liner)
 ├── CLAUDE.md                  This file
 └── README.md                  Project overview
 ```

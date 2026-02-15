@@ -29,7 +29,7 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
 ## Instructions
 
-**Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all dashboard labels, section headings, card descriptions, and button labels in that language. System IDs and status labels stay in English.
+**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If PROJECT.md is missing, default to `en` / "Untitled Project" and suggest running `/kickoff`. Write all dashboard labels, section headings, card descriptions, and button labels in that language. System IDs and status labels stay in English. Set `meta.language` and `meta.project` in the JSON accordingly.
 
 ### Phase 1: Load
 
