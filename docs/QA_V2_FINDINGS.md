@@ -220,7 +220,7 @@
 - **Observed:** Sonnet session hit 24m 38s before compaction. Images are especially token-expensive (visual reading). Linear processing means no parallelism.
 - **Root cause:** Sequential file processing + multimodal image reading is slow and token-heavy.
 - **Impact:** Projects with 100+ files will be inviable without mitigation. BUG-01 fix (process ALL files, no skipping) will make this worse.
-- **Hotfix (v4.0.1):** Image batching — group 3-4 images per Read call within the same folder. Reduces per-image overhead and enables cross-image context (workshop photo sequences). Added to extract/SKILL.md.
+- **Hotfix (v4.1.0):** Image batching — group 3-4 images per Read call within the same folder. Reduces per-image overhead and enables cross-image context (workshop photo sequences). Added to extract/SKILL.md.
 - **Full fix:** BL-17 (ARCH-02 SOURCE_MAP.md) → parallel /extract by folder (idea #11). Split by folder, each agent writes to separate file, merge step concatenates.
 - **Priority:** Medium now, High after BUG-01 fix
 - **Status:** MITIGATED (image batching hotfix, full parallelism in BL-17)
