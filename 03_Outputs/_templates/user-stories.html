@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Stories</title>
+  <link rel="stylesheet" href="_base.css">
+  <style>
+  /* === Module Groups === */
+  .us-module {
+    margin-bottom: 32px;
+  }
+  .us-module-header {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #202124;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e5e5;
+  }
+
+  /* === Story Cards === */
+  .us-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 14px;
+    background: #fff;
+    break-inside: avoid;
+  }
+
+  .us-card-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .us-id {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .us-priority {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .us-priority-high { background: #f8d7da; color: #721c24; }
+  .us-priority-medium { background: #fef3cd; color: #856404; }
+  .us-priority-low { background: #d1ecf1; color: #0c5460; }
+
+  .us-persona {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  /* JTBD statement */
+  .us-jtbd {
+    background: #f8f9fa;
+    border-left: 3px solid #00cea5;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #333;
+  }
+  .us-jtbd-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  /* Acceptance criteria (expandable) */
+  .us-ac-toggle {
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #555;
+    user-select: none;
+  }
+  .us-ac-toggle::-webkit-details-marker { color: #aaa; }
+  .us-ac-toggle summary { padding: 4px 0; }
+  .us-ac-list {
+    margin: 6px 0 0;
+    padding-left: 20px;
+    list-style: none;
+  }
+  .us-ac-item {
+    font-size: 0.85rem;
+    color: #333;
+    padding: 3px 0;
+    line-height: 1.4;
+  }
+  .us-ac-item::before {
+    content: "\\2713\\0020";
+    color: #00cea5;
+    font-weight: 700;
+  }
+  .us-ac-item .ref-link, .us-ac-item .insight-ref {
+    font-size: 0.8em;
+  }
+
+  /* Refs footer */
+  .us-refs {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: #888;
+    font-style: italic;
+  }
+
+  /* === Traceability Matrix === */
+  .us-trace-section {
+    margin-top: 40px;
+    break-before: page;
+  }
+  .us-trace-section h2 {
+    font-size: 16pt;
+    margin-bottom: 12px;
+  }
+  .us-trace-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  .us-trace-table th {
+    background: #f8f8f8;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid #c7c7c7;
+  }
+  .us-trace-table td {
+    padding: 6px 10px;
+    border: 1px solid #e5e5e5;
+    vertical-align: top;
+  }
+
+  /* === Print === */
+  @media print {
+    .us-card { border: 1px solid #ccc; box-shadow: none; }
+    .us-ac-toggle[open] { /* keep open in print */ }
+    details.us-ac-toggle { display: block; }
+    details.us-ac-toggle > summary { display: none; }
+    details.us-ac-toggle > .us-ac-list { display: block; }
+  }
+  </style>
+</head>
+<body>
+
+  <div class="page" id="content">
+    <!-- Rendered by JS from embedded JSON -->
+  </div>
+
+  <script id="pd-data" type="application/json">{}</script>
+
+  <script src="_base.js"></script>
+  <script>
+  (function() {
+    'use strict';
+
+    var data = PDSpec.loadData();
+    if (!data) return;
+
+    var meta = data.meta || {};
+    if (meta.language) document.documentElement.lang = meta.language;
+
+    var content = document.getElementById('content');
+
+    // Title
+    var h1 = document.createElement('h1');
+    h1.textContent = data.title || 'User Stories';
+    content.appendChild(h1);
+    document.title = h1.textContent;
+
+    // Doc meta
+    PDSpec.renderDocMeta(meta, content);
+
+    // Module groups
+    (data.modules || []).forEach(function(mod) {
+      var section = document.createElement('div');
+      section.className = 'us-module';
+      section.id = mod.id || '';
+
+      var mh = document.createElement('h2');
+      mh.className = 'us-module-header';
+      mh.textContent = mod.name;
+      section.appendChild(mh);
+
+      (mod.stories || []).forEach(function(story) {
+        var card = document.createElement('div');
+        card.className = 'us-card';
+        card.id = story.id || '';
+
+        var html = '';
+
+        // Top row: ID + priority + persona
+        html += '<div class="us-card-top">';
+        html += '<span class="us-id">' + esc(story.id) + '</span>';
+        if (story.priority) {
+          var pCls = 'us-priority us-priority-' + story.priority.toLowerCase();
+          html += '<span class="' + pCls + '">' + esc(story.priority) + '</span>';
+        }
+        if (story.persona) {
+          html += '<span class="us-persona">' + esc(story.persona) + '</span>';
+        }
+        html += '</div>';
+
+        // JTBD
+        if (story.jtbd) {
+          html += '<div class="us-jtbd">';
+          html += '<div class="us-jtbd-label">Job to be Done</div>';
+          html += 'When <strong>' + esc(story.jtbd.situation) + '</strong>, ';
+          html += 'I want to <strong>' + esc(story.jtbd.motivation) + '</strong>, ';
+          html += 'so I can <strong>' + esc(story.jtbd.outcome) + '</strong>.';
+          html += '</div>';
+        }
+
+        // Acceptance criteria (expandable)
+        var ac = story.acceptance_criteria || [];
+        if (ac.length) {
+          html += '<details class="us-ac-toggle" open>';
+          html += '<summary>Acceptance Criteria (' + ac.length + ')</summary>';
+          html += '<ul class="us-ac-list">';
+          ac.forEach(function(c) {
+            html += '<li class="us-ac-item">' + esc(c.text);
+            if (c.ref) html += ' <span class="insight-ref">[' + c.ref + ']</span>';
+            html += '</li>';
+          });
+          html += '</ul></details>';
+        }
+
+        // Refs
+        if (story.refs && story.refs.length) {
+          html += '<div class="us-refs ref-link-target">Insights: ' + story.refs.map(function(r) { return '[' + r + ']'; }).join(', ') + '</div>';
+        }
+
+        card.innerHTML = html;
+        section.appendChild(card);
+      });
+
+      content.appendChild(section);
+    });
+
+    // Traceability matrix
+    if (data.traceability && data.traceability.length) {
+      var traceSection = document.createElement('div');
+      traceSection.className = 'us-trace-section';
+
+      var isEs = meta.language === 'es';
+      var th2 = document.createElement('h2');
+      th2.textContent = isEs ? 'Matriz de Trazabilidad' : 'Traceability Matrix';
+      traceSection.appendChild(th2);
+
+      var table = '<table class="us-trace-table"><thead><tr>';
+      table += '<th>' + (isEs ? 'Historia' : 'Story') + '</th>';
+      table += '<th>' + (isEs ? 'Insights' : 'Insights') + '</th>';
+      table += '<th>' + (isEs ? 'Fuentes' : 'Sources') + '</th>';
+      table += '</tr></thead><tbody>';
+
+      data.traceability.forEach(function(row) {
+        table += '<tr>';
+        table += '<td>' + esc(row.story_id) + '</td>';
+        table += '<td class="ref-link-target">' + (row.insights || []).map(function(r) { return '[' + r + ']'; }).join(', ') + '</td>';
+        table += '<td>' + (row.sources || []).map(function(s) { return esc(s); }).join(', ') + '</td>';
+        table += '</tr>';
+      });
+
+      table += '</tbody></table>';
+      traceSection.innerHTML += table;
+      content.appendChild(traceSection);
+    }
+
+    // Convert refs to links
+    PDSpec.convertRefs(content, false);
+  })();
+
+  function esc(str) { return PDSpec.esc(str); }
+  </script>
+</body>
+</html>

@@ -27,9 +27,11 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 3. **Load system map** — Read `02_Work/SYSTEM_MAP.md` to understand current product decisions.
 
+4. **Validate arguments** — If the user provides specific IDs (approve IG-XX, reject IG-YY, resolve CF-ZZ), verify each ID exists in the loaded files before proceeding. If an ID doesn't exist, report it to the user and skip it. Do not silently ignore invalid IDs or create phantom resolutions.
+
 ### Phase 2: Present & Discuss (Per Conflict)
 
-4. **Present each PENDING conflict** one at a time:
+5. **Present each PENDING conflict** one at a time:
    - Show the conflict ID, title, and the tension between insights.
    - Show the relevant source references.
    - If the agent has a suggested resolution, present it with reasoning.
@@ -38,7 +40,7 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 ### Phase 3: Propose Updates (User Approval)
 
-5. **Draft resolution summary** — After all conflicts are discussed, present:
+6. **Draft resolution summary** — After all conflicts are discussed, present:
    - Proposed changes to `CONFLICTS.md` (status updates, resolution notes).
    - Proposed changes to `INSIGHTS_GRAPH.md` (status changes, new merged insights).
    - Proposed changes to `SYSTEM_MAP.md` (vision, modules, design implications, principles, open questions).
@@ -47,13 +49,13 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 ### Phase 4: Write (After Approval)
 
-6. **Resolve conflicts** — Update conflict statuses to `RESOLVED` in `02_Work/CONFLICTS.md`. Add resolution notes and actions taken.
+7. **Resolve conflicts** — Update conflict statuses to `RESOLVED` in `02_Work/CONFLICTS.md`. Add resolution notes and actions taken.
 
-7. **Update insights** — In `02_Work/INSIGHTS_GRAPH.md`:
+8. **Update insights** — In `02_Work/INSIGHTS_GRAPH.md`:
    - Mark resolved insights as `VERIFIED`, `MERGED`, or `INVALIDATED`.
    - If merging, create a new insight that combines the originals.
 
-8. **Update system map** — In `02_Work/SYSTEM_MAP.md`:
+9. **Update system map** — In `02_Work/SYSTEM_MAP.md`:
    - Product Vision — if core assumptions changed.
    - Modules — add, remove, or modify based on verified insights.
    - **Design implications** — for each module, derive actionable implications from its referenced insights. These are not invented — they follow directly from the insight categories:
@@ -70,12 +72,12 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
      - [Implication] — [IG-XX]
      - [Implication] — [IG-YY]
      ```
-   - Design Principles — ensure they reflect current truth.
+   - Design Principles — ensure they reflect current truth. Give each principle a **memorable name** (e.g., "Quiet UI", "The Delta", "Zero-Friction Onboarding") alongside its `[IG-XX]` references. Names make principles actionable and quotable in team discussions. The name should capture the essence of the principle, not just describe it.
    - Open Questions — add any new questions surfaced during resolution.
 
-9. **Ensure traceability** — Every entry in SYSTEM_MAP.md must reference at least one `[IG-XX]` insight ID. Every design implication must reference the insight it derives from. Flag any entries that lack references.
+10. **Ensure traceability** — Every entry in SYSTEM_MAP.md must reference at least one `[IG-XX]` insight ID. Every design implication must reference the insight it derives from. Flag any entries that lack references.
 
-10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /synthesis
     - **Request:** [what the user asked]

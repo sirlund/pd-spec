@@ -51,7 +51,9 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
 
 ### Phase 2: Write Settings
 
-7. **Update `CLAUDE.md`** — Edit the `## Project Settings` section with the user's answers:
+**Critical: use the Edit tool to replace existing content in-place.** CLAUDE.md has a single `## Project Settings` block. Find it and replace it entirely.
+
+7. **Replace `## Project Settings` in-place** — Use Edit to find the existing `## Project Settings` block (from the `## Project Settings` heading through the `started` line) and replace it with:
 
    ```markdown
    ## Project Settings
@@ -61,18 +63,11 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - **project_name:** [user's answer]
    - **output_language:** en | es
    - **one_liner:** [user's answer]
+   - **team:** [leave as-is or ask if user wants to set]
+   - **started:** [today's date in YYYY-MM-DD]
    ```
 
-8. **Update `## Project Context`** — Replace the placeholder project name and product description:
-
-   ```markdown
-   ## Project Context
-
-   - **Project:** [project_name]
-   - **Product:** [one_liner]
-   - **Team:** [leave as-is or ask if user wants to set]
-   - **Started:** [today's date in YYYY-MM-DD]
-   ```
+   **Do NOT** add new sections, headings, or duplicate blocks. Only replace the existing one.
 
 ### Phase 3: Orient
 

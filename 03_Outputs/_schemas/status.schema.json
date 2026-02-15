@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "status.schema.json",
+  "description": "JSON Schema for PD-Spec Research Dashboard data",
+  "type": "object",
+  "required": ["meta", "title", "cards"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["type", "generated"],
+      "properties": {
+        "type": { "const": "status" },
+        "generated": { "type": "string", "description": "Generation date YYYY-MM-DD" },
+        "language": { "type": "string", "description": "Output language code (en, es)" },
+        "last_session": { "type": "string", "description": "Timestamp of last MEMORY.md entry" }
+      }
+    },
+    "title": { "type": "string" },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["count", "label"],
+        "properties": {
+          "count": { "type": "integer" },
+          "label": { "type": "string" },
+          "breakdown": { "type": "string" },
+          "style": { "type": "string", "enum": ["ok", "warn", "error"] }
+        }
+      },
+      "description": "Summary cards for overview module"
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "claim"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^IG-\\d+$" },
+          "status": { "type": "string", "enum": ["PENDING", "VERIFIED", "MERGED", "INVALIDATED"] },
+          "category": { "type": "string", "enum": ["user-need", "technical", "business", "constraint"], "description": "Insight category" },
+          "temporal": { "type": "string", "enum": ["current", "aspirational"], "description": "Temporal tag" },
+          "claim": { "type": "string" },
+          "source": { "type": "string", "description": "Source file path relative to 01_Sources/" },
+          "quote": { "type": "string", "description": "Key quote from source" },
+          "source_confidence": { "type": "string", "enum": ["high", "medium", "low", "hunch"], "description": "Confidence level from field notes sources. Omit for non-field-note sources." },
+          "refs": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" },
+            "description": "Cross-references to related insights/conflicts"
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^CF-\\d+$" },
+          "status": { "type": "string", "enum": ["PENDING", "RESOLVED"] },
+          "title": { "type": "string" },
+          "refs": { "type": "string", "description": "e.g. 'IG-01 vs IG-05'" },
+          "tension": { "type": "string" },
+          "sides": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position": { "type": "string" },
+                "refs": {
+                  "type": "array",
+                  "items": { "type": "string", "pattern": "^IG-\\d+$" }
+                }
+              }
+            },
+            "description": "Sides of the conflict with their insight refs"
+          },
+          "resolution": { "type": "string", "description": "Only for RESOLVED conflicts" },
+          "flag_label": { "type": "string", "description": "Context for 'Flag for discussion' option" },
+          "research_label": { "type": "string", "description": "Context for 'Needs more research' option" }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["folder"],
+        "properties": {
+          "folder": { "type": "string", "description": "Folder name in 01_Sources/" },
+          "files": { "type": "integer", "description": "Number of files in folder" },
+          "types": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "File types present (md, pdf, png, etc.)"
+          },
+          "extraction_status": { "type": "string", "description": "Extracted / Not extracted / Partial" }
+        }
+      },
+      "description": "Source folder coverage map"
+    },
+    "source_diversity": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "present"],
+        "properties": {
+          "type": { "type": "string", "description": "Source type (interviews, benchmarks, analytics, workshops, surveys)" },
+          "present": { "type": "boolean" }
+        }
+      },
+      "description": "Which source types are present/missing"
+    },
+    "source_issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["claim-level", "source-diversity", "general"], "description": "Gap type for grouping" },
+          "description": { "type": "string" },
+          "suggestion": { "type": "string", "description": "Suggested methodology to fill gap" }
+        }
+      }
+    },
+    "system_map": {
+      "type": "object",
+      "properties": {
+        "vision": { "type": "string", "description": "Product vision statement from SYSTEM_MAP.md" },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "status": { "type": "string" },
+              "refs": { "type": "string", "description": "Comma-separated insight refs" },
+              "implications": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": { "type": "string" },
+                    "ref": { "type": "string", "pattern": "^(IG|CF)-\\d+$" }
+                  }
+                },
+                "description": "Design implications derived from insights"
+              },
+              "blocker": { "type": "string" }
+            }
+          }
+        },
+        "principles": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "properties": {
+                  "text": { "type": "string" },
+                  "ref": { "type": "string" }
+                }
+              }
+            ]
+          },
+          "description": "Design principles from SYSTEM_MAP.md"
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,5 @@
 # CLAUDE.md — AI Agent Protocol
 
-## Project Context
-
-- **Project:** TIMining
-- **Product:** Innovacion & Minería 4.0
-- **Team:** Niklas Lundin
-- **Started:** 2026-02-13
-
 ## Project Settings
 
 > Configured by `/kickoff`. Edit manually anytime.
@@ -14,6 +7,8 @@
 - **project_name:** TIMining
 - **output_language:** es
 - **one_liner:** Innovacion & Minería 4.0
+- **team:** Niklas Lundin
+- **started:** 2026-02-13
 
 **Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language`. System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 
@@ -76,9 +71,11 @@ The folder name provides context that individual files inherit. The agent valida
 | Skill | Command | What it does |
 |---|---|---|
 | Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
-| Analyze | `/analyze` | Scan sources, extract insights, detect conflicts |
+| Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
+| Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
-| Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
+| Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
+| Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Status | `/status` | Generate Work layer dashboard (HTML) — insights, conflicts, gaps, source issues. |
@@ -97,11 +94,19 @@ The folder name provides context that individual files inherit. The agent valida
 | File | Role | Editable? |
 |---|---|---|
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
+| `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
+| `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
+| `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
+| `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
 | `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
+| `03_Outputs/PERSONAS.html` | User persona cards | Yes (via `/ship persona`) |
+| `03_Outputs/JOURNEY_MAP.html` | User journey map | Yes (via `/ship journey-map`) |
+| `03_Outputs/LEAN_CANVAS.html` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
+| `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
 
@@ -110,25 +115,51 @@ The folder name provides context that individual files inherit. The agent valida
 ```
 ├── .claude/skills/
 │   ├── kickoff/SKILL.md       /kickoff — project setup wizard
-│   ├── analyze/SKILL.md       /analyze — ingest sources
+│   ├── extract/SKILL.md      /extract — read sources, extract raw claims
+│   ├── analyze/SKILL.md       /analyze — process extractions into insights
 │   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
-│   ├── ship/SKILL.md          /ship — generate deliverables
+│   ├── ship/SKILL.md          /ship — generate deliverables (10 output types)
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   └── status/SKILL.md       /status — work layer dashboard
+│   ├── status/SKILL.md       /status — work layer dashboard
+│   └── audit/SKILL.md        /audit — quality gate before /ship
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
 │   └── _README.md            Onboarding guide for users
 ├── 02_Work/                   Knowledge base (agent-managed, do not edit manually)
+│   ├── EXTRACTIONS.md          Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
 │   ├── SYSTEM_MAP.md          Product architecture decisions
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
 │   ├── MEMORY.md              Session log & state tracker
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
-│   ├── PRD.html               Product Requirements Document
+│   ├── _templates/            Static HTML templates (Template+JSON architecture)
+│   │   ├── _base.css          Shared CSS (Inter font, A4 page system, badges, print)
+│   │   ├── _base.js           Shared JS (JSON loader, section renderers, ref-link converter)
+│   │   ├── prd.html           PRD template
+│   │   ├── report.html        Report template
+│   │   ├── presentation.html  Reveal.js presentation template
+│   │   ├── benchmark-ux.html   Benchmark UX template
+│   │   ├── persona.html       Persona cards template
+│   │   ├── journey-map.html   Journey map template
+│   │   ├── lean-canvas.html   Lean Canvas template
+│   │   ├── user-stories.html  User stories template
+│   │   └── status.html        Dashboard template
+│   ├── _schemas/              JSON Schema definitions for output data
+│   │   ├── base.schema.json   Shared definitions (meta, sections, refs)
+│   │   ├── prd.schema.json    PRD data schema
+│   │   ├── report.schema.json Report data schema
+│   │   ├── benchmark-ux.schema.json Benchmark UX data schema
+│   │   ├── persona.schema.json Persona data schema
+│   │   ├── journey-map.schema.json Journey map data schema
+│   │   ├── lean-canvas.schema.json Lean Canvas data schema
+│   │   ├── user-stories.schema.json User stories data schema
+│   │   └── status.schema.json Status dashboard data schema
+│   ├── PRD.html               Product Requirements Document (template + embedded JSON)
+│   ├── PERSONAS.html          User persona cards (template + embedded JSON)
 │   └── _README.md            Layer rules for users
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
@@ -150,7 +181,7 @@ At the start of every session (new conversation), the agent must:
    - Any discrepancies are reported to the user before proceeding.
 3. **Resume context** — use MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
-After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot.
+After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
 
 ## Current State
 

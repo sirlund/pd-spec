@@ -1,15 +1,17 @@
 ---
 name: analyze
-description: Scan sources in 01_Sources/, extract atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md
+description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 ---
 
-# /analyze — Source Ingestion & Insight Extraction
+# /analyze — Insight Extraction & Cross-Referencing
 
 ## What this skill does
 
-Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross-references them against existing verified insights, and logs any contradictions found.
+Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), converts them into atomic insights, cross-references them against existing verified insights, and logs any contradictions found.
+
+**Prerequisite:** Run `/extract` first to populate `02_Work/EXTRACTIONS.md` with raw claims from source files.
 
 ## Instructions
 
@@ -19,38 +21,47 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
 **Language** — Check `output_language` in CLAUDE.md `## Project Settings`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
-### Phase 1: Discovery & Validation
+### Phase 1: Load Extractions
 
-1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
+1. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
-2. **Read folder context** — For each subfolder, check for a `_CONTEXT.md` file. If present, use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata. The `_CONTEXT.md` provides type, date, participants, and per-file descriptions.
-
-3. **Validate source organization** — For each source file, check:
-   - Does the file's metadata (type, date, context) match the folder it's in?
-   - Is any file misplaced (e.g., a benchmark in an interviews folder)?
-   - Does the file date conflict with the folder date prefix?
-   - Are there missing metadata fields (Type, Date, Participants, Context)?
-   - Are there non-standard date formats (expected: `YYYY-MM-DD`)?
-   - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
-   - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
-
-4. **Read each source** — For every source file, extract atomic claims and facts. Each claim should be a single, verifiable statement. For non-markdown files described in `_CONTEXT.md`, extract claims from the descriptions provided.
-
-5. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+2. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
 
 ### Phase 2: Analysis (Draft)
 
-6. **Prepare new insights** — For each new claim not already captured:
+3. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, zero-padded).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
-   - **Status: always `PENDING`.** Insights are never born as VERIFIED. Verification happens later through cross-referencing in `/synthesis` or explicit user validation.
-   - Aim for **one insight per atomic claim**. "Users want X and hate Y" is two insights, not one.
+   - **Key quote** — Include 1-2 sentences from the source that best support the claim. This is the evidence trail — without it, the insight is an assertion without proof.
+   - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
+   - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
+     - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
+     - `(aspirational)` — describes a desired future state ("users want X", "the product should do Y")
+     - If ambiguous, default to `(current)`. The tag goes after the category: `(user-need, aspirational)`.
+   - **Convergence** — After extracting a claim, check if similar claims appear in other source files processed in `02_Work/EXTRACTIONS.md`. Record the convergence ratio: `Convergence: X/Y sources` where X = number of sources mentioning this or a substantially similar claim, Y = total sources processed. A claim from 1 source has convergence 1/Y. A claim echoed across 3 sources has 3/Y.
+   - **Atomicity** — One insight per atomic claim. "Users want X and hate Y" is two insights, not one. A source that lists 10 needs produces 10 insights. Do not bundle multiple claims into a single insight.
+   - **Field notes confidence** — When a claim comes from a `_FIELD_NOTES.md` source and carries a confidence tag (`high`, `medium`, `low`, `hunch`), include it in the insight metadata as `Source confidence: [level]`. Processing rules by confidence level:
+     - `high` / `medium` — Treat as normal claims. Process into PENDING insights like any other source.
+     - `low` — Process into PENDING insights but add a note: `Source confidence: low — consider cross-referencing before verification`.
+     - `hunch` — Do NOT create a regular insight. Instead, generate an open question for the system map: `"[IG-XX claim rephrased as question] (from field note hunch)"`. Log as a PENDING insight with the note `Source confidence: hunch — logged as open question, not assertion`.
+   - **Granularity guidance** — When to separate vs. consolidate:
+     - **Separate** when claims have different sources, different categories, or could be independently verified/invalidated.
+     - **Consolidate** when two claims are really the same observation stated differently (deduplicate, not merge).
+     - When in doubt, **separate**. It's easier to merge later than to split.
 
-7. **Cross-reference** — Compare new claims against all existing VERIFIED insights.
-   - Look for contradictions, tensions, or incompatible statements.
+   **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
 
-8. **Detect evidence gaps** — Two levels of gap detection:
+4. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+   - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
+     - Direct contradictions ("users love X" vs "users avoid X").
+     - Tensions ("team wants simplicity" vs "client demands customization").
+     - Incompatible assumptions ("small user base" vs "must handle 10K concurrent users").
+     - Temporal conflicts ("currently using tool Y" vs "already migrated to Z").
+   - For each potential conflict, cite the specific claims from both sides.
+   - **Convergence boost** — When multiple new claims from different sources converge on the same point, note the convergence ratio. High convergence (>50% of sources) is a strong signal worth highlighting. Single-source insights are fragile and should be noted as such.
+
+5. **Detect evidence gaps** — Two levels of gap detection:
 
    **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
 
@@ -67,38 +78,115 @@ Scans all source files in `01_Sources/`, extracts atomic claims and facts, cross
 
    Report which source types are present and which are missing. For missing types, suggest what kind of source would fill the gap (as options, not impositions — per Mandate #4).
 
+   **c. Diversity dimensions** — Beyond source type, evaluate three additional diversity axes:
+
+   - **Temporal diversity** — Are all sources from the same time period? Check source dates (from metadata or folder names). Flag clusters where all sources are older than 6 months ("sources may be outdated") or where all sources share the same date range ("no longitudinal perspective — trends and changes over time are invisible").
+   - **Perspective diversity** — Are all sources from the same stakeholder group? Categorize sources by who produced or is represented in them (e.g., management, end-users, operators, engineers, external partners). Flag when a single perspective dominates (>70% of sources) with no counterbalance.
+   - **Methodology diversity** — Are all sources the same method type? (e.g., all interviews, all documents, all quantitative). Qualitative sources reveal *why*; quantitative sources reveal *how much*. Flag when all sources share a single methodology.
+
+   **d. Source matrix & diversity score** — Build a source matrix for internal tracking:
+
+   ```
+   Source type          | Present | Files | Example file
+   ---------------------|---------|-------|-------------
+   User research        | ✓ / ✗   | N     | path/to/file
+   Business data        | ✓ / ✗   | N     | ...
+   Technical docs       | ✓ / ✗   | N     | ...
+   Brand / design       | ✓ / ✗   | N     | ...
+   Competitive analysis | ✓ / ✗   | N     | ...
+   Accessibility data   | ✓ / ✗   | N     | ...
+   ```
+
+   Calculate a **diversity score**: number of source types present out of 6 (e.g., `3/6`). This is a simple health indicator, not a quality judgment — a 6/6 project with shallow sources is worse than a 3/6 project with deep ones.
+
+   **e. Single-source fragility flags** — After insights are prepared (step 3), review them for source diversity at the insight level. Flag any insight whose supporting evidence comes from only one source type. These insights are more fragile — they lack cross-type corroboration. In the report (Phase 4), list fragile insights with a note like: `[IG-05] supported only by user research — would benefit from technical or business corroboration`.
+
 ### Phase 3: Write
 
 All insights are written as `PENDING`. The real approval happens downstream — the user reviews the files at their own pace and `/synthesis` is where PENDING insights get promoted to VERIFIED. This skill does NOT require chat-based approval.
 
 > **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-9. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+6. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, zero-padded)
-   - Category in parentheses: `(user-need)`, `(technical)`, `(business)`, `(constraint)`
+   - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
+   - Key quote — 1-2 sentences from the source (in a blockquote)
+   - Convergence ratio: `Convergence: X/Y sources`
    - Source reference: `Ref: [file path]`
-   - All insights are `PENDING`
+   - Status: `PENDING` (plain text, no formatting)
+   - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
-10. **Log conflicts** — For each detected contradiction:
+7. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
-    - Append the conflict as `PENDING` with a description of the tension and references to the conflicting insight IDs.
+    - Append the conflict as `PENDING` with a description of the tension.
+    - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+8. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze
     - **Request:** [what the user asked]
-    - **Actions:** [files scanned, organization issues found]
+    - **Actions:** [extractions processed, cross-referencing performed]
     - **Result:** [insights added, conflicts logged, gaps flagged]
     - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
     ```
 
+### Phase 3b: Research Brief
+
+After writing insights and conflicts, generate a Research Brief — a short executive narrative for stakeholders who don't want to read a list of insights.
+
+**Structure:**
+
+1. **"What's Broken"** — pain points and problems found (from user-need insights tagged as `current`)
+2. **"What Could Be Better"** — opportunities and aspirations (from `aspirational` insights)
+3. **"What Works Well"** — strengths to preserve (from positive current-state insights)
+4. **"Key Tensions"** — unresolved conflicts that need stakeholder input (from `PENDING` conflicts)
+5. **"Evidence Gaps"** — what we don't know yet and how to fill it
+
+**Rules:**
+
+- Group by narrative themes, NOT by technical categories
+- Write in `output_language`
+- Reference `[IG-XX]` IDs inline but keep the text readable
+- Maximum 500 words per section
+- No jargon, no internal pipeline terminology
+- Target audience: project stakeholders who haven't used PD-Spec
+- This is auto-generated — no user approval step needed
+- The brief supplements the insight list, it does not replace it
+
+**Output:** Write to `02_Work/RESEARCH_BRIEF.md` using this format:
+
+```markdown
+# Research Brief
+> Auto-generated by /analyze on YYYY-MM-DD
+> Based on X insights from Y sources
+
+## What's Broken
+[narrative text with [IG-XX] refs]
+
+## What Could Be Better
+[narrative text]
+
+## What Works Well
+[narrative text]
+
+## Key Tensions
+[narrative text with [CF-XX] refs]
+
+## Evidence Gaps
+[list of gaps with suggestions]
+```
+
 ### Phase 4: Report
 
-12. **Summarize to the user** what was written:
+9. **Summarize to the user** what was written:
     - Source organization issues found (list each one).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
-    - **Source diversity** — which source types are covered, which are missing, and what to consider adding.
+    - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
     - Evidence gaps detected (with suggested validation methods).
+    - **Convergence summary:**
+      - How many insights have convergence >50% of sources (strong signals).
+      - How many insights are single-source (fragile — may need additional validation).
+      - Highlight the highest-convergence insights as strongest findings.
     - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."

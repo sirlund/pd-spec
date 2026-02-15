@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personas</title>
+  <link rel="stylesheet" href="_base.css">
+  <style>
+  /* === Persona Grid === */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .persona-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 24px;
+    background: #fff;
+    break-inside: avoid;
+  }
+
+  .persona-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+
+  .persona-id {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .persona-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #202124;
+    margin: 4px 0 2px;
+  }
+
+  .persona-role {
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  .persona-quote {
+    background: #f8f9fa;
+    border-left: 3px solid #00cea5;
+    padding: 10px 14px;
+    margin: 12px 0 16px;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  .persona-quote .insight-ref {
+    font-style: normal;
+    display: block;
+    margin-top: 6px;
+  }
+
+  .persona-section {
+    margin-bottom: 14px;
+  }
+
+  .persona-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin-bottom: 6px;
+  }
+
+  .persona-item {
+    font-size: 0.88rem;
+    color: #333;
+    padding: 3px 0;
+    line-height: 1.4;
+  }
+  .persona-item::before {
+    content: "• ";
+    color: #aaa;
+  }
+
+  .persona-item .ref-link {
+    font-size: 0.8em;
+  }
+
+  /* === Gap items === */
+  .persona-item.is-gap {
+    color: #856404;
+  }
+  .persona-item.is-gap::before {
+    content: "⚠ ";
+  }
+
+  /* === Print === */
+  @media print {
+    .persona-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .persona-card {
+      border: 1px solid #ccc;
+      box-shadow: none;
+    }
+  }
+  </style>
+</head>
+<body>
+
+  <div class="page" id="content">
+    <!-- Rendered by JS from embedded JSON -->
+  </div>
+
+  <script id="pd-data" type="application/json">{}</script>
+
+  <script src="_base.js"></script>
+  <script>
+  (function() {
+    var data = PDSpec.loadData();
+    if (!data) return;
+
+    document.title = data.title || 'Personas';
+    if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
+
+    var content = document.getElementById('content');
+
+    // Title
+    var h1 = document.createElement('h1');
+    h1.textContent = data.title || 'User Personas';
+    content.appendChild(h1);
+
+    // Doc meta
+    PDSpec.renderDocMeta(data.meta, content);
+
+    // Persona grid
+    var grid = document.createElement('div');
+    grid.className = 'persona-grid';
+
+    (data.personas || []).forEach(function(p) {
+      var card = document.createElement('div');
+      card.className = 'persona-card';
+      card.id = p.id || '';
+
+      var html = '';
+
+      // Header
+      html += '<div class="persona-header">';
+      html += '<div class="persona-id">' + esc(p.id || '') + '</div>';
+      html += '<div class="persona-name">' + esc(p.name) + '</div>';
+      html += '<div class="persona-role">' + esc(p.role) + '</div>';
+      html += '</div>';
+
+      // Quote
+      if (p.quote) {
+        html += '<div class="persona-quote">';
+        html += '&ldquo;' + esc(p.quote.text) + '&rdquo;';
+        if (p.quote.ref) html += '<span class="insight-ref">[' + p.quote.ref + ']</span>';
+        html += '</div>';
+      }
+
+      // Sections
+      var sections = [
+        { key: 'goals', label: 'Goals' },
+        { key: 'frustrations', label: 'Frustrations' },
+        { key: 'context', label: 'Context' },
+        { key: 'behaviors', label: 'Behaviors' }
+      ];
+
+      sections.forEach(function(sec) {
+        var items = p[sec.key];
+        if (!items || !items.length) return;
+        html += '<div class="persona-section">';
+        html += '<div class="persona-section-title">' + esc(sec.label) + '</div>';
+        items.forEach(function(item) {
+          var isGap = item.text && item.text.indexOf('[GAP]') !== -1;
+          html += '<div class="persona-item' + (isGap ? ' is-gap' : '') + '">';
+          html += esc(item.text);
+          if (item.ref) html += ' <span class="insight-ref">[' + item.ref + ']</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      card.innerHTML = html;
+      grid.appendChild(card);
+    });
+
+    content.appendChild(grid);
+
+    // Convert refs to links
+    PDSpec.convertRefs(content, false);
+  })();
+
+  function esc(str) { return PDSpec.esc(str); }
+  </script>
+</body>
+</html>
