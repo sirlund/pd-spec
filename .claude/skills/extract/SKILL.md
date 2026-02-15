@@ -40,7 +40,8 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
    - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
 
-4. **Report progress** — "Processing `folder_name/` — X files found"
+4. **Report progress** — Log overall scope before starting:
+   - "Starting extraction: X folders, Y total files"
 
 ### Phase 2: Read & Extract
 
@@ -55,7 +56,12 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - **PDFs** — Read using the Read tool with `pages` parameter for large documents (>10 pages). Extract claims from text content.
    - **Files described in `_CONTEXT.md`** — If a non-readable file (spreadsheet, .docx, proprietary format) is described in `_CONTEXT.md`, extract claims from the descriptions provided there.
 
-   **Large source sets** — When processing >20 files, work in batches by subfolder. Report progress between batches (e.g., "Processed `entrevistas-operadores/` — 24 claims extracted. Moving to `benchmark-inicial/`...").
+   **Progress reporting** — Report progress to the user throughout extraction:
+
+   - **Before starting each subfolder:** Log "Processing `[folder-name]/` — 0% (0/N files)"
+   - **After each file:** Log "Processing `[folder-name]/` — X% (M/N files) — `filename`"
+   - **After completing each subfolder:** Log "Completed `[folder-name]/` — 100% (N/N files) — X claims extracted"
+   - **After all folders:** Log "Extraction complete: Y files processed, Z total claims extracted"
 
 ### Phase 3: Write Extractions
 
@@ -100,5 +106,9 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - **Request:** [what the user asked]
    - **Actions:** [files scanned, organization issues found]
    - **Result:** [files processed, claims extracted count]
+   - **Stats:**
+     - `[folder-name]/`: N files, X claims
+     - `[folder-name]/`: N files, X claims
+     - **Total:** Y files processed, Z claims extracted
    - **Snapshot:** X source files · Y claims extracted · Z organization issues
    ```
