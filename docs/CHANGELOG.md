@@ -27,6 +27,12 @@
 - **Quick observations without the pipeline.** The "Add Context" button in STATUS.html now generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note — no need to run the full `/extract` → `/analyze` cycle for a single observation.
 - **Ad-hoc changes logged.** Any state change to Work layer files (approving insights in conversation, manual edits, direct injections) is now logged to MEMORY.md, not just formal skill runs.
 
+### Resilience (context overflow mitigations)
+
+- **Checkpoint after each folder.** Extraction results are written to disk after each subfolder completes, not at the end. If the context window compacts mid-extraction, already-processed folders are safe on disk and the agent can continue from where it left off.
+- **Claim counts verified from disk.** The final extraction report counts claims by re-reading the written file, not from in-memory counters. Context compaction can corrupt in-memory state — the file on disk is the source of truth.
+- **Dashboard self-check.** After generating STATUS.html, the agent verifies the file contains the Template+JSON data block. If it doesn't (e.g., the agent fell back to monolithic HTML after compaction), it retries from the template.
+
 <details>
 <summary>QA reference numbers</summary>
 
@@ -34,7 +40,7 @@ From QA v2 testing on test-timining branch (57 files, 6 folders):
 - Extraction: BUG-01, BUG-04, BUG-05, BUG-06, BUG-07
 - Analysis: BUG-08, BUG-09, BUG-10, BUG-14
 - Pipeline: BUG-11, BUG-13, BUG-15
-- Not fixable via skill edits (systemic): BUG-02, BUG-03, BUG-12, PERF-01
+- Mitigated (workarounds): BUG-02, BUG-03, BUG-12
 - Architectural proposals pending: ARCH-01, ARCH-02, ARCH-03
 
 </details>
