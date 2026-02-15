@@ -6,5 +6,5 @@
 - **project_name:** TIMining
 - **output_language:** es
 - **one_liner:** Innovacion & Minería 4.0
-- **team:** Niklas Lundin
+- **team:** Idemax
 - **started:** 2026-02-13
