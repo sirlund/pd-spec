@@ -5,11 +5,11 @@ user-invocable: true
 allowed-tools: Read, Grep, Glob, Write
 ---
 
-# /status — Work Layer Dashboard
+# /status — Research Dashboard
 
 ## What this skill does
 
-Generates an interactive HTML dashboard of the current Work layer state. The user reviews insights and conflicts in a browser, makes decisions (approve/reject insights, flag/research/resolve conflicts), then generates a copy-paste prompt for `/synthesis`. This is an internal tool, not a stakeholder deliverable.
+Generates an interactive HTML dashboard of the current Work layer state. The dashboard has a sidebar with modular navigation (Overview, Insights, Conflicts, Sources, Evidence Gaps, System Map, Actions). The user reviews insights and conflicts in a browser, makes decisions (approve/reject insights, flag/research/resolve conflicts), then generates a copy-paste prompt for `/synthesis`. This is an internal tool, not a stakeholder deliverable.
 
 ## Architecture: Template + JSON
 
@@ -34,18 +34,22 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 ### Phase 1: Load
 
 1. **Read all Work layer files:**
-   - `02_Work/INSIGHTS_GRAPH.md` — parse all `[IG-XX]` entries with status, category, claim, source ref, and key quote.
-   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status, tension, insight refs, and resolution notes.
-   - `02_Work/SYSTEM_MAP.md` — parse modules (name, status, blocker, insight refs), open questions.
+   - `02_Work/INSIGHTS_GRAPH.md` — parse all `[IG-XX]` entries with status, category, temporal tag, claim, source ref, and key quote.
+   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status, tension, insight refs, sides, and resolution notes.
+   - `02_Work/SYSTEM_MAP.md` — parse vision, modules (name, status, blocker, insight refs, design implications), principles, open questions.
    - `02_Work/MEMORY.md` — parse last session entry for timestamp.
 
-2. **Scan sources** — Glob `01_Sources/` to count source files and detect organization issues.
+2. **Scan sources** — Glob `01_Sources/` to list source folders, count files per folder, identify file types, and determine extraction status (cross-reference with EXTRACTIONS.md).
 
 3. **Compute summary stats** — insights by status, conflicts by status, source count, evidence gaps.
 
+4. **Detect evidence gaps:**
+   - **Claim-level gaps** — insights with weak or single-source backing.
+   - **Source diversity gaps** — check which source types are present/missing from: interviews, benchmarks, analytics, workshops, surveys.
+
 ### Phase 2: Generate JSON
 
-4. **Build the JSON data object** following `03_Outputs/_schemas/status.schema.json`:
+5. **Build the JSON data object** following `03_Outputs/_schemas/status.schema.json`:
 
    ```json
    {
@@ -55,17 +59,19 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
        "language": "en",
        "last_session": "YYYY-MM-DDTHH:MM"
      },
-     "title": "PD-Spec Status",
+     "title": "Project Name — Dashboard",
      "cards": [
        {"count": 12, "label": "Insights", "breakdown": "8 verified, 4 pending", "style": "ok"},
        {"count": 4, "label": "Conflicts", "breakdown": "2 pending, 2 resolved", "style": "warn"},
-       {"count": 6, "label": "Sources", "style": "ok"}
+       {"count": 6, "label": "Sources", "style": "ok"},
+       {"count": 3, "label": "Evidence Gaps", "style": "warn"}
      ],
      "insights": [
        {
          "id": "IG-01",
          "status": "VERIFIED",
          "category": "business",
+         "temporal": "current",
          "claim": "The claim text",
          "source": "folder/file.md",
          "quote": "Key quote from source"
@@ -78,40 +84,97 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
          "title": "Conflict title",
          "refs": "IG-01 vs IG-05",
          "tension": "Description of the tension",
+         "sides": [
+           {"position": "Side A position", "refs": ["IG-01"]},
+           {"position": "Side B position", "refs": ["IG-05"]}
+         ],
          "flag_label": "CTO + Product: prioritization",
          "research_label": "user testing needed"
        }
+     ],
+     "sources": [
+       {
+         "folder": "entrevistas-operadores",
+         "files": 3,
+         "types": ["md"],
+         "extraction_status": "Extracted"
+       }
+     ],
+     "source_diversity": [
+       {"type": "Interviews", "present": true},
+       {"type": "Benchmarks", "present": true},
+       {"type": "Analytics", "present": false},
+       {"type": "Workshops", "present": false},
+       {"type": "Surveys", "present": false}
      ],
      "source_issues": [
        {"description": "Issue description", "action": "Suggested action"}
      ],
      "evidence_gaps": [
-       {"description": "Gap description", "action": "Suggested methodology"}
+       {
+         "type": "claim-level",
+         "description": "IG-03 backed by single source",
+         "suggestion": "Cross-reference with user interviews"
+       },
+       {
+         "type": "source-diversity",
+         "description": "No quantitative analytics data",
+         "suggestion": "Request usage metrics or run a survey"
+       }
      ],
      "system_map": {
+       "vision": "Product vision statement",
        "modules": [
-         {"name": "Module Name", "status": "Ready", "refs": "IG-01, IG-03", "blocker": null}
+         {
+           "name": "Module Name",
+           "status": "Ready",
+           "refs": "IG-01, IG-03",
+           "implications": [
+             {"text": "Must support offline mode", "ref": "IG-01"}
+           ],
+           "blocker": null
+         }
        ],
+       "principles": ["Simplicity over features"],
        "open_questions": ["Question text"]
      }
    }
    ```
 
-   **Card styles:** `"ok"` (green border), `"warn"` (amber border), `"error"` (red border). Use `"warn"` when there are pending conflicts, `"error"` when blockers exist.
+   **Card styles:** `"ok"` (green border), `"warn"` (amber border), `"error"` (red border). Use `"warn"` when there are pending conflicts or evidence gaps, `"error"` when blockers exist.
 
    **Conflict options context:** For each PENDING conflict, provide specific `flag_label` (who to involve and topic) and `research_label` (what to research) derived from the conflict data. The template renders these as radio button options.
 
+   **Source diversity:** Check folder names and file content for indicators of each source type. Mark as `present: true` if at least one source of that type exists.
+
 ### Phase 3: Inject & Write
 
-5. **Read the template** — Read `03_Outputs/_templates/status.html`.
+6. **Read the template** — Read `03_Outputs/_templates/status.html`.
 
-6. **Inject JSON** — Replace the contents of `<script id="pd-data" type="application/json">` with the generated JSON. The status template is self-contained (no external `_base.css`/`_base.js` dependencies), so no inlining is needed.
+7. **Inject JSON** — Replace the contents of `<script id="pd-data" type="application/json">` with the generated JSON. The status template is self-contained (no external `_base.css`/`_base.js` dependencies), so no inlining is needed.
 
-7. **Write** — Write the combined file to `03_Outputs/STATUS.html`.
+8. **Write** — Write the combined file to `03_Outputs/STATUS.html`.
 
 ### Phase 4: Report
 
-8. **Tell the user** the file was generated:
+9. **Tell the user** the file was generated:
    > Dashboard generated at `03_Outputs/STATUS.html`. Open it in your browser to review and make decisions.
 
-9. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
+10. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
+
+## Dashboard Features (handled by template)
+
+The template provides these interactive features — the agent only needs to supply correct JSON:
+
+- **Sidebar navigation** — clicking a nav item shows that module, hides others
+- **Overview module** — summary cards + research maturity progress bar
+- **Insights module** — filterable/searchable cards with approve/reject buttons for PENDING
+- **Conflicts module** — filterable cards with Flag/Research/Context radio options
+- **Sources module** — folder coverage map + source diversity visualization
+- **Evidence Gaps module** — grouped by type (claim-level, source-diversity)
+- **System Map module** — vision, modules with implications, principles, open questions
+- **Actions module** — prompt generator that collects all decisions and formats `/synthesis` prompt
+- **Cross-referencing anchors** — `STATUS.html#IG-XX` auto-opens the correct module and scrolls to the card
+- **Decision counter** — tracks decisions in sidebar footer and action bar
+- **Print-friendly** — expands all modules, hides interactive elements
+- **Responsive** — collapsible sidebar on mobile
