@@ -167,6 +167,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
    - If EXTRACTIONS.md already has content, **replace it entirely** with the new extraction. Each `/extract` run produces a fresh, complete extraction.
    - Preserve the header and description at the top of the file.
+   - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
    - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report
@@ -180,6 +181,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - If a folder from Phase 1 discovery has zero entries in this report, that is a bug — report it.
    - Source organization issues found (list each one).
    - **Total:** Files processed, files not processed, total claims extracted.
+   - **Verify counts from disk, not memory.** After all writing is complete, re-read `02_Work/EXTRACTIONS.md` and count: (a) section headers (`## [`) = files processed, (b) numbered claim lines = total claims. Use THESE numbers in the report and MEMORY.md, not in-memory counters. Context compaction can corrupt in-memory counts — the file on disk is the source of truth.
    - **Completeness check** — Compare the list of files in EXTRACTIONS.md (section headers) against the full file list from Phase 1 (Glob results). Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
    - **Remind the user:** "Run `/analyze` to process extractions into insights."
 

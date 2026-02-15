@@ -8,8 +8,8 @@
 |---|---|---|---|
 | FIX-01 | Fix | FIXED | /extract can't read Office files |
 | BUG-01 | Bug | FIXED | /extract skips 42/57 files silently, reported only 27 |
-| BUG-02 | Bug | NOTED | Skills fill context window on large projects (systemic) |
-| BUG-03 | Bug | CONFIRMED | Claim count 862 real vs 476 reported (post-compaction) |
+| BUG-02 | Bug | MITIGATED | Skills fill context window on large projects (systemic) |
+| BUG-03 | Bug | MITIGATED | Claim count 862 real vs 476 reported (post-compaction) |
 | BUG-04 | Bug | FIXED | Entire folder "Propuesta ruta/" omitted from report |
 | BUG-05 | Bug | FIXED | 3 PDFs "not readable" — Read tool should handle them |
 | BUG-06 | Bug | FIXED | HEIC images + video files unsupported, not reported |
@@ -18,7 +18,7 @@
 | BUG-09 | Bug | FIXED | Format inconsistency between old and new insights |
 | BUG-10 | Bug | FIXED | Duplicate insights — deduplication failed post-compaction |
 | BUG-11 | Bug | FIXED | /analyze skips /status — user has no visual review before /synthesis |
-| BUG-12 | Bug | NOTED | /status generates old monolithic HTML — ignores Template+JSON (CRITICAL) |
+| BUG-12 | Bug | MITIGATED | /status generates old monolithic HTML — ignores Template+JSON (CRITICAL) |
 | PERF-01 | Perf | NOTED | 24+ min / 30k tokens for 60 files (linear processing) |
 | ARCH-01 | Arch | PENDING | Project settings in CLAUDE.md cause merge conflicts |
 | ARCH-02 | Arch | PROPOSED | SOURCE_MAP.md — state management for /extract |

@@ -155,12 +155,14 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
 8. **Write** — Write the combined file to `03_Outputs/STATUS.html`.
 
+9. **Self-check** — After writing, re-read `03_Outputs/STATUS.html` and verify it contains `<script id="pd-data" type="application/json">` with valid JSON inside. If the file does NOT contain this tag, the write was incorrect — re-read the template from `03_Outputs/_templates/status.html` and retry the injection. **CRITICAL: Never write STATUS.html as monolithic inline HTML/CSS/JS. Always use the template.**
+
 ### Phase 4: Report
 
-9. **Tell the user** the file was generated:
+10. **Tell the user** the file was generated:
    > Dashboard generated at `03_Outputs/STATUS.html`. Open it in your browser to review and make decisions.
 
-10. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
+11. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
 
 ## Dashboard Features (handled by template)
 
