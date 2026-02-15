@@ -72,7 +72,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    *Directly readable (Read tool):*
    - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
    - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out /tmp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the /tmp/ path.
-   - **PDFs** — Read using the Read tool with `pages` parameter for large documents (>10 pages). Extract claims from text content.
+   - **PDFs** — Read using the Read tool with `pages` parameter (mandatory for >10 pages, max 20 pages per request). For large PDFs, read in chunks: pages `1-20`, then `21-40`, etc. **If a PDF returns empty or garbled content** (likely an image-only scan without text layer), report it as: "PDF appears to be image-only (no text layer). Export with OCR or provide a `_CONTEXT.md` description." Never silently skip a PDF — always attempt to read it, and always report the outcome.
    - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
 
    *Office files (DOCX, PPTX, XLSX) — convert-then-read:*

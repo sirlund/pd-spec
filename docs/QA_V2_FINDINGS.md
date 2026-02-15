@@ -11,12 +11,12 @@
 | BUG-02 | Bug | NOTED | Skills fill context window on large projects (systemic) |
 | BUG-03 | Bug | CONFIRMED | Claim count 862 real vs 476 reported (post-compaction) |
 | BUG-04 | Bug | FIXED | Entire folder "Propuesta ruta/" omitted from report |
-| BUG-05 | Bug | NOTED | 3 PDFs "not readable" — Read tool should handle them |
+| BUG-05 | Bug | FIXED | 3 PDFs "not readable" — Read tool should handle them |
 | BUG-06 | Bug | FIXED | HEIC images + video files unsupported, not reported |
 | BUG-07 | Bug | FIXED | Insight refs point to /tmp/ files, not real sources |
 | BUG-08 | Bug | FIXED | /analyze loses source attribution — who said what, with what authority |
 | BUG-09 | Bug | FIXED | Format inconsistency between old and new insights |
-| BUG-10 | Bug | NOTED | Duplicate insights — deduplication failed post-compaction |
+| BUG-10 | Bug | FIXED | Duplicate insights — deduplication failed post-compaction |
 | BUG-11 | Bug | FIXED | /analyze skips /status — user has no visual review before /synthesis |
 | BUG-12 | Bug | NOTED | /status generates old monolithic HTML — ignores Template+JSON (CRITICAL) |
 | PERF-01 | Perf | NOTED | 24+ min / 30k tokens for 60 files (linear processing) |

@@ -31,7 +31,14 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### Phase 2: Analysis (Draft)
 
-3. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
+4. **Deduplication check** — Before creating any new insight, compare each candidate claim against ALL existing insights (not just their IDs — read the actual claim text). A claim is a duplicate if:
+   - It makes the same factual assertion as an existing insight, even if worded differently (semantic match, not string match).
+   - It describes the same user need, pain point, or constraint from the same perspective.
+   - **NOT a duplicate if:** the same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
+   - When a duplicate is found: do NOT create a new insight. Instead, increment the convergence count on the existing insight and add the new source ref. If the new source has a better quote, update the quote.
+   - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
+
+5. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
@@ -65,7 +72,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
    **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
 
-4. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+6. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
    - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
      - Direct contradictions ("users love X" vs "users avoid X").
      - Tensions ("team wants simplicity" vs "client demands customization").
@@ -74,7 +81,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    - For each potential conflict, cite the specific claims from both sides.
    - **Convergence boost** — When multiple new claims from different sources converge on the same point, note the convergence ratio. High convergence (>50% of sources) is a strong signal worth highlighting. Single-source insights are fragile and should be noted as such.
 
-5. **Detect evidence gaps** — Two levels of gap detection:
+7. **Detect evidence gaps** — Two levels of gap detection:
 
    **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
 
@@ -120,7 +127,7 @@ All insights are written as `PENDING`. The real approval happens downstream — 
 
 > **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-6. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+8. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, two-digit minimum: `IG-01`…`IG-99`, then `IG-100`+)
    - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
@@ -132,12 +139,12 @@ All insights are written as `PENDING`. The real approval happens downstream — 
    - Status: `PENDING` (plain text, no formatting)
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
-7. **Log conflicts** — For each detected contradiction:
+9. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-8. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze
     - **Request:** [what the user asked]
@@ -194,8 +201,9 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 
 ### Phase 4: Report
 
-9. **Summarize to the user** what was written:
+11. **Summarize to the user** what was written:
     - Source organization issues found (list each one).
+    - **Deduplication** — how many candidate claims were deduplicated into existing insights (count + which IDs absorbed them).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
     - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
