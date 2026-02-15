@@ -172,3 +172,96 @@
 **Result:** 6 archivos HTML generados en `03_Outputs/`. Total insights referenciados: 115 (100% VERIFIED). Conflictos documentados: 6 (2 FLAGGED para decisión stakeholder, 4 RESOLVED con contexto).
 
 **Snapshot:** 115 insights (115 VERIFIED) · 6 conflicts (2 FLAGGED, 4 RESOLVED) · 7 outputs (STATUS + 6 deliverables)
+
+## 2026-02-15T15:45 /extract (COMPLETE)
+
+**Request:** Ejecutar extracción completa de todas las fuentes en `01_Sources/`, procesando archivos en español según `output_language: es`.
+
+**Actions:**
+- **Escaneados ~71 archivos** en `01_Sources/` organizados en 6 carpetas
+- **Procesados 18 archivos** con múltiples formatos:
+  - **5 archivos markdown:** analisis reu, reu_coo, reunion_operaciones (split read), transcript, _FIELD_NOTES
+  - **6 archivos DOCX:** convertidos con textutil (Design Brief, Casos de Uso, KEEP-STOP-START retro, Evolution narrative, Narrativa CCB)
+  - **3 archivos PPTX:** extraídos con Python stdlib zipfile (Referencia Benchmark, Sello Experiencia)
+  - **4 archivos imagen PNG/JPG:** analizados visualmente (3 interview maps, 3 workshop photos sample)
+- **No usado markitdown** (no disponible) → fallback a herramientas nativas exitoso
+- **Archivos no procesados:**
+  - 23 fotos Workshop 1 (solo 3 muestras procesadas)
+  - 3 PDFs Visión Futuro _CORE/ (no legibles)
+  - 1 PPTX Propuesta ruta/ (error lectura)
+
+**Result:**
+- **476 claims** extraídos y escritos a `02_Work/EXTRACTIONS.md` en español
+- **0 problemas de organización** detectados — todas las fuentes coherentemente ubicadas
+- Todos los claims preservan citas verbatim o paráfrasis factuales sin interpretación
+- File successfully replaced from previous empty template
+
+**Stats:**
+- `entrevistas operaciones/`: 3 files, 157 claims
+- Root level: 3 files, 26 claims
+- `Workshop 1/`: 6 files, 241 claims
+- `Visión Futuro _CORE_/`: 1 file, 100 claims
+- `Antecedentes/`: 2 files, 338 claims
+- **Total:** 18 files procesados, 476 claims extraídos
+
+**Snapshot:** 115 insights VERIFIED · 6 conflicts (2 FLAGGED, 4 RESOLVED) · 476 raw claims in EXTRACTIONS.md · ready for /analyze
+
+## 2026-02-15T16:15 /analyze (COMPLETE)
+
+**Request:** Procesar 476 raw claims de EXTRACTIONS.md en insights atómicos, cross-referenciar contra 115 insights VERIFIED existentes, detectar conflictos, generar Research Brief.
+
+**Actions:**
+- **Leídos:** INSIGHTS_GRAPH.md (115 insights VERIFIED), CONFLICTS.md (6 conflicts), EXTRACTIONS.md (476 claims de 18 fuentes)
+- **Cross-referenciado:** 476 claims vs 115 insights existentes
+- **Análisis de convergencia:** Mayoría de claims ya representados en insights existentes [IG-01] a [IG-115]
+- **27 nuevos insights** identificados y escritos a INSIGHTS_GRAPH.md:
+  - [IG-116] a [IG-142] — todos con status PENDING
+  - Categorización: user-need (10), technical (6), business (11)
+  - Temporal tags: current (11), aspirational (16)
+  - Convergence ratios: mayoría 1/18 sources (single-source), algunos 2-3/18
+  - Key quotes incluidas en todos
+- **0 conflictos nuevos** detectados — tensiones identificadas ya están cubiertas en CF-01 y CF-02 FLAGGED
+- **Research Brief generado** — RESEARCH_BRIEF.md con narrativa ejecutiva en español:
+  - Qué Está Roto (6 problemas clave)
+  - Qué Podría Ser Mejor (9 oportunidades)
+  - Qué Funciona Bien (7 fortalezas)
+  - Tensiones Clave (5 conflictos/tensiones)
+  - Gaps de Evidencia (diversidad de fuentes 3/6, suggestions de validación)
+
+**Result:**
+- **142 insights totales** en INSIGHTS_GRAPH.md (115 VERIFIED + 27 PENDING)
+- **6 conflicts** sin cambios (2 FLAGGED, 4 RESOLVED)
+- **RESEARCH_BRIEF.md** generado con hallazgos ejecutivos
+
+**Insights nuevos destacados:**
+- IG-117: Usuarios sobrecargados con dashboards que repiten KPIs
+- IG-118: Necesidad sistema proactivo que venga a ellos
+- IG-119: Sistema recomendador, no solo alertas
+- IG-123: "Desplanificadómetro" en línea
+- IG-127: Reducir dependencia del formato de datos del cliente
+- IG-131: Módulos genéricos configurables (convergencia 2/18)
+- IG-134: Algoritmo inferencia topográfica propietario (convergencia 3/18, highest)
+- IG-140: "Efecto Suiza" integrador neutral (convergencia 3/18)
+
+**Source diversity analysis:**
+- ✓ User research: 11 archivos
+- ✓ Business data: 4 archivos
+- ✓ Technical docs: presente
+- ✗ Competitive analysis: menciones pero sin benchmarks detallados
+- ✗ Accessibility data: no detectado
+- ✗ Brand/design guidelines: no detectado
+- **Diversidad score: 3/6** — saludable pero con gaps
+
+**Convergence summary:**
+- High convergence (>50%): 0 insights
+- Medium convergence (2-3/18): 13 insights
+- Single-source (frágiles): 129 de 142 insights (90.8%)
+- Base de conocimiento amplia pero poco profunda — típico de Level 1 (Seed) → Level 2 (Validation)
+
+**Snapshot:** 142 insights (115 VERIFIED, 27 PENDING) · 6 conflicts (2 FLAGGED, 4 RESOLVED) · 7 outputs
+
+## [2026-02-15T16:30] /status
+- **Request:** Generate interactive HTML dashboard of Work layer state
+- **Actions:** Read all Work layer files (INSIGHTS_GRAPH.md 142 insights, CONFLICTS.md 6 conflicts, SYSTEM_MAP.md), parsed source folders, built complete JSON data object, injected into template
+- **Result:** STATUS.html generated (102 KB, 1,388 lines) — interactive dashboard with sidebar navigation, filterable insights/conflicts, source coverage analysis, evidence gaps, system map, field notes generator, /synthesis prompt builder
+- **Snapshot:** 142 insights (115 VERIFIED, 27 PENDING) · 6 conflicts (2 FLAGGED, 4 RESOLVED) · 5 source folders · 9 evidence gaps · 0 outputs

@@ -509,3 +509,304 @@ Ref: `01_Sources/Workshop 1/Casos de Uso Workshop 01.docx`
 Visión "Skynet" (Lámina 20) es roadmap futuro lejano: sistema analiza situación cada X minutos, corre N simulaciones, eventualmente da órdenes a máquinas (autonomía completa "1° personas, 2° máquinas").
 Ref: `01_Sources/Workshop 1/Casos de Uso Workshop 01.docx`
 
+---
+
+## Nuevos Insights — /analyze 2026-02-15
+
+### [IG-116] (user-need, current) PENDING
+Los usuarios necesitan que la plataforma sea "plug and play" sin generar problemas adicionales de TI, contratos o adherencia técnica.
+
+> "No quiere más problemas (TI, contrato, adherencia) quiere que nuestra solución sea plug and play"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-117] (user-need, current) PENDING
+Los usuarios están sobrecargados con dashboards que muestran los mismos KPIs repetidos y prefieren información única y procesable.
+
+> "MOSTRAR LOS MISMOS KPIS QUE TODOS LOS DASHBOARDS [...] MÁS PANTALLAS [...] MUCHA DATA SIN SENTIDO"
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-118] (user-need, aspirational) PENDING
+Los usuarios necesitan un sistema proactivo que venga a ellos con soluciones, no que requiera buscar activamente la información.
+
+> "Buscar la solución → que la solución venga a él [...] Un sistema más Proactivo"
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-119] (user-need, aspirational) PENDING
+Los usuarios necesitan que el sistema recomiende acciones (sistema recomendador), no solo alertas — customización con recomendaciones automáticas ante problemas recurrentes.
+
+> "Un sistema Recomendador y que tome ACCIÓN en temas recurrentes [...] Customización. Necesita recomendaciones no solo alertas. Respuestas Automáticas a sus problemas y sugerencias."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-120] (user-need, current) PENDING
+Los usuarios necesitan capacitación adaptada a su perfil de usuario, idealmente in-app, evitando capacitaciones largas y genéricas.
+
+> "CAPACITACIÓN RESPECTO AL PERFIL DE USUARIO (OJALÁ IN-APP) [...] Capacitaciones muy largas [NO necesita]"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-121] (user-need, aspirational) PENDING
+Los usuarios quieren ver elementos que les ayuden a cumplir sus KPIs de bonos personales y mejorar su desempeño individual.
+
+> "Ver los elementos que le ayudan a cumplir sus KPIs de sus bonos [...] Que puedo hacer: mejorar su trabajo. Mejor desempeño personal."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-122] (user-need, aspirational) PENDING
+Los usuarios necesitan priorización clara ante contingencias con orden de prioridad integrado en canales primarios de comunicación (radiales, WhatsApp).
+
+> "Orden de prioridad ante contingencias (Radiales - whatsapp, etc.) [...] Estar en los canales de comunicación primarios de la MINA"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-123] (user-need, aspirational) PENDING
+Los usuarios necesitan un "desplanificadómetro" en línea que mida en tiempo real cuánto material se ha dejado de extraer versus el plan desde un tiempo t0.
+
+> "Un Desplanificadometro (desplaninometro) en línea. Medir cuanto llevo desviado desde un t0. Lo # Material perdido que dejé de extraer."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-124] (user-need, aspirational) PENDING
+Los usuarios no saben que necesitan coordinarse entre áreas y comunicar eventualidades rápidamente — existe oportunidad de ofrecer herramienta intermediaria para mejorar comunicación entre colaboradores.
+
+> "COORDINARSE ENTRE ÁREAS Y SER RÁPIDO EN COMUNICAR EVENTUALIDADES [...] Mejorar la comunicación entre colaboradores áreas. ¿Un intermediario?"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-125] (user-need, aspirational) PENDING
+Los usuarios necesitan capacidad de auditar sus "fuentes de la verdad" (FMS, drilling software, etc.) y corregirlas cuando hay inconsistencias.
+
+> "AUDITAR SUS 'FUENTES DE LA VERDAD' Y CORREGIRLAS [...] No sabe los datos que tiene, ni su calidad de su informacion."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-126] (technical, aspirational) PENDING
+La plataforma debe ofrecer un catálogo de casos de uso y ejemplos de otros clientes para responder "¿cómo lo uso?" — arquitectura fácil de justificar al cliente con pre-factibilidad.
+
+> "¿Ejemplos de otros clientes '¿CÓMO LO USO?' CATÁLOGO [...] Pre-factibilidad → Arquitectura fácil de Justificar al Cliente."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-127] (technical, current) PENDING
+El equipo tiene dependencia alta del formato de datos del cliente y de que el cliente envíe los datos — necesidad de reducir dependencia del cliente.
+
+> "Menos dependencia del Cliente. Dependemos mucho del formato del Dato del Cliente o que lo envíe."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-128] (technical, aspirational) PENDING
+El AI Copilot (TIM Agent) debe incluir búsqueda por voz, chat conversacional, y búsqueda en lenguaje natural sin necesidad de navegar la interfaz tradicional.
+
+> "El IA COPILOT debe incluir: Búsqueda por voz, Chat conversacional, Búsqueda en lenguaje natural"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/Design Brief.md`
+
+Status: PENDING
+
+### [IG-129] (technical, aspirational) PENDING
+La plataforma debe tener una API genérica que exponga módulos internos (topografía, perforación, carguío y transporte, etc.) para consumo externo y configuración flexible.
+
+> "API genérica: Una sola entrada que expone todos los módulos de TIMining (topografía, perforación, carguío y transporte, etc.)"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/Design Brief.md`
+
+Status: PENDING
+
+### [IG-130] (business, current) PENDING
+El product team mide su éxito con KPIs de velocidad de implementación de nuevas funcionalidades, user adoption (usuarios activos, frecuencia de uso), y tiempo promedio de configuración/despliegue.
+
+> "Product Team KPIs: Velocidad de implementación de nuevas funcionalidades, User Adoption (usuarios activos, frecuencia de uso, etc.), Tiempo promedio de configuración y despliegue"
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Workshop 1/Design Brief.md`
+
+Status: PENDING
+
+### [IG-131] (technical, aspirational) PENDING
+La arquitectura debe permitir agregar capas de datos de manera simple y rápida sin desarrollo específico — módulos genéricos configurables.
+
+> "Agregar un dato para entenderlo en con el contexto, simple y rápido [...] Dejar de hacer desarrollos específicos y desarrollarlos de manera genérica"
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Workshop 1/retro.txt`
+
+Status: PENDING
+
+### [IG-132] (business, current) PENDING
+TIMining realizó una primera ronda de capital de ~USD 4M liderada por Aurus Capital (VC enfocado en minería) en 2017-2019 para financiar el crecimiento internacional.
+
+> "This first round raised aprox USD 4 MM and was led by Aurus Capital, a mining focused VC."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-133] (business, current) PENDING
+Anglo American Los Bronces fue el socio estratégico principal para refinar la visión del Digital Twin en una solución lista para campo.
+
+> "Strategic Co-Development: Anglo American's Los Bronces became the primary partner to refine this vision into a field-ready solution."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-134] (technical, current) PENDING
+El algoritmo de inferencia topográfica en tiempo real usando datos GPS de palas (sin drones ni escaneo manual) es el breakthrough técnico propietario de TIMining desarrollado por Carlo Calderón.
+
+> "The Proprietary Breakthrough: Carlo Calderon developed a unique algorithm to infer topographies in real-time using GPS data from shovels."
+
+Convergence: 3/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-135] (business, current) PENDING
+2025 no fue un año de gran crecimiento de ARR, pero terminó con un pipeline fuerte para cosechar en 2026/27 — budget 2026 proyecta >80% crecimiento YoY de ARR.
+
+> "Whilst 2025 wasn't a great year in terms of ARR growth, these new conversations allowed to end the year with a strong Pipeline to harvest during 2026/27, hence why 2026's Budget has over an 80% ARR growth target YoY."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-136] (business, aspirational) PENDING
+Para 2040, se espera que la industria minera opere minas globales simultáneamente desde centros urbanos (IROCs maduros en Santiago u otras ciudades), con distinción desaparecida entre mina y planta.
+
+> "The Mature IROC (Integrated Remote Operations Center): Massive corporations manage multiple global mines simultaneously from urban centers like Santiago. The distinction between the mine and the plant has vanished."
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-137] (technical, aspirational) PENDING
+Para 2040, los cambios de turno estarán soportados por logs multimedia creados automáticamente por la plataforma TIMining, eliminando el "efecto gaviota" (caída de producción durante handovers).
+
+> "Automated Shift Transitions: The 'shift change' ritual is now supported by multimedia logs created automatically by TIMining's Platform, eliminating the 'seagull effect' (production drops during handovers)."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-138] (technical, aspirational) PENDING
+Para 2040, las visitas físicas a sitio serán inexistentes — equipos geotécnicos y operativos inspeccionarán "zonas virtuales" para evitar interrumpir flujos de vehículos autónomos.
+
+> "Virtual Visits: Physical site visits are non-existent; geotechnical and operational teams inspect 'virtual zones' to avoid interrupting autonomous vehicle flows."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-139] (business, aspirational) PENDING
+Para 2040, equipos corporativos usarán modelos predictivos de TIMining para decisiones tácticas multi-mina — si una mina cae detrás del plan, el sistema identifica estrategias de recuperación a nivel portafolio corporativo.
+
+> "Corporate teams no longer just react to yesterday's data; they use TIMining's predictive models to make multi-mine tactical decisions. If one mine falls behind its plan, the system identifies strategies to recover yield across the entire corporate portfolio."
+
+Convergence: 1/18 sources
+
+Ref: `01_Sources/Antecedentes/evolution.txt`
+
+Status: PENDING
+
+### [IG-140] (business, current) PENDING
+TIMining ocupa una posición estructural única como "Integrador Neutro" (Efecto Suiza) — los grandes OEMs (Caterpillar, Komatsu, Hexagon) que no se integran entre sí sí se integran con TIMining.
+
+> "En una industria caracterizada por 'jardines amurallados' donde los grandes OEMs compiten y no se integran entre sí, Timining ocupa una posición estructural única: somos el Integrador Neutro."
+
+Convergence: 3/18 sources
+
+Ref: `01_Sources/Antecedentes/narrativa.txt`
+
+Status: PENDING
+
+### [IG-141] (business, current) PENDING
+La adopción de TIMining es "Bottom-Up" inusualmente alta con >100 usuarios activos mensuales por faena — la operación confía porque resuelve dolores diarios (stickiness).
+
+> "Tenemos una adopción 'Bottom-Up' inusualmente alta, con más de 100 usuarios activos mensuales por faena. La operación confía en nosotros porque resolvemos sus dolores diarios (stickiness)."
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Antecedentes/narrativa.txt`
+
+Status: PENDING
+
+### [IG-142] (technical, current) PENDING
+El "músculo" técnico de TIMining se forjó resolviendo problemas difíciles por separado: precisión matemática (Geotecnia), dinámica de procesos (Orchestra), inferencia geométrica desde sensores.
+
+> "Nuestra ventaja no es solo código; es ADN. Somos una 'singularidad' forjada al resolver primero problemas difíciles por separado: El rigor de la Geotecnia [...] La dinámica de la Operación (Orchestra) [...] Inferir el estado de la mina en tiempo real desde los sensores."
+
+Convergence: 2/18 sources
+
+Ref: `01_Sources/Antecedentes/narrativa.txt`
+
+Status: PENDING
+
