@@ -43,6 +43,7 @@
           "claim": { "type": "string" },
           "source": { "type": "string", "description": "Source file path relative to 01_Sources/" },
           "quote": { "type": "string", "description": "Key quote from source" },
+          "source_confidence": { "type": "string", "enum": ["high", "medium", "low", "hunch"], "description": "Confidence level from field notes sources. Omit for non-field-note sources." },
           "refs": {
             "type": "array",
             "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" },
