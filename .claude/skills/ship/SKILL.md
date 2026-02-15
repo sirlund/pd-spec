@@ -3,7 +3,7 @@ name: ship
 description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|audit|strategy]"
+argument-hint: "[prd|presentation|report|persona|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -36,8 +36,9 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` — Product Requirements Document (default).
    - `presentation` — Reveal.js slide deck with key insights and decisions.
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
-   - `benchmark` — **Deprecated.** See step 13 note.
    - `benchmark-ux` — Inter-industry design referents. NOT competitive analysis.
+   - `persona` — User persona cards grounded in verified insights.
+   - `benchmark` — **Deprecated.** See step 15 note.
    - `audit` / `strategy` — Specialized documents.
 
 2. **Load knowledge base** — Read:
@@ -66,6 +67,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `report` → `_templates/report.html`
    - `presentation` → `_templates/presentation.html`
    - `benchmark-ux` → `_templates/benchmark-ux.html`
+   - `persona` → `_templates/persona.html`
    - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
 6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
@@ -158,14 +160,35 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
     - **Anti-hallucination:** every referent must be a real product the agent can verify via web search. If unsure, skip it.
     - JSON uses `categories` array (not `sections`) — see `_schemas/benchmark-ux.schema.json`.
 
-14. **For other document types** (audit, strategy):
+14. **For persona** (`/ship persona`):
+    - Output: `03_Outputs/PERSONAS.html`
+    - Template: `_templates/persona.html`
+    - Schema: `_schemas/persona.schema.json`
+    - **JSON structure uses `personas` array instead of `sections`** — see schema for details.
+    - Derive personas from user-need insights in `INSIGHTS_GRAPH.md`:
+      - Filter for insights about user behaviors, needs, frustrations, goals, and context.
+      - Group related insights to form distinct archetype clusters.
+    - Each persona includes:
+      - `name` — Realistic name (not stereotypical).
+      - `role` — Job title or role description.
+      - `quote` — Representative quote traced to a real source insight.
+      - `goals` — What they want to achieve. Array of `{text, ref}` where `ref` is an `[IG-XX]`.
+      - `frustrations` — What blocks them. Array of `{text, ref}`.
+      - `context` — Work environment, tools, constraints. Array of `{text, ref}`.
+      - `behaviors` — How they currently work. Array of `{text, ref}`.
+    - Generate **3–5 personas** — enough to cover the insight space without overlap.
+    - Each persona must be grounded in **at least 3 verified insights**.
+    - If insufficient user-need insights exist, use `[GAP]` markers in the relevant fields and flag the gap to the user.
+    - The **Propose phase** (step 4) should present: persona names, roles, key insight clusters per persona, and any gaps.
+
+15. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.
     - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
     **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-15. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+16. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
