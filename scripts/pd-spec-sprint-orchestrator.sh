@@ -96,7 +96,7 @@ create_worktree() {
     git branch -D "$branch_name" 2>/dev/null || true
   fi
 
-  git worktree add "$worktree_path" -b "$branch_name" >&2 2>&1
+  git worktree add "$worktree_path" -b "$branch_name" > /dev/null 2>&1
   echo "$worktree_path"
 }
 
