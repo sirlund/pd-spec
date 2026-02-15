@@ -39,6 +39,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
      - `(aspirational)` — describes a desired future state ("users want X", "the product should do Y")
      - If ambiguous, default to `(current)`. The tag goes after the category: `(user-need, aspirational)`.
+   - **Convergence** — After extracting a claim, check if similar claims appear in other source files processed in `02_Work/EXTRACTIONS.md`. Record the convergence ratio: `Convergence: X/Y sources` where X = number of sources mentioning this or a substantially similar claim, Y = total sources processed. A claim from 1 source has convergence 1/Y. A claim echoed across 3 sources has 3/Y.
    - **Atomicity** — One insight per atomic claim. "Users want X and hate Y" is two insights, not one. A source that lists 10 needs produces 10 insights. Do not bundle multiple claims into a single insight.
    - **Granularity guidance** — When to separate vs. consolidate:
      - **Separate** when claims have different sources, different categories, or could be independently verified/invalidated.
@@ -54,6 +55,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - Incompatible assumptions ("small user base" vs "must handle 10K concurrent users").
      - Temporal conflicts ("currently using tool Y" vs "already migrated to Z").
    - For each potential conflict, cite the specific claims from both sides.
+   - **Convergence boost** — When multiple new claims from different sources converge on the same point, note the convergence ratio. High convergence (>50% of sources) is a strong signal worth highlighting. Single-source insights are fragile and should be noted as such.
 
 5. **Detect evidence gaps** — Two levels of gap detection:
 
@@ -83,6 +85,7 @@ All insights are written as `PENDING`. The real approval happens downstream — 
    - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
    - Key quote — 1-2 sentences from the source (in a blockquote)
+   - Convergence ratio: `Convergence: X/Y sources`
    - Source reference: `Ref: [file path]`
    - Status: `PENDING` (plain text, no formatting)
 
@@ -108,4 +111,8 @@ All insights are written as `PENDING`. The real approval happens downstream — 
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
     - **Source diversity** — which source types are covered, which are missing, and what to consider adding.
     - Evidence gaps detected (with suggested validation methods).
+    - **Convergence summary:**
+      - How many insights have convergence >50% of sources (strong signals).
+      - How many insights are single-source (fragile — may need additional validation).
+      - Highlight the highest-convergence insights as strongest findings.
     - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."
