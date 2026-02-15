@@ -2,316 +2,282 @@
 
 ## [4.0.0] — 2026-02-15
 
-Major release: 14 autonomous agents executed Olas 2-4 from `docs/SPRINT.md` via `scripts/pd-spec-sprint-orchestrator.sh`. Architecture overhaul, 5 new intelligence features, 6 new output types, and a dedicated quality gate.
+### Highlights
 
-### Architecture — Ola 2 (3 agents)
+**Your sources, fully read.** PD-Spec now reads DOCX, PPTX, XLSX, images, and PDFs directly — no manual conversion needed. Drop your files in `01_Sources/` and go.
 
-#### A1: `/extract` skill — separation of concerns
-- **New skill** `.claude/skills/extract/SKILL.md` — reads sources from `01_Sources/`, writes raw claims to `02_Work/EXTRACTIONS.md`
-- **New template** `02_Work/EXTRACTIONS.md` — structured raw claims per source file (verbatim quotes, no interpretation)
-- **Modified `/analyze`** — now reads from `EXTRACTIONS.md` instead of `01_Sources/` directly. If `EXTRACTIONS.md` is empty, tells user to run `/extract` first
-- Pipeline changes: `/extract` → `/analyze` (previously `/analyze` did both reading and thinking)
-- Updated CLAUDE.md: Skills Pipeline table, Folder Structure, Sources of Truth
+**See what the agent read before it thinks.** The new `/extract` → `/analyze` pipeline separates reading from interpretation. Raw quotes land in `EXTRACTIONS.md` first — you can review exactly what was captured before insights are generated.
 
-#### A2: Template+JSON architecture for all outputs
-- **New directory** `03_Outputs/_templates/` — static HTML templates that handle all rendering:
-  - `_base.css` — shared styles (Inter font, A4 layout, cards, badges, print media queries)
-  - `_base.js` — shared JS (JSON loader, section renderers, `[IG-XX]`/`[CF-XX]` → `STATUS.html#ID` link converter)
-  - `prd.html`, `report.html`, `presentation.html`, `status.html` — type-specific templates
-- **New directory** `03_Outputs/_schemas/` — JSON Schema definitions:
-  - `base.schema.json` — shared definitions (`meta`, `snapshot`, `changelog`, `section`, `moduleItem`)
-  - `prd.schema.json`, `report.schema.json`, `status.schema.json` — type-specific schemas
-- **Rewritten `/ship`** — agent now produces JSON data only, injects into template. No more hand-crafted HTML per run. Templates are engine files (committed, not generated).
-- **Rewritten `/status`** — same Template+JSON pattern. Agent writes JSON, template renders dashboard with interactive cards.
-- Section types: `text`, `callout`, `table`, `module-list`, `open-questions`, `gap`
-- Self-contained outputs: CSS and JS inlined at generation time. Single `.html` file, no external deps (except Reveal.js CDN for presentations).
+**Consistent, fast outputs.** All deliverables now use a Template+JSON architecture. The agent writes data, not HTML. Outputs render instantly, look consistent across types, and are easy to update.
 
-#### A3: Research Dashboard
-- **Enhanced `/status` dashboard** (`03_Outputs/_templates/status.html`) — 1200+ lines of interactive UI
-- Replaces flat insight/conflict lists with a Research Dashboard layout:
-  - Summary cards with breakdown stats
-  - Insight cards with approve/reject toggle (PENDING only)
-  - Conflict cards with Flag/Research/Context radio options
-  - System Map module viewer with status badges and implications
-  - Evidence gap section with suggested actions
-  - Source health overview
-- Prompt generator action bar — generates `/synthesis` prompt from all user decisions
-- Updated `status.schema.json` with expanded fields for gap items, source health, and module details
+**Six new deliverables.** Personas, journey maps, lean canvas, user stories, UX benchmarks, and a quality audit — all grounded in your verified insights.
 
-### Intelligence — Ola 3 (5 agents)
+**Smarter analysis.** Source diversity scoring, convergence tracking, auto-generated research briefs, and field notes support for researcher observations.
 
-#### I1: Auto Research Brief in `/analyze`
-- **New Phase 3b** in `/analyze` — after writing insights and conflicts, auto-generates `02_Work/RESEARCH_BRIEF.md`
-- Stakeholder-facing executive narrative: "What's Broken", "What Could Be Better", "What Works Well", "Key Tensions", "Evidence Gaps"
-- All claims reference `[IG-XX]` and `[CF-XX]` — no unsourced statements
-- Template created at `02_Work/RESEARCH_BRIEF.md` with placeholder sections
-- Auto-generated — no user approval step (supplements insight list, doesn't replace it)
+### New capabilities
 
-#### I2: Enhanced source diversity detection in `/analyze`
-- **New Phase 4b** in `/analyze` — Source Diversity Analysis after main reporting
-- Detects type bias (e.g., 80% interviews, 0% quantitative data)
-- Detects temporal gaps (all sources from same period)
-- Detects perspective gaps (only internal stakeholders, no end users)
-- Reports diversity score and suggests specific methodologies to fill gaps
+#### `/extract` — dedicated source reading
+Reads all files in `01_Sources/` and writes raw claims to `02_Work/EXTRACTIONS.md`. Supports markdown, DOCX, PPTX, XLSX, CSV, PDF, and images out of the box (zero dependencies). Optionally install `markitdown` for better table and structure preservation.
 
-#### I3: Human calibration layer (field notes)
-- **New template** `01_Sources/_FIELD_NOTES_TEMPLATE.md` — structured format for researcher observations (body language, tone, environment, unspoken tensions)
-- **Updated `/extract`** — detects field notes and extracts observational claims alongside factual claims
-- **Updated `/status` dashboard** — field notes section shows researcher observations that may not appear in transcripts
-- Provides context that pure transcript analysis misses
+Run `/extract` before `/analyze`. The separation means you can verify what was captured, correct any missed context, and re-run analysis without re-reading all sources.
 
-#### I4: Convergence tracking in `/analyze`
-- **Convergence ratio** per insight — tracks how many sources support the same claim (e.g., "3/12 sources")
-- Reported in Phase 4 summary: "X insights with strong convergence (3+ sources), Y single-source insights"
-- Helps prioritize: high-convergence insights are more reliable than single-source claims
+#### `/audit` — quality gate before shipping
+Checks your Work layer for readiness: traceability gaps, unresolved conflicts, insight coverage per module, source diversity. Run it before `/ship` to catch issues early.
 
-#### I5: `/extract` progress indicator
-- **Batch progress reporting** in `/extract` — for large source sets (>20 files), reports progress by subfolder
-- Format: "Processing folder_name/ — X files found... Done (Y claims extracted)"
-- Prevents timeout anxiety on large projects
+#### New `/ship` types
 
-### New Outputs — Ola 4 (6 agents)
+| Command | Output | What it does |
+|---|---|---|
+| `/ship persona` | `PERSONAS.html` | 3-5 user archetypes, each grounded in 3+ verified insights |
+| `/ship journey-map` | `JOURNEY_MAP.html` | Phases × layers matrix with emotions and pain points |
+| `/ship lean-canvas` | `LEAN_CANVAS.html` | One-page business model, gaps marked explicitly |
+| `/ship user-stories` | `USER_STORIES.html` | JTBD format with acceptance criteria — ready for handoff |
+| `/ship benchmark-ux` | `BENCHMARK_UX.html` | Design inspiration from other industries, not competitor analysis |
 
-#### O1: `/ship benchmark-ux`
-- **New output type** — inter-industry design referents (NOT competitive analysis)
-- Template: `_templates/benchmark-ux.html` | Schema: `_schemas/benchmark-ux.schema.json`
-- Structure: referents grouped by design category (Data Viz, Navigation, Onboarding, etc.)
-- Per referent: Name + Industry, Factor X, Applicable Pattern, Design Principle link `[IG-XX]`
-- **Anti-hallucination:** every referent must be a real product verified via web search
-- Replaces deprecated `/ship benchmark` — old type redirects to `benchmark-ux`
+All outputs are self-contained HTML files with traceable `[IG-XX]` references linked to `STATUS.html`.
 
-#### O2: `/ship persona`
-- **New output type** — user persona cards grounded in verified insights
-- Template: `_templates/persona.html` | Schema: `_schemas/persona.schema.json`
-- JSON uses `personas` array (not `sections`) — each persona has name, role, quote, goals, frustrations, context, behaviors
-- All fields use `{text, ref}` pairs with `[IG-XX]` references
-- Derives archetypes from user-need insight clusters — 3-5 personas, each grounded in 3+ insights
-- `[GAP]` markers for insufficient coverage
+#### Analysis intelligence
 
-#### O3: `/ship journey-map`
-- **New output type** — user journey map with phases × layers matrix
-- Template: `_templates/journey-map.html` | Schema: `_schemas/journey-map.schema.json`
-- Phases (columns): derive from product context (Awareness → Onboarding → Daily Use → Advanced → Support)
-- Layers (rows): User Actions, Touchpoints, Emotions, Pain Points, Opportunities
-- Links to primary persona if `/ship persona` has been run
-- Critical pain points highlighted, `[GAP]` markers for missing coverage
+- **Research Brief** — `/analyze` auto-generates `02_Work/RESEARCH_BRIEF.md`: a stakeholder-ready narrative organized by "what's broken", "what works", "key tensions", and evidence gaps.
+- **Source diversity** — Detects when your sources are skewed (all interviews, no quantitative data; all from the same period; only internal perspectives) and suggests what's missing.
+- **Convergence tracking** — Each insight shows how many sources support it. An insight backed by 5/12 sources carries more weight than one from a single interview.
+- **Field notes** — New `_FIELD_NOTES_TEMPLATE.md` for capturing researcher observations (body language, tone, environment) that don't appear in transcripts.
 
-#### O4: `/ship lean-canvas`
-- **New output type** — one-page business model synthesis (9-block Lean Canvas)
-- Template: `_templates/lean-canvas.html` | Schema: `_schemas/lean-canvas.schema.json`
-- JSON uses `canvas` object keyed by block ID — each block has `items`, `refs`, and optional `gap: true`
-- 9 blocks: Problem, Solution, Key Metrics, UVP, Unfair Advantage, Channels, Customer Segments, Cost Structure, Revenue Streams
-- Derives from business + user-need + constraint insights
-- Optimized for print (one-page format)
+### Improved
 
-#### O5: `/ship user-stories`
-- **New output type** — JTBD-framed user stories (bridge between PD-Spec strategy and PD-Build execution)
-- Template: `_templates/user-stories.html` | Schema: `_schemas/user-stories.schema.json`
-- JSON uses `modules` array — stories grouped by product module or user flow
-- JTBD format: `{situation, motivation, outcome}` per story
-- Each story: ID (US-XX), persona reference, JTBD statement, acceptance criteria (from SYSTEM_MAP), priority (High/Medium/Low), insight refs
-- Traceability matrix: Story → Insights → Sources
-- Priority logic: High = 3+ converging insights or business-critical; Medium = 1-2 insights; Low = single-source
-- Scope boundary: describes *what* and *why*, never *how* (no implementation details)
+#### Template+JSON architecture
+All outputs (`/ship`, `/status`) now follow a template + data pattern. Static HTML templates handle rendering; the agent writes JSON data only. Benefits:
+- Faster generation (JSON is ~100 lines vs ~500+ lines of hand-crafted HTML)
+- Consistent styling across all output types
+- Templates are versioned with the engine — visual improvements apply to all outputs automatically
 
-#### O6: `/audit` quality gate
-- **New skill** `.claude/skills/audit/SKILL.md` — evaluates Work layer readiness before `/ship`
-- Checks: traceability completeness, insight coverage per module, conflict resolution status, source diversity, evidence gaps
-- Produces a structured quality report with pass/warn/fail per check
-- Separate from `/ship audit` (which generates a formatted report) — `/audit` runs validation checks
-- Updated CLAUDE.md Skills Pipeline table with `/audit` entry
+#### Enhanced `/status` dashboard
+The Research Dashboard now includes module viewer with design implications, evidence gap tracking with suggested actions, and source health overview — alongside the existing insight approval and conflict surfacing tools.
 
-### Infrastructure
+### Breaking changes
 
-- **Sprint Orchestrator** `scripts/pd-spec-sprint-orchestrator.sh` — bash script using git worktrees for parallel agent execution
-  - 14 agent prompts as heredocs, worktree isolation per agent, merge-back to main, cleanup
-  - Supports `--dry-run` mode for validation
-  - Fixes: `CLAUDECODE` env unset for child agents, `--dangerously-skip-permissions` for headless operation, subshell PID capture via global variables
+- **`/analyze` requires `/extract` first.** If `EXTRACTIONS.md` is empty, `/analyze` will ask you to run `/extract`.
+- **`/ship benchmark` is deprecated.** Use `/ship benchmark-ux` instead. The old type generated competitive analysis prone to hallucination; the new type finds design referents from other industries with web-verified sources.
+- **Existing HTML outputs** from v3.x don't use Template+JSON. They'll continue to work but will be regenerated in the new format on next `/ship` run.
 
-### Updated files summary
+### Pipeline reference
+
+```
+/extract  →  /analyze  →  /synthesis  →  /ship [type]
+   ↓            ↓             ↓              ↓
+EXTRACTIONS  INSIGHTS     SYSTEM_MAP     HTML outputs
+   .md       GRAPH.md       .md          (10 types)
+             CONFLICTS.md
+             RESEARCH_BRIEF.md
+```
+
+<details>
+<summary>Technical details</summary>
+
+#### Architecture (3 agents)
+- **A1 `/extract`**: New skill + `02_Work/EXTRACTIONS.md` template. `/analyze` now reads from EXTRACTIONS.md instead of `01_Sources/`.
+- **A2 Template+JSON**: `03_Outputs/_templates/` (10 HTML templates, `_base.css`, `_base.js`) + `03_Outputs/_schemas/` (9 JSON schemas). Section types: `text`, `callout`, `table`, `module-list`, `open-questions`, `gap`. Self-contained outputs with inlined CSS/JS.
+- **A3 Research Dashboard**: Enhanced `/status` template (1200+ lines). Summary cards, insight/conflict interactive cards, system map viewer, evidence gaps, source health, prompt generator.
+
+#### Intelligence (5 agents)
+- **I1** Auto Research Brief — Phase 3b in `/analyze`, writes `02_Work/RESEARCH_BRIEF.md`
+- **I2** Source diversity — Phase 4b in `/analyze`, type/temporal/perspective bias detection
+- **I3** Field notes — `_FIELD_NOTES_TEMPLATE.md`, `/extract` handles confidence tags
+- **I4** Convergence ratio per insight — "X/Y sources" in `/analyze` summary
+- **I5** Progress indicator — batch reporting by subfolder in `/extract`
+
+#### New outputs (6 agents)
+- **O1** benchmark-ux — `categories` array, anti-hallucination via web search
+- **O2** persona — `personas` array, 3-5 archetypes, `{text, ref}` pairs
+- **O3** journey-map — `phases` array with `layers` object, persona link
+- **O4** lean-canvas — `canvas` object, 9 blocks, `gap: true` marker
+- **O5** user-stories — JTBD `{situation, motivation, outcome}`, traceability matrix, priority logic
+- **O6** `/audit` — quality gate with pass/warn/fail checks
+
+#### Files changed
 
 | File | Changes |
 |---|---|
-| `CLAUDE.md` | Skills table (10 skills), Sources of Truth (5 new outputs), Folder Structure (templates, schemas, new skills) |
-| `.claude/skills/ship/SKILL.md` | Template+JSON architecture, 10 output types (steps 11-21), schema/template mapping |
-| `.claude/skills/analyze/SKILL.md` | Reads EXTRACTIONS.md, auto-brief phase, source diversity analysis, convergence tracking |
-| `.claude/skills/extract/SKILL.md` | NEW — source reading + raw claim extraction, progress indicator, field notes support |
-| `.claude/skills/status/SKILL.md` | Template+JSON pattern, Research Dashboard layout |
-| `.claude/skills/audit/SKILL.md` | NEW — quality gate with traceability checks |
-| `03_Outputs/_templates/` | 10 HTML templates (base CSS/JS + 8 type-specific) |
-| `03_Outputs/_schemas/` | 9 JSON schemas (base + 8 type-specific) |
-| `02_Work/EXTRACTIONS.md` | NEW — raw claims from /extract |
-| `02_Work/RESEARCH_BRIEF.md` | NEW — auto-generated executive narrative |
-| `01_Sources/_FIELD_NOTES_TEMPLATE.md` | NEW — researcher observation template |
+| `CLAUDE.md` | Skills table (10 skills), Sources of Truth, Folder Structure |
+| `.claude/skills/ship/SKILL.md` | Template+JSON architecture, 10 output types |
+| `.claude/skills/analyze/SKILL.md` | Reads EXTRACTIONS.md, auto-brief, diversity, convergence |
+| `.claude/skills/extract/SKILL.md` | NEW — source reading + claim extraction |
+| `.claude/skills/audit/SKILL.md` | NEW — quality gate |
+| `03_Outputs/_templates/` | 10 HTML templates |
+| `03_Outputs/_schemas/` | 9 JSON schemas |
+| `02_Work/EXTRACTIONS.md` | NEW — raw claims template |
+| `02_Work/RESEARCH_BRIEF.md` | NEW — executive narrative template |
+| `01_Sources/_FIELD_NOTES_TEMPLATE.md` | NEW — researcher observations template |
+
+</details>
+
+---
 
 ## [3.2.0] — 2026-02-14
 
-### Fixed — /ship (Track 1: 8 fixes from QA-30 to QA-61)
-- `<title>` tag must respect `output_language` — was generating English titles in Spanish projects (QA-39, QA-45, QA-50, QA-56)
-- Emoji policy enforced — only functional emojis (✓✗⚠️🔴🟠🟢▲▼), decorative ones (💸💎💡🎯🚀😢👍) prohibited (QA-40, QA-42, QA-51, QA-58)
-- Traceability: every section must have `[IG-XX]` refs or explicit `[GAP]` marker — no silent gaps (QA-32, QA-37, QA-38, QA-43, QA-44, QA-53)
-- No redundancy rule — same information must not repeat across sections of a document (QA-41)
-- Language mixing prohibited — headings, labels, all visible text must be in `output_language` (QA-48, QA-49, QA-57)
-- Multi-page outputs: separate `.page` divs with `page-break-after: always` for clean PDF export (QA-52, QA-59)
-- `doc-meta` with changelog now mandatory for ALL output types, no exceptions (QA-46)
-- `/ship benchmark` deprecated — anti-hallucination rule for competitor claims without `[IG-XX]` source. Will be reconverted to `benchmark-ux` in Ola 4 (QA-54)
+### Highlights
 
-### Fixed — /analyze (Track 2: 7 fixes from QA-01 to QA-29)
-- Cross-referencing strengthened — actively seek contradictions, tensions, temporal conflicts, not just obvious opposites (QA-03, QA-20)
-- Key quote required per insight — 1-2 sentences from source as evidence trail (QA-05)
-- Atomicity enforced — "a list of 10 needs = 10 insights, not 1" (QA-14)
-- Granularity guidance added — when to separate vs. consolidate insights (QA-15)
-- Status labels as plain text (`PENDING`), not bold or backtick-wrapped (QA-16)
-- `## Section` headers formalized as grouping mechanism in INSIGHTS_GRAPH.md (QA-17)
-- Both sides of a conflict must reference `[IG-XX]` IDs (QA-19)
+**Quality pass.** First systematic QA review of all skills against real data (TIMining, 63 source files). 29 findings fixed across `/ship`, `/analyze`, `/synthesis`, and `/kickoff`. Outputs are now more reliable, consistent, and honest about gaps.
 
-### Fixed — Other skills (Track 3)
-- `/synthesis`: validate that argument IDs (IG-XX, CF-XX) exist before processing — no phantom resolutions (QA-24)
-- `/kickoff` + CLAUDE.md: unified `## Project Context` and `## Project Settings` into a single section — eliminates redundancy (QA-06)
-- CLAUDE.md: `team` and `started` fields as `[Set by /kickoff]` placeholders in template (QA-07)
-- Session Protocol: timestamp format must be ISO `YYYY-MM-DDTHH:MM` — enforced centrally (QA-02)
-- `/analyze`: `_CONTEXT.md` must follow `_CONTEXT_TEMPLATE.md` structure (QA-10)
-- `/analyze`: prohibit insight derivation in `_CONTEXT.md` — metadata only, no analysis (QA-11)
+### Fixed
 
-### Added — Gemini learnings (Track 4)
-- Temporal tag `(current)`/`(aspirational)` on insights in `/analyze` — distinguishes present state from desired future (BL-10)
-- Memorable naming for Design Principles in `/synthesis` — e.g., "Quiet UI", "The Delta" alongside `[IG-XX]` refs (Gemini doc)
-- `/ship benchmark` marked for reconversion to `benchmark-ux` — inter-industry design referents, not competitive analysis (Gemini doc + QA-54)
+#### Outputs (`/ship`)
+- **Language consistency** — `<title>` tag, headings, labels, all visible text now respect `output_language`. No more English titles in Spanish projects.
+- **Traceability enforced** — every section must have `[IG-XX]` refs or an explicit `[GAP]` marker. No silent gaps.
+- **No redundancy** — same information can't repeat across sections of a document.
+- **Emoji policy** — only functional emojis (✓ ✗ ⚠️ 🔴🟠🟢 ▲▼). Decorative ones prohibited.
+- **PDF export** — multi-page outputs use proper page breaks for clean Print > Save as PDF.
+- **Document versioning** — `doc-meta` with changelog now mandatory for ALL output types.
+- **Benchmark deprecated** — `/ship benchmark` replaced by `/ship benchmark-ux` (coming in v4.0). Anti-hallucination rule for any competitor claims.
 
-### Added — Multimodal & performance (from QA backlog)
-- `/analyze`: direct image reading (PNG, JPG, whiteboard photos) — extract text, diagrams, post-it notes (QA-04, QA-12)
-- `/analyze`: direct PDF reading via `pages` parameter for large documents (QA-13)
-- `/analyze`: batch progress reporting for large source sets (>20 files) (QA-08)
+#### Analysis (`/analyze`)
+- **Stronger cross-referencing** — actively seeks contradictions and tensions, not just obvious opposites.
+- **Evidence trail** — every insight now requires a 1-2 sentence key quote from the source.
+- **Atomicity** — "a list of 10 needs = 10 insights, not 1". Clear guidance on when to split vs. consolidate.
+- **Conflict format** — both sides must reference `[IG-XX]` IDs.
+
+#### Other skills
+- `/synthesis` validates that referenced IDs actually exist before processing.
+- `/kickoff` unified redundant Project Context and Project Settings sections.
+- Session timestamps enforced as ISO `YYYY-MM-DDTHH:MM` across all skills.
+
+### Added
+- **Temporal tags** on insights — `(current)` vs `(aspirational)` to distinguish present state from desired future.
+- **Memorable Design Principle names** — e.g., "Quiet UI", "The Delta" alongside `[IG-XX]` refs.
+- **Multimodal source reading** — `/analyze` can now read images (PNG, JPG, whiteboard photos) and PDFs directly.
+
+<details>
+<summary>QA reference numbers</summary>
+
+- /ship: QA-30 to QA-61 (8 fix categories)
+- /analyze: QA-01 to QA-29 (7 fix categories)
+- /synthesis: QA-24
+- /kickoff + CLAUDE.md: QA-02, QA-06, QA-07, QA-10, QA-11
+
+</details>
+
+---
 
 ## [3.1.0] — 2026-02-11
 
-### Added
-- **`/kickoff` skill** — project setup wizard. Asks project name, language (en/es), and one-liner description. Writes to `CLAUDE.md` `## Project Settings`. Run once after cloning. Idempotent — detects existing config before overwriting.
-- **`output_language` setting** in CLAUDE.md `## Project Settings` — controls content language for Work layer and Output deliverables. System IDs (`[IG-XX]`, `VERIFIED`, `PENDING`) always stay in English. Currently supports `en` and `es`.
-- **Language instructions** in 5 content-producing skills (`/analyze`, `/synthesis`, `/ship`, `/status`, `/visualize`) — each reads `output_language` from Project Settings and generates content accordingly.
-- **Cross-referencing v1** between outputs — STATUS.html is the canonical anchor hub. All `/ship` outputs auto-link `[IG-XX]`/`[CF-XX]` text to `STATUS.html#ID` via JS regex. `:target` CSS highlights arrival cards. Defined in `/status` SKILL.md and `/ship` SKILL.md step 8.
-- **Interactive STATUS dashboard** codified in `/status` SKILL.md — insight cards with approve/reject toggle buttons, conflict cards with Flag/Research/Context radio options, action bar with prompt generator for copy-paste to agent. Previously ad-hoc, now reproducible across `/status` runs.
+### Highlights
 
-### Changed
-- README Getting Started now starts with `/kickoff` instead of manual CLAUDE.md editing
-- CLAUDE.md skills table includes `/kickoff` and folder structure updated
+**Multi-language support and interactive decisions.** PD-Spec now generates all content in your chosen language. The STATUS dashboard became an interactive workbench where you approve insights and resolve conflicts directly in the browser.
+
+### New capabilities
+
+- **`/kickoff`** — project setup wizard. Three questions (name, language, one-liner) and you're configured. Detects existing settings and asks before overwriting.
+- **`output_language`** — set to `en` or `es` in Project Settings. All Work layer content and Output deliverables follow this setting. System IDs always stay in English.
+- **Interactive STATUS dashboard** — insight cards with approve/reject buttons, conflict cards with Flag/Research/Context options, and an action bar that generates a `/synthesis` prompt from your decisions. Copy-paste into the agent and go.
+- **Cross-referencing** — all `[IG-XX]` and `[CF-XX]` references in outputs are clickable links to `STATUS.html`. Click a reference in your PRD → land on the exact insight card with a yellow highlight.
+
+---
 
 ## [3.0.0] — 2025-02-10
 
-### Changed
-- **Renamed from ProductLM to PD-Spec** — the project is now the Strategy & Intelligence layer of ProductDesign OS (PD-OS). Original name preserved as "formerly ProductLM" (started as "I'll build my own NotebookLM")
-- All references updated across README, CLAUDE.md, FRAMEWORK.md, and skill templates
-- Skill frontmatter descriptions enriched with explicit input/output layer paths (Anthropic skill-creator best practice)
+### Highlights
 
-### Added
-- **PD-OS Ecosystem documentation** in README and FRAMEWORK.md — defines the relationship between PD-Spec (strategy) and PD-Build (execution)
-- **Interface Contract** specification — `DESIGN_BRIEF.md` format with `[INTENT]`, `[LOGIC_RULES]`, `[DATA_EVIDENCE]`, `[USER_FLOW]` blocks
-- **Data Flow diagram** showing how PD-Spec outputs feed into PD-Build's Kernel
-- **Backlog items**: BL-01 `/ship design-system` (REC vs IG-XX labeling), BL-02 `/audit` (strategic quality gate), BL-03 `/ship persona` & `/ship journey-map` (SYN label for synthesized narrative)
-- **PD-Build sibling repo** scaffolded at `https://github.com/sirlund/pd-build` — 4-layer architecture (Sources → Kernel → Drivers → Dist), TOON format, TRACED/HYPOTHESIS data labeling
-- **Document versioning in `/ship`** — every HTML output carries a visible `doc-meta` header with version, date, snapshot, and inline changelog. No silent updates to shared documents.
-- **Operating model defined** — PD-Spec is the architect's personal companion tool. Stakeholders only see outputs (PRD, presentations, briefs). Transfer to PD-Build via manual copy-paste of DESIGN_BRIEF.md.
-- **Two-log separation** — `02_Work/MEMORY.md` is the project usage log (written by skills automatically). `docs/CHANGELOG.md` (this file) is the PD-Spec product development log (versions, fixes, decisions — written manually, never by skills). CHANGELOG moved from root to `docs/` to keep the template root clean.
+**PD-Spec is born.** Renamed from ProductLM to PD-Spec — the Strategy & Intelligence layer of ProductDesign OS. What started as "I'll build my own NotebookLM" is now half of a two-repo ecosystem.
 
-### Architecture Decisions (v2.1–v3.0 session)
+### What's new
 
-Proposals evaluated during the v2–v3 design sessions. Documented here for context across tools and models.
+- **PD-OS ecosystem** — PD-Spec (strategy: sources → insights → deliverables) + PD-Build (execution: design briefs → components → shipped product). Two repos, one architecture.
+- **Interface Contract** — `DESIGN_BRIEF.md` format defines how PD-Spec outputs feed into PD-Build. Format over transport.
+- **Document versioning** — every HTML output carries a visible version header with date, snapshot, and changelog. Stakeholders always know what version they're reading.
+- **Two-log separation** — `02_Work/MEMORY.md` (project usage, written by skills) vs `docs/CHANGELOG.md` (PD-Spec development, written by humans). Different audiences, different logs.
+
+<details>
+<summary>Architecture decisions (v2.1–v3.0)</summary>
 
 **Adopted:**
 - 3-layer stack (Sources → Work → Outputs) with unidirectional data flow
-- 4 skills (/analyze, /synthesis, /ship, /visualize) with propose-before-execute pattern
+- 4 skills with propose-before-execute pattern
 - 7 agent mandates in CLAUDE.md
 - MEMORY.md for session continuity + manual edit detection
 - _CONTEXT.md system for non-markdown source files
-- PD-OS as two-repo ecosystem: PD-Spec (strategy) + PD-Build (execution in product repo, like Storybook)
-- DESIGN_BRIEF.md as the contract between repos (format over transport)
-- TRACED vs HYPOTHESIS data labeling in PD-Build (golden rule: HYPOTHESIS never overwrites TRACED)
-- IDE-first rendering (Cursor/.cursorrules) before expanding to other tools
-- Anthropic skill best practices: frontmatter with layer paths, <500 lines, no aux docs in skill folders
+- PD-OS as two-repo ecosystem
+- DESIGN_BRIEF.md as the contract between repos
+- TRACED vs HYPOTHESIS data labeling in PD-Build
+- IDE-first rendering before expanding to other tools
 
 **Rejected (Homer's Car Detector):**
-- 00_Config as 4th layer — breaks 3-layer invariant, CLAUDE.md handles config
-- Rename 02_Work → 02_System — high migration cost, cosmetic benefit
-- _CONTEXT.yaml — rejected for _CONTEXT.md (stays in markdown ecosystem)
-- Separate /present, /report, /design-specs, /research skills — scoped to /ship output types or existing skills
-- OOODS "Triple O" branding — branding not architecture
-- 4 rendering layers simultaneously (IDE + Pencil + Figma + Storybook) — start with one, prove it, expand
-- AGENTS block per tool in TOON objects — O(objects × tools) maintenance, use per-tool drivers instead
-- PD-Bootstrap as 4 functions — scoped to single ingestion processor
+- 00_Config as 4th layer — CLAUDE.md handles config
+- Rename 02_Work → 02_System — cosmetic, high migration cost
+- _CONTEXT.yaml — stays in markdown ecosystem
+- Separate /present, /report, /design-specs skills — scoped to /ship types
+- 4 rendering layers simultaneously — start with one, prove it, expand
 - .pd-build-ignore custom format — .gitignore already handles it
+
+</details>
+
+---
 
 ## [2.4.0] — 2025-02-10
 
-### Added
-- **`/visualize` skill** — generates interactive Mermaid diagrams from Work layer (system-map, insights, conflicts, all). Outputs to `03_Outputs/DIAGRAMS.html`
-- **`/ship presentation`** — Reveal.js slide deck generator. Single HTML file with speaker notes, keyboard navigation, and presenter mode
-- **`/ship report`** — A4 formatted report for stakeholders, optimized for Print > Save as PDF. Cover page, table of contents, executive summary
+### Highlights
 
-### Changed
-- `/ship` argument-hint expanded: `[prd|presentation|report|benchmark|audit|strategy]`
-- All docs updated to reflect 4-skill pipeline (analyze, synthesis, ship, visualize)
+**More ways to share your research.** Three new output formats: Reveal.js presentations with speaker notes, A4 reports optimized for PDF export, and Mermaid diagrams for visualizing your knowledge base.
+
+### New capabilities
+
+- **`/visualize`** — generates interactive Mermaid diagrams from your Work layer (system map, insights, conflicts). Outputs to `DIAGRAMS.html`.
+- **`/ship presentation`** — Reveal.js slide deck. One idea per slide, speaker notes, keyboard navigation, presenter mode (press `S`).
+- **`/ship report`** — A4 formatted report with cover page, table of contents, executive summary. Print > Save as PDF for stakeholders.
+
+---
 
 ## [2.3.0] — 2025-02-10
 
-### Added
-- **Project Memory** (`02_Work/MEMORY.md`) — session log and state tracker. Skills append entries after execution; agent reads at session start for continuity and manual edit detection
-- **`_CONTEXT.md` system** for non-markdown sources — images, PDFs, spreadsheets, .txt, .docx files get metadata via a folder-level `_CONTEXT.md` file. Template at `01_Sources/_CONTEXT_TEMPLATE.md`
-- **Layer signage** — `_README.md` in `01_Sources/`, `02_Work/`, and `03_Outputs/` explaining what the folder is and what the user should (not) do
-- **Phase 0: Integrity Check** in all three skills — reads MEMORY.md at session start, compares against actual Work layer state, reports discrepancies before proceeding
-- **Session Protocol** section in CLAUDE.md — defines the agent's startup sequence (read memory → integrity check → resume context)
+### Highlights
 
-### Changed
-- `/analyze` now reads `_CONTEXT.md` files to understand non-markdown sources
-- All skills now append to `02_Work/MEMORY.md` after execution
-- README, CLAUDE.md, FRAMEWORK.md updated with MEMORY system, _CONTEXT.md documentation, and agent-managed layer warnings
+**The agent remembers.** Project Memory means the agent picks up where it left off across sessions. It also detects if you edited files manually between sessions and tells you what changed.
+
+### New capabilities
+
+- **Project Memory** (`02_Work/MEMORY.md`) — skills log what they did after each run. The agent reads this at session start to resume context without you re-explaining.
+- **Manual edit detection** — if you change an insight or conflict between sessions, the agent notices and reports the discrepancy before proceeding.
+- **`_CONTEXT.md`** — describe non-markdown sources (images, PDFs, spreadsheets) with a simple metadata file in the folder. The agent uses these descriptions during analysis.
+- **Layer signage** — `_README.md` in each layer folder explains what it is and what you should (not) do with it.
+
+---
 
 ## [2.2.0] — 2025-02-10
 
-### Added
-- **Agent Mandates expanded** from 3 to 7: added Transparency & Control, Proactive Gap Detection, Source Organization Validation, Uncertainty Management
-- **Source organization by milestone/category** — subfolders in `01_Sources/` with naming conventions (date-prefixed for events, category-based for themes)
-- **Agent Behavior Protocols** section in `docs/FRAMEWORK.md` — propose-before-executing, evidence gap handling, proactive suggestions, source validation, uncertainty management
-- **Propose-first workflow** in all three skills (`/analyze`, `/synthesis`, `/ship`) — agent presents draft findings and waits for user approval before writing to files
+### Highlights
 
-### Changed
-- **No Hallucination mandate** enhanced with actionable phrasing: "should we mark it as an assumption or should I suggest how to validate it?"
-- `/analyze` skill restructured into 4 phases: Discovery & Validation → Analysis → Propose → Write
-- `/synthesis` skill restructured into 4 phases: Load → Present & Discuss → Propose → Write
-- `/ship` skill restructured into 3 phases: Load & Validate → Propose → Generate
-- README updated with source organization patterns and expanded design principles (Transparency, Proactive Gap Detection)
+**The agent asks before acting.** All skills now present draft findings and wait for your approval before writing to files. Seven mandates govern agent behavior — from hallucination prevention to complexity detection.
+
+### New capabilities
+
+- **Propose-before-execute** — every insight extraction, conflict resolution, and deliverable generation is a draft first. You approve, reject, or adjust before anything is written.
+- **7 agent mandates** — No Hallucination, Transparency & Control, Homer's Car Detector, Proactive Gap Detection, Source Organization Validation, Uncertainty Management, Silence is Gold.
+- **Source organization** — subfolders in `01_Sources/` by milestone or category. The agent validates that files match their folder context.
+
+---
 
 ## [2.1.0] — 2025-02-10
 
-### Changed
-- **README rewritten as architecture documentation** — explains the problem, the 3-layer invariant, design principles, and maturity model before "Getting Started"
-- **CLAUDE.md filled in** with project context (no more placeholders)
-- Repo positioning shifted from "template to clone" to "product architecture reference"
+### Highlights
+
+**Architecture-first documentation.** README rewritten to explain the problem, the 3-layer invariant, and design principles before "Getting Started". PD-Spec positioned as a product architecture reference, not just a template.
+
+---
 
 ## [2.0.0] — 2025-02-09
 
-### Changed
-- **Pivot from consultant proposal template to Product Knowledge OS**
-- Replaced Makefile + init.sh pipeline with Claude Code skills (`/analyze`, `/synthesis`, `/ship`)
-- Replaced `Propuesta_Master.html` and `Presentacion.html` with traceable `PRD.html`
-- Replaced `BACKLOG.md` with `CONFLICTS.md` contradiction log
-- Moved `FRAMEWORK.md` from `02_Work/` to `docs/`
+### Highlights
 
-### Added
-- `.claude/skills/` — three skill definitions (analyze, synthesis, ship)
-- `02_Work/INSIGHTS_GRAPH.md` — atomic insights with `[IG-XX]` IDs
-- `02_Work/SYSTEM_MAP.md` — product logic decisions with insight traceability
-- `02_Work/CONFLICTS.md` — contradiction detection and resolution log
-- `01_Sources/_SOURCE_TEMPLATE.md` — generic source capture template
-- `03_Outputs/PRD.html` — A4 HTML PRD template with insight references
-- `docs/FRAMEWORK.md` — full methodology documentation
-- Maturity levels (Seed → Validation → Ecosystem) in CLAUDE.md
-- 3 Mandates: No Hallucination, Homer's Car Detector, Silence is Gold
+**The pivot.** From consultant proposal template to Product Knowledge OS. Makefile and init.sh replaced by Claude Code skills. The 3-layer architecture and traceable insights system started here.
 
-### Removed
-- `init.sh` — no setup script needed
-- `Makefile` — replaced by Claude Code skills
-- `docs/PANDOC_SETUP.md` — no Pandoc pipeline
-- `01_Sources/00_initial_brief.md` — replaced by `_SOURCE_TEMPLATE.md`
-- `02_Work/Propuesta_Master.html` — replaced by `03_Outputs/PRD.html`
-- `03_Outputs/Presentacion.html` — not a base deliverable in v2
-- `02_Work/BACKLOG.md` — replaced by `CONFLICTS.md`
+### What was built
+
+- **3-layer architecture** — `01_Sources/` (read-only) → `02_Work/` (knowledge base) → `03_Outputs/` (deliverables)
+- **3 skills** — `/analyze` (extract insights), `/synthesis` (resolve conflicts), `/ship` (generate PRD)
+- **Traceable insights** — every claim gets an `[IG-XX]` ID linked to a source file. Every conflict gets a `[CF-XX]` ID.
+- **3 mandates** — No Hallucination, Homer's Car Detector, Silence is Gold
+- **Maturity model** — Seed → Validation → Ecosystem
+
+### What was removed
+- `init.sh`, `Makefile`, `docs/PANDOC_SETUP.md` — replaced by Claude Code skills
+- `Propuesta_Master.html`, `Presentacion.html` — replaced by traceable `PRD.html`
+- `BACKLOG.md` — replaced by `CONFLICTS.md` contradiction log
