@@ -36,7 +36,8 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` — Product Requirements Document (default).
    - `presentation` — Reveal.js slide deck with key insights and decisions.
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
-   - `benchmark` — **Deprecated.** See step 11 note.
+   - `benchmark` — **Deprecated.** See step 13 note.
+   - `benchmark-ux` — Inter-industry design referents. NOT competitive analysis.
    - `audit` / `strategy` — Specialized documents.
 
 2. **Load knowledge base** — Read:
@@ -64,6 +65,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `prd` → `_templates/prd.html`
    - `report` → `_templates/report.html`
    - `presentation` → `_templates/presentation.html`
+   - `benchmark-ux` → `_templates/benchmark-ux.html`
    - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
 6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
@@ -142,14 +144,28 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
     - Optimized for Print → Save as PDF: template handles page breaks between sections.
     - Target audience: stakeholders who don't use GitHub or the pipeline.
 
-13. **For other document types** (audit, strategy):
+13. **For benchmark-ux** (`/ship benchmark-ux`):
+    - Output: `03_Outputs/BENCHMARK_UX.html` (via Template+JSON)
+    - The agent uses web search to find real design referents from **other industries** — this is NOT a competitive analysis.
+    - Structure per referent:
+      - Name and industry (e.g., "Compound Finance — DeFi")
+      - Screenshot or description of the relevant pattern
+      - "Factor X" — what makes this referent relevant (1 sentence)
+      - Applicable pattern — how this could apply to the current project
+      - Linked Design Principle from SYSTEM_MAP `[IG-XX]`
+    - Group referents by design category (Data Visualization, Navigation, Onboarding, etc.)
+    - Include 8–15 referents total.
+    - **Anti-hallucination:** every referent must be a real product the agent can verify via web search. If unsure, skip it.
+    - JSON uses `categories` array (not `sections`) — see `_schemas/benchmark-ux.schema.json`.
+
+14. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.
     - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
-    **Note on `benchmark`:** The `/ship benchmark` type is deprecated. It will be reconverted to `/ship benchmark-ux` in a future update (see Ola 4 in `docs/SPRINT.md`). If the user requests `/ship benchmark`, explain that competitive benchmarks without verified source data risk hallucination (see QA-54), and suggest waiting for the benchmark-ux reconversion — which focuses on inter-industry design referents, not competitor claims. If the user insists, generate it but apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
+    **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
 
-14. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+15. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]
