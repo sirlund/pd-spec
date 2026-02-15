@@ -1,9 +1,9 @@
 ---
 name: ship
-description: Generate HTML deliverables (prd, presentation, report, benchmark, audit, strategy) in 03_Outputs/ from verified insights in 02_Work/SYSTEM_MAP.md and INSIGHTS_GRAPH.md
+description: Generate HTML deliverables in 03_Outputs/ from verified insights. Types: prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, audit, strategy.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[prd|presentation|report|persona|audit|strategy]"
+argument-hint: "[prd|presentation|report|benchmark-ux|persona|journey-map|lean-canvas|audit|strategy]"
 ---
 
 # /ship — Deliverable Generation
@@ -38,8 +38,10 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
    - `benchmark-ux` — Inter-industry design referents. NOT competitive analysis.
    - `persona` — User persona cards grounded in verified insights.
-   - `benchmark` — **Deprecated.** See step 15 note.
+   - `journey-map` — User journey map with phases, touchpoints, emotions, and pain points.
+   - `lean-canvas` — Business model synthesis on one page.
    - `audit` / `strategy` — Specialized documents.
+   - `benchmark` — **Deprecated.** See step 19 note.
 
 2. **Load knowledge base** — Read:
    - `02_Work/SYSTEM_MAP.md` for product architecture and decisions.
@@ -68,6 +70,8 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - `presentation` → `_templates/presentation.html`
    - `benchmark-ux` → `_templates/benchmark-ux.html`
    - `persona` → `_templates/persona.html`
+   - `journey-map` → `_templates/journey-map.html`
+   - `lean-canvas` → `_templates/lean-canvas.html`
    - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
 
 6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
@@ -125,7 +129,7 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
    - **Exception:** Presentation template links to Reveal.js CDN — keep those as external links.
    - Write the combined file to `03_Outputs/TYPE.html` (e.g., `PRD.html`, `REPORT.html`, `PRESENTATION.html`).
 
-**Emoji policy** — Only functional emojis in JSON content: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis (💸💎💡🎯🚀😢👍✅❌) that are redundant with text or purely ornamental.
+**Emoji policy** — Only functional emojis in JSON content: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis that are redundant with text or purely ornamental.
 
 **No redundancy** — Do not repeat the same information in different sections. Each fact or claim should appear once, in the most relevant section.
 
@@ -181,14 +185,39 @@ The agent's job is: read Work layer → produce JSON → inject into template. T
     - If insufficient user-need insights exist, use `[GAP]` markers in the relevant fields and flag the gap to the user.
     - The **Propose phase** (step 4) should present: persona names, roles, key insight clusters per persona, and any gaps.
 
-15. **For other document types** (audit, strategy):
+15. **For journey-map** (`/ship journey-map`):
+    - Output: `03_Outputs/JOURNEY_MAP.html` (via Template+JSON)
+    - Template: `_templates/journey-map.html`
+    - Schema: `_schemas/journey-map.schema.json`
+    - Derive journey from user-need and constraint insights in `02_Work/INSIGHTS_GRAPH.md`.
+    - Structure: phases (columns) × layers (rows)
+      - **Phases** (e.g., Awareness, Onboarding, Daily Use, Advanced Use, Support) — derive from actual product context.
+      - **Layers per phase:** User Actions, Touchpoints, Emotions, Pain Points, Opportunities.
+    - Each cell's `content` references `[IG-XX]` insights. Cells without insight backing use `[GAP]` marker.
+    - Highlight critical pain points (negative emotions) and moments of delight (positive emotions).
+    - If personas exist (from `/ship persona`), link journey to the primary persona in the `persona` field of the JSON.
+    - JSON structure uses a `phases` array where each phase has a `layers` object keyed by layer type.
+
+16. **For lean-canvas** (`/ship lean-canvas`):
+    - Output: `03_Outputs/LEAN_CANVAS.html` (via Template+JSON)
+    - Template: `_templates/lean-canvas.html`
+    - Schema: `_schemas/lean-canvas.schema.json`
+    - Derive canvas blocks from business, user-need, and constraint insights.
+    - Standard 9 blocks: Problem, Solution, Key Metrics, Unique Value Proposition, Unfair Advantage, Channels, Customer Segments, Cost Structure, Revenue Streams.
+    - Each block uses `{content, refs}` with `[IG-XX]` references.
+    - Blocks without insight backing use `[GAP]` marker.
+    - JSON uses `blocks` object keyed by block ID.
+
+17. **For other document types** (audit, strategy):
     - Use `_templates/prd.html` template.
     - Adapt the section structure in JSON to the document type.
     - Maintain the same traceability requirements.
 
-    **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
+18. **Note on `audit`:** See `/audit` skill (`.claude/skills/audit/SKILL.md`) for the dedicated quality gate. `/ship audit` generates a formatted report; `/audit` runs the validation checks.
 
-16. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+19. **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
+
+20. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /ship
    - **Request:** [what the user asked]

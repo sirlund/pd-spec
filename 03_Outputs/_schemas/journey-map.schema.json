@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "journey-map.schema.json",
+  "description": "JSON Schema for PD-Spec User Journey Map output data",
+  "type": "object",
+  "required": ["meta", "title", "phases"],
+  "properties": {
+    "meta": {
+      "$ref": "base.schema.json#/$defs/meta",
+      "properties": {
+        "type": { "const": "journey-map" }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title (in output_language)"
+    },
+    "persona": {
+      "type": "string",
+      "description": "Primary persona name this journey applies to (if personas exist)"
+    },
+    "phases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/phase" },
+      "description": "Ordered journey phases (columns in the visual grid)"
+    }
+  },
+  "$defs": {
+    "phase": {
+      "type": "object",
+      "required": ["id", "name", "layers"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique phase identifier (e.g. awareness, onboarding)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Phase display name (in output_language)"
+        },
+        "layers": {
+          "type": "object",
+          "required": ["actions", "touchpoints", "emotions", "pain_points", "opportunities"],
+          "properties": {
+            "actions": { "$ref": "#/$defs/layerCell" },
+            "touchpoints": { "$ref": "#/$defs/layerCell" },
+            "emotions": { "$ref": "#/$defs/emotionCell" },
+            "pain_points": { "$ref": "#/$defs/layerCell" },
+            "opportunities": { "$ref": "#/$defs/layerCell" }
+          },
+          "description": "Layer data for this phase (rows in the visual grid)"
+        }
+      }
+    },
+    "layerCell": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text"],
+            "properties": {
+              "text": { "type": "string" },
+              "refs": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" }
+              },
+              "gap": {
+                "type": "boolean",
+                "description": "True if this item lacks source backing"
+              }
+            }
+          }
+        }
+      }
+    },
+    "emotionCell": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text", "valence"],
+            "properties": {
+              "text": { "type": "string" },
+              "valence": {
+                "type": "string",
+                "enum": ["positive", "neutral", "negative"],
+                "description": "Emotional valence for color coding"
+              },
+              "refs": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" }
+              },
+              "gap": {
+                "type": "boolean",
+                "description": "True if this item lacks source backing"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

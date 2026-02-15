@@ -10,7 +10,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["prd", "report", "presentation", "persona", "status", "audit", "strategy", "benchmark-ux"]
+          "enum": ["prd", "report", "presentation", "persona", "journey-map", "lean-canvas", "status", "audit", "strategy", "benchmark-ux"]
         },
         "version": {
           "type": "string",
