@@ -196,7 +196,7 @@ If context compaction occurs mid-operation, the agent must re-check MEMORY.md af
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2025-02-10
-- **Status:** v3.0 — Renamed to PD-Spec (formerly ProductLM). Strategy layer of ProductDesign OS. 4-skill pipeline, project memory, propose-first workflows.
+- **Last updated:** 2026-02-15
+- **Status:** v4.1.0 — 10-skill pipeline, Template+JSON outputs, /extract with Office+image+PDF support, Voice/Authority metadata, deduplication, image batching. QA v2 complete (13 fixed, 4 mitigated).
 - **Insights count:** 0
 - **Conflicts count:** 0
