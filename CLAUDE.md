@@ -75,6 +75,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
 | Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark, audit, strategy) |
+| Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Status | `/status` | Generate Work layer dashboard (HTML) — insights, conflicts, gaps, source issues. |
@@ -117,7 +118,8 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   └── status/SKILL.md       /status — work layer dashboard
+│   ├── status/SKILL.md       /status — work layer dashboard
+│   └── audit/SKILL.md        /audit — quality gate before /ship
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
