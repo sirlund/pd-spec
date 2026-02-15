@@ -8,11 +8,16 @@
 |---|---|---|---|
 | FIX-01 | Fix | FIXED | /extract can't read Office files |
 | BUG-01 | Bug | FIXING | /extract skips 42/57 files silently, reported only 27 |
-| BUG-02 | Bug | NOTED | /extract fills context window, forces mid-skill compaction |
+| BUG-02 | Bug | NOTED | Skills fill context window on large projects (systemic) |
 | BUG-03 | Bug | CONFIRMED | Claim count 862 real vs 476 reported (post-compaction) |
 | BUG-04 | Bug | NOTED | Entire folder "Propuesta ruta/" omitted from report |
 | BUG-05 | Bug | NOTED | 3 PDFs "not readable" — Read tool should handle them |
 | BUG-06 | Bug | NOTED | HEIC images + video files unsupported, not reported |
+| BUG-07 | Bug | NOTED | Insight refs point to /tmp/ files, not real sources |
+| BUG-08 | Bug | NOTED | /analyze loses source attribution — who said what, with what authority |
+| BUG-09 | Bug | NOTED | Format inconsistency between old and new insights |
+| BUG-10 | Bug | NOTED | Duplicate insights — deduplication failed post-compaction |
+| BUG-11 | Bug | NOTED | /analyze skips /status — user has no visual review before /synthesis |
 | PERF-01 | Perf | NOTED | 24+ min / 30k tokens for 60 files (linear processing) |
 | ARCH-01 | Arch | PENDING | Project settings in CLAUDE.md cause merge conflicts |
 | ARCH-02 | Arch | PROPOSED | SOURCE_MAP.md — state management for /extract |
@@ -46,13 +51,16 @@
 - **Fix:** Add explicit no-skip rule + mandatory completeness check against glob results. If too many files, process in batches — never skip. SOURCE_MAP.md (ARCH-02) would make skipping detectable.
 - **Status:** FIXING
 
-### BUG-02: /extract fills context window — forces mid-skill compaction
-- **Problem:** /extract processing 60 files generated so much context (file reads + 476 claims + multimodal image processing) that it overflowed the context window, triggering automatic /compact mid-skill.
-- **Observed:** Sonnet session compacted at 24m 38s. Post-compaction, agent lost intermediate state and had to reconstruct from compact summary. Also hit Write tool error ("File has not been read yet") because the pre-compaction file read was lost.
-- **Root cause:** Single-agent processes entire extraction in one context window. No chunking or checkpointing between folders.
-- **Impact:** Post-compaction agent may lose extracted claims, skip files it already processed, or fail to write. Unreliable for large projects.
-- **Relation:** Compounds BUG-01 and PERF-01. Parallel /extract (idea #11) would solve all three — each folder in its own context window.
-- **Status:** NOTED (future improvement)
+### BUG-02: Skills fill context window on large projects — forces mid-skill compaction
+- **Problem:** Skills processing large datasets overflow the context window, triggering automatic /compact mid-skill. Post-compaction, the agent loses intermediate state and must reconstruct from a lossy summary.
+- **Observed:**
+  - **/extract:** Compacted at 24m 38s processing 60 files. Post-compaction lost file read state (Write tool error), lost track of skipped files, produced wrong claim count.
+  - **/analyze:** Compacted while cross-referencing 862 claims × 115 existing insights. Impact on output TBD.
+  - **/ship:** TBD — expected to compact when reading full Work layer + generating HTML.
+- **Root cause:** Single-agent, single-context architecture. Each skill runs in one context window with no checkpointing. Large projects exceed the window during normal operation.
+- **Impact:** Post-compaction agent loses intermediate state → wrong counts (BUG-03), silent file skips (BUG-01), lost processing strategies (BUG-05). Systemic — affects any skill on large projects, not just /extract.
+- **Mitigation:** Parallel processing by folder (idea #11) for /extract. For /analyze and /ship, needs investigation — possibly chunked processing or selective loading of Work layer.
+- **Status:** NOTED (systemic, future improvement)
 
 ### BUG-03: Claim count inconsistency — post-compaction data integrity loss
 - **Problem:** /extract final report shows per-folder claim totals that don't match the reported grand total.
@@ -61,6 +69,7 @@
 - **Root cause:** The 476 total was calculated pre-compaction. Post-compaction, the agent wrote more claims but carried forward the stale total. MEMORY.md also records 476 (propagated error).
 - **Impact:** User cannot trust the extraction report. MEMORY.md snapshot is wrong. Any downstream skill reading MEMORY.md inherits the bad count.
 - **Relation:** Direct consequence of BUG-02 (context overflow).
+- **Cascade:** /analyze reads MEMORY.md at session start and inherits the wrong count. Sonnet's /analyze reports "procesando 476 claims" when EXTRACTIONS.md has 862. Downstream skills that trust MEMORY.md will propagate the error further.
 - **Status:** CONFIRMED
 
 ### BUG-04: Entire folder "Propuesta ruta/" omitted from extraction report
@@ -88,6 +97,79 @@
   - **HEIC:** Convert to JPG via `sips -s format jpeg "file.heic" --out /tmp/file.jpg` (macOS native, zero deps). Then read as image.
   - **Video:** Genuinely unprocessable by the agent (no transcription tool). Should be explicitly listed as unsupported format. Agent must report them and suggest: "Export audio transcript or provide a _CONTEXT.md description."
 - **Impact:** Users with iPhone photos or event recordings will have gaps they don't know about.
+- **Status:** NOTED
+
+### BUG-07: Insight source refs point to /tmp/ conversion files instead of real sources
+- **Problem:** /extract converts Office files to /tmp/ intermediaries (textutil, zipfile). /analyze then references these temp paths instead of the original source files in 01_Sources/.
+- **Observed in IG-116 to IG-142:**
+  - `Workshop 1/retro.txt` → should be `Workshop 1/KEEP-STOP-START (retro).docx`
+  - `Workshop 1/Design Brief.md` → should be `Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx`
+  - `Antecedentes/evolution.txt` → should be `Antecedentes/31_12_2025_TIMining The Evolution...docx`
+  - `Antecedentes/narrativa.txt` → should be `Antecedentes/Narrativa CCB para Mngt Team_ESP.docx`
+- **Root cause:** /extract writes the temp file path in EXTRACTIONS.md section headers instead of the original source path. /analyze inherits the bad ref. The /extract SKILL.md doesn't explicitly say "reference the original source file, not the conversion intermediary."
+- **Impact:** Traceability broken. Anyone following an [IG-XX] ref to verify a claim lands on a non-existent file. Violates Mandate #1 (No Hallucination — every insight must trace back to a file in 01_Sources/).
+- **Fix:** /extract must always use the original 01_Sources/ path in section headers, never the /tmp/ conversion path.
+- **Status:** NOTED
+
+### BUG-08: /analyze loses source attribution — who said what
+- **Problem:** /extract preserves source metadata (Type, Date, Participants) per file section. /analyze discards this when creating insights. The resulting insight has a file ref but no information about WHO said it or WITH WHAT AUTHORITY.
+- **Observed:** All 27 new insights (IG-116 to IG-142) have identical structure regardless of source type:
+  - A user complaint from a workshop retro → `(user-need)` with no speaker attribution
+  - A CEO's 2040 vision narrative → `(business, aspirational)` — looks like a verified insight, is actually a hypothesis
+  - A historical fact from internal docs → `(technical)` — no distinction from a user need
+  - An operator's specific pain point → `(user-need)` — which operator? what role? what context?
+- **Root cause:** /analyze skill only categorizes as `user-need`, `technical`, `business`, `constraint` + temporal tag `current`/`aspirational`. No concept of:
+  - **Claim voice:** who said it (operator, PM, COO, CEO, document)
+  - **Claim authority:** direct observation, user quote, stakeholder hypothesis, vision/aspiration, historical fact
+  - **Source weight:** a user interview has different evidentiary value than a marketing narrative
+- **Impact:** Downstream skills (/synthesis, /ship) can't distinguish between verified user pain and stakeholder speculation. A PRD built on these insights treats "users hate dashboards" (real pain, observed) the same as "in 2040 mines will be run from cities" (CEO narrative, unverified).
+- **Pipeline gap:**
+  ```
+  Source (type, date, participants, role)
+    → /extract (preserves metadata ✅)
+    → /analyze (loses attribution ❌)
+    → insight without "who" or "authority level"
+  ```
+- **Proposed fix:** Add to /analyze insight format:
+  - `Voice: [user | stakeholder | document | researcher]`
+  - `Authority: [direct-quote | observation | hypothesis | vision | fact]`
+  - Preserve participant info from EXTRACTIONS.md metadata
+- **Status:** NOTED
+
+### BUG-09: /analyze format inconsistency — new vs existing insights
+- **Problem:** New insights (IG-116+) use a different format than existing insights (IG-01 to IG-115).
+- **Observed:**
+  - Old: `### [IG-01] (technical) **VERIFIED**` — one line, bold status
+  - New: `### [IG-116] (user-need, current) PENDING` + separate `Status: PENDING` line + `> "quote"` + `Convergence: X/18`
+  - Status appears twice in new format (header + body)
+  - Temporal tag added to category in new format (correct per v3.2) but missing from old
+  - Convergence denominator says "18 sources" but actual processed files = 15 sections, total source files = 57
+- **Root cause:** Old insights were generated pre-v4.0 by a different /analyze run. New insights follow updated skill instructions (temporal tags, convergence, key quotes). No migration step to normalize the existing insights.
+- **Impact:** Mixed formats in the same file. Parsing tools or downstream skills may handle one format but not the other.
+- **Status:** NOTED
+
+### BUG-10: /analyze creates duplicate insights — claims already covered
+- **Problem:** Some new insights overlap significantly with existing ones. /analyze's deduplication was insufficient.
+- **Observed:**
+  - IG-140 (Efecto Suiza, integrador neutro) — likely overlaps with existing insights about TIMining's structural position
+  - IG-141 (bottom-up adoption >100 users) — likely overlaps with existing adoption insights
+  - IG-134 (inferencia topográfica breakthrough) — likely covered in existing technical insights
+  - IG-142 (singularidad técnica, equipo multidisciplinario) — likely covered
+- **Root cause:** Post-compaction, agent may have lost track of existing insight details. Cross-referencing 862 claims × 115 insights is context-heavy — compaction interrupts the comparison.
+- **Impact:** Duplicate insights dilute the knowledge base. /synthesis will need to merge them, adding unnecessary work.
+- **Relation:** Consequence of BUG-02 (compaction during cross-referencing).
+- **Status:** NOTED
+
+### BUG-11: /analyze skips /status — user has no visual review before /synthesis
+- **Problem:** /analyze suggests "run /synthesis" as next step, skipping /status entirely. The user has no visual way to review new insights before deciding what to approve/reject.
+- **Observed:** Sonnet's /analyze completed with 27 new PENDING insights and said "ejecuta /synthesis para verificar los 27 insights PENDING". No mention of /status.
+- **Background:** In QA v1 session, the idea was proposed that STATUS.html should be the output of /analyze — the dashboard as the natural review surface between analysis and synthesis. Ideas #4 and #5 in qa-session-ideas.md describe STATUS as "bridge between analysis and output generation."
+- **Root cause:** /analyze SKILL.md doesn't include /status generation or suggestion. STATUS is a separate skill the user must invoke manually. The Research Brief is auto-generated inside /analyze, but the interactive dashboard (where decisions actually happen) is not.
+- **Proposed fix:** /analyze should auto-generate STATUS.html at the end of its flow. This gives the user an immediate visual review surface with approve/reject buttons, conflict options, and the prompt generator for /synthesis. Same pattern as Research Brief — generated automatically, no extra step.
+- **Pipeline should be:**
+  ```
+  /extract → /analyze (generates STATUS.html) → user reviews in browser → /synthesis → /ship
+  ```
 - **Status:** NOTED
 
 ### PERF-01: /extract performance — 24+ min for 60 files
