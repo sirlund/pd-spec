@@ -72,6 +72,29 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
    Report which source types are present and which are missing. For missing types, suggest what kind of source would fill the gap (as options, not impositions — per Mandate #4).
 
+   **c. Diversity dimensions** — Beyond source type, evaluate three additional diversity axes:
+
+   - **Temporal diversity** — Are all sources from the same time period? Check source dates (from metadata or folder names). Flag clusters where all sources are older than 6 months ("sources may be outdated") or where all sources share the same date range ("no longitudinal perspective — trends and changes over time are invisible").
+   - **Perspective diversity** — Are all sources from the same stakeholder group? Categorize sources by who produced or is represented in them (e.g., management, end-users, operators, engineers, external partners). Flag when a single perspective dominates (>70% of sources) with no counterbalance.
+   - **Methodology diversity** — Are all sources the same method type? (e.g., all interviews, all documents, all quantitative). Qualitative sources reveal *why*; quantitative sources reveal *how much*. Flag when all sources share a single methodology.
+
+   **d. Source matrix & diversity score** — Build a source matrix for internal tracking:
+
+   ```
+   Source type          | Present | Files | Example file
+   ---------------------|---------|-------|-------------
+   User research        | ✓ / ✗   | N     | path/to/file
+   Business data        | ✓ / ✗   | N     | ...
+   Technical docs       | ✓ / ✗   | N     | ...
+   Brand / design       | ✓ / ✗   | N     | ...
+   Competitive analysis | ✓ / ✗   | N     | ...
+   Accessibility data   | ✓ / ✗   | N     | ...
+   ```
+
+   Calculate a **diversity score**: number of source types present out of 6 (e.g., `3/6`). This is a simple health indicator, not a quality judgment — a 6/6 project with shallow sources is worse than a 3/6 project with deep ones.
+
+   **e. Single-source fragility flags** — After insights are prepared (step 3), review them for source diversity at the insight level. Flag any insight whose supporting evidence comes from only one source type. These insights are more fragile — they lack cross-type corroboration. In the report (Phase 4), list fragile insights with a note like: `[IG-05] supported only by user research — would benefit from technical or business corroboration`.
+
 ### Phase 3: Write
 
 All insights are written as `PENDING`. The real approval happens downstream — the user reviews the files at their own pace and `/synthesis` is where PENDING insights get promoted to VERIFIED. This skill does NOT require chat-based approval.
@@ -106,6 +129,6 @@ All insights are written as `PENDING`. The real approval happens downstream — 
     - Source organization issues found (list each one).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
-    - **Source diversity** — which source types are covered, which are missing, and what to consider adding.
+    - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
     - Evidence gaps detected (with suggested validation methods).
     - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/synthesis` to resolve conflicts and verify insights."
