@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "prd.schema.json",
+  "description": "JSON Schema for PD-Spec PRD output data",
+  "type": "object",
+  "required": ["meta", "title", "sections"],
+  "properties": {
+    "meta": {
+      "$ref": "base.schema.json#/$defs/meta",
+      "properties": {
+        "type": { "const": "prd" }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title (in output_language)"
+    },
+    "sections": {
+      "type": "array",
+      "items": { "$ref": "base.schema.json#/$defs/section" },
+      "description": "Ordered list of document sections. Expected section types: text (vision, context, architecture), table (insights summary), module-list (modules), callout (key findings), open-questions (risks/questions), gap (unsupported sections)."
+    }
+  }
+}
