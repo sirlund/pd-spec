@@ -91,12 +91,12 @@ create_worktree() {
   fi
 
   if [ -d "$worktree_path" ]; then
-    warn "Worktree $branch_name ya existe, limpiando..."
+    warn "Worktree $branch_name ya existe, limpiando..." >&2
     git worktree remove "$worktree_path" --force 2>/dev/null || true
     git branch -D "$branch_name" 2>/dev/null || true
   fi
 
-  git worktree add "$worktree_path" -b "$branch_name"
+  git worktree add "$worktree_path" -b "$branch_name" >&2 2>&1
   echo "$worktree_path"
 }
 
@@ -106,7 +106,7 @@ launch_agent() {
   local prompt_file="$3"
   local log_file="${LOG_DIR}/${TIMESTAMP}_${agent_name}.md"
 
-  log "Lanzando agente: ${BLUE}${agent_name}${NC}"
+  log "Lanzando agente: ${BLUE}${agent_name}${NC}" >&2
 
   if $DRY_RUN; then
     echo -e "  ${YELLOW}[DRY-RUN]${NC} claude -p <${prompt_file}> in ${worktree_path}" >&2
