@@ -72,6 +72,13 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    *Directly readable (Read tool):*
    - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
    - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out /tmp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the /tmp/ path.
+
+   **Image batching** — Images are token-expensive (each photo can consume 1-2k input tokens for visual reading). To reduce overhead, batch images from the same folder:
+   1. **Group** all image files (PNG, JPG, converted HEIC→JPG) within a subfolder.
+   2. **Read in batches of 3-4 images** per Read call (use multiple `file_path` calls in the same message). Provide shared context: "These are photos from [folder-name]. Extract visible text, post-it notes, diagrams, and spatial relationships from each image."
+   3. **Extract claims for all images in the batch** in a single pass — write one `## [folder/image.ext]` section per image, but process them together so the agent sees the full visual context (e.g., a sequence of whiteboard photos that form a connected flow).
+   4. **Shared context benefit** — workshop photos often form a series (whiteboard evolution, post-it clusters from the same session). Batching lets the agent understand cross-image connections (e.g., "photo 3 continues the flow from photo 1") that are invisible when processing one image at a time.
+   5. **Still produce per-file sections** — each image gets its own `## [folder/filename.ext]` header in EXTRACTIONS.md, even if processed in a batch.
    - **PDFs** — Read using the Read tool with `pages` parameter (mandatory for >10 pages, max 20 pages per request). For large PDFs, read in chunks: pages `1-20`, then `21-40`, etc. **If a PDF returns empty or garbled content** (likely an image-only scan without text layer), report it as: "PDF appears to be image-only (no text layer). Export with OCR or provide a `_CONTEXT.md` description." Never silently skip a PDF — always attempt to read it, and always report the outcome.
    - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
 
