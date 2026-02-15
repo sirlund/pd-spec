@@ -1295,6 +1295,57 @@ The three layer `_README.md` files (01_Sources, 02_Work, 03_Outputs) were outdat
 |---|---|
 | `docs/FRAMEWORK.md` | Major rewrite: update skills count to 10, add all missing skills, fix pipeline, add all ship types, add EXTRACTIONS.md + RESEARCH_BRIEF.md to Work layer, document Template+JSON, add convergence/authority/temporal/implications |
 
+## [BL-22] RAG Layer — Scale Source Ingestion Beyond Context Window
+
+**Status:** Proposed
+**Priority:** Low (becomes High at 100+ sources)
+**Origin:** QA v2 session (2026-02-15), PERF-01 analysis
+**Related:** BL-17 (SOURCE_MAP.md — prerequisite), PERF-01 (performance)
+**Depends on:** BL-17
+
+### Problem
+
+PD-Spec reads all sources/claims sequentially into one context window. Works for 10-20 sources. At 57+ files (TIMining QA), the system compacted 3 times in one session, lost state, produced wrong counts, and skipped files. NotebookLM handles 100+ sources effortlessly via RAG — index everything, retrieve what's relevant per query.
+
+### What RAG would solve
+
+1. **/extract** wouldn't need to hold all files in context — index claims as they're extracted
+2. **/analyze** cross-referencing wouldn't load all claims — query "find claims similar to X" and get top-K
+3. **/analyze** deduplication — "is this claim already captured?" → semantic search vs reading all insights
+4. **/ship** context loading — "what insights relate to this module?" → query by topic, not load entire Work layer
+5. **/synthesis** conflict detection — "what evidence contradicts this?" → targeted retrieval
+
+### Architecture options
+
+| Option | Approach | Deps | Pro | Con |
+|---|---|---|---|---|
+| A | BM25 keyword search | zero (pure Python or `rank_bm25`) | Simple, fast | Keyword-only, misses semantic similarity across languages |
+| B | Embeddings + vector store | `sentence-transformers` + `chromadb`/`lancedb` | Best quality, multilingual | ~500MB model download |
+| C | MCP server wrapping A or B | Option A/B + MCP infra | Native Claude Code integration | More infrastructure |
+| D | Claude's native file indexing | none (future platform feature) | Zero maintenance | Doesn't exist yet |
+
+**Recommended path:** Start with **A** (BM25, zero deps) to prove the pattern. If multilingual quality is insufficient, upgrade to **B**. Wrap in **C** (MCP) when the tool interface stabilizes.
+
+### What changes in PD-Spec
+
+- `/extract` builds index after writing EXTRACTIONS.md (new Phase 3b)
+- `/analyze` queries index instead of reading full EXTRACTIONS.md into context
+- SOURCE_MAP.md (BL-17) tracks index state alongside extraction state
+- Index stored in `02_Work/_index/` (gitignored, regenerable from EXTRACTIONS.md)
+- Skills get a new allowed tool: `search_claims(query, top_k)` or MCP equivalent
+
+### User stories
+
+1. **As a researcher with 200+ source files,** I want /analyze to find relevant claims via search instead of loading everything into context, so that cross-referencing works at scale without context overflow.
+
+2. **As a researcher adding a new source,** I want the index to update incrementally (not rebuild from scratch), so that adding one file doesn't re-index 200 others.
+
+3. **As a researcher working in Spanish and English,** I want semantic search that understands both languages, so that a Spanish claim matches an English insight about the same topic.
+
+### Implementation order
+
+Natural progression: BL-17 (state management) → BL-17 parallel extract → **BL-22 RAG** (retrieval at scale)
+
 ---
 
 # Appendix A: QA Findings — TIMining Test (2026-02-14)
