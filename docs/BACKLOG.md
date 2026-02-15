@@ -1267,9 +1267,9 @@ The three layer `_README.md` files (01_Sources, 02_Work, 03_Outputs) were outdat
 
 ---
 
-## [BL-21] FRAMEWORK.md Sync — Major Documentation Debt
+## ~~[BL-21] FRAMEWORK.md Sync — Major Documentation Debt~~ — RESOLVED
 
-**Status:** Proposed
+**Status:** Resolved — content was redundant with README.md and CLAUDE.md. File cleared and reserved for future PD-OS methodology documentation.
 **Priority:** High
 **Origin:** Cross-reference audit (2026-02-15)
 **Related:** BL-19, BL-20
