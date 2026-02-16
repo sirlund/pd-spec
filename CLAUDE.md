@@ -226,7 +226,7 @@ When a bug is discovered during formal QA:
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-15
-- **Status:** v4.1.0 — 10-skill pipeline, Template+JSON outputs, /extract with Office+image+PDF support, Voice/Authority metadata, deduplication, image batching. QA v2 complete (13 fixed, 4 mitigated).
+- **Last updated:** 2026-02-16
+- **Status:** v4.3.0 — Production-ready pipeline. /extract processes 100% of files (no skips), /analyze incremental + synthesis layer (161 observations → 18 strategic insights), ambiguity detection, research gap identification. Tested end-to-end on 61-file TIMining project.
 - **Insights count:** 0
 - **Conflicts count:** 0
