@@ -497,6 +497,139 @@ Pass 2: 9/16 ✓ (19 claims)
 
 ---
 
+### [BL-35] /status Performance Fix — Eliminate Synthesis Overhead
+
+**Status:** Proposed
+**Priority:** P0 — CRITICAL (blocks BL-30)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-04
+**Related:** BL-30 (auto-generate status), BL-34 (compact output)
+
+**Problem:**
+
+/status takes 6-10 minutes on ALL projects due to hidden synthesis overhead. Makes dashboard regeneration prohibitive and blocks BL-30 (auto-generate STATUS.html at end of /analyze).
+
+**Evidence from QA v3:**
+
+**Benchmark results:**
+
+| Project | Sources | Insights | Duration | Target | Delta |
+|---|---|---|---|---|---|
+| Small | 3 | ~12 | 6m 50s | <10s | 40x slower |
+| Large (TIMining) | 61 | 22 | 10m 2s | <60s | 10x slower |
+
+**Overhead structure:**
+- Fixed: ~6-7min (dominates, 67% of total)
+- Variable: ~3min (scales with project size)
+
+**Root causes (identified via SKILL.md analysis):**
+
+1. **Conflict label inference (line 146):** 🚨 MAIN CULPRIT
+   ```markdown
+   "For each PENDING conflict, provide specific flag_label (who to involve and topic)
+   and research_label (what to research) derived from the conflict data."
+   ```
+   - Requires agent to INFER resolution context for each conflict
+   - Evidence: `thought for 258s` (4min 18s) observed in TIMining
+   - This is SYNTHESIS work, not data formatting
+   - Estimated: ~40-50s per conflict
+
+2. **Evidence gap subjective evaluation (line 47):**
+   ```markdown
+   "insights with weak or single-source backing"
+   ```
+   - "Weak" requires subjective analysis of each insight
+   - Should be objective: read convergence field, no thinking
+   - Estimated overhead: ~1min
+
+3. **Verbose output (Update + Write tools):**
+   - Update tool: expands 494 lines of JSON
+   - Write tool: expands 1571 lines of HTML (if used)
+   - Forces context compaction at 5m 30s
+
+**Impact:**
+
+- 🚨 **BL-30 BLOCKED:** Cannot auto-generate STATUS.html if adds 10min to /analyze
+  - Current /analyze: 7m 35s
+  - With auto-status: 7m 35s + 10m = **17m 35s total** (UNACCEPTABLE)
+- ❌ User workflow broken: "quick iteration" becomes 20+ min cycles
+- ❌ Dashboard regeneration feels expensive, users avoid it
+- ❌ Forces context compaction (small projects hit limit)
+
+**Proposed fixes:**
+
+**Fix 1: Eliminate conflict label inference (saves ~4-5min)** 🎯 HIGH IMPACT
+
+**Current (line 146):**
+```markdown
+provide specific flag_label and research_label derived from the conflict data
+```
+
+**Fixed:**
+```markdown
+Use generic labels (no inference, no thinking required):
+
+For PENDING conflicts:
+- flag_label: "Flag for stakeholder discussion"
+- research_label: "Needs more research"
+
+OR read labels directly from CONFLICTS.md if already present.
+NO derivation, NO synthesis, NO thinking.
+```
+
+**Fix 2: Simplify evidence gap detection (saves ~1min)**
+
+**Current (line 47):**
+```markdown
+insights with weak or single-source backing
+```
+
+**Fixed:**
+```markdown
+Read convergence field from each insight in INSIGHTS_GRAPH.md.
+If convergence < 2: add to gaps list.
+NO subjective "weak" evaluation — pure data extraction.
+```
+
+**Fix 3: Compact output (prevents compaction, saves token generation)**
+
+**Add after Phase 3:**
+```markdown
+IMPORTANT: After Write, DO NOT show file contents.
+
+Output only:
+✓ Dashboard: 03_Outputs/STATUS.html
+  Summary: {insights_total} insights ({verified} VERIFIED, {pending} PENDING),
+           {conflicts_total} conflicts, {gaps_total} evidence gaps
+  Open: file://{absolute_path}
+
+NO HTML source, NO JSON expansion.
+```
+
+**User story:**
+> As a PD-Spec user, I expect /status to generate the dashboard in seconds (not minutes), so I can iterate quickly and regenerate the dashboard after every /analyze without hesitation.
+
+**Acceptance criteria:**
+- [ ] Execution time: <10s for small projects (<10 sources) — down from 7min
+- [ ] Execution time: <30s for medium projects (10-50 sources)
+- [ ] Execution time: <60s for large projects (50+ sources) — down from 10min
+- [ ] /status output ≤100 lines (not 1571 lines HTML + 494 lines JSON)
+- [ ] No "thought for X seconds" delays (no inference, no synthesis)
+- [ ] Small projects complete without triggering compaction
+- [ ] BL-30 unblocked: /analyze + auto-status = <8min total (not 17min)
+
+**Expected improvement:** 10min → <10s (60x faster)
+
+**Implementation:**
+1. Edit `.claude/skills/status/SKILL.md`:
+   - Line 146: Replace inference instruction with generic labels
+   - Line 47: Replace subjective evaluation with convergence < 2 check
+   - After Phase 3: Add compact output instruction
+2. Test on TIMining (61 sources): verify <60s execution
+3. Test on small project (3 sources): verify <10s execution
+4. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+
+---
+
 ### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
 
 **Status:** ✅ IMPLEMENTED (v4.3.1, Option E)
