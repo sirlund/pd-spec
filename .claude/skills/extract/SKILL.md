@@ -66,6 +66,21 @@ EVERY file discovered in Phase 1 MUST be:
    - If missing → treat all files as NEW, proceed to Phase 2
    - If exists → parse the table to build a map of known files with their status and hash
 
+**Validate SOURCE_MAP Integrity:**
+
+Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
+1. Read `02_Work/EXTRACTIONS.md`
+2. For each entry in SOURCE_MAP with status=`processed`:
+   - Check if corresponding `## [filename]` section exists in EXTRACTIONS.md
+   - If missing: change status to `error` with reason "missing from EXTRACTIONS (possible interruption)"
+3. Count corrupted entries
+4. If corrupted entries found, report to user:
+   ```
+   ⚠️ SOURCE_MAP corruption detected: X files marked 'processed' but missing from EXTRACTIONS.md
+   These files will be re-processed.
+   ```
+5. Add corrupted files to RETRY queue
+
 7. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
    ```bash
    md5 -q "path/to/file"
