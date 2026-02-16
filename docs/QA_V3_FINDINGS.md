@@ -577,6 +577,78 @@ Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
   [shows all 32 lines of extracted claims verbatim]
 ```
 
+---
+
+### [QA3-UX-04] /status Verbose Output — Small Projects Trigger Premature Compaction
+
+**Severity:** High (blocker for small projects)
+**Component:** /status skill
+**Context:** Minimal project (3 sources) testing
+
+**Observed behavior:**
+
+```
+Project: 3 sources (minimal)
+/status execution: 5m 30s
+Context compaction triggered: ✽ Compacting conversation… (5m 30s · ↑ 13.3k tokens)
+
+Output:
+⏺ Write(03_Outputs/STATUS.html)
+  ⎿ Wrote 1571 lines to 03_Outputs/STATUS.html
+     … +1561 lines (ctrl+o to expand)
+     [Full HTML template + CSS + JS printed to chat]
+```
+
+**Root cause:**
+- /status writes STATUS.html via Write tool
+- Write tool default: expand full file content in output
+- 1571 lines of HTML (template + inline CSS + inline JS) printed to terminal
+- User doesn't need to see HTML source code
+- 13.3k tokens output for a single file write
+
+**Impact:**
+- ❌ Small projects (3-10 sources) trigger compaction after /status
+- ❌ /status becomes "expensive" to run
+- ❌ User hesitates to regenerate dashboard
+- ❌ Negates benefit of interactive dashboard workflow
+- ❌ Forces session restart on minimal projects
+
+**Expected behavior:**
+
+```
+✓ Dashboard generated: 03_Outputs/STATUS.html
+  Summary: 12 insights (8 PENDING, 4 VERIFIED), 3 conflicts PENDING, 2 evidence gaps
+
+Open in browser: file:///path/to/03_Outputs/STATUS.html
+```
+
+**Proposed fix:**
+
+Add to /status skill instructions:
+
+```markdown
+### Phase 3: Write STATUS.html
+
+IMPORTANT: After Write tool completes, DO NOT show file contents.
+
+Output format:
+✓ Dashboard generated: 03_Outputs/STATUS.html
+  Summary: {insights_total} insights ({insights_verified} VERIFIED, {insights_pending} PENDING),
+           {conflicts_total} conflicts ({conflicts_pending} PENDING),
+           {gaps_total} evidence gaps
+
+Open: file://{absolute_path_to_STATUS_html}
+```
+
+**Acceptance criteria:**
+- [ ] /status output ≤100 lines (not 1571 lines)
+- [ ] No HTML source shown in terminal
+- [ ] Summary stats visible at a glance
+- [ ] File path provided for opening in browser
+- [ ] Small projects (3-10 sources) complete without compaction
+
+**Related:** BL-30 (auto-generate STATUS.html at end of /analyze) makes this more critical since dashboard generation becomes more frequent.
+
 **Impact:**
 - 51/61 files processed → 2 context compactions (22min elapsed)
 - ~30min projected total duration (vs <2min target)
