@@ -206,6 +206,46 @@ Logic:
 
 ---
 
+### Option E Test Results (2026-02-16, 33m 54s)
+
+**Result:** ✅ **PASS — First version to complete 100% extraction**
+
+| Metric | Result | vs Option D | vs Baseline | Target |
+|---|---|---|---|---|
+| Files processed | **54/54 (100%)** ✅ | +16 (+42%) | +46 (+575%) | 54/54 (100%) |
+| Heavy files (Pass 2) | **16/16 (100%)** ✅ | +16 (vs 0/16) | +16 (vs 0/16) | 16/16 (100%) |
+| Claims extracted | **1,238 claims** ✅ | ~3x more | ~6x more | All |
+| Duration | 33m 54s ⚠️ | +3m 32s | +27m 53s | <2min |
+| Context compactions | 2-3 survived ✅ | 7 failed ❌ | 1 failed ❌ | 0 |
+| Validation | Passed ✅ | N/A | N/A | Pass |
+
+**What worked:**
+- ✅ Two-pass strategy (38 light files + 16 heavy files)
+- ✅ Direct processing in main context (NO Task agents)
+- ✅ Per-file writes for heavy files (write immediately after each)
+- ✅ Survives context compactions (state recovers from SOURCE_MAP.md)
+- ✅ All file types working (PDF, DOCX, PPTX, HEIC, PNG, JPG, MD)
+- ✅ Validation passed (54 EXTRACTIONS.md sections match 54 SOURCE_MAP.md entries)
+- ✅ 7 videos correctly identified as unsupported (webm, mp4)
+
+**What needs improvement:**
+- ⚠️ Duration 33min (vs <2min target) — token-expensive due to verbose output
+- ⚠️ 2-3 context compactions still occurring (recoverable but interrupts flow)
+- ⚠️ Not production-fast for iterative workflows
+
+**Root cause of slowness:**
+- Verbose skill output (see QA3-UX-03 evidence)
+- Each file generates extensive logs (conversions, reads, updates, claims)
+- Output accumulation forces compactions
+
+**Conclusion:**
+**Option E achieves 100% extraction** (first working solution) but needs optimization:
+- **Functional:** PASS ✅ (completes extraction, all files processed)
+- **Performance:** NEEDS WORK ⚠️ (33min vs 2min target)
+- **Next steps:** Implement compact output (QA3-UX-03) + express mode (QA3-UX-01)
+
+---
+
 ### Option D Test Results (2026-02-16, 30m 22s)
 
 **Result:** ❌ FAILED
@@ -577,39 +617,65 @@ Pass 2: 9/16 ✓ (19 claims)
 ## ✅ VALIDATED FIXES
 
 ### BL-23: Editorial Decisions Bug
-**Status:** [PASS / FAIL / PARTIAL]
+**Status:** ✅ PASS (validated with Option E)
 **Evidence:**
 ```
-[Confirmation that fix worked]
+54/54 files processed (100% vs 38% baseline)
+Zero files skipped for "redundancy"
+All 27 workshop photos processed with claims extracted
+Heavy files (16 PDFs/DOCX/PPTX) all processed
+Validation: 54 EXTRACTIONS.md sections match 54 SOURCE_MAP.md entries
 ```
+**Fix applied:** Mandatory no-skip rule + disk validation in extract/SKILL.md
 
 ### BL-24: PDF Fallbacks Not Used
-**Status:** [PASS / FAIL / PARTIAL]
+**Status:** ✅ PASS (validated with Option E)
 **Evidence:**
 ```
-[Confirmation that fix worked]
+5 PDFs processed successfully:
+- PPT TIMining - General_ENE 2026_Español.pdf (69 pages, 71 claims)
+- TIMining_s strategic position...pdf (27 claims)
+- Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf (37 claims)
+- Timining_Core_La_Inteligencia_Operacional.pdf (11.1MB, 31 claims)
+- Additional PDFs in Visión Futuro folder
+
+All used Read(pdf) without pages parameter (no poppler required)
+Per-file writes prevented request size overflow
 ```
+**Fix applied:** Corrected PDF instructions to Read(pdf), added per-file writes for large files
 
 ### BL-27: SOURCE_MAP Corruption
-**Status:** [PASS / FAIL / PARTIAL]
+**Status:** ✅ PASS (validated with Option E)
 **Evidence:**
 ```
-[Confirmation that fix worked]
+Validation check at end of extraction:
+"Validation: 54 sections confirmed in EXTRACTIONS.md matching 54 processed files in SOURCE_MAP.md"
+
+SOURCE_MAP integrity maintained through 2-3 context compactions
+Per-file writes ensure SOURCE_MAP updated after each heavy file
+No corrupted entries detected
 ```
+**Fix applied:** Integrity validation in Phase 1b of extract/SKILL.md
 
 ### BL-28: Incremental /analyze
-**Status:** [PASS / FAIL / PARTIAL]
+**Status:** ⏳ NOT TESTED (requires /analyze execution)
 **Evidence:**
 ```
-[Confirmation that fix worked]
+Extraction completed with timestamp metadata in EXTRACTIONS.md sections
+SOURCE_MAP.md tracks per-file processing state and timestamps
+Ready for incremental /analyze testing
 ```
+**Fix applied:** Timestamp-based filtering in analyze/SKILL.md (not tested in this QA session)
 
 ### BL-18: Synthesis Layer
-**Status:** [PASS / FAIL / PARTIAL]
+**Status:** ⏳ NOT TESTED (requires /analyze execution)
 **Evidence:**
 ```
-[Confirmation that fix worked]
+1,238 claims extracted from 54 files (large dataset for synthesis testing)
+Synthesis logic implemented in analyze/SKILL.md Phase 4
+Requires /analyze execution to validate synthesis behavior
 ```
+**Fix applied:** Phase 4 SYNTHESIS in analyze/SKILL.md (not tested in this QA session)
 
 ---
 
@@ -617,31 +683,47 @@ Pass 2: 9/16 ✓ (19 claims)
 
 | Metric | Value |
 |---|---|
-| Total duration | [time] |
-| Context compactions | [count] |
-| Tool calls | [count] |
-| Files processed | [count] |
-| Insights created | [count] |
-| Ambiguities detected | [count] |
-| Errors encountered | [count] |
+| Total duration | 33m 54s (Option E test) |
+| Context compactions | 2-3 (all recovered successfully) |
+| Tool calls | ~300+ (estimated, verbose output) |
+| Files processed | 54/54 (100% of processable files) |
+| Claims extracted | 1,238 claims |
+| Insights created | 0 (extraction only, /analyze not run) |
+| Bugs discovered | 4 (QA3-BUG-01 to QA3-BUG-04) |
+| UX observations | 3 (QA3-UX-01 to QA3-UX-03) |
 
 ---
 
 ## 🎯 SUMMARY
 
-### What Worked
-- [List successes]
+### What Worked ✅
+- **Option E completes 100% extraction** — First version to process all 54 files
+- **Two-pass strategy** — Light files (Pass 1) + Heavy files (Pass 2) prevents overflow
+- **Per-file writes** — Heavy files write immediately, preserves progress
+- **Direct processing** — NO Task agents eliminates permission issues and overhead
+- **File type support** — PDF, DOCX, PPTX, HEIC, images all working
+- **Recovery from compactions** — State preserved via SOURCE_MAP.md
+- **Validation** — 54 EXTRACTIONS.md sections match SOURCE_MAP.md entries
 
-### What Failed
-- [List failures]
+### What Failed ❌
+- **Option D (Task agents + batch 5)** — 38/61 files (62%), 30min, all agents hit context limit
+- **Production speed** — 33min vs <2min target (16x slower)
+- **Verbose output** — Token-expensive, forces compactions
 
-### What Needs Attention
-- [List follow-ups]
+### What Needs Attention ⚠️
+1. **Performance optimization** — Reduce output verbosity (QA3-UX-03)
+2. **Express mode for small projects** — Skip heavy files for fast iteration (QA3-UX-01)
+3. **Phase-based dashboard** — Visual progress tracking (QA3-UX-02)
+4. **Context management** — Compact skill output to preserve context longer
+5. **/analyze + /synthesis testing** — BL-18, BL-28 not validated yet
 
 ### Recommended Actions
-1. [Action item 1]
-2. [Action item 2]
-3. [Action item 3]
+1. **IMPLEMENT:** BL-34 (Compact Output) — 90% reduction in verbosity → faster, fewer compactions
+2. **IMPLEMENT:** BL-32 (Express Mode) — Auto-detect project size, skip heavy files by default
+3. **IMPLEMENT:** BL-33 (Phase Dashboard) — Visual progress in STATUS.html
+4. **TEST:** /analyze incremental mode (BL-28) + synthesis layer (BL-18) on TIMining dataset
+5. **DOCUMENT:** BL-29 as IMPLEMENTED (Option E), close with lessons learned
+6. **CONSIDER:** BL-31 (Extract Express Mode) as fast-track for small projects
 
 ---
 
