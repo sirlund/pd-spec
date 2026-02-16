@@ -810,3 +810,262 @@ Ref: `01_Sources/Antecedentes/narrativa.txt`
 
 Status: PENDING
 
+---
+
+## Arquitectura de Producto CORE (Visión 2026)
+
+### [IG-143] (technical, aspirational) PENDING
+La plataforma CORE 2026 tiene cuatro modos operacionales: REALITY (Digital Twin en tiempo real), TACTICAL (Simulación de escenarios), AGENT (IA Copiloto conversacional), BRIEFING (Handover automático de turno).
+
+> "TIMining CORE 2026 platform is a multi-modal operating platform governed by 'Command Ribbon' UX. Platform has four operational modes: 1. REALITY (Digital Twin), 2. TACTICAL (Simulation), 3. AGENT (AI Co-Pilot), 4. BRIEFING (Shift Handover)"
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+### [IG-144] (user-need, current) PENDING
+El "Efecto Gaviota" (Seagull Effect) causa pérdida de contexto en cambios de turno, generando caídas de producción durante handovers. La plataforma resuelve esto con briefings automáticos multimedia (Voice Note + Video Reel + KPI Summary).
+
+> "Platform solves 'Seagull Effect' (shift change context loss) with automated briefings. CORE Automated Briefing includes Voice Note, Video Reel, and KPI Summary. System generates multimedia logs for incoming shifts ensuring seamless continuity."
+
+Voice: document
+Authority: observation
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+### [IG-145] (technical, aspirational) PENDING
+La plataforma implementa un flujo cerrado (closed-loop): Detection → Analysis → Recommendation → Action, reduciendo tiempo problema-solución de horas a minutos.
+
+> "Platform enables closed-loop workflow: Detection → Analysis → Recommendation → Action. Example: CORE detects 1.5m deviation in Shovel PA05 geometry, TIM predicts bottleneck, supervisor receives alert and selects option, plan auto-updates and fleet reroutes instantly. Time from problem to solution reduced from hours to minutes."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+### [IG-146] (technical, aspirational) PENDING
+Interface incluye Timeline Slider que permite navegación temporal desde datos históricos (hindsight) hasta simulaciones futuras (foresight), dando capacidad de "viaje en el tiempo" entre pasado y futuro.
+
+> "Interface provides time-travel capability from hindsight to foresight via Timeline Slider. Timeline slider allows navigation between historical data and future simulations."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+### [IG-147] (technical, aspirational) PENDING
+Especificaciones técnicas de interfaces multimodales: Voz vía Radio IP 450.0 MHz protocolo P25 (manos libres terreno), Chat TIM Insight (diagnóstico causal), Visual 3D Twin MINA_DIGITAL_v4.2 vista isométrica, Push Alertas con prioridad HIGH/CRITICAL.
+
+> "Voz (Radio IP): Para el usuario en terreno. Manos libres. FREQ: 450.0 MHz | PROTOCOL: P25. Chat (TIM Insight): Para consultas rápidas y diagnóstico causal. Visual (3D Twin): Para conciencia situacional profunda. MODEL: MINA_DIGITAL_v4.2 | VIEW: ISOMETRIC. Push (Alertas): Para gestión por excepción. PRIORITY: HIGH | TYPE: CRITICAL_THRESHOLD"
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-148] (technical, current) PENDING
+El gemelo digital está en TRL 9 (Technology Readiness Level 9), validado matemáticamente como fuente única de verdad que fusiona planificación con operación en tiempo real — no es simulación, es validación matemática de la realidad.
+
+> "Detrás de cada interacción existe un Gemelo Digital Dinámico (TRL 9) que fusiona la planificación con la operación en tiempo real. No es una simulación; es una validación matemática de la realidad."
+
+Voice: document
+Authority: fact
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf`
+
+Status: PENDING
+
+### [IG-149] (user-need, current) PENDING
+Existe una "Paradoja de la Mina Digital": la mina genera 5 TB/día de datos en milisegundos (1,450,234 ms de latencia, streaming real-time), pero el cuello de botella cognitivo humano toma 4.5 horas para analizar y decidir.
+
+> "La Paradoja de la Mina Digital: Datos en Milisegundos, Decisiones en Horas. La Fábrica de Datos (Milisegundos): 1,450,234 ms, 5 TB/day, Real-time Stream. El Cuello de Botella Cognitivo (Horas): 04:30:00 hrs Analysis in progress, Decision Pending. Generamos terabytes de datos, pero la capacidad humana para procesarlos y encontrar la causa raíz es limitada."
+
+Voice: document
+Authority: observation
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf`
+
+Status: PENDING
+
+### [IG-150] (technical, aspirational) PENDING
+La plataforma implementa arquitectura de 4 canales con experiencias diferenciadas: Canal 1 Control Operacional (alta resolución, despachador/jefe sala), Canal 2 Gestión Proactiva (gestión por excepción, supervisor terreno), Canal 3 Visión Estratégica (movilidad/semáforo, gerente), Canal 4 Conversación con IA (profundidad sin barreras, ingeniero planificación).
+
+> "Canal 1 | Control Operacional: Alta Resolución - Usuario: Despachador / Jefe de Sala. Conciencia Situacional Total, actualización segundo a segundo. Canal 2 | Gestión Proactiva: El Silencio es Oro - Usuario: Supervisor Terreno / Jefe Turno. Gestión por Excepción, no puede mirar pantallas. Canal 3 | Visión Estratégica: El Pulso del Negocio - Usuario: Gerente / Superintendente. Movilidad y Síntesis, visión semáforo. Canal 4 | TIM Insight Engine: Conversando con la Mina - Usuario: Ingeniero Planificación. Democratizar analítica avanzada."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf`
+
+Status: PENDING
+
+### [IG-151] (user-need, aspirational) PENDING
+Filosofía de "Gestión por Excepción" donde "El Silencio es Oro": el sistema vigila silenciosamente y solo notifica al usuario cuando es crítico, permitiendo que usuarios en terreno trabajen sin mirar pantallas hasta que realmente se necesite atención.
+
+> "Canal 2 | Gestión Proactiva: El Silencio es Oro - Usuario: Supervisor de Terreno / Jefe de Turno. El usuario está en terreno. No puede mirar pantallas. El sistema vigila silenciosamente y notifica solo cuando es crítico."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf`
+
+Status: PENDING
+
+## Validación de Mercado y Adopción
+
+### [IG-152] (business, current) PENDING
+TIMining tiene validación global en 50+ minas en 8 países, con 7 minas corriendo el modelo Digital Twin completo en tiempo real. Portfolio de clientes incluye CODELCO, BHP, Glencore, Anglo American, Teck, Lundin Mining. 27 minas en Sudamérica más operación BHP WAIO.
+
+> "TIMining has global validation across 50+ mines in 8 countries. 7 mines currently running the full Real-Time Digital Model. Client portfolio includes major mining companies: CODELCO, BHP, Glencore, Anglo American, Teck, Lundin Mining. 27 mines in South America and BHP WAIO operation."
+
+Voice: document
+Authority: fact
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+### [IG-153] (business, current) PENDING
+Modelo de adopción "Leapfrog" bottom-up donde ingenieros y supervisores impulsan la adopción (no top-down), con alta adherencia al embeberse en rutinas diarias de turno. 100+ usuarios activos por sitio. Meta: 80% crecimiento year-over-year para 2026.
+
+> "Scalable growth driven by operational pull with 'Leapfrog' adoption model. Bottom-up strategy with adoption driven by engineers and supervisors (not top-down). High stickiness through embedding in daily shift routines. 100+ active users per site. Target: 80% Year-over-Year growth by 2026."
+
+Voice: document
+Authority: fact
+Convergence: 2/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+
+## Métricas y Roadmap
+
+### [IG-154] (business, current) PENDING
+Métrica de impacto documentada: Adherencia al Plan mejora de 60% → 95% mediante corrección en tiempo real, transformando incertidumbre operativa en resultados predecibles.
+
+> "Adherencia al Plan: 60% → 95% (Mejora mediante corrección en tiempo real). Timining Core transforma la incertidumbre operativa en resultados predecibles."
+
+Voice: document
+Authority: observation
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-155] (business, aspirational) PENDING
+Roadmap estratégico detallado: H2 2025 enfoca en Conciencia Situacional (Material Tracking Integral, Gestión de Extracción, Alertas Geotécnicas); 2026 enfoca en Inteligencia Prescriptiva (Proyecto TIM v1 recomendaciones, Simulación continua automática); Futuro enfoca en Habilitadores de Autonomía (Sensores virtuales para monitoreo de caminos flotas autónomas, Expansión Underground).
+
+> "Roadmap Estratégico 2025-2026: H2 2025 - Conciencia Situacional: Material Tracking Integral, Gestión de Extracción, Alertas Geotécnicas. 2026 - Inteligencia Prescriptiva: Proyecto TIM v1 (Recomendaciones), Simulación continua automática. Future - Habilitadores de Autonomía: Sensores virtuales para monitoreo de caminos para flotas autónomas. Roadmap 2026: Predictive Simulations, Underground Expansion, Advanced Optimization."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf` + GEMINI exercies PDF
+
+Status: PENDING
+
+## User Journeys — Personas Detallados
+
+### [IG-156] (user-need, aspirational) PENDING
+User Journey Pedro (Jefe de Turno): trabaja en terreno con manos ocupadas y ojos en el camino, sin acceso a pantallas. Solución: Voz/Radio IP permite decisiones en segundos sin fricción visual. Ejemplo: "TIM, ¿por qué está parada la Pala 4?" → "Falla hidráulica. Según SAP, operativa en 15 minutos."
+
+> "User Journey: Pedro, Jefe de Turno — El Problema: Manos ocupadas, ojos en el camino. Sin acceso a pantallas. Solución: Voz / Radio IP. Impacto: Decisión tomada en segundos sin fricción visual."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-157] (user-need, aspirational) PENDING
+User Journey María (Gerente Mina): remota, desconectada de la operación minuto a minuto. Solución: Push Notification/WhatsApp para control estratégico y gestión de riesgos desde cualquier lugar. Ejemplo: "Desviación Crítica: Calidad alimentación Chancador bajo límite. Impacto en recuperación proyectado."
+
+> "User Journey: María, Gerente Mina — El Contexto: Remoto, desconectada de la operación minuto a minuto. Solución: Push Notification / WhatsApp. Impacto: Control estratégico y gestión de riesgos desde cualquier lugar."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-158] (user-need, aspirational) PENDING
+User Journey Jorge (Controlador): alta presión, decisiones complejas. Solución: Desktop 3D + Simulación (Orchestra) pasa de intuición a certeza matemática. Ejemplo: simular fin de turno moviendo 2 camiones Fase Norte→Sur genera alerta "Mover 2 camiones genera colas en Chancador. Recomendación: Mover 1."
+
+> "User Journey: Jorge, Controlador — El Contexto: Alta presión, decisiones complejas. Solución: Desktop 3D + Simulación (Orchestra). Impacto: De la intuición a la certeza matemática."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+## Capacidades Técnicas Adicionales
+
+### [IG-159] (technical, aspirational) PENDING
+Material Tracking implementa conciliación espacial automática comparando polígonos de plan vs trayectorias reales de equipos, cuantificando desviaciones en volumen, ley y ubicación en tiempo real (V.real vs. V.plan).
+
+> "Material Tracking: Conciliación espacial automática (Polígonos vs. Trayectorias). Algoritmos de comparación geométrica que cuantifican desviaciones en volumen, ley y ubicación en tiempo real (V.real vs. V.plan)."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-160] (technical, current) PENDING
+La inferencia topográfica se actualiza cada 15 minutos mediante procesamiento continuo de nubes de puntos y datos de sensores, generando superficie 3D dinámica de la mina sin necesidad de drones.
+
+> "Inferencia Topográfica: Cálculo del estado 3D en tiempo real. Procesamiento continuo de nubes de puntos y datos de sensores para actualizar dinámicamente la superficie minera. Topografía inferida cada 15 min."
+
+Voice: document
+Authority: observation
+Convergence: 2/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf`
+
+Status: PENDING
+
+### [IG-161] (business, aspirational) PENDING
+Posicionamiento estratégico 2026: "Cracking the Geometry Code" como punto de inflexión — pasar de monitorear el pasado a operar el presente, cerrando el loop entre mundo sensorial y mundo de planificación mediante inferencia geométrica propietaria.
+
+> "The 2026 inflection point focuses on 'Cracking the Geometry Code'. Platform shifted from 'Monitoring' the past to 'Operating' the present. System closes the loop between sensory world and planning world by inferring topography from equipment movement."
+
+Voice: document
+Authority: vision
+Convergence: 1/21 sources
+
+Ref: `01_Sources/Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf`
+
+Status: PENDING
+

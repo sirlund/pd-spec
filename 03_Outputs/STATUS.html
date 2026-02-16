@@ -696,1218 +696,292 @@
 
   <div class="toast" id="toast">Copied!</div>
 
-  <script id="pd-data" type="application/json">
-{
+  <script id="pd-data" type="application/json">{
   "meta": {
     "type": "status",
-    "generated": "2026-02-15T13:32",
+    "generated": "2026-02-16",
     "language": "es",
-    "last_session": "2026-02-15T16:30"
+    "project": "TIMining",
+    "last_session": "2026-02-16T02:15"
   },
-  "title": "TIMining — PD-Spec Status Dashboard",
+  "title": "TIMining — Dashboard",
   "cards": [
     {
-      "count": 142,
+      "count": 161,
       "label": "Insights",
-      "breakdown": "115 verified, 27 pending",
-      "style": "warn"
-    },
-    {
-      "count": 6,
-      "label": "Conflicts",
-      "breakdown": "2 flagged, 4 resolved",
-      "style": "warn"
-    },
-    {
-      "count": 6,
-      "label": "Source Folders",
-      "breakdown": "57 total files",
+      "breakdown": "115 verificados, 46 pendientes",
       "style": "ok"
     },
     {
-      "count": 9,
-      "label": "Evidence Gaps",
-      "breakdown": "3 diversity, 3 claim-level",
+      "count": 6,
+      "label": "Conflictos",
+      "breakdown": "2 flagged, 4 resueltos",
+      "style": "warn"
+    },
+    {
+      "count": 6,
+      "label": "Fuentes",
+      "style": "ok"
+    },
+    {
+      "count": 3,
+      "label": "Gaps de Evidencia",
       "style": "warn"
     }
   ],
   "insights": [
     {
-      "id": "IG-01",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIMining posee 6-8 productos de software divididos en dos dominios principales: Operaciones/Planificación (Aware, Orchestra, Delta) y Geotecnia/Geología (SIC, Tangram, ARIS).",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-02",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Aware y Orchestra se venden juntos como solución integrada porque Aware muestra la operación en tiempo real pero no puede cuantificar impacto, mientras Orchestra entrega análisis histórico para justificar el ROI.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-03",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los productos geotécnicos legacy (SIC, Tangram, ARIS) tienen una base de clientes estable y leal a pesar de interfaces visualmente desactualizadas.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-04",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Delta funciona como puerta de entrada para vender otros productos y se usa a nivel corporativo en CODELCO, Grupo México y Equinox Gold estandarizando la conciliación entre distintos softwares de planificación.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-05",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los tiempos de actualización de datos en Aware son confusos para los usuarios: camiones se actualizan en tiempo casi real vía GPS, mapas de calor promedian 3 horas con desfase de 30 minutos, indicadores se refrescan cada 30 minutos, y topografía se genera cada 15 minutos.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-06",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "La capacitación inicial de Aware no alcanza para una interfaz con múltiples capas, y los usuarios abandonan la herramienta cuando no entienden el timing de los datos.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-07",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Se perdió un cliente porque las métricas de extracción a 24 horas no hacían sentido para mineros que trabajan por turno.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-08",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los clientes piden muchas funcionalidades nuevas, pero luego les cuesta usarlas bien, generando el riesgo del \"auto de Homero Simpson\" (producto con demasiadas funcionalidades que nadie usa).",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-09",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Orchestra requiere fuerte componente consultivo: los usuarios no tienen tiempo para curva de aprendizaje compleja y TIMining dedica 30-36 horas por caso de renovación para armar casos de estudio.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-10",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "En 2022 se invirtieron ~600 horas en dos proyectos de consultoría completos con Orchestra, indicando alta carga de trabajo consultivo.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-11",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "El simulador de Orchestra no se ha adaptado bien a camiones autónomos, uso de múltiples rutas y otros escenarios modernos, requiriendo \"trucos\" y workarounds complejos de usuarios expertos.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-12",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los usuarios de SIC tienen alta autonomía comparado con Orchestra, pero el proceso de conciliación es tedioso y los usuarios acumulan trabajo para realizar varios a la vez.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-13",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIMining es agnóstico al hardware y proveedores (OEM), puede integrar datos de muchos sensores, equipos y sistemas sin importar la marca.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-14",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "El diferenciador clave es la capacidad de hacer \"match\" entre la geometría del plan y lo que realmente pasa en terreno, conectando datos geométricos/topográficos con el posicionamiento y actividad real de los vehículos.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-15",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Los algoritmos de TIMining infieren estados de vehículos sin depender del input humano, mejorando la calidad de datos operacionales al no requerir que operadores marquen manualmente el estado del camión.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-16",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "El stack tecnológico actual está fragmentado: componentes en C++, visualizaciones en Unity, servicios backend en Go y Python, interfaces web, y reportes generados in-house enviados por correo electrónico fuera de un flujo integrado.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-17",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "No existe un sistema unificado de autenticación que abarque todo el portafolio de productos.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-18",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Para integrar sistemas actualmente se recurre a bajar bases de datos y hacer cruces manuales, invirtiendo tiempo en extraer datos, preprocesarlos y armar reportes manualmente en vez de usar APIs y flujos automatizados.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-19",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Existe una \"Brecha Geométrica\": el minero en terreno ve \"camioncitos y palas\" en su sistema de flota pero no ve el contexto geológico ni el plan espacial detallado, sin saber si está extrayendo desde el polígono o bloque correcto.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-20",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Las desviaciones respecto al plan se descubren tarde (a veces semanas después) y el costo de haber extraído en la zona equivocada puede ser de millones de dólares.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-21",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Hay tensiones entre incentivos de corto plazo (cumplir un bono hoy) y valor de largo plazo de la mina.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-22",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Cada faena minera requiere mucha customización: el tiempo estándar de instalación es 1 mes a nivel básico, luego viene un período largo de ajustes y customizaciones (ejemplo: todo 2025 comprometido con customización para un cliente en Aware).",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-23",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "Las razones de tanta variabilidad incluyen: distintos métodos de extracción, diferentes regulaciones locales, restricciones de seguridad, estructuras organizacionales diferentes, e incentivos de negocio que cambian el uso de la herramienta.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-24",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Caso de uso principal de Aware: jefes de turno monitoreando cuellos de botella, curvas lentas y estado de equipos para identificar problemas operacionales en tiempo real.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-25",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Caso de éxito: Aware detectó caída sistemática de velocidad de ~20 km/h a 8 km/h en curva específica, lo que llevó a descubrir que la ruta de camiones autónomos estaba mal dibujada en software de Komatsu, recuperando rendimiento sin cambiar flota ni hardware.",
-      "source": "01_Sources/entrevistas operaciones/reu_coo_roberto-catalan.md"
-    },
-    {
-      "id": "IG-26",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Orchestra es usado principalmente por planificadores para evaluar 20+ escenarios en horizontes de 3 años en proyectos de planificación anual.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-27",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Delta es usado por planificadores y geólogos para conciliaciones de período (diario/mensual/anual) con resultados en menos de 1 minuto.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-28",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Tangram es usado por ingenieros geotécnicos 2-3 veces por semana como mínimo para predecir bloques de roca que pueden caer y gestionar riesgo extrayendo bloques peligrosos antes de que caigan naturalmente.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-29",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "SIC es usado por ingenieros geotécnicos con frecuencia semanal o diaria para evaluación de cumplimiento banco por banco (ancho de berma, ángulo, parámetros de seguridad).",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-30",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "ARIS integra datos de 30+ tipos de instrumentos de monitoreo geotécnico y envía alertas automáticas cuando las lecturas exceden rangos de tolerancia.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-31",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Base de clientes: ~16 minas usan Orchestra vs ~6-7 que usan Aware, indicando mayor penetración de Orchestra.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-32",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "TIMining nació en geotecnia y hoy se expande más hacia software de operaciones, teniendo más clientes legacy en productos geotécnicos.",
-      "source": "01_Sources/entrevistas operaciones/reunion_operaciones (27-01-2026).md"
-    },
-    {
-      "id": "IG-33",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "La venta es altamente consultiva: se requiere ayudar a los clientes constantemente con reportes, simulaciones y análisis para renovaciones y casos de estudio.",
-      "source": "01_Sources/entrevistas operaciones/reunion_operaciones (27-01-2026).md"
-    },
-    {
-      "id": "IG-34",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "El modelo de pricing tiene desafíos: Aware antes se vendía sin Orchestra, pero Aware solo no puede justificar su valor sin la analítica de Orchestra para cuantificar el impacto.",
-      "source": "01_Sources/entrevistas operaciones/reunion_operaciones (27-01-2026).md"
-    },
-    {
-      "id": "IG-35",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "TIMining tiene ventaja competitiva en ARIS al integrar cualquier tipo de instrumento sin cobrar adicionales por tener más instrumentos o por tener tanto el rajo como la relavera, mientras competidores cobran servicios adicionales.",
-      "source": "01_Sources/entrevistas operaciones/reunion_operaciones (27-01-2026).md"
-    },
-    {
-      "id": "IG-36",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Fuerte nivel de customización por cliente genera complejidad: funcionalidades activadas/desactivadas según tipo de mina (cobre vs bauxita vs carbón) y capas personalizadas según necesidades operacionales.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-37",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Riesgo de romper configuraciones específicas con actualizaciones de software debido a customizaciones.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-38",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Existe necesidad de mejor validación de requerimientos: entender el uso real antes de implementar features para evitar implementar funcionalidades que los usuarios no usan.",
-      "source": "01_Sources/entrevistas operaciones/analisis reu con operaciones.md"
-    },
-    {
-      "id": "IG-39",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los usuarios piden funcionalidades pero luego no saben qué hacer con ellas, generando el fenómeno de \"mientras más funciones tengamos mejor, son gratuitas\" pero después no las usan.",
-      "source": "01_Sources/entrevistas operaciones/reunion_operaciones (27-01-2026).md"
-    },
-    {
-      "id": "IG-40",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "La visión de TIMining es convertirse en el \"cerebro\" o \"sistema nervioso central\" de la mina, ayudando a cumplir el plan minero mediante integración de datos en tiempo real, IA y sensores virtuales.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-41",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "El problema central que TIMining quiere resolver es ayudar a la mina a cumplir su plan minero, que está alineado con el plan de negocio del dueño, pero los usuarios actuales no están directamente preocupados por la última línea del dueño.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-42",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "El plan minero se pierde en todos los turnos, no una vez al año cuando el planificador lo actualiza, pero sin sistema no se detecta cuándo y dónde se pierde.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-43",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "La meta comercial es vender la nueva plataforma a $450,000 USD por implementación, significativamente más caro que Aware actual.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-44",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIMining tiene tres capas tecnológicas: (1) integración de datos en tiempo real (efecto Suiza, agnóstico), (2) inteligencia (topografía en línea, sensores virtuales), (3) UX/UI (visualizador 3D).",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-45",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "La industria minera es lenta y conservadora con alta inercia en procesos, lo que hace que iteraciones sean lentas y ciclos de venta largos (1 año o más).",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-46",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Existe oportunidad y amenaza: TIMining está en océano azul pero los competidores grandes (pascos) también están apuntando al mismo océano.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-47",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Necesidad de generar \"paz mental\" para usuarios, permitiendo que las decisiones se basen en análisis de causa raíz y recomendaciones proactivas en lugar de solo reportar eventos pasados.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-48",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "La plataforma debe ser multimodal, llegando al usuario de múltiples formas: Aware, reportes, alertas, chat/agente, radio de mina, etc., no solo una interfaz única.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-49",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Hipótesis: la plataforma debería ser importante para los CFO para ayudarles a asegurar que se cumpla el plan de negocio, pero TIMining no habla con los CFO actualmente.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-50",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "El valor está en los números que el cliente no tiene, no en convencerlo de que el número de TIMining es igual al que él ya tiene.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-51",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "Los ciclos de venta son lentos (1 año o más) y los deploys también son lentos, haciendo difícil iterar y testear.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-52",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "Aunque hay iteraciones lentas, el punto de partida es crítico: si se parte muy offside, no dejan avanzar, por lo que la primera implementación debe ser razonablemente buena.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-53",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "TIMining ha sido \"malaza\" para cobrar porque no está claro dónde termina la configuración y dónde parte el servicio adicional como producto nuevo.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-54",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Cada subequipo tiende a resolver problemas solo con sus herramientas sin visión holística de todas las opciones disponibles en la plataforma.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-55",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Los usuarios tienden a contar sus dolores, no sus problemas, requiriendo un approach más diagnóstico como un médico en vez de simplemente dar lo que piden.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-56",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "La visualización de datos es clave: los mismos datos en Excel vs en visualización intuitiva cambian radicalmente la capacidad de tomar decisiones.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-57",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Decisión estratégica hace un par de años: ser una solución más flexible y multimodal en vez de converger todo a una sola plataforma (Aware).",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-58",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "Los equipos de implementación actualmente diseñan soluciones mientras implementan, sin arquitectura coherente definida previamente.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-59",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "La experiencia del usuario incluye desde que compra el producto: si la instalación es complicada, es parte de la mala experiencia aunque el software sea bueno.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-60",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "No existe clarity en el modelo de negocio entre \"producto base\", \"configuración\", \"customización\" y \"consultoría\", generando problemas de pricing y captura de valor.",
-      "source": "01_Sources/Workshop 1/transcript.md"
-    },
-    {
-      "id": "IG-61",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "TIMining ha capturado USD $10M+ en valor total agregado across 3 minas en Chile (contexto Codelco/AMSA).",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-62",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Una campaña específica en una sola mina Enero-Mayo 2025 generó USD $6M en valor capturado debido a mejoras en velocidad y adherencia al plan.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-63",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Mejora en cycle time documentada: reducción de 2.4 minutos en rampa F07B following mantenimiento priorizado.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-64",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Mejora en throughput: +130 truck loads/día ganadas debido a mejores cycle times en rutas mantenidas.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-65",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Un cliente pasó de fallar el plan en -15.6% (Abril) a excederlo en +7.25% (Mayo) corrigiendo adherencia geométrica en Fase 361, mejorando Production Accuracy de Cu Fine.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-66",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Fleet efficiency mejorada en +5.2 truck hours/día ganadas resultando de decisiones optimizadas de mantenimiento de rampas.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-67",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "El agente TIM puede generar reportes tabulares en lenguaje natural: \"¿Me darías el reporte de las palas en una tabla?\" → genera tabla con Shovel ID, Status, Yield, Utilization, Availability, Idle Time, Queue Time, Total Extraction.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-68",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM puede graficar datos automáticamente: \"¿Puedes graficar el tonelaje global por hora?\" → genera line chart visualizando tendencia producción hourly.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-69",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM analiza cumplimiento de plan: \"Con respecto al plan semanal, ¿cómo vamos?\" → reporta 39.76% del plan semanal, estima completion Nov 16 (2 días delay), provee progreso por fase.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-70",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM configura alertas predictivas: \"Avísame si se producirá inactividad mayor a 3 minutos con a lo más 15 minutos de anticipación en CH-1\" → pide WhatsApp, guarda, configura alert basado en parámetros específicos.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-71",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM inicia simulaciones: \"Puedes simular el escenario base para comenzar mi análisis de escenarios?\" → inicia sensitivity analysis simulation Load & Haul system para establecer baseline.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-72",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM envía alertas proactivas geotécnicas: detecta trucks entrando zonas peligrosas y envía WhatsApp real-time: \"truck CA104 está operando en zona de inestabilidad geotécnica\".",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-73",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM predice downtime de equipos: \"Crusher CH-1 is predicted to idle at least 4.28 minutes in 9.75 minutes\" enviado proactivamente.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-74",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM detecta incumplimiento de plan en excavación: \"Pala PA03 fuera de plan\" cuando shovel extrae fuera del área designada.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-75",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "TIM identifica asignaciones incorrectas de material: \"Wrong Assignment: Truck 22304 assigned to Dump but carrying material for Stockpile\".",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-76",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Caso de uso crítico: Jefe de Turno al inicio necesita recibir contexto completo turno anterior sin depender de WhatsApp, detectar incumplimientos y recibir recomendaciones de prioridades.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-77",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Caso de uso: Supervisor Centro Integrado llega a reunión sin preparación → plataforma envía WhatsApp 15 min antes con resumen contra plan, problemas principales (tronadura -20%, 5 camiones estacionados generarán cola), situaciones riesgo, y genera recomendaciones automáticas.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-78",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Concepto \"Skynet\": visión de sistema que cada X minutos analiza situación general mina, corre N simulaciones buscando óptimo global, envía sugerencias a despacho/planificación/roles, y eventualmente genera replanificación automática (\"haz esto\") enviando órdenes: 1° a personas, 2° a máquinas.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-79",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "20 escenarios de crisis documentados cubren roles: jefe turno, planificador mina, supervisor operaciones, geólogo, despachador, gerente mantenimiento, planificador corto plazo, supervisor centro integrado, gerente mina.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-80",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Usuarios NO quieren: visualización 3D de la mina, desarrollos específicos (prefieren genéricos), gráficos/reportes que no resuelven algo, mostrar mismos KPIs que todos dashboards, más pantallas, mucha data sin sentido, capacitaciones largas, experiencias que quiten tiempo.",
-      "source": "01_Sources/Workshop 1/KEEP-STOP-START (retro).docx"
-    },
-    {
-      "id": "IG-81",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Usuarios SÍ quieren: ejemplos de otros clientes \"¿cómo lo uso?\" (catálogo), herramientas fáciles y robustas para decisiones día a día, sistema recomendador que tome acción en temas recurrentes, capacitación según perfil (ojalá in-app), respuestas automáticas a problemas, experiencia acorde rutina diaria.",
-      "source": "01_Sources/Workshop 1/KEEP-STOP-START (retro).docx"
-    },
-    {
-      "id": "IG-82",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Usuarios no saben que necesitan: asistente virtual día a día, disminuir reuniones/coordinaciones, \"desplanificadómetro\" en línea (medir desvío desde t0, material perdido), reducir ruido información (foco esencial), copiloto que soporte decisiones, herramientas para entender \"qué pasó y porqué\" luego \"qué hacer\", consciencia de valor agregado con sus decisiones.",
-      "source": "01_Sources/Workshop 1/KEEP-STOP-START (retro).docx"
-    },
-    {
-      "id": "IG-83",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "\"Desplanificadómetro\": métrica inexistente que usuarios necesitan sin saberlo - medir desvío acumulado en tiempo real desde t0 y cuantificar material perdido que dejó de extraerse.",
-      "source": "01_Sources/Workshop 1/KEEP-STOP-START (retro).docx"
-    },
-    {
-      "id": "IG-84",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Roadmap Phase 7 (2026 - Year of Digital Co-Pilot): Q1 2026 engineers enable AI to run automatic simulations using Orchestra engine, shifting from \"problem happening\" to \"here are 3 scenarios to fix it\" in minutes.",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-85",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Roadmap Phase 8 (2040 Vision): Mature IROC donde corporations manage múltiples minas globales desde centros urbanos (ej. Santiago), distinción mine-plant desaparece (single digital twin), natural language como interfaz nativa, automated shift transitions eliminan \"seagull effect\", virtual visits reemplazan site visits físicos.",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-86",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Value proposition shift documentado: cambió de vender \"nice 3D viewer\" a \"robust end-to-end platform for short-term planning + operational efficiency + plan compliance\".",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-87",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "2025 no fue gran año ARR growth pero terminó con strong Pipeline → 2026 Budget tiene 80%+ ARR growth target YoY.",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-88",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "TIMining transitó exitosamente desde software factory hacia recurring SaaS business model con world-class commercial organization, expandiendo beyond LatAm hacia North America + Australia.",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-89",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Base de ingresos recurrentes se aproxima a ~$5M con márgenes altos y capital-efficient software economics.",
-      "source": "01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx"
-    },
-    {
-      "id": "IG-90",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Pilar Valor Cliente: TIMining entrega lo que nadie más tiene - capacidad de responder \"¿Estamos cumpliendo el plan ahora mismo?\" permitiendo correcciones intra-turno evitando destrucción de valor antes de que se consolide.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-91",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "\"Efecto Suiza\": En industria con \"jardines amurallados\" donde grandes OEMs (Caterpillar, Komatsu, Hexagon) compiten y no integran entre sí, TIMining es el Integrador Neutro agnóstico al hardware. Proveedores que no se hablan SÍ se integran con TIMining, generando ventaja estructural defensible.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-92",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Adopción \"Bottom-Up\" inusualmente alta: más de 100 usuarios activos mensuales por faena. La operación confía porque resuelve dolores diarios (stickiness), generando tracción interna que acelera acuerdos corporativos.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-93",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Altas gerencias están interesadas en entender trayectoria de desvíos al plan: aunque no les interesa detalle día a día, los desvíos al plan de negocio se generan día a día y difícilmente se pueden recuperar.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-94",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Oportunidad Pricing: Existe desconexión entre precio actual y valor estratégico de ser \"Fuente de la Verdad\". Para comprador estratégico, oportunidad inmediata de realinear pricing de modelo \"licencia de software\" a modelo \"valor empresarial\", capturando porción mayor de ahorros millonarios generados.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-95",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "ADN único: \"singularidad\" forjada resolviendo problemas difíciles separadamente - rigor Geotecnia (precisión matemática donde error cuesta vidas) + dinámica Operación Orchestra (caos logístico, modeling procesos) + desarrollar algoritmos inferir estado mina real-time desde sensores. Capacidad multidisciplinaria difícil replicar.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-96",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Barrera de entrada = Inferencia geométrica de procesos mina: mientras competencia depende hardware costoso (drones, escáneres), TIMining desarrolló algoritmos propietarios que usan \"ruido\" datos existentes para reconstruir mina real-time. No simulamos → vemos ejecución real. No estimamos → medimos con precisión.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-97",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Futuro es autónomo y remoto (IROC): robots ciegos sin modelo actualizado entorno. TIMining = eslabón perdido habilitando Minería 4.0. Para comprador estratégico, adquirir TIMining no es comprar software; es asegurar control de capa datos ejecución.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-98",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Con Project TIM (integración IA), shift de describir realidad → prescribir futuro, convirtiéndose en activo final para liderar minería autónoma.",
-      "source": "01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx"
-    },
-    {
-      "id": "IG-99",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "PM AWARE (Carolina) identifica problemas principales: calidad de datos es el #1, complejidad de servidores que tienen multiples funcionalidades, falta de cuantificación de impacto para justificar valor.",
-      "source": "01_Sources/Entrevista PM AWARE.png"
-    },
-    {
-      "id": "IG-100",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "PM AWARE diferencia productos: \"AWARE es más datos en tiempo real (light, solo ilumina), Orchestra es análisis profundo\".",
-      "source": "01_Sources/Entrevista PM AWARE.png"
-    },
-    {
-      "id": "IG-101",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "PM AWARE busca referentes: design systems, ClickUp, videojuegos, Google Maps, Power BI para datos.",
-      "source": "01_Sources/Entrevista PM AWARE.png"
-    },
-    {
-      "id": "IG-102",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "PM AWARE identifica competencia debe compararse en: comparaciones gráficas de características, centros remotos de aprendizaje simple, facilidad de uso y acceso libre.",
-      "source": "01_Sources/Entrevista PM AWARE.png"
-    },
-    {
-      "id": "IG-103",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "PM Orchestra (Ernesto) define valor: cuantificación de desviaciones y pérdida, reducir tiempos de ciclo, mejor adherencia plan. Usuario ideal: operarios en terreno que 1. detectan 2. corrigen en terreno 3. cuantifican ganancia.",
-      "source": "01_Sources/Entrevista PM Orchestra.png"
-    },
-    {
-      "id": "IG-104",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "PM Orchestra identifica problema: 30% de uso de usuarios avanzados, simulador muy sofisticado y sólo válido para expertos, brechas técnicas problemáticas no generalizables en tiempo real.",
-      "source": "01_Sources/Entrevista PM Orchestra.png"
-    },
-    {
-      "id": "IG-105",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "PM Orchestra visión futuro 2026: empowerment simulador interactivo según perfiles (técnicos y arquitectura 3 meses), paso a producción prototipos (4 meses adelante).",
-      "source": "01_Sources/Entrevista PM Orchestra.png"
-    },
-    {
-      "id": "IG-106",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Gerente Comms (Ana) viene de industria muy diferente y observa: TIMining resuelve problemas en industria minera pero \"en la realidad no sé si el cliente lo percibe\", señalando gap entre capacidad técnica y percepción de valor.",
-      "source": "01_Sources/Entrevista_Ana.png"
-    },
-    {
-      "id": "IG-107",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Gerente Comms identifica tensión: board confía en lo que TIMining resuelve, pero existe brecha entre mensaje técnico y comunicación para diferentes audiencias. \"Como comunicamos (gente super técnica que comunica)\" es un problema.",
-      "source": "01_Sources/Entrevista_Ana.png"
-    },
-    {
-      "id": "IG-108",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Gerente Comms señala problema crítico: \"No podemos estar prevalidos del tipo de deseos del cliente, no es así cuando el valor que estamos entregando\". Tensión entre flexibilidad y capacidad de decir \"no\" a customizaciones.",
-      "source": "01_Sources/Entrevista_Ana.png"
-    },
-    {
-      "id": "IG-109",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Gerente Comms visión: \"Multimodal - la propuesta recordó ese todo de la información a la mina Y deben incluir múltiples\", confirmando estrategia multicanal.",
-      "source": "01_Sources/Entrevista_Ana.png"
-    },
-    {
-      "id": "IG-110",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Gerente Comms identifica: expertise técnico está muy centralizado \"hoy mucho en Carlo\", señalando riesgo de concentración de conocimiento crítico en una persona.",
-      "source": "01_Sources/Entrevista_Ana.png"
-    },
-    {
-      "id": "IG-111",
-      "status": "VERIFIED",
-      "category": "constraint",
-      "claim": "Los 20 casos de uso documentados en el Workshop representan VISIÓN FUTURA (70-80% aspiracional) para TIMining CORE, NO son capacidades del producto actual.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-112",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Workshop documenta el GAP entre producto actual (Aware/Orchestra con problemas UX, alta carga consultiva 30-36h/renovación, dependencia WhatsApp) y visión CORE (plataforma proactiva multimodal con AI copilot).",
-      "source": "01_Sources/Workshop 1/_CONTEXT.md"
-    },
-    {
-      "id": "IG-113",
-      "status": "VERIFIED",
-      "category": "technical",
-      "claim": "Algunas capacidades de la visión CORE están parcialmente implementadas: AI Copilot TIM tiene queries en lenguaje natural funcionando y alertas geotécnicas básicas, pero integración completa en flujo multimodal es futura.",
-      "source": "01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx"
-    },
-    {
-      "id": "IG-114",
-      "status": "VERIFIED",
-      "category": "user-need",
-      "claim": "Casos de uso aspiracionales describen capacidades deseadas: detección automática de problemas, análisis causa-raíz, recomendaciones proactivas, predicción de eventos 15min antes, coordinación sin WhatsApp.",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
-      "id": "IG-115",
-      "status": "VERIFIED",
-      "category": "business",
-      "claim": "Visión \"Skynet\" (Lámina 20) es roadmap futuro lejano: sistema analiza situación cada X minutos, corre N simulaciones, eventualmente da órdenes a máquinas (autonomía completa \"1° personas, 2° máquinas\").",
-      "source": "01_Sources/Workshop 1/Casos de Uso Workshop 01.docx"
-    },
-    {
       "id": "IG-116",
       "status": "PENDING",
       "category": "user-need",
-      "claim": "Los usuarios necesitan que la plataforma sea \"plug and play\" sin generar problemas adicionales de TI, contratos o adherencia técnica.",
-      "source": "01_Sources/Workshop 1/retro.txt",
       "temporal": "current",
-      "quote": "No quiere más problemas (TI, contrato, adherencia) quiere que nuestra solución sea plug and play"
+      "claim": "Los usuarios necesitan que la plataforma sea \"plug and play\" sin generar problemas adicionales de TI, contratos o adherencia técnica.",
+      "source": "Workshop 1/retro.txt",
+      "quote": "No quiere más problemas (TI, contrato, adherencia) quiere que nuestra solución sea plug and play",
+      "convergence": "1/18"
     },
     {
       "id": "IG-117",
       "status": "PENDING",
       "category": "user-need",
-      "claim": "Los usuarios están sobrecargados con dashboards que muestran los mismos KPIs repetidos y prefieren información única y procesable.",
-      "source": "01_Sources/Workshop 1/retro.txt",
       "temporal": "current",
-      "quote": "MOSTRAR LOS MISMOS KPIS QUE TODOS LOS DASHBOARDS [...] MÁS PANTALLAS [...] MUCHA DATA SIN SENTIDO"
+      "claim": "Los usuarios están sobrecargados con dashboards que muestran los mismos KPIs repetidos y prefieren información única y procesable.",
+      "source": "Workshop 1/retro.txt",
+      "quote": "MOSTRAR LOS MISMOS KPIS QUE TODOS LOS DASHBOARDS [...] MÁS PANTALLAS [...] MUCHA DATA SIN SENTIDO",
+      "convergence": "2/18"
     },
     {
       "id": "IG-118",
       "status": "PENDING",
       "category": "user-need",
-      "claim": "Los usuarios necesitan un sistema proactivo que venga a ellos con soluciones, no que requiera buscar activamente la información.",
-      "source": "01_Sources/Workshop 1/retro.txt",
       "temporal": "aspirational",
-      "quote": "Buscar la solución → que la solución venga a él [...] Un sistema más Proactivo"
+      "claim": "Los usuarios necesitan un sistema proactivo que venga a ellos con soluciones, no que requiera buscar activamente la información.",
+      "source": "Workshop 1/retro.txt",
+      "quote": "Buscar la solución → que la solución venga a él [...] Un sistema más Proactivo",
+      "convergence": "2/18"
     },
     {
       "id": "IG-119",
       "status": "PENDING",
       "category": "user-need",
-      "claim": "Los usuarios necesitan que el sistema recomiende acciones (sistema recomendador), no solo alertas — customización con recomendaciones automáticas ante problemas recurrentes.",
-      "source": "01_Sources/Workshop 1/retro.txt",
       "temporal": "aspirational",
-      "quote": "Un sistema Recomendador y que tome ACCIÓN en temas recurrentes [...] Customización. Necesita recomendaciones no solo alertas. Respuestas Automáticas a sus problemas y sugerencias."
+      "claim": "Los usuarios necesitan que el sistema recomiende acciones (sistema recomendador), no solo alertas — customización con recomendaciones automáticas ante problemas recurrentes.",
+      "source": "Workshop 1/retro.txt",
+      "quote": "Un sistema Recomendador y que tome ACCIÓN en temas recurrentes [...] Customización. Necesita recomendaciones no solo alertas. Respuestas Automáticas a sus problemas y sugerencias.",
+      "convergence": "1/18"
     },
     {
       "id": "IG-120",
       "status": "PENDING",
       "category": "user-need",
+      "temporal": "current",
       "claim": "Los usuarios necesitan capacitación adaptada a su perfil de usuario, idealmente in-app, evitando capacitaciones largas y genéricas.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "current",
-      "quote": "CAPACITACIÓN RESPECTO AL PERFIL DE USUARIO (OJALÁ IN-APP) [...] Capacitaciones muy largas [NO necesita]"
+      "source": "Workshop 1/retro.txt",
+      "quote": "CAPACITACIÓN RESPECTO AL PERFIL DE USUARIO (OJALÁ IN-APP) [...] Capacitaciones muy largas [NO necesita]",
+      "convergence": "1/18"
     },
     {
-      "id": "IG-121",
+      "id": "IG-143",
+      "status": "PENDING",
+      "category": "technical",
+      "temporal": "aspirational",
+      "claim": "La plataforma CORE 2026 define 4 modos operacionales: REALITY (Digital Twin real-time), TACTICAL (Simulación escenarios), AGENT (IA Copiloto conversacional), BRIEFING (Handover automático turno).",
+      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
+      "quote": "Los 4 modos operacionales cubren desde monitoreo hasta decisión: REALITY muestra el twin, TACTICAL simula, AGENT conversa, BRIEFING entrega contexto de turno.",
+      "convergence": "1/21"
+    },
+    {
+      "id": "IG-144",
       "status": "PENDING",
       "category": "user-need",
-      "claim": "Los usuarios quieren ver elementos que les ayuden a cumplir sus KPIs de bonos personales y mejorar su desempeño individual.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "Ver los elementos que le ayudan a cumplir sus KPIs de sus bonos [...] Que puedo hacer: mejorar su trabajo. Mejor desempeño personal."
-    },
-    {
-      "id": "IG-122",
-      "status": "PENDING",
-      "category": "user-need",
-      "claim": "Los usuarios necesitan priorización clara ante contingencias con orden de prioridad integrado en canales primarios de comunicación (radiales, WhatsApp).",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "Orden de prioridad ante contingencias (Radiales - whatsapp, etc.) [...] Estar en los canales de comunicación primarios de la MINA"
-    },
-    {
-      "id": "IG-123",
-      "status": "PENDING",
-      "category": "user-need",
-      "claim": "Los usuarios necesitan un \"desplanificadómetro\" en línea que mida en tiempo real cuánto material se ha dejado de extraer versus el plan desde un tiempo t0.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "Un Desplanificadometro (desplaninometro) en línea. Medir cuanto llevo desviado desde un t0. Lo # Material perdido que dejé de extraer."
-    },
-    {
-      "id": "IG-124",
-      "status": "PENDING",
-      "category": "user-need",
-      "claim": "Los usuarios no saben que necesitan coordinarse entre áreas y comunicar eventualidades rápidamente — existe oportunidad de ofrecer herramienta intermediaria para mejorar comunicación entre colaboradores.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "COORDINARSE ENTRE ÁREAS Y SER RÁPIDO EN COMUNICAR EVENTUALIDADES [...] Mejorar la comunicación entre colaboradores áreas. ¿Un intermediario?"
-    },
-    {
-      "id": "IG-125",
-      "status": "PENDING",
-      "category": "user-need",
-      "claim": "Los usuarios necesitan capacidad de auditar sus \"fuentes de la verdad\" (FMS, drilling software, etc.) y corregirlas cuando hay inconsistencias.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "AUDITAR SUS 'FUENTES DE LA VERDAD' Y CORREGIRLAS [...] No sabe los datos que tiene, ni su calidad de su informacion."
-    },
-    {
-      "id": "IG-126",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "La plataforma debe ofrecer un catálogo de casos de uso y ejemplos de otros clientes para responder \"¿cómo lo uso?\" — arquitectura fácil de justificar al cliente con pre-factibilidad.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "¿Ejemplos de otros clientes '¿CÓMO LO USO?' CATÁLOGO [...] Pre-factibilidad → Arquitectura fácil de Justificar al Cliente."
-    },
-    {
-      "id": "IG-127",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "El equipo tiene dependencia alta del formato de datos del cliente y de que el cliente envíe los datos — necesidad de reducir dependencia del cliente.",
-      "source": "01_Sources/Workshop 1/retro.txt",
       "temporal": "current",
-      "quote": "Menos dependencia del Cliente. Dependemos mucho del formato del Dato del Cliente o que lo envíe."
+      "claim": "El problema del \"Efecto Gaviota\" en cambios de turno causa pérdida de contexto y caídas de producción durante handovers.",
+      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
+      "quote": "Los supervisores llegan al turno sin preparación, dependiendo de WhatsApp informal. Se pierde contexto crítico.",
+      "convergence": "1/21"
     },
     {
-      "id": "IG-128",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "El AI Copilot (TIM Agent) debe incluir búsqueda por voz, chat conversacional, y búsqueda en lenguaje natural sin necesidad de navegar la interfaz tradicional.",
-      "source": "01_Sources/Workshop 1/Design Brief.md",
-      "temporal": "aspirational",
-      "quote": "El IA COPILOT debe incluir: Búsqueda por voz, Chat conversacional, Búsqueda en lenguaje natural"
-    },
-    {
-      "id": "IG-129",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "La plataforma debe tener una API genérica que exponga módulos internos (topografía, perforación, carguío y transporte, etc.) para consumo externo y configuración flexible.",
-      "source": "01_Sources/Workshop 1/Design Brief.md",
-      "temporal": "aspirational",
-      "quote": "API genérica: Una sola entrada que expone todos los módulos de TIMining (topografía, perforación, carguío y transporte, etc.)"
-    },
-    {
-      "id": "IG-130",
+      "id": "IG-152",
       "status": "PENDING",
       "category": "business",
-      "claim": "El product team mide su éxito con KPIs de velocidad de implementación de nuevas funcionalidades, user adoption (usuarios activos, frecuencia de uso), y tiempo promedio de configuración/despliegue.",
-      "source": "01_Sources/Workshop 1/Design Brief.md",
       "temporal": "current",
-      "quote": "Product Team KPIs: Velocidad de implementación de nuevas funcionalidades, User Adoption (usuarios activos, frecuencia de uso, etc.), Tiempo promedio de configuración y despliegue"
+      "claim": "TIMining tiene validación global en 50+ minas en 8 países, con 7 minas corriendo el modelo Digital Twin completo en tiempo real. Portfolio incluye CODELCO, BHP, Glencore, Anglo American, Teck, Lundin Mining.",
+      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
+      "quote": "50+ minas, 8 países, clientes tier-1. 27 minas Sudamérica + BHP WAIO.",
+      "convergence": "1/21"
     },
     {
-      "id": "IG-131",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "La arquitectura debe permitir agregar capas de datos de manera simple y rápida sin desarrollo específico — módulos genéricos configurables.",
-      "source": "01_Sources/Workshop 1/retro.txt",
-      "temporal": "aspirational",
-      "quote": "Agregar un dato para entenderlo en con el contexto, simple y rápido [...] Dejar de hacer desarrollos específicos y desarrollarlos de manera genérica"
-    },
-    {
-      "id": "IG-132",
+      "id": "IG-154",
       "status": "PENDING",
       "category": "business",
-      "claim": "TIMining realizó una primera ronda de capital de ~USD 4M liderada por Aurus Capital (VC enfocado en minería) en 2017-2019 para financiar el crecimiento internacional.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
       "temporal": "current",
-      "quote": "This first round raised aprox USD 4 MM and was led by Aurus Capital, a mining focused VC."
-    },
-    {
-      "id": "IG-133",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "Anglo American Los Bronces fue el socio estratégico principal para refinar la visión del Digital Twin en una solución lista para campo.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "current",
-      "quote": "Strategic Co-Development: Anglo American's Los Bronces became the primary partner to refine this vision into a field-ready solution."
-    },
-    {
-      "id": "IG-134",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "El algoritmo de inferencia topográfica en tiempo real usando datos GPS de palas (sin drones ni escaneo manual) es el breakthrough técnico propietario de TIMining desarrollado por Carlo Calderón.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "current",
-      "quote": "The Proprietary Breakthrough: Carlo Calderon developed a unique algorithm to infer topographies in real-time using GPS data from shovels."
-    },
-    {
-      "id": "IG-135",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "2025 no fue un año de gran crecimiento de ARR, pero terminó con un pipeline fuerte para cosechar en 2026/27 — budget 2026 proyecta >80% crecimiento YoY de ARR.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "current",
-      "quote": "Whilst 2025 wasn't a great year in terms of ARR growth, these new conversations allowed to end the year with a strong Pipeline to harvest during 2026/27, hence why 2026's Budget has over an 80% ARR growth target YoY."
-    },
-    {
-      "id": "IG-136",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "Para 2040, se espera que la industria minera opere minas globales simultáneamente desde centros urbanos (IROCs maduros en Santiago u otras ciudades), con distinción desaparecida entre mina y planta.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "aspirational",
-      "quote": "The Mature IROC (Integrated Remote Operations Center): Massive corporations manage multiple global mines simultaneously from urban centers like Santiago. The distinction between the mine and the plant has vanished."
-    },
-    {
-      "id": "IG-137",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "Para 2040, los cambios de turno estarán soportados por logs multimedia creados automáticamente por la plataforma TIMining, eliminando el \"efecto gaviota\" (caída de producción durante handovers).",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "aspirational",
-      "quote": "Automated Shift Transitions: The 'shift change' ritual is now supported by multimedia logs created automatically by TIMining's Platform, eliminating the 'seagull effect' (production drops during handovers)."
-    },
-    {
-      "id": "IG-138",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "Para 2040, las visitas físicas a sitio serán inexistentes — equipos geotécnicos y operativos inspeccionarán \"zonas virtuales\" para evitar interrumpir flujos de vehículos autónomos.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "aspirational",
-      "quote": "Virtual Visits: Physical site visits are non-existent; geotechnical and operational teams inspect 'virtual zones' to avoid interrupting autonomous vehicle flows."
-    },
-    {
-      "id": "IG-139",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "Para 2040, equipos corporativos usarán modelos predictivos de TIMining para decisiones tácticas multi-mina — si una mina cae detrás del plan, el sistema identifica estrategias de recuperación a nivel portafolio corporativo.",
-      "source": "01_Sources/Antecedentes/evolution.txt",
-      "temporal": "aspirational",
-      "quote": "Corporate teams no longer just react to yesterday's data; they use TIMining's predictive models to make multi-mine tactical decisions. If one mine falls behind its plan, the system identifies strategies to recover yield across the entire corporate portfolio."
-    },
-    {
-      "id": "IG-140",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "TIMining ocupa una posición estructural única como \"Integrador Neutro\" (Efecto Suiza) — los grandes OEMs (Caterpillar, Komatsu, Hexagon) que no se integran entre sí sí se integran con TIMining.",
-      "source": "01_Sources/Antecedentes/narrativa.txt",
-      "temporal": "current",
-      "quote": "En una industria caracterizada por 'jardines amurallados' donde los grandes OEMs compiten y no se integran entre sí, Timining ocupa una posición estructural única: somos el Integrador Neutro."
-    },
-    {
-      "id": "IG-141",
-      "status": "PENDING",
-      "category": "business",
-      "claim": "La adopción de TIMining es \"Bottom-Up\" inusualmente alta con >100 usuarios activos mensuales por faena — la operación confía porque resuelve dolores diarios (stickiness).",
-      "source": "01_Sources/Antecedentes/narrativa.txt",
-      "temporal": "current",
-      "quote": "Tenemos una adopción 'Bottom-Up' inusualmente alta, con más de 100 usuarios activos mensuales por faena. La operación confía en nosotros porque resolvemos sus dolores diarios (stickiness)."
-    },
-    {
-      "id": "IG-142",
-      "status": "PENDING",
-      "category": "technical",
-      "claim": "El \"músculo\" técnico de TIMining se forjó resolviendo problemas difíciles por separado: precisión matemática (Geotecnia), dinámica de procesos (Orchestra), inferencia geométrica desde sensores.",
-      "source": "01_Sources/Antecedentes/narrativa.txt",
-      "temporal": "current",
-      "quote": "Nuestra ventaja no es solo código; es ADN. Somos una 'singularidad' forjada al resolver primero problemas difíciles por separado: El rigor de la Geotecnia [...] La dinámica de la Operación (Orchestra) [...] Inferir el estado de la mina en tiempo real desde los sensores."
+      "claim": "Adherencia al Plan mejora de 60% → 95% mediante corrección en tiempo real, transformando incertidumbre operativa en resultados predecibles.",
+      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
+      "quote": "Adherencia 60% → 95% es la métrica de impacto clave. Incertidumbre → Predecibilidad.",
+      "convergence": "1/21"
     }
   ],
   "conflicts": [
     {
       "id": "CF-01",
-      "status": "PENDING",
+      "status": "FLAGGED",
       "title": "Aware puede funcionar independiente vs Aware necesita Orchestra",
       "refs": "IG-02, IG-34",
-      "tension": "Centinela compró 5 licencias de Orchestra y dejaron Aware diciendo que \"no es gemelo\" ([IG-34]), pero históricamente Aware y Orchestra se vendían por separado. Sin embargo, la evidencia muestra que Aware sin Orchestra no puede justificar su valor al no poder cuantificar impacto ([IG-02]).",
-      "flag_label": "Escalado a Sales + Product para definir bundles obligatorios vs opcionales.",
-      "research_label": "Investigar datos adicionales"
+      "tension": "Centinela compró 5 licencias de Orchestra y dejaron Aware diciendo que \"no es gemelo\". Sin embargo, la evidencia muestra que Aware sin Orchestra no puede justificar su valor al no poder cuantificar impacto.",
+      "sides": [
+        {
+          "position": "Aware y Orchestra deben venderse juntos — Aware no puede cuantificar impacto solo",
+          "refs": ["IG-02", "IG-34"]
+        },
+        {
+          "position": "Aware se vendía históricamente standalone antes",
+          "refs": ["IG-34"]
+        }
+      ],
+      "flag_label": "Sales + Product: definir bundles obligatorios",
+      "research_label": "Entrevistar clientes Aware-only para validar valor percibido"
     },
     {
       "id": "CF-02",
-      "status": "PENDING",
+      "status": "FLAGGED",
       "title": "Customización es valor vs Customización es riesgo",
-      "refs": "IG-22, IG-23, IG-36, IG-37, IG-08, IG-39",
-      "tension": "Por un lado, cada faena requiere customización debido a distintos métodos de extracción, regulaciones y estructuras organizacionales ([IG-23], [IG-22]). Por otro lado, la customización genera complejidad, riesgo de romper configuraciones con actualizaciones ([IG-37]), y el \"auto de Homero Simpson\" donde se implementan funcionalidades que no se usan ([IG-08], [IG-39]).",
-      "flag_label": "Escalado a CEO + CTO para definir trade-off customización-estabilidad y límites de configuración por tier.",
-      "research_label": "Investigar datos adicionales"
+      "refs": "IG-22, IG-23, IG-36, IG-37, IG-08, IG-39, IG-131",
+      "tension": "Por un lado, cada faena requiere customización debido a distintos métodos de extracción y regulaciones. Por otro lado, genera complejidad técnica, riesgo de romper configuraciones y el \"auto de Homero Simpson\" donde se implementan funcionalidades que no se usan. Usuarios mismos piden \"dejar de hacer desarrollos específicos\".",
+      "sides": [
+        {
+          "position": "Customización permite capturar valor en faenas únicas",
+          "refs": ["IG-22", "IG-23"]
+        },
+        {
+          "position": "Customización genera complejidad, riesgo y features no usadas",
+          "refs": ["IG-36", "IG-37", "IG-08", "IG-39", "IG-131"]
+        }
+      ],
+      "flag_label": "CEO + CTO: definir límites configuración por tier",
+      "research_label": "Auditar features por uso real — cuáles se usan <10%"
     },
     {
       "id": "CF-03",
       "status": "RESOLVED",
       "title": "Orchestra es difícil de usar vs Orchestra tiene buenos usuarios",
       "refs": "IG-09, IG-11, IG-12",
-      "tension": "Por un lado, Orchestra requiere fuerte componente consultivo y los usuarios no tienen tiempo para curva de aprendizaje compleja ([IG-09]). El simulador es complejo y requiere usuarios expertos con \"trucos\" y workarounds ([IG-11]). Por otro lado, usuarios de SIC (módulo de análisis de Orchestra) llegan a ser muy buenos en el módulo de analítica ([IG-12] menciona \"alta autonomía\").",
-      "resolution": "Orchestra es una herramienta que probablemente sea descontinuada o reemplazada por agente IA. La tensión se disuelve con la transición a Project TIM (Phase 7 2026)."
+      "tension": "Orchestra requiere fuerte componente consultivo y usuarios expertos con trucos, pero usuarios de SIC logran alta autonomía.",
+      "sides": [
+        {
+          "position": "Orchestra es complejo y requiere consultoría",
+          "refs": ["IG-09", "IG-11"]
+        },
+        {
+          "position": "Usuarios SIC tienen alta autonomía",
+          "refs": ["IG-12"]
+        }
+      ],
+      "resolution": "Orchestra probablemente será descontinuado/reemplazado por agente IA (Project TIM Phase 7 2026)."
     },
     {
       "id": "CF-04",
       "status": "RESOLVED",
       "title": "TIMining tiene ventaja competitiva vs Amenaza de competidores grandes",
       "refs": "IG-13, IG-14, IG-15, IG-46",
-      "tension": "TIMining está en océano azul con tecnología única de integración agnóstica ([IG-13], [IG-14], [IG-15]) y diferenciadores claros. Sin embargo, los competidores grandes también están apuntando al mismo océano ([IG-46]).",
-      "resolution": "Esto es más una amenaza externa y un motivo para acelerar la innovación de TIMining. No es un conflicto interno sino una urgencia estratégica."
+      "tension": "TIMining está en océano azul con tecnología única de integración agnóstica. Sin embargo, competidores grandes también apuntan al mismo océano.",
+      "sides": [
+        {
+          "position": "TIMining tiene diferenciadores únicos",
+          "refs": ["IG-13", "IG-14", "IG-15"]
+        },
+        {
+          "position": "Competidores grandes apuntan al mismo mercado",
+          "refs": ["IG-46"]
+        }
+      ],
+      "resolution": "Amenaza externa, no conflicto interno. Motivo para acelerar innovación."
     },
     {
       "id": "CF-05",
       "status": "RESOLVED",
       "title": "Interfaces son mejores que la industria vs Interfaces tienen problemas de adopción",
       "refs": "IG-03, IG-06, IG-07",
-      "tension": "Las interfaces de TIMining están en el top comparadas con la industria minera. Sin embargo, hay múltiples problemas de adopción: usuarios abandonan Aware por no entender tiempos de actualización ([IG-06]), se perdió un cliente por métricas confusas ([IG-07]), y los productos geotécnicos son visualmente desactualizados pero tienen usuarios leales ([IG-03]).",
-      "resolution": "El software de minería tiene pésima UI/UX. La vara está baja y no debería ser un consuelo. Con poco se puede mejorar mucho la experiencia, pero el equipo lo ve como una montaña de esfuerzo por desconocimiento."
+      "tension": "Interfaces de TIMining están en el top comparadas con industria minera, pero hay problemas de adopción (usuarios abandonan por tiempos confusos, métricas incomprensibles, interfaces antiguas pero leales).",
+      "sides": [
+        {
+          "position": "Interfaces son top de la industria minera",
+          "refs": []
+        },
+        {
+          "position": "Interfaces tienen problemas de usabilidad real",
+          "refs": ["IG-03", "IG-06", "IG-07"]
+        }
+      ],
+      "resolution": "Software de minería tiene pésima UI/UX. La vara está baja — no debe ser consuelo. Con poco esfuerzo se puede mejorar mucho."
     },
     {
       "id": "CF-06",
       "status": "RESOLVED",
       "title": "Valor en números nuevos vs Necesidad de validar números existentes",
       "refs": "IG-50",
-      "tension": "El verdadero valor de TIMining está en los números que el cliente no tiene, no en replicar lo que ya tiene ([IG-50]). Sin embargo, la práctica muestra que cuesta que le crean a los números de TIMining cuando el usuario está acostumbrado a sus propios números.",
-      "resolution": "Mostrar los números que no ven, no gastar tiempo en igualar con los suyos. Estrategia de \"valor nuevo\" sobre \"validación de lo existente\"."
+      "tension": "Valor de TIMining está en números que cliente no tiene, no en replicar existentes. Pero cuesta que le crean cuando están acostumbrados a sus propios números.",
+      "sides": [
+        {
+          "position": "Mostrar números nuevos que no ven",
+          "refs": ["IG-50"]
+        },
+        {
+          "position": "Validar contra números existentes para credibilidad",
+          "refs": []
+        }
+      ],
+      "resolution": "Estrategia de \"valor nuevo\" sobre \"validación de lo existente\". Mostrar lo que no ven, no gastar tiempo igualando."
     }
   ],
   "sources": [
     {
-      "folder": "(root)",
-      "files": 6,
-      "types": [
-        "png",
-        "pptx"
-      ],
-      "extraction_status": "Partial"
-    },
-    {
       "folder": "Antecedentes",
       "files": 13,
-      "types": [
-        "docx",
-        "mp4",
-        "pdf",
-        "pptx",
-        "webm"
-      ],
-      "extraction_status": "Partial"
+      "types": ["docx", "pptx", "pdf", "webm", "mp4"],
+      "extraction_status": "Extracted (4 DOCX, 1 PPTX, 2 PDF unprocessable, 7 videos unsupported)"
     },
     {
       "folder": "Propuesta ruta",
       "files": 1,
-      "types": [
-        "pptx"
-      ],
-      "extraction_status": "Partial"
+      "types": ["pptx"],
+      "extraction_status": "Extracted"
     },
     {
       "folder": "Visión Futuro _CORE_",
       "files": 4,
-      "types": [
-        "docx",
-        "pdf"
-      ],
-      "extraction_status": "Partial"
+      "types": ["docx", "pdf"],
+      "extraction_status": "Extracted (3 PDFs, 1 DOCX partial)"
     },
     {
       "folder": "Workshop 1",
-      "files": 29,
-      "types": [
-        "docx",
-        "heic",
-        "jpeg",
-        "md"
-      ],
-      "extraction_status": "Extracted"
+      "files": 32,
+      "types": ["docx", "md", "png", "heic"],
+      "extraction_status": "Extracted (4 DOCX, 2 MD, 26 images)"
+    },
+    {
+      "folder": "entrevistas iniciales stakeholders",
+      "files": 4,
+      "types": ["png"],
+      "extraction_status": "Extracted (3 images, 1 skipped)"
     },
     {
       "folder": "entrevistas operaciones",
       "files": 4,
-      "types": [
-        "md",
-        "png"
-      ],
-      "extraction_status": "Extracted"
+      "types": ["md", "png"],
+      "extraction_status": "Extracted (2 MD, 1 image, 1 unprocessable)"
     }
   ],
   "source_diversity": [
     {
-      "type": "User research (entrevistas, workshops)",
+      "type": "User research",
       "present": true
     },
     {
-      "type": "Business data (métricas, modelo negocio)",
+      "type": "Business data",
       "present": true
     },
     {
-      "type": "Technical documentation",
-      "present": true
-    },
-    {
-      "type": "Strategic narratives",
+      "type": "Technical docs",
       "present": true
     },
     {
@@ -1915,68 +989,48 @@
       "present": false
     },
     {
-      "type": "Accessibility / usability audits",
+      "type": "Accessibility data",
       "present": false
     },
     {
-      "type": "Brand / design guidelines",
+      "type": "Brand / design",
       "present": false
+    }
+  ],
+  "source_issues": [
+    {
+      "description": "2 PDFs no procesables (Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, TIMining_s strategic position_Sept 25.pdf)",
+      "action": "Convertir PDFs a formato extraíble o procesar manualmente"
+    },
+    {
+      "description": "7 videos no soportados (.mp4, .webm)",
+      "action": "Transcribir videos o extraer screenshots clave manualmente"
     }
   ],
   "evidence_gaps": [
     {
       "type": "source-diversity",
-      "description": "No hay benchmarks competitivos detallados — solo menciones de OEMs (Caterpillar, Komatsu, Hexagon)",
-      "suggestion": "Realizar análisis comparativo formal: features, pricing, posicionamiento de competidores directos"
+      "description": "No hay análisis competitivo directo — se mencionan competidores pero sin benchmarks detallados",
+      "suggestion": "Analizar qué ofrecen competidores en centros remotos, facilidad de uso, acceso libre"
     },
     {
       "type": "source-diversity",
-      "description": "No hay datos de accesibilidad ni auditorías WCAG",
-      "suggestion": "Realizar auditoría de usabilidad formal con usuarios reales en contexto minero"
-    },
-    {
-      "type": "source-diversity",
-      "description": "No hay guías de diseño o identidad visual documentadas",
-      "suggestion": "Documentar brand guidelines y design system existente"
+      "description": "No hay datos de accesibilidad — sin auditorías WCAG ni datos demográficos de usuarios",
+      "suggestion": "Auditoría de accesibilidad y demografía de usuarios (edad, contexto uso, capacidades)"
     },
     {
       "type": "claim-level",
-      "description": "22 de 27 nuevos insights son single-source (convergencia 1/18)",
-      "suggestion": "Validar insights clave con entrevistas adicionales o datos cuantitativos"
-    },
-    {
-      "type": "claim-level",
-      "description": "Hipótesis no validada: la plataforma debería importar a CFOs, pero TIMining no habla con ellos",
-      "suggestion": "Entrevistas con CFOs de clientes actuales sobre cumplimiento plan de negocio [IG-49]"
-    },
-    {
-      "type": "claim-level",
-      "description": "Análisis de churn incompleto — se perdió cliente por métricas confusas [IG-07] pero no hay análisis sistemático",
-      "suggestion": "Análisis de churn patterns: ¿por qué se van los clientes? ¿En qué momento?"
-    },
-    {
-      "type": "general",
-      "description": "KPIs del product team documentados [IG-130] pero sin baseline ni targets actuales",
-      "suggestion": "Establecer baseline de velocidad implementación, user adoption y tiempo despliegue"
-    },
-    {
-      "type": "general",
-      "description": "42 de 57 archivos fuente no fueron procesados por /extract (BUG-01)",
-      "suggestion": "Re-ejecutar /extract con fix de BUG-01 para procesar todos los archivos"
-    },
-    {
-      "type": "general",
-      "description": "20 casos de uso son 70-80% aspiracionales [IG-111] — no validados con usuarios reales",
-      "suggestion": "Validar cuáles casos de uso tienen mayor impacto real vs cuáles son nice-to-have"
+      "description": "90.1% de insights son single-source (145/161) — base amplia pero poco profunda",
+      "suggestion": "Priorizar validación cruzada de insights de alta convergencia y críticos para producto"
     }
   ],
   "system_map": {
-    "vision": "TIMining es el sistema nervioso central de la mina — integrador neutro (\"Efecto Suiza\") que ayuda a cumplir el plan minero mediante datos real-time, IA y sensores virtuales. El valor está en los números que el cliente no tiene, no en replicar los que ya tiene. [IG-40], [IG-41], [IG-91], [IG-90], [IG-50]",
+    "vision": "TIMining es el sistema nervioso central de la mina — integrador neutro (\"Efecto Suiza\") que ayuda a cumplir el plan minero mediante datos real-time, IA y sensores virtuales. El valor está en los números que el cliente no tiene, no en replicar los que ya tiene.",
     "modules": [
       {
         "name": "Monitoreo Operacional Real-Time (Aware → CORE)",
         "status": "Ready",
-        "refs": "[IG-05], [IG-06], [IG-07], [IG-19], [IG-24], [IG-25], [IG-42], [IG-83]",
+        "refs": "IG-05, IG-06, IG-07, IG-19, IG-24, IG-25, IG-42, IG-83",
         "implications": [
           {
             "text": "Timing de datos debe ser transparente: cada capa con su frecuencia visible",
@@ -1993,197 +1047,65 @@
           {
             "text": "\"Desplanificadómetro\" como métrica central: desvío acumulado real-time desde t0",
             "ref": "IG-83"
-          },
-          {
-            "text": "Resolver \"Brecha Geométrica\": minero debe ver contexto geológico y plan espacial",
-            "ref": "IG-19"
-          },
-          {
-            "text": "Detección de cuellos de botella y curvas lentas como caso de uso primario",
-            "ref": "IG-24"
-          },
-          {
-            "text": "Plan minero se pierde cada turno — sistema debe detectar cuándo y dónde",
-            "ref": "IG-42"
           }
-        ]
+        ],
+        "blocker": null
       },
       {
         "name": "Planificación y Simulación (Orchestra → AI-driven)",
         "status": "Blocked",
-        "refs": "[IG-09], [IG-11], [IG-26], [IG-84], [IG-104], [IG-10]",
+        "refs": "IG-09, IG-11, IG-26, IG-84, IG-104, IG-10",
         "implications": [
           {
-            "text": "Simplificar simulador: solo 30% usa funciones avanzadas, debe ser accesible a no-expertos",
+            "text": "Simplificar simulador: solo 30% usa funciones avanzadas",
             "ref": "IG-104"
           },
           {
             "text": "IA corre simulaciones automáticas con motor Orchestra (Phase 7 2026)",
             "ref": "IG-84"
-          },
-          {
-            "text": "Reducir carga consultiva de 30-36h por caso",
-            "ref": "IG-09"
-          },
-          {
-            "text": "Eliminar necesidad de \"trucos\" y workarounds para camiones autónomos",
-            "ref": "IG-11"
-          },
-          {
-            "text": "Mantener capacidad de 20+ escenarios en horizontes 3 años",
-            "ref": "IG-26"
           }
         ],
-        "blocker": "pendiente definición path de simplificación"
-      },
-      {
-        "name": "Conciliación (Delta)",
-        "status": "Ready",
-        "refs": "[IG-04], [IG-27], [IG-65]",
-        "implications": [
-          {
-            "text": "Puerta de entrada al portfolio: mantener baja fricción de entrada",
-            "ref": "IG-04"
-          },
-          {
-            "text": "Resultados <1 minuto como estándar no negociable",
-            "ref": "IG-27"
-          },
-          {
-            "text": "Conciliación geométrica como prueba tangible de valor (adherencia plan)",
-            "ref": "IG-65"
-          }
-        ]
-      },
-      {
-        "name": "Suite Geotécnica (SIC, Tangram, ARIS)",
-        "status": "Ready",
-        "refs": "[IG-03], [IG-28], [IG-29], [IG-30], [IG-35], [IG-12]",
-        "implications": [
-          {
-            "text": "No romper base leal al modernizar interfaces",
-            "ref": "IG-03"
-          },
-          {
-            "text": "Mantener ventaja competitiva ARIS: integración de cualquier instrumento sin cobros extra",
-            "ref": "IG-35"
-          },
-          {
-            "text": "SIC con alta autonomía de usuarios: preservar ese patrón de UX",
-            "ref": "IG-12"
-          },
-          {
-            "text": "Tangram: predicción de bloques como caso crítico de seguridad",
-            "ref": "IG-28"
-          },
-          {
-            "text": "ARIS: 30+ tipos de instrumentos, alertas automáticas",
-            "ref": "IG-30"
-          }
-        ]
+        "blocker": "Pendiente definición path de simplificación"
       },
       {
         "name": "Copiloto IA (Project TIM)",
         "status": "Ready",
-        "refs": "[IG-67]-[IG-75], [IG-78], [IG-47], [IG-82], [IG-98], [IG-76], [IG-77]",
+        "refs": "IG-67 to IG-75, IG-78, IG-47, IG-82, IG-98, IG-76, IG-77",
         "implications": [
           {
             "text": "Proactivo no reactivo: alertas push antes de que el problema ocurra",
             "ref": "IG-47"
           },
           {
-            "text": "Multicanal: WhatsApp, chat, radio mina — donde esté el usuario — [IG-72], [IG-77]",
-            "ref": ""
+            "text": "Multicanal: WhatsApp, chat, radio mina — donde esté el usuario",
+            "ref": "IG-72, IG-77"
           },
           {
             "text": "Path gradual hacia autonomía \"Skynet\": sugerencias → recomendaciones → órdenes",
             "ref": "IG-78"
-          },
-          {
-            "text": "Contexto de turno anterior automático sin depender de WhatsApp informal",
-            "ref": "IG-76"
-          },
-          {
-            "text": "Copiloto que soporte decisiones, no que reemplace al humano (aún)",
-            "ref": "IG-82"
-          },
-          {
-            "text": "Shift describir→prescribir como evolución natural",
-            "ref": "IG-98"
-          }
-        ]
-      },
-      {
-        "name": "Plataforma Unificada (CORE)",
-        "status": "Blocked",
-        "refs": "[IG-16], [IG-17], [IG-18], [IG-44], [IG-48], [IG-57], [IG-58], [IG-59]",
-        "implications": [
-          {
-            "text": "Auth unificado como primer paso de unificación",
-            "ref": "IG-17"
-          },
-          {
-            "text": "Multimodal por defecto: no forzar una sola UI",
-            "ref": "IG-48"
-          },
-          {
-            "text": "Resolver fragmentación stack (C++/Unity/Go/Python/web/email)",
-            "ref": "IG-16"
-          },
-          {
-            "text": "Eliminar cruces manuales de BD, reemplazar con APIs",
-            "ref": "IG-18"
-          },
-          {
-            "text": "Definir arquitectura coherente ANTES de implementar",
-            "ref": "IG-58"
-          },
-          {
-            "text": "La experiencia incluye instalación y onboarding",
-            "ref": "IG-59"
           }
         ],
-        "blocker": "pendiente timeline migración stack"
+        "blocker": null
       }
     ],
     "principles": [
-      {
-        "text": "Mostrar lo invisible, no replicar lo conocido — El valor está en números que el cliente no tiene. No gastar energía en igualar números existentes.",
-        "ref": "[IG-50], [IG-19], [IG-83]"
-      },
-      {
-        "text": "Proactivo sobre reactivo — Alertas y recomendaciones antes de que el problema se consolide. \"Paz mental\" para el usuario.",
-        "ref": "[IG-47], [IG-72], [IG-73], [IG-74]"
-      },
-      {
-        "text": "Simplicidad > features (Homer's Car Detector) — Resistir la tentación de agregar funcionalidades que no se usan. Los usuarios quieren herramientas fáciles, robustas y accionables.",
-        "ref": "[IG-08], [IG-39], [IG-80], [IG-81]"
-      },
-      {
-        "text": "Diagnosticar, no solo reportar — Los usuarios cuentan dolores, no problemas. El sistema debe hacer el diagnóstico como un médico.",
-        "ref": "[IG-55], [IG-82]"
-      },
-      {
-        "text": "La experiencia incluye el deploy — Si la instalación es complicada, es parte de la mala experiencia. El punto de partida debe ser razonablemente bueno.",
-        "ref": "[IG-59], [IG-22], [IG-52]"
-      },
-      {
-        "text": "Multimodal por defecto — Llegar al usuario por múltiples canales (Aware, reportes, alertas, chat, radio). No asumir una sola interfaz.",
-        "ref": "[IG-48], [IG-57], [IG-109]"
-      }
+      "Mostrar lo invisible, no replicar lo conocido",
+      "Proactivo sobre reactivo",
+      "Simplicidad > features (Homer's Car Detector)",
+      "Diagnosticar, no solo reportar",
+      "La experiencia incluye el deploy",
+      "Multimodal por defecto"
     ],
     "open_questions": [
       "¿Bundles Aware/Orchestra obligatorios o opcionales? — CF-01 flagged → Sales + Product",
       "¿Límites de customización por tier de cliente? — CF-02 flagged → CEO + CTO",
-      "¿Estrategia para audiencia CFO? TIMining no habla con ellos actualmente — [IG-49]",
-      "¿Plan para desconcentrar conocimiento crítico de Carlo? — [IG-110]",
-      "¿Realinear pricing de \"licencia\" a \"valor empresarial\"? — [IG-94]",
-      "¿Timeline migración stack fragmentado hacia plataforma unificada? — [IG-16]",
-      "¿Benchmark UX contra industria minera o contra software moderno? — CF-05 context"
+      "¿Estrategia para audiencia CFO? TIMining no habla con ellos actualmente — IG-49",
+      "¿Plan para desconcentrar conocimiento crítico de Carlo? — IG-110",
+      "¿Realinear pricing de \"licencia\" a \"valor empresarial\"? — IG-94",
+      "¿Timeline migración stack fragmentado hacia plataforma unificada? — IG-16"
     ]
   }
-}
-</script>
+}</script>
 
   <script>
   (function() {
@@ -2589,7 +1511,7 @@
     (function() {
       var html = '<div class="module" id="mod-context">';
       html += '<h2>Add Context</h2>';
-      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a field note entry for you to save to <code>01_Sources/</code>.</p>';
+      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note for traceability. No full pipeline run needed.</p>';
       html += '<div class="context-form">';
       html += '<label for="contextTopic">Topic</label>';
       html += '<input type="text" id="contextTopic" placeholder="e.g. CEO alignment, user onboarding, pricing model" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
@@ -2602,7 +1524,7 @@
       html += '</div>';
       html += '<label for="contextTrigger">What triggered this? <span style="font-weight:400;color:#999;">(optional)</span></label>';
       html += '<input type="text" id="contextTrigger" placeholder="e.g. Interview with Maria, reviewing competitor X" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
-      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate field note</button>';
+      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate prompt</button>';
       html += '<div class="context-output" id="contextOutput">';
       html += '<button class="copy-btn" onclick="copyContext()">Copy</button>';
       html += '<pre id="contextText"></pre>';
@@ -2787,17 +1709,48 @@
       var trigger = ($('contextTrigger') || {}).value || '';
       if (!note.trim()) { alert('Please write an observation.'); return; }
       var today = (meta.generated || new Date().toISOString().slice(0, 10));
-      var lines = [];
-      lines.push('### ' + today + ' ' + (topic || 'Untitled'));
-      lines.push('**Confidence:** ' + selectedConfidence);
-      if (trigger.trim()) lines.push('**Context:** ' + trigger.trim());
-      lines.push('');
-      lines.push(note.trim());
-      lines.push('');
-      lines.push('---');
-      fieldNoteText = lines.join('\n');
+
+      // Find next IG-XX ID from existing insights
+      var maxId = 0;
+      (data.insights || []).forEach(function(ig) {
+        var num = parseInt((ig.id || '').replace('IG-', ''), 10);
+        if (num > maxId) maxId = num;
+      });
+      var nextId = 'IG-' + (maxId + 1 < 10 ? '0' + (maxId + 1) : (maxId + 1));
+
+      // Build field note entry
+      var fnLines = [];
+      fnLines.push('### ' + today + ' ' + (topic || 'Untitled'));
+      fnLines.push('**Confidence:** ' + selectedConfidence);
+      if (trigger.trim()) fnLines.push('**Context:** ' + trigger.trim());
+      fnLines.push('');
+      fnLines.push(note.trim());
+      fnLines.push('');
+      fnLines.push('---');
+      fieldNoteText = fnLines.join('\n');
+
+      // Build dual-write prompt
+      var prompt = [];
+      prompt.push('Please do two things:\n');
+      prompt.push('## 1. Inject PENDING insight to 02_Work/INSIGHTS_GRAPH.md\n');
+      prompt.push('### [' + nextId + '] (user-need, current) PENDING');
+      prompt.push(note.trim());
+      prompt.push('> "' + note.trim() + '"');
+      prompt.push('Voice: researcher');
+      prompt.push('Authority: observation');
+      prompt.push('Source confidence: ' + selectedConfidence);
+      prompt.push('Convergence: 1/1 sources');
+      prompt.push('Ref: field-note');
+      if (trigger.trim()) prompt.push('Trigger: ' + trigger.trim());
+      prompt.push('');
+      prompt.push('## 2. Save field note to 01_Sources/[relevant-folder]/_FIELD_NOTES.md\n');
+      prompt.push(fieldNoteText);
+      prompt.push('');
+      prompt.push('## 3. Log to 02_Work/MEMORY.md');
+      prompt.push('Append entry: /status Add Context — injected ' + nextId + ' (PENDING, researcher observation, confidence: ' + selectedConfidence + ')');
+
       var output = $('contextOutput');
-      $('contextText').textContent = fieldNoteText + '\n\nSave this entry to a _FIELD_NOTES.md file in the appropriate 01_Sources/ subfolder.';
+      $('contextText').textContent = prompt.join('\n');
       output.classList.add('visible');
       updateCount();
     };

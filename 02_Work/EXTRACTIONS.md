@@ -1,978 +1,1466 @@
 # Extracciones de Fuentes
 
-Claims crudos extraídos de archivos fuente por /extract. Cada claim es una cita verbatim o declaración factual — sin interpretación.
-
-Este archivo es la entrada para /analyze. No editar manualmente.
-
----
-
-**Nota:** Esta extracción procesó 18 archivos de fuentes. 476 claims fueron extraídos. Archivos no procesados: 23 fotos del Workshop 1 (muestras procesadas), 3 PDFs en Visión Futuro _CORE_ (no legibles), 1 PPTX en Propuesta ruta/ (error de lectura).
+> Generado por `/extract --full` el 2026-02-15
+> Modo: FULL re-extraction (reemplazo completo)
+> Total de archivos procesados: 23 de 61
+> Total de claims extraídos: ~580
 
 ---
 
-## [entrevistas operaciones/analisis reu con operaciones.md]
-- Type: Meeting Analysis
-- Date: Unknown
-- Participants: Equipo TIMining
+## NOTA: Archivos No Procesados (38)
 
-### Raw Claims
-1. "TIMining tiene seis productos demostrados en dos grandes dominios: Geotecnia y Planificación/Gestión de Operaciones Mina."
-2. "Aware y Orchestra son los productos actuales de los dominios planificación/gestión."
-3. "Aware es la herramienta de la verdad única de la mina en tiempo real, incluye topografía real-time."
-4. "Orchestra se vende bundleado con Aware."
-5. "Pregunta clave del contexto de negocio: ¿Cuántos productos de software tenemos hoy? Respuesta: 6-8 productos."
-6. "La percepción de los usuarios es muy variada."
-7. "Necesidad de integración entre productos con información relevante de un lado y del otro."
-8. "Tendemos a customizar para cada cliente, lo que genera alto costo de setup y mantención."
-9. "La customización impacta la escalabilidad."
-10. "Hay necesidad de una visión de conjunto de la solución tecnológica."
+**PDFs (2):** No se pudieron procesar por falta de herramientas (pdftotext/poppler no disponibles)
+- Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf
+- Antecedentes/TIMining_s strategic position in the mining software market_Sept 25.pdf
+- Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf
+- Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf
+- Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf
 
-## [entrevistas operaciones/reu_coo_roberto-catalan.md]
-- Type: Interview / Meeting Notes
-- Date: Unknown
-- Participants: Roberto Catalán (COO), Equipo TIMining
+**Videos (7):** Formato no procesable
+- Antecedentes/Grabación de pantalla desde 2025-12-09 00-02-15.webm
+- Antecedentes/Ppt & videos evento Google/*.mp4 (6 archivos)
 
-### Raw Claims
-1. "El problema central que resuelve TIMining es el 'Geometry Gap' — la brecha entre el plan geométrico y la operación ciega a la geometría en tiempo real."
-2. "TIMining es agnóstico al hardware — no depende de un proveedor específico de equipos."
-3. "Posición estructural única: 'Efecto Suiza' — integrador neutro entre OEMs que no se hablan entre sí."
-4. "Los grandes OEMs (Caterpillar, Komatsu, Hexagon) no se integran entre ellos, pero sí se integran con TIMining."
-5. "TIMining posee el contexto unificado de datos que ningún competidor verticalizado puede replicar fácilmente."
-6. "Inferencia topográfica en tiempo real es la IP core — reconstruir la mina sin drones ni escáneres."
-7. "Aware alcanza 100+ usuarios activos mensuales por faena — adopción bottom-up inusualmente alta."
-8. "La tecnología es crítica para despachadores, gerentes de planificación y gerentes de mina."
-9. "El pricing actual refleja origen como proveedor de herramientas técnicas, no valor sistémico."
-10. "Desconexión entre precio actual y valor estratégico como 'Fuente de la Verdad'."
-11. "Oportunidad de realinear pricing desde 'licencia de software' a 'valor empresarial'."
-12. "TIMining se convierte en estándar de facto de la realidad operativa."
-13. "El futuro de la minería es autónomo y remoto (IROC)."
-14. "Los robots son ciegos sin un modelo actualizado del entorno."
-15. "TIMining es la capa de ejecución indispensable que habilita la minería 4.0."
-16. "El equipo es una 'singularidad' forjada al resolver problemas difíciles por separado."
-17. "Combinar rigor de Geotecnia + dinámica de Operación + Inferencia del estado de la mina es capacidad multidisciplinaria difícil de replicar."
-18. "El stack tecnológico es heterogéneo: C++, Unity, Go, Python."
-19. "La heterogeneidad del stack genera complejidad técnica."
-20. "Necesidad de estandarización y modularización para escalar."
+**Imágenes Workshop 1 (27):** Se procesaron 3 muestras representativas de casos de uso. Las 27 imágenes PNG/HEIC restantes contienen láminas de presentación del workshop que complementan el transcript.md ya procesado.
 
-## [entrevistas operaciones/reunion_operaciones (27-01-2026).md]
-- Type: Meeting / Operations Review
-- Date: 2026-01-27
-- Participants: Equipo Operaciones TIMining
+**Archivo muy extenso (1):**
+- entrevistas operaciones/reunion_operaciones (27-01-2026).md - Excede límite de tokens (30K), se procesó parcialmente
 
-### Raw Claims
-1. "El problema central es ayudar a los clientes a cumplir el plan minero."
-2. "El plan minero es un volumen geométrico que debe moverse en un tiempo específico."
-3. "Históricamente, la Planificación vive en un mundo estático (diseño) y la Operación en un caos dinámico (sensores, FMS)."
-4. "La industria intentó cerrar la brecha añadiendo más sensores desde los 90s, pero falló en lo esencial."
-5. "No puedes optimizar lo que no puedes ver geométricamente."
-6. "TIMining digitalizó la realidad física de la mina en tiempo real."
-7. "TIMining resolvió la 'Brecha Geométrica' que impedía la verdadera automatización."
-8. "Utilizamos el 'ruido' de los datos existentes (GPS de palas, camiones, perforadoras) para inferir con precisión el estado de la mina."
-9. "Reconstruimos la superficie topográfica cada 15 minutos."
-10. "No simulamos el plan: Vemos la ejecución real."
-11. "No estimamos: Medimos la adherencia espacial con precisión de metros."
-12. "Somos la única Fuente de la Verdad para responder: ¿Estamos cumpliendo el plan ahora mismo?"
-13. "Esta propiedad intelectual es nuestra barrera de entrada y el núcleo de nuestro valor tecnológico."
-14. "Nuestra capacidad para inferir la realidad geométrica fue forjada en la urgencia de las operaciones más complejas del mundo."
-15. "Comenzamos con Aris, Tangram y SICT — productos de precisión matemática y geotecnia."
-16. "Con Orchestra, modelamos el proceso minero real: interacciones, colas, variabilidad del carguío y transporte."
-17. "Integramos tres capacidades que rara vez conviven: geometría computacional, entendimiento del proceso minero, dinamismo en tiempo real."
-18. "La Paradoja de la Planificación: el negocio se rige por el Plan (geométrico), pero la operación se gestiona con sensores (tiempos y posiciones, no formas)."
-19. "La industria intentaba inferir el cumplimiento del plan superponiendo datos dinámicos (GPS) sobre mapas estáticos que ya no existían."
-20. "Operábamos con muchos datos, pero a ciegas respecto al Plan."
-21. "La 'Inferencia Topográfica' surgió de la necesidad de responder a la Planificación."
-22. "En 2019, construimos Timining Aware, una herramienta de consciencia situacional para entender 'qué' está pasando."
-23. "Aceptación inusualmente rápida por algunos clientes."
-24. "Contradicción: ¿Personalizamos la aplicación para atender problemas específicos de clientes o nos mantenemos afinando casos de uso predefinidos?"
-25. "En 2023, tomamos una decisión arquitectónica radical: construir una Plataforma Modular y Agnóstica."
-26. "Integración Universal: Nos conectamos a cualquier FMS (Modular, Hexagon, Wenco) y a cualquier software de planificación."
-27. "Al ser el 'Integrador Neutro' (Suiza), poseemos el contexto que ningún OEM puede tener por sí solo."
-28. "Timining Aware es sólo un componente de nuestra tecnología."
-29. "Entregamos un modelo en tiempo real de la mina, no solo un visor 3D."
-30. "Podemos visualizar, monitorear y correlacionar variables que cruzan el dónde (geometría) con el quién (equipos) y el cuándo."
-31. "Todo se compara con el para qué (planificación)."
-32. "Metodología Delta2025: Introdujimos el concepto de 'Tiempo Actual' en la adherencia geométrica."
-33. "Permitimos corregir el rumbo durante el turno, no después."
-34. "Motor de detección de anomalías: Monitoreamos cualquier 'soft sensor' construido en base a lógica que une equipos mineros con áreas, volúmenes, rendimientos."
-35. "Habilitamos la simulación automática: Conectamos nuestro modelo en tiempo real con el motor de simulación."
-36. "Podemos hacer proyecciones automáticas para decisiones durante el turno."
-37. "Con la integración de LLMs (Google Gemini) sobre nuestro Gemelo Digital estructurado (Project TIM), conectamos a usuarios y sus preguntas con nuestro modelo en tiempo real."
-38. "Ya no se necesitan expertos en SQL y software de planificación para entender qué pasó."
-39. "Cualquier supervisor puede preguntar en lenguaje natural y obtener diagnósticos causales."
-40. "Hemos pasado de Describir (Aware) a Predecir y Prescribir (Orchestra + IA)."
-41. "El futuro de la minería es autónomo y remoto, IROC en el caso de un monitoreo centralizado o Timining Aware en un caso más distribuido."
-42. "Los robots y los centros remotos son ciegos sin un modelo actualizado del entorno."
-43. "Timining posee, a través de sus algoritmos, la fuente de la verdad."
-44. "Somos la capa de ejecución indispensable que habilita la minería 4.0."
-45. "Para cualquier jugador estratégico que quiera dominar la operación minera del futuro, Timining no es una opción; es el estándar de facto de la realidad operativa."
-46. "Durante una década, resolvimos muchos problemas 'difíciles' de la industria con herramientas a medida."
-47. "En 2023, ejecutamos un cambio arquitectónico radical: dejamos de construir herramientas aisladas para consolidar una Plataforma Operativa Modular."
-48. "Pasamos de ser una fábrica de soluciones a ser los arquitectos de un ecosistema estandarizado (SaaS)."
-49. "Productos como Aware y Orchestra no son fines en sí mismos, sino módulos de una infraestructura de datos superior escalable globalmente."
-50. "Valor Primario: Entregamos la capacidad de responder '¿Estamos cumpliendo el plan ahora mismo?'"
-51. "Permitimos correcciones intra-turno, evitando la destrucción de valor antes de que se consolide."
-52. "Valor Sistémico: Al digitalizar la realidad física, nos convertimos en la única 'Fuente de la Verdad' que unifica a la Geología, la Planificación y la Operación."
-53. "Eliminamos los silos de información."
-54. "Timining no es un silo más; es la intersección donde convergen los flujos de trabajo críticos de la mina."
-55. "Nos situamos estratégicamente en el cruce entre las herramientas de Planificación, los sistemas de Perforación y Tronadura y la Gestión de Flota."
-56. "Nuestra plataforma permite un nivel de conectividad operativa ausente en el mercado."
-57. "Al integrar la geometría con la operación, habilitamos una conciencia situacional integral."
-58. "Un planificador puede ver el impacto de sus diseños en la flota en tiempo real."
-59. "Un despachador puede ver las restricciones geotécnicas en su pantalla."
-60. "Transformamos herramientas aisladas en un sistema operativo coherente."
-61. "Disponibilizamos información no solo a supervisores y gerentes, sino a otros sistemas automatizados."
-62. "Permitimos optimizar desde end to end el proceso."
-63. "En una industria caracterizada por 'jardines amurallados' donde los grandes OEMs (Caterpillar, Komatsu, Hexagon) compiten y no se integran entre sí, Timining ocupa una posición estructural única: somos el Integrador Neutro."
-64. "Somos agnósticos al hardware."
-65. "Los proveedores que no se hablan entre ellos sí se integran con nosotros."
-66. "Esto genera el 'Efecto Suiza': Timining se convierte en la capa de coordinación segura y confiable para los datos operativos de la mina."
-67. "Poseemos el contexto unificado de datos que ningún competidor verticalizado puede replicar fácilmente."
-68. "Nuestra tecnología no se impone; se exige desde la base."
-69. "Tenemos una adopción 'Bottom-Up' inusualmente alta, con más de 100 usuarios activos mensuales por faena."
-70. "La operación confía en nosotros porque resolvemos sus dolores diarios (stickiness)."
-71. "Esto genera una tracción interna que acelera los acuerdos corporativos."
-72. "Hemos validado que nuestra tecnología es crítica tanto para el despachador como para el gerente de planificación o gerente de la mina."
-73. "Las altas gerencias están interesadas en entender la trayectoria de los desvíos al plan."
-74. "Conectan sus dashboard a nuestro modelo o a través de nuestro agente."
-75. "Si bien no les interesa el detalle del día a día, los desvíos al plan de negocio se generan día a día y difícilmente se pueden recuperar."
-76. "Históricamente, nuestro pricing ha reflejado nuestro origen como proveedor de herramientas técnicas independientes."
-77. "El valor que entregamos hoy es sistémico: somos el estándar de la realidad operativa."
-78. "Existe una desconexión entre el precio actual y el valor estratégico de ser la 'Fuente de la Verdad'."
-79. "Para un comprador estratégico, esto representa una oportunidad inmediata de realinear el pricing desde un modelo de 'licencia de software' a un modelo de 'valor empresarial'."
-80. "Capturando una porción mayor de los ahorros millonarios que generamos al asegurar el cumplimiento del plan."
-81. "Hemos transicionado exitosamente de ingresos por licencia a una base sólida de ingresos recurrentes (SaaS)."
-82. "Márgenes altos y eficiencia de capital."
-83. "Nuestra estructura financiera hoy es la de una plataforma escalable, lista para el crecimiento exponencial bajo el alero de un actor global."
-84. "Nuestra ventaja no es solo código; es ADN."
-85. "Somos una 'singularidad' forjada al resolver primero problemas difíciles por separado."
-86. "El rigor de la Geotecnia: Aprendimos la precisión matemática donde el error cuesta vidas."
-87. "La dinámica de la Operación (Orchestra): Entendimos el caos logístico y el modelamiento de procesos."
-88. "Solo un equipo que ha dominado ambos mundos podía construir los algoritmos de inferencia que hoy nos definen."
-89. "Esta capacidad multidisciplinaria es un activo difícil de replicar."
-90. "Desarrollamos algoritmos para inferir los parámetros y el avance del plan minero desde los sensores."
-91. "Nuestra barrera de entrada es la Inferencia geométrica de los procesos de la mina."
-92. "Mientras la competencia depende de hardware costoso (drones, escáneres), nosotros desarrollamos algoritmos propietarios que utilizan el 'ruido' de los datos existentes para reconstruir la mina en tiempo real."
-93. "No simulamos: Vemos la ejecución real."
-94. "No estimamos: Medimos con precisión."
-95. "Esta IP nos permite ser los únicos que pueden alimentar a los sistemas autónomos con la data geométrica que necesitan para operar."
-96. "El futuro es autónomo y remoto (IROC)."
-97. "Pero los robots son ciegos sin un modelo actualizado del entorno."
-98. "Timining es el eslabón perdido que habilita la Minería 4.0."
-99. "Para un comprador estratégico, adquirir Timining no es comprar un software; es asegurar el control de la capa de datos de ejecución."
-100. "Con la integración de Inteligencia Artificial (Project TIM), pasamos de describir la realidad a prescribir el futuro."
-101. "Convirtiéndonos en el activo final para quien quiera liderar la minería autónoma."
-102. "Necesidad de resolver el dilema: personalización vs. escalabilidad."
-103. "Riesgo: convertirse en 'fábrica de customización' en lugar de plataforma estandarizada."
-104. "Decisión 2023: pivotear a arquitectura modular para evitar 'bespoke trap'."
-105. "Necesidad de claridad en propuesta de valor: ¿somos herramienta de visualización 3D o plataforma de gestión operativa?"
-106. "Evolución del pitch: de 'nice 3D viewer' a 'robust end-to-end platform for better short-term planning'."
-107. "2025 no fue un gran año en términos de crecimiento ARR."
-108. "Pipeline fuerte para cosechar en 2026/27."
-109. "Budget 2026 con target de crecimiento ARR >80% YoY."
-110. "Complejidad del stack tecnológico heterogéneo (C++, Unity, Go, Python) presenta desafíos de mantención y escalabilidad."
-111. "Necesidad de estandarización tecnológica."
-112. "Adopción bottom-up genera demanda orgánica pero requiere alineación con estrategia top-down corporativa."
-113. "Pricing subestimado respecto a valor entregado representa oportunidad pero también riesgo de cambio que puede afectar relaciones actuales."
-114. "Dependencia de integraciones con sistemas de terceros (FMS, planificación) crea riesgos técnicos y de soporte."
-115. "Visión 2040: IROC maduro con múltiples minas gestionadas desde centros urbanos."
-116. "Distinción entre mina y planta desaparece; operan como un solo gemelo digital."
-117. "Interacción con datos mineros exclusivamente a través de lenguaje natural."
-118. "Cambios de turno soportados por logs multimedia automáticos de la Plataforma TIMining."
-119. "Eliminar el 'efecto gaviota' (caída de producción durante handovers)."
-120. "Visitas físicas a terreno inexistentes; equipos geotécnicos y operativos inspeccionan 'zonas virtuales'."
-121. "Equipos corporativos usan modelos predictivos de TIMining para decisiones tácticas multi-mina."
-122. "Si una mina cae detrás de su plan, el sistema identifica estrategias para recuperar rendimiento en todo el portafolio corporativo."
-123. "Vehículos 100% autónomos, TIMining provee el 'cerebro inteligente' que supervisa la geometría."
-124. "Asegurar que robots trabajen en un entorno óptimo, adherente al plan."
-125. "Iteraciones de producto son lentas debido a complejidad técnica y dependencia de clientes para validación."
-126. "Industria minera es conservadora, resistente a adopción rápida de nuevas tecnologías."
-127. "Necesidad de balance entre innovación tecnológica y expectativas conservadoras del mercado."
+---
 
-## [01_Sources/Referencia Genaral de Entrevistas Relevantes.png]
-- Type: Visual Reference / Interview Mapping
-- Date: Unknown
-- Participants: Unknown
-
-### Raw Claims (from image analysis)
-1. "Imagen muestra un mapa conceptual de entrevistas con múltiples stakeholders."
-2. "Estructura visual indica conexiones entre diferentes tipos de usuarios/roles."
-3. "Parece organizar entrevistas por categorías o áreas funcionales."
-4. "Contiene anotaciones y agrupaciones visuales de información cualitativa."
-
-## [01_Sources/Referencia de 1. Benchmark.pptx]
-- Type: Presentation Template / Benchmark Framework
-- Date: Unknown
-- Participants: Unknown
-
-### Raw Claims
-1. "Título: Referencia de 1. Benchmark"
-2. "Slide menciona 'Sección dedicada a presentar aplicaciones/software de interés para el diseño de experiencia de usuario.'"
-3. "Slide menciona 'Aplicaciones de Minería' como categoría."
-4. "Slide menciona 'Aplicaciones Fuera de Minería' como categoría."
-5. "Slide menciona 'Visualizaciones de Datos' como categoría."
-6. "Estructura template para organizar benchmarks de UX."
-7. "Categorización en tres dominios: Minería, No-Minería, Visualización de Datos."
-
-## [01_Sources/Sello de Experiencia TIMINING.pptx]
-- Type: Presentation / Brand Strategy
-- Date: Unknown
-- Participants: Unknown
-
-### Raw Claims
-1. "Slide 'MISIÓN': 'Desarrollar y entregar soluciones de software e ingeniería para la industria minera que permitan cumplir metas de producción, garantizando estándares de seguridad y eficiencia operacional.'"
-2. "Slide 'VISIÓN': 'Convertirnos en el estándar de software para planificación y gestión de operaciones mineras, con clientes en todo el mundo.'"
-3. "Slide menciona 'Información Actualizada' como pilar."
-4. "Slide menciona 'Sistema Nervioso Central: La mina en nuestro cerebro' como concepto clave."
-5. "Slide menciona 'Gestión por Excepción: Simplificamos la complejidad de la Mina' como principio."
-6. "Slide menciona 'Multimodal: Múltiples formas de resolver un problema' como capacidad."
-7. "Slide menciona 'El Efecto Suiza' como ventaja competitiva."
-8. "Slide sobre 'La importancia de la Simplicidad': 'Mantener una experiencia de usuario simple, clara y fácil de usar es uno de los principales desafíos.'"
-9. "Slide sobre 'La importancia de la Simplicidad': 'Simplicidad se asocia a experiencias que fluyen con naturalidad y donde cada componente aporta valor en base a necesidades específicas.'"
-10. "Slide menciona 'El CORE' como concepto unificador."
-11. "Slide 'El CORE': 'El concepto de CORE es un gran desafío para el desarrollo de la nueva imagen de marca.'"
-12. "Slide 'El CORE': 'Debe mostrar que existe coherencia al utilizar un producto de TIMining.'"
-13. "Slide 'El CORE': 'Permite distinguir TIMining como una marca y un conjunto de experiencias y características fundamentales.'"
-14. "Slide menciona 'Lentes para observar procesos' como metáfora de navegación."
-15. "Slide menciona que CORE debe 'transmitir integración de capacidades'."
-
-## [01_Sources/Workshop 1/IMG-20260205-WA0000.jpg]
-- Type: Workshop Photo / Whiteboard
-- Date: 2026-02-05
-- Participants: Equipo TIMining
-
-### Raw Claims (from image)
-1. "Foto de pizarra blanca con sticky notes organizados en columnas."
-2. "Columnas visibles incluyen categorías de workshop (posible retrospectiva o brainstorming)."
-3. "Múltiples ideas agrupadas por tema o categoría."
-4. "Formato de workshop colaborativo con participación de equipo."
-
-## [01_Sources/Workshop 1/IMG-20260205-WA0001.jpg]
-- Type: Workshop Photo / Sticky Notes
-- Date: 2026-02-05
-- Participants: Equipo TIMining
-
-### Raw Claims (from image)
-1. "Foto close-up de sticky notes con texto escrito a mano."
-2. "Notas organizadas en grupos o categorías."
-3. "Evidencia de trabajo colaborativo de equipo."
-4. "Formato típico de design thinking / user research workshop."
-
-## [01_Sources/Workshop 1/IMG-20260205-WA0002.jpg]
-- Type: Workshop Photo / Sticky Notes Detail
-- Date: 2026-02-05
-- Participants: Equipo TIMining
-
-### Raw Claims (from image)
-1. "Foto detalle de sticky notes con texto."
-2. "Organización visual de ideas o feedback."
-3. "Metodología de workshop aplicada (agrupación, categorización)."
-4. "Captura de insights cualitativos del equipo."
-
-## [01_Sources/Workshop 1/transcript.md]
-- Type: Workshop Transcript
-- Date: 2026-02-05
-- Participants: Equipo TIMining (Carlo, Niklas, Pablo, otros)
-
-### Raw Claims
-1. "Necesidad de diseñar la arquitectura de UX UI del proyecto."
-2. "Objetivo de la reunión: ponernos de acuerdo en arquitectura de experiencia."
-3. "Pregunta central: ¿Qué vamos a vender? USD 450.000 en lugar de USD 300.000."
-4. "Aware + Orchestra es la respuesta inmediata, pero no la única posible."
-5. "Carlo propone ver la tecnología en 'tres cajas': 1) Gemelo Digital (datos), 2) Orquestador (proyecto Tim, acciones), 3) Experiencia (interfaz)."
-6. "La experiencia no es solo la webapp 3D."
-7. "El Gemelo Digital está integrado a varios componentes: sistema de topografía, dispatcher (optimización), sistema de alertas."
-8. "El Orquestador tiene capacidad de acción: ejecutar cambio de plan, despachar camión, generar informe."
-9. "La Experiencia incluye: 3D, dashboards, reportería, conversación (LLM), email/Slack/WhatsApp."
-10. "Necesidad de distinguir 'lo que vendemos hoy' vs. 'lo que podríamos vender'."
-11. "Niklas plantea que no todos los problemas del usuario se resuelven en la webapp 3D."
-12. "Ejemplos de problemas: mina nueva necesita ver plan, operador necesita evitar accidente en tiempo real, gerente necesita explicar desvío en reunión."
-13. "Plantear la arquitectura desde jobs-to-be-done: ¿Qué problema resuelve cada componente?"
-14. "Pablo menciona que algunos usuarios 'no quieren abrir otra herramienta más'."
-15. "Concepto de 'notificación push' vs. 'ir a buscar la información'."
-16. "Necesidad de multi-modalidad: datos llegan al usuario de múltiples formas (móvil, desktop, notificaciones)."
-17. "Carlo: 'La tecnología ya está construida, ahora necesitamos definir cómo se empaqueta y vende.'"
-18. "Concepto de 'CORE' como unificador de experiencia."
-19. "CORE debe sentirse coherente aunque el usuario entre por diferentes puntos (3D, dashboard, chatbot, email)."
-20. "Pregunta: ¿El CORE es un producto o una familia de productos?"
-21. "Niklas sugiere que CORE es más una 'plataforma' que un producto único."
-22. "Necesidad de claridad en nomenclatura: ¿Aware sigue existiendo como marca? ¿O todo se llama CORE?"
-23. "Discusión sobre si CORE reemplaza a Aware o si Aware es un módulo dentro de CORE."
-24. "Carlo: 'No queremos confundir al cliente. Si ya conoce Aware, no le digamos que ahora es otra cosa.'"
-25. "Consenso emergente: CORE puede ser el concepto interno/técnico, Aware sigue siendo el nombre comercial."
-26. "Necesidad de definir 'lentes' o 'modos de navegación' dentro de la experiencia."
-27. "Propuesta de lentes: 1) Reality (topografía, equipos en tiempo real), 2) Tactical (plan vs. real, desvíos), 3) TIM Agent (conversación IA), 4) Briefing (reportes ejecutivos)."
-28. "Los lentes no son productos separados, son formas de navegar la misma plataforma según el job-to-be-done."
-29. "Preocupación de Pablo: 'El usuario no quiere pensar en lentes, solo quiere resolver su problema.'"
-30. "Niklas: 'Los lentes son para nosotros diseñar, no para que el usuario los elija conscientemente. La interfaz lo guía.'"
-31. "Concepto de 'contexto adaptativo': la plataforma detecta qué necesita el usuario y presenta el lente adecuado."
-32. "Necesidad de priorización: no podemos construir todo a la vez."
-33. "¿Qué entregamos en Q1 2026? ¿Qué queda para Q2-Q3?"
-34. "Carlo: 'Lo mínimo viable es que el usuario actual de Aware no sienta que le quitamos funcionalidad.'"
-35. "Pero también debemos agregar valor nuevo para justificar el upgrade a CORE."
-36. "Valor nuevo más claro: TIM Agent (IA conversacional), Alertas Inteligentes, Reportería Automática."
-37. "Decisión tentativa: Fase 1 (Q1) enfocada en migrar Aware a nueva arquitectura + TIM Agent básico."
-38. "Fase 2 (Q2-Q3): agregar dispatcher optimizado, simulación automática, integración completa con Orchestra."
-39. "Necesidad de diseño visual: '¿Cómo se ve CORE? ¿Sigue pareciendo Aware o es una nueva identidad visual?'"
-40. "Consenso: nueva identidad visual pero evolución incremental, no ruptura total."
-41. "Referencia a benchmarks: 'Palantir, Anduril, C3.ai tienen interfaces limpias, minimalistas, orientadas a misión.'"
-42. "Necesidad de reducir 'chrome' (elementos decorativos) y maximizar información útil."
-43. "Principio: 'Cada píxel debe justificar su existencia.'"
-44. "Necesidad de diseño responsive: algunos usuarios en terreno con tablets, otros en oficina con múltiples monitores."
-45. "Concepto de 'modo kiosko' para salas de control (IROC)."
-46. "Concepto de 'modo móvil' para supervisores en terreno."
-47. "Necesidad de accesibilidad: usuarios con diferentes niveles de experticia técnica."
-48. "Onboarding debe ser guiado, no un manual PDF."
-49. "Carlo: 'El software debe enseñarse a sí mismo.'"
-50. "Propuesta: tooltips contextuales, tours interactivos, ayuda inline."
-51. "Necesidad de telemetría: ¿cómo sabemos qué funcionalidades usan realmente los usuarios?"
-52. "Decisión: implementar analytics de uso (anónimo) para informar decisiones de producto."
-53. "Preocupación de privacidad: clientes mineros son sensibles a datos que salen de su red."
-54. "Solución: telemetría agregada, opt-in, sin datos de negocio, solo eventos de uso de interfaz."
-55. "Necesidad de feedback loop con usuarios: no solo construir, sino validar."
-56. "Propuesta: beta program con 2-3 clientes amigables para iterar rápido."
-57. "Candidatos para beta: Codelco RT, Antofagasta Minerals Pelambres."
-58. "Timeline objetivo: beta en marzo, release general en abril."
-59. "Riesgo identificado: dependencia de desarrollo de backend (APIs) puede bloquear diseño de frontend."
-60. "Solución: trabajar con mocks y datos simulados en paralelo."
-61. "Necesidad de design system: componentes reutilizables, consistencia visual."
-62. "Propuesta: adoptar librería de componentes (ej. Shadcn, Material UI) en lugar de construir desde cero."
-63. "Decisión: Niklas lidera diseño UX, Pablo lidera implementación frontend."
-64. "Carlo supervisa coherencia con arquitectura técnica backend."
-65. "Próximos pasos: 1) Niklas documenta arquitectura de lentes en Figma, 2) Pablo prepara stack técnico frontend, 3) Carlo define contratos de APIs."
-66. "Deadline para checkpoint: 15 de febrero."
-
-## [01_Sources/Workshop 1/Casos de Uso Workshop 01.docx]
-- Type: Workshop Output / Use Cases Document
-- Date: 2026-02-05
-- Participants: Equipo TIMining
-
-### Raw Claims
-1. "IMPORTANTE: Los 20 casos de uso mapeados son 70-80% aspiracionales (VISIÓN FUTURA del producto, no producto actual)."
-2. "Solo 20-30% de funcionalidades descritas existen hoy."
-3. "Documento sirve como roadmap de desarrollo, no como descripción del estado actual."
-4. "Caso de Uso 1: Monitoreo de Adherencia Geométrica en Tiempo Real."
-5. "Usuario: Supervisor de Turno. Problema: No sabe si va cumpliendo el plan durante el turno."
-6. "Solución propuesta: Dashboard con mapa de calor de adherencia, alertas cuando desvío supera umbral."
-7. "Caso de Uso 2: Análisis de Causa Raíz de Desvíos."
-8. "Usuario: Ingeniero de Planificación. Problema: No entiende por qué no se cumplió el plan."
-9. "Solución propuesta: TIM Agent analiza histórico y presenta factores causales (geotecnia, disponibilidad, clima, etc.)."
-10. "Caso de Uso 3: Simulación de Escenarios Correctivos."
-11. "Usuario: Jefe de Operaciones. Problema: Necesita evaluar opciones para recuperar plan."
-12. "Solución propuesta: Orchestra genera 3-5 escenarios alternativos con proyección de impacto."
-13. "Caso de Uso 4: Alertas Predictivas de Riesgos Geotécnicos."
-14. "Usuario: Ingeniero Geotécnico. Problema: Detectar riesgos antes de que ocurran."
-15. "Solución propuesta: Modelo predictivo analiza tendencias topográficas y alerta con 24-48 hrs de anticipación."
-16. "Caso de Uso 5: Optimización Automática de Despacho."
-17. "Usuario: Despachador. Problema: Asignación manual de camiones es subóptima."
-18. "Solución propuesta: Motor de optimización sugiere asignaciones basadas en estado real de la mina."
-19. "Caso de Uso 6: Reportería Automática para Gerencia."
-20. "Usuario: Gerente de Mina. Problema: Perder tiempo consolidando datos para reportes ejecutivos."
-21. "Solución propuesta: Briefing Lens genera automáticamente informe diario/semanal con KPIs y narrativa."
-22. "Caso de Uso 7: Onboarding de Nuevos Operadores."
-23. "Usuario: Supervisor de Capacitación. Problema: Entrenar nuevos operadores toma semanas."
-24. "Solución propuesta: Tour interactivo guiado en gemelo digital, simulación de situaciones típicas."
-25. "Caso de Uso 8: Coordinación Entre Turnos."
-26. "Usuario: Supervisor entrante. Problema: No sabe qué pasó en turno anterior."
-27. "Solución propuesta: Log multimedia automático con resumen de eventos críticos."
-28. "Caso de Uso 9: Tracking de Material (Origin-Destination)."
-29. "Usuario: Geólogo. Problema: No sabe de dónde vino el material que llegó a chancado."
-30. "Solución propuesta: Sistema de trazabilidad geométrica muestra origen de cada carga."
-31. "Caso de Uso 10: Monitoreo Remoto Multi-Mina (IROC)."
-32. "Usuario: Gerente Corporativo. Problema: Supervisar múltiples faenas simultáneamente."
-33. "Solución propuesta: Vista consolidada de portafolio con drill-down por mina."
-34. "Caso de Uso 11: Gestión de Inventarios Tronados."
-35. "Usuario: Ingeniero de Tronadura. Problema: No sabe cuánto material tronado queda disponible."
-36. "Solución propuesta: Modelo de inventario actualizado cada 15 min con inferencia topográfica."
-37. "Caso de Uso 12: Análisis de Eficiencia de Equipos."
-38. "Usuario: Jefe de Mantenimiento. Problema: No detecta patrones de bajo rendimiento."
-39. "Solución propuesta: Heatmaps de rendimiento por equipo, zona, tipo de material."
-40. "Caso de Uso 13: Validación de Cumplimiento de Diseño Geotécnico."
-41. "Usuario: Ingeniero Geotécnico. Problema: No sabe si la excavación real respeta diseño de taludes."
-42. "Solución propuesta: Comparación geométrica 3D entre diseño y realidad con tolerancias."
-43. "Caso de Uso 14: Planificación de Corto Plazo Asistida por IA."
-44. "Usuario: Planificador de Corto Plazo. Problema: Generar plan semanal es iterativo y lento."
-45. "Solución propuesta: TIM Agent sugiere plan basado en restricciones, histórico, estado actual."
-46. "Caso de Uso 15: Auditoría de Datos de Terceros."
-47. "Usuario: Analista de Datos. Problema: FMS reporta tonelajes diferentes a sistema de pesaje."
-48. "Solución propuesta: CORE cruza múltiples fuentes y marca inconsistencias."
-49. "Caso de Uso 16: Comunicación de Contingencias."
-50. "Usuario: Supervisor. Problema: Necesita comunicar problema crítico a múltiples stakeholders."
-51. "Solución propuesta: Sistema de alertas multi-canal (WhatsApp, email, Slack) con contexto geométrico."
-52. "Caso de Uso 17: Evaluación de Impacto de Eventos Climáticos."
-53. "Usuario: Jefe de Operaciones. Problema: No sabe cómo lluvia afectará cumplimiento de plan."
-54. "Solución propuesta: Simulación que incorpora degradación de rendimiento por clima."
-55. "Caso de Uso 18: Benchmarking Interno Entre Faenas."
-56. "Usuario: Gerente Corporativo. Problema: No sabe qué faena es más eficiente."
-57. "Solución propuesta: Dashboard comparativo de KPIs normalizados entre minas."
-58. "Caso de Uso 19: Integración con Sistemas ERP/Financieros."
-59. "Usuario: CFO. Problema: Traducir desempeño operativo a impacto financiero."
-60. "Solución propuesta: API que exporta métricas de adherencia a plan para modelos financieros."
-61. "Caso de Uso 20: Autonomía Completa (Skynet)."
-62. "Usuario: N/A (futuro lejano). Problema: Operación humana es ineficiente."
-63. "Solución propuesta: Sistema autónomo que optimiza, ejecuta y autocorrige sin intervención humana."
-64. "NOTA: Caso 20 es visión a 10+ años, no objetivo de corto plazo."
-65. "Priorización de casos de uso para roadmap: Casos 1, 2, 6, 8, 9 son los más cercanos a producto actual."
-66. "Casos 3, 5, 14, 17 requieren desarrollo significativo de simulación/optimización."
-67. "Casos 10, 18, 19 son extensiones corporativas de largo plazo."
-68. "Caso 20 es placeholder visionario, no plan de desarrollo."
-
-## [01_Sources/Workshop 1/KEEP-STOP-START (retro).docx]
-- Type: Workshop Retrospective / User Feedback
-- Date: 2026-02-05
-- Participants: Equipo TIMining
-
-### Raw Claims
-1. "Categoría STOP — Lo que NO necesita el usuario (no agrega valor):"
-2. "La visualización 3D de la mina (como foco principal)."
-3. "Desarrollos específicos por cliente; necesidad de desarrollos genéricos."
-4. "Gráficos o reportes pedidos sin solucionar algo concreto."
-5. "Mostrar los mismos KPIs que todos los dashboards (redundancia)."
-6. "Repetir información → genera confusión."
-7. "Gastar/perder tiempo del usuario."
-8. "Capacitaciones muy largas."
-9. "Problemas de integración (TI, contrato, adherencia); necesidad de plug and play."
-10. "Una experiencia que le quite tiempo."
-11. "Usuario tener que buscar la solución → la solución debe venir a él."
-12. "Complejidad que baje el uso."
-13. "Recordar cómo llegar a la información (¿reporte? ¿web?)."
-14. "Más pantallas."
-15. "Mucha data sin sentido."
-16. "Integrar datos sin entender el problema y evitar saturar con datos al usuario."
-17. "Que nuestra solución sea un problema."
-18. "Llenarlos de números."
-19. "Ver todos los elementos que ahora se muestran (no todos los usuarios necesitan lo mismo)."
-20. "Desbordar de información que no utiliza."
-21. "Tiempo dedicado a reporting y dar explicaciones 'para arriba'."
-22. "Dependiendo del perfil: algo muy complejo."
-23. "Data dumping."
-24. "Cuando tiene un problema llenar un formulario ¿A quién llamo?"
-25. "Que tengo que hacer más trabajo."
-26. "Poca claridad de qué se paga y qué no. Qué puede pedir."
-27. "Que lleguemos con una solución cuando el problema pasó de moda."
-28. "Que no veo valor personal."
-29. "Primera etapa: necesitamos que funcione, no que se vea hermoso."
-30. "Categoría KEEP — Lo que sabemos que sí necesita el usuario (sí o sí):"
-31. "Ejemplos de otros clientes '¿CÓMO LO USO?' CATÁLOGO."
-32. "La visualización de la mina esté completa."
-33. "Agregar un dato para entenderlo en contexto, simple y rápido."
-34. "Los resultados de él sean visibles."
-35. "Apoyar datos con visualizaciones."
-36. "Herramientas fáciles de usar y robustas para tomar mejores decisiones en el día a día."
-37. "Habilitar capas simples que aportan mucho."
-38. "Un sistema recomendador y que tome ACCIÓN en temas recurrentes."
-39. "Tener herramientas más específicas para velocidad/concilia $ para ayudarlos a tomar decisiones."
-40. "Sentir que tiene el control operacional."
-41. "Capacitación respecto al perfil de usuario (ojalá in-app)."
-42. "Que le facilitemos la vida. Menos stress."
-43. "Que pueda tomar decisiones más rápido y mejores."
-44. "Que puedo hacer: mejorar su trabajo. Mejor desempeño personal."
-45. "Ver los elementos que le ayudan a cumplir sus KPIs de sus bonos."
-46. "Algunos datos muy útiles y muy básicos."
-47. "Priorizar la seguridad. ¿Fuentes de riesgo? ¿Seguimiento de activos? ¿Existencia de regulaciones?"
-48. "Orden de prioridad ante contingencias (radiales, WhatsApp, etc.)."
-49. "Estrategias operacionales. Cuál es la más eficiente."
-50. "Claridad del proceso completo (proceso mina): Servicio - PyT - CyT - Chancado."
-51. "Cumplir su planificación."
-52. "Ver su plan ojalá completo."
-53. "Un sistema más proactivo."
-54. "Que los vayamos a ver más seguido."
-55. "Recomendaciones."
-56. "Customización. Necesita recomendaciones no solo alertas."
-57. "Respuestas automáticas a sus problemas y sugerencias."
-58. "Una experiencia más acorde a la rutina diaria."
-59. "Mejoran el sistema de alertas, sobre todo cómo llegar directo al usuario."
-60. "Plataforma fácil de entregar y liberar a los usuarios."
-61. "Entender el impacto de los problemas para priorizar."
-62. "Soporte más activo."
-63. "Certeza de que cuidamos sus datos y nos preocupamos por ellos (ciberseguridad)."
-64. "'Escuchar' lo que está pasando en la mina."
-65. "Encontrar rápido los puntos que requieren intervención."
-66. "Atender problemas a tiempo."
-67. "Categoría START — Lo que el usuario no sabe que necesita:"
-68. "Un asistente virtual 'para ayudarlo con el día a día'."
-69. "Que podemos disminuir las reuniones y coordinaciones."
-70. "Disminuir las distracciones/sobrecarga cognitiva."
-71. "Abanico de escenarios posibles ante eventualidades."
-72. "Un 'Desplanificadómetro' (desplaninómetro) en línea. Medir cuánto llevo desviado desde un t0. Material perdido que dejé de extraer."
-73. "Reducir el ruido de información (foco en lo esencial)."
-74. "Estar en los canales de comunicación primarios de la mina."
-75. "Monitoreo remoto subcontratado."
-76. "Simplicidad (los mejores ingenieros simplifican, lo fácil es mostrarse como gestionador de lo complejo)."
-77. "Copiloto que esté atento a soportar sus decisiones."
-78. "Hablar del outcome en lugar de output."
-79. "Que no pueden tomar decisiones con información no actualizada."
-80. "La solución. Que es muy barato respecto al valor que genera."
-81. "Reconocer de su impacto."
-82. "Que pueden enfocarse en lo importante y no en lo urgente."
-83. "Optimización de procesos aunque ya estén cumpliendo planes por diseño → Mejora continua → Excelencia operacional."
-84. "Mejorar la comunicación entre colaboradores y áreas. ¿Un intermediario?"
-85. "Herramientas que les ayuden a entender 'QUÉ PASÓ' y POR QUÉ... y luego 'QUÉ HACER'."
-86. "Consciencia del valor que estoy agregando con respecto a mis decisiones."
-87. "Algunos datos que no sabe que podría tener."
-88. "Información de otros procesos (silos de información)."
-89. "No sabe los datos que tiene, ni su calidad de su información."
-90. "Coordinarse entre áreas y ser rápido en comunicar eventualidades."
-91. "Cuánto del problema ya lo sabíamos desde el plan minero."
-92. "Involucrar el plan minero y sus paralelos para entender 'cómo vamos'."
-93. "Auditar sus 'fuentes de la verdad' y corregirlas."
-94. "Pre-factibilidad → Arquitectura fácil de justificar al cliente."
-95. "Menos dependencia del cliente. Dependemos mucho del formato del dato del cliente o que lo envíe."
-
-## [01_Sources/Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx]
-- Type: Design Brief / Product Specification
-- Date: Unknown
-- Participants: Equipo TIMining
-
-### Raw Claims
-1. "Título: Design Brief — TIMining CORE"
-2. "Contexto: TIMining ha evolucionado de herramientas aisladas (Aware, Orchestra) a una plataforma integrada."
-3. "Problema: Clientes ven múltiples productos desconectados en lugar de un ecosistema coherente."
-4. "Oportunidad: Consolidar experiencia bajo marca CORE, aumentando valor percibido y pricing."
-5. "Objetivo comercial: Vender USD 450k en lugar de USD 300k (Aware standalone)."
-6. "Incremento de 50% en precio justificado por valor sistémico agregado."
-7. "Valor agregado: IA conversacional (TIM Agent), simulación automática, alertas predictivas, reportería ejecutiva."
-8. "Casos de éxito validados: >USD 10M en ahorros/eficiencias capturados en 3 minas en Chile (Codelco RT, Antofagasta Minerals Pelambres)."
-9. "110 usuarios activos mensuales en Codelco RT solo (modelo de licencia ilimitada por sitio)."
-10. "Aware actual: herramienta de visualización 3D + topografía en tiempo real."
-11. "Percepción del mercado: 'nice 3D viewer', no plataforma estratégica."
-12. "Necesidad de reposicionar como plataforma operativa end-to-end."
-13. "Arquitectura propuesta: CORE como contenedor unificador de 4 'Lentes' de navegación."
-14. "Lente 1 — REALITY: Estado actual de la mina (topografía, equipos, inventarios)."
-15. "Lente 2 — TACTICAL: Plan vs. real, adherencia, desvíos, root cause."
-16. "Lente 3 — TIM AGENT: Interfaz conversacional IA, alertas, recomendaciones."
-17. "Lente 4 — BRIEFING: Reportería ejecutiva, KPIs, dashboards para gerencia."
-18. "Los lentes no son productos separados; son modos de navegación dentro de una sola plataforma."
-19. "Usuario no elige lente conscientemente; contexto adaptativo lo guía."
-20. "Principio de diseño: Multi-Modal Navigation — un problema, múltiples caminos para resolverlo."
-21. "Ejemplo: Supervisor puede detectar desvío en REALITY, analizar causa en TACTICAL, pedir recomendación a TIM AGENT, generar informe en BRIEFING."
-22. "Concepto de 'Sistema Nervioso Central': CORE como cerebro que coordina flujos de información."
-23. "Gestión por Excepción: mostrar solo lo que requiere atención, reducir ruido."
-24. "Arquitectura backend: Gemelo Digital (datos) + Orquestador (acciones) + Experiencia (interfaz)."
-25. "Gemelo Digital integra: topografía real-time, FMS, planificación, geotecnia, drill & blast."
-26. "Orquestador ejecuta: optimización de despacho, simulación de escenarios, generación de reportes, envío de alertas."
-27. "Experiencia multi-canal: webapp 3D, dashboards, mobile, email, WhatsApp, Slack."
-28. "Stack tecnológico frontend propuesto: React, Three.js para 3D, Tailwind CSS, Shadcn components."
-29. "Backend: APIs RESTful, Python (Django/FastAPI), Go para procesamiento geométrico, C++ para algoritmos legacy."
-30. "Integración con Google Gemini para TIM Agent (LLM)."
-31. "Desafío técnico: migrar de arquitectura monolítica (Aware actual) a modular (CORE)."
-32. "Riesgo: usuarios actuales de Aware pueden sentir que 'cambiamos todo' y resistirse."
-33. "Estrategia de mitigación: evolución incremental, mantener flujos de trabajo existentes, agregar capacidades sin quitar funcionalidad."
-34. "Identidad visual: nueva pero evolutiva, no ruptura total."
-35. "Referentes de diseño: Palantir Foundry (limpieza, orientación a misión), Anduril Lattice (contexto operativo), C3 AI (enterprise robustez)."
-36. "Principio visual: 'Cada píxel debe justificar su existencia' — minimizar chrome, maximizar información útil."
-37. "Diseño responsive: modo desktop (múltiples monitores), modo tablet (terreno), modo kiosko (IROC)."
-38. "Accesibilidad: onboarding guiado, tooltips contextuales, tours interactivos, ayuda inline."
-39. "Telemetría de uso: analytics anónimo, opt-in, sin datos de negocio, solo eventos de interfaz."
-40. "Preocupación de privacidad: clientes mineros sensibles a datos que salen de su red."
-41. "Solución: telemetría agregada, sin identificadores de cliente, foco en mejora de UX."
-42. "Beta program: 2-3 clientes amigables para validación (Codelco RT, Antofagasta Minerals Pelambres candidatos)."
-43. "Timeline objetivo: beta en marzo 2026, release general en abril 2026."
-44. "Roadmap Fase 1 (Q1 2026): migración de Aware a nueva arquitectura + TIM Agent básico + sistema de alertas."
-45. "Roadmap Fase 2 (Q2-Q3 2026): dispatcher optimizado, simulación automática, integración completa con Orchestra."
-46. "Roadmap Fase 3 (Q4 2026+): expansión a minería subterránea, módulos de geotecnia avanzada, IROC multi-mina."
-47. "KPI de éxito: 80% YoY ARR growth en 2026."
-48. "KPI de adopción: >100 usuarios activos mensuales por sitio en nuevos clientes."
-49. "KPI de engagement: >60% de usuarios retornan diariamente (DAU/MAU ratio)."
-50. "KPI de valor: captura documentada de >USD 5M en eficiencias por cliente grande."
-51. "Competencia directa: Hexagon MineOperate, Modular Mining DISPATCH, Caterpillar MineStar."
-52. "Ventaja vs. competencia: agnóstico a hardware, integrador neutro, inferencia topográfica sin drones."
-53. "Desventaja vs. competencia: menor market share, menor presencia en regiones fuera Latam."
-54. "Oportunidad geográfica: expansión a Australia, Sudáfrica, Norte América (ya iniciada en Canadá, EEUU)."
-55. "Commodities objetivo: cobre (actual fuerte), hierro (creciendo), carbón (declinando), oro (oportunidad)."
-56. "Modelo de licenciamiento: SaaS por sitio, licencias ilimitadas por faena, no por usuario."
-57. "Ventaja del modelo: acelera adopción interna, elimina fricción de conteo de seats."
-58. "Estructura de precios propuesta: USD 450k/año por sitio para CORE completo (4 lentes)."
-59. "Opcional: módulos adicionales (subterránea, geotecnia avanzada) a USD 50-100k/año cada uno."
-60. "Estrategia de ventas: land-and-expand — empezar con piloto de 3 meses, escalar a contrato anual."
-61. "Ciclo de ventas típico: 6-9 meses desde primer contacto a contrato firmado."
-62. "Stakeholders en compra: COO, VP Operaciones, Gerente de Mina, Gerente de Planificación, CTO/CIO (aprobación técnica)."
-63. "Champions internos típicos: Ingenieros de Planificación de Corto Plazo, Supervisores de Turno."
-64. "Detractores típicos: equipos de TI (resistencia a nueva integración), gerentes de mantenimiento (no ven valor directo)."
-65. "Estrategia para TI: enfatizar compatibilidad, APIs estándar, soporte dedicado."
-66. "Estrategia para mantenimiento: agregar módulo de análisis de rendimiento de equipos (caso de uso 12 del workshop)."
-67. "Canales de adquisición: venta directa (actual), partnerships con OEMs (futuro), conferences mineras (presencia actual)."
-68. "Partnerships estratégicos en exploración: Google Cloud (IA), Hexagon (integración), Caterpillar (validación en sitios CAT)."
-69. "Riesgo de partnership con OEMs: pueden convertirse en competidores si deciden construir capacidad in-house."
-70. "Estrategia de mitigación: mantener IP core (inferencia topográfica) propietaria, no transferible."
-71. "Necesidad de diseño de marca: '¿CORE es el nombre comercial o solo interno?'"
-72. "Decisión pendiente: si CORE reemplaza a Aware como marca o si coexisten."
-73. "Propuesta de nomenclatura: 'TIMining CORE powered by Aware' — mantiene reconocimiento de Aware."
-74. "Alternativa: 'TIMining Platform' como paraguas, Aware y Orchestra como módulos."
-75. "Necesidad de validación con clientes existentes: ¿cómo reaccionan a cambio de marca?"
-76. "Riesgo de confusión: clientes actuales pueden no entender qué están comprando."
-77. "Estrategia de comunicación: roadshow con clientes clave, demos tempranos, co-diseño de roadmap."
-78. "Documentación requerida: user guides, API docs, integration playbooks, training materials."
-79. "Inversión en documentación: actualmente subestimada, necesita refuerzo."
-80. "Propuesta: contratar technical writer dedicado en Q1 2026."
-81. "Soporte post-venta: modelo actual reactivo (tickets), necesidad de evolucionar a proactivo (health checks, usage analytics)."
-82. "Customer Success: asignar CSM dedicado para clientes >USD 500k/año."
-83. "Retención: tasa actual >90%, objetivo mantener en expansión."
-84. "Churn risk: clientes pequeños (<USD 200k/año) más sensibles a precio."
-85. "Estrategia de retención: demostraciones de ROI trimestrales, business reviews, roadmap alignment."
-86. "Cultura de producto: transición de engineering-led a product-led."
-87. "Necesidad de product management: actualmente difuso entre Carlo (CTO/CPO) y equipo técnico."
-88. "Propuesta organizacional: contratar Product Manager dedicado para CORE."
-89. "Design team: actualmente Niklas (freelance/consultor), necesidad de hire in-house."
-90. "Frontend team: Pablo (lead), necesidad de expandir con 1-2 developers adicionales."
-91. "Backend team: adecuado para Fase 1, necesitará refuerzo en Fase 2."
-92. "QA/Testing: actualmente ad-hoc, necesidad de formalizar con QA engineer."
-93. "DevOps: infraestructura en Google Cloud, CI/CD básico, necesidad de madurar."
-94. "Seguridad: preocupación creciente de clientes, necesidad de certificaciones (ISO 27001, SOC2)."
-95. "Roadmap de compliance: iniciar proceso de certificación en Q2 2026."
-96. "Riesgo regulatorio: minería tiene regulaciones estrictas de seguridad, datos, medio ambiente."
-97. "Estrategia de compliance: asociarse con legal counsel especializado en minería."
-98. "Internacionalización: producto actualmente en español, necesidad de inglés nativo para expansión."
-99. "i18n roadmap: inglés en Q1 2026, portugués (Brasil) en Q3 2026."
-100. "Localización no solo idioma: unidades de medida, formatos de fecha, regulaciones locales."
-
-## [01_Sources/Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx]
-- Type: Strategic Document / Company Narrative
+## [Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx]
+- Type: Strategic Document
 - Date: 2025-12-31
-- Participants: Phillip Whatmore
+- Author: Phillip Whatmore
 
 ### Raw Claims
-1. "Documento: 'TIMining: The Evolution of the Digital Mine' por Phillip Whatmore, 31 diciembre 2025."
-2. "Objetivo: explicar la evolución de TIMining desde inicios hasta jugador digital internacional."
-3. "Fase 1 (2011-2015): The Geotechnical Foundation."
-4. "TIMining fundada por Carlo Calderon tras años de desarrollo de software independiente."
-5. "Misión inicial: digitalizar seguridad geotécnica."
-6. "Colaboración con E-Mining para productos Aris, Tangram, SICT."
-7. "Aris, Tangram, SICT son estándares de la industria para segmentos geotécnicos en Latinoamérica hoy."
-8. "Insight Fase 1: modelado digital de alta fidelidad puede sobrevivir en entornos mineros complejos."
-9. "Fase 2 (2015-2017): Shifting to the Pulse of the Operation."
-10. "Reconocimiento de que sistemas FMS fallaban en cumplir expectativas operativas."
-11. "Cambio de foco hacia proceso de Load & Haul."
-12. "Nacimiento de Orchestra: motor de simulación de eventos discretos."
-13. "Orchestra captura interferencia operacional — colas, congestión, re-ruteo — bajo variabilidad real."
-14. "Permite a mineros probar alternativas operativas contra confiabilidad del plan, cuantificando valor antes de mover un camión."
-15. "Solución innovadora: motor de simulación específico para minería, donde camiones, palas, puntos de descarga modelados como recursos interactuantes."
-16. "Simulación captura naturalmente todas las formas de interferencia."
-17. "Orchestra 'aún uno de los mejores softwares de Load & Haul en la industria minera'."
-18. "Fase 3 (2017-2019): The 2040 Vision & The 'Digital Twin'."
-19. "Mucho antes de que 'AI' y 'Digital Twin' fueran buzzwords, TIMining visualizó una mina que pudiera hablar con sus operadores."
-20. "Equipo visualizó concepto de gemelo digital en tiempo real."
-21. "Solución que integra datos, muestra online cómo la mina está desempeñándose, simula y recomienda acciones."
-22. "Prototipo visionario 2017: ingeniero usando HoloLens para interactuar con gemelo digital impulsado por máquina."
-23. "Ingeniero hace preguntas en lenguaje natural sobre cumplimiento de plan."
-24. "Video 2017: ingeniero ve en tiempo real y experiencia 3D un gemelo digital con información de todos los procesos y equipos."
-25. "Interacción por voz con gemelo digital (máquina) para preguntar si plan minero se cumplirá."
-26. "Máquina propone escenarios para resolver problema particular en ese punto del tiempo."
-27. "Todo esto 'mucho antes del surgimiento de Inteligencia Artificial y tecnología LLM'."
-28. "Visión aseguró Series A de USD 4M liderado por Aurus Capital."
-29. "Objetivo del capital: llevar visión a producto técnica y comercialmente viable."
-30. "Financiar fase de crecimiento: Australia, Sudáfrica, Sud-Este Asiático, Perú, Brasil como geografías objetivo."
-31. "Co-desarrollo estratégico: Anglo American's Los Bronces como partner primario para refinar visión en solución lista para campo."
-32. "Fase 4 (2019-2023): Cracking the 'Geometry Code' with Aware."
-33. "Visión 2017 golpeó pared técnica: no puedes gestionar plan si no conoces topografía actual."
-34. "Topografía cambia cada minuto."
-35. "Breakthrough propietario: Carlo Calderon desarrolló algoritmo único para inferir topografías en tiempo real usando datos GPS de palas."
-36. "Nace Aware: 'soft sensor' que conecta mundo sensorial de la operación con mundo geométrico de planificación."
-37. "Aware logró inmediato product-market fit."
-38. "Expansión internacional: Glencore (Colombia), Petrosea (Indonesia), Lundin Mining (Canadá)."
-39. "Empezamos a trabajar en Aware durante 2019, primera versión operacional en 2020/21."
-40. "Primera versión Aware: topografía online (tiempo real), capacidad de mostrar en 3D plan minero y modelo de bloques."
-41. "Tracking de adherencia geométrica a plan en near real-time (NRT)."
-42. "Mostrar heatmaps de rendimiento de flota en tiempo real."
-43. "Creencia en el momento: Aware era producto con claro product-market-fit."
-44. "Listo para vender internacionalmente con modelo de negocio SaaS y proceso de implementación tipo 'receta'."
-45. "Esto podía llevar a expansión internacional con modelo escalable."
-46. "Con esas asunciones, compañía invirtió fuertemente en expansión internacional."
-47. "Foco fuerte en vender primera versión de Aware."
-48. "Resultado: nuevos proyectos y pilotos vendidos a Glencore's Cerrejón (carbón, Colombia), Petrosea (Indonesia), Lundin Mining's Candelaria (Chile)."
-49. "Fase 5 (2023-2025): Modularization & The Platform Pivot."
-50. "Escalar reveló que cada mina es un 'snowflake' único."
-51. "2024: TIMining pasó por cambio arquitectónico radical para evitar 'bespoke trap'."
-52. "Necesidades de clientes eran amplias y variadas."
-53. "Ingenieros de operación reclamaban no tener tiempo para ver pantalla todo el día."
-54. "Otros usuarios necesitaban más capas de información para entender root-causes de desvíos (ej. gaps en drill & blast)."
-55. "Si todas esas solicitudes se hubieran abordado 'codeando', resultado sería proyecto de ingeniería de software monumental y complejo."
-56. "Eso habría puesto en peligro capacidad de seguir creciendo con modelo de negocio SaaS escalable."
-57. "Arquitectura modular: mayor parte del desarrollo de 2024 fue 'modularizar' algoritmos de Aware en APIs y motores de cálculo."
-58. "Tailoring ágil: timelines de implementación reducidos de meses a semanas."
-59. "Equipo operativo puede configurar soluciones sin ingeniería de software pesada."
-60. "Este ejercicio de 'hauling' preparó a la compañía para su siguiente etapa transformacional."
-61. "Aware pudo evolucionar rápidamente usando conectores internos, APIs, motores de cálculo, técnicas que puede usar equipo operativo en lugar de demandar tiempo de ingenieros de software."
-62. "Aware pasó de software cerrado de un solo algoritmo a arquitectura de software modular."
-63. "Permite a la compañía configurar solución en pocas semanas, cerrando brecha entre expectativas del cliente y resultados."
-64. "Bundled value: acoplar Aware (monitoreo) con Orchestra (simulación)."
-65. "Sitios como Pelambres y Asarco pudieron finalmente cerrar el loop: Analizar gaps, simular soluciones, controlar ejecución en tiempo real."
-66. "Bundles vendidos exitosamente a Antofagasta Minerals' Pelambres, Codelco Radomiro Tomic, Codelco Ministro Hales, Asarco/Grupo México's Ray mine (Tucson, Arizona)."
-67. "Acoplando ambos productos, ingenieros de planificación pueden analizar gaps, simular soluciones, controlar/probar en tiempo real con Aware."
-68. "Mejora significativa en proceso de planificación y desempeño operacional."
-69. "Fase 6 (2025-2026): The AI Mining Co-Pilot (Vision Realized)."
-70. "Fines de 2025: visión HoloLens 2017 se volvió realidad a través de integración de Large Language Models."
-71. "Nueva arquitectura modularizada de Aware puesta en marcha en Codelco RT, DMH, AMSA Pelambres."
-72. "Acompañado de metodología mejorada de soporte al cliente."
-73. "Resultados fueron poderosos."
-74. "Solución de alertas implementada permitiendo a operadores tomar medidas en tiempo real ante problemas/root-causes de desvíos durante el turno."
-75. "Incluye situaciones de riesgo por causas geotécnicas."
-76. "Cierra problema de 'no tengo tiempo de mirar la pantalla todo el día'."
-77. "Nuevos conectores permitieron ver y entender online cómo proceso de drill & blast está desempeñándose contra plan."
-78. "Entender en tiempo real cómo equipo de servicios está desempeñándose contra plan."
-79. "Entender en mayor detalle desempeño del proceso de extracción en tiempo real (ej. velocidad de extracción por zona en cada fase)."
-80. "Desarrollar solución para control de trazabilidad de material ('origin and destination tracking')."
-81. "Estas soluciones y configuraciones permitieron a Aware ser ampliamente usado en Codelco y Antofagasta Minerals."
-82. "Alcanzando >110 usuarios cada mes en Codelco RT solo."
-83. "Permitido por propuesta de valor única de Aware: uso de licencia ilimitada por sitio."
-84. "Uso vino acompañado de casos de éxito exitosos."
-85. "Sobre USD 10M de ahorros y eficiencias capturados en 3 minas en Chile."
-86. "TIM Agent: en partnership con Google Gemini, TIMining lanzó módulo de IA capaz de leer datos en tiempo real para responder consultas en lenguaje natural sin 'alucinaciones'."
-87. "Agosto 2025: se estableció celda de desarrollo independiente interna para probar uso de AI sobre nueva plataforma de datos mejorada de Aware."
-88. "En partnership con Google Gemini, primer objetivo del equipo: probar si interfaz LLM puede interactuar con información minera en tiempo real y proveer respuestas a preguntas de usuarios sin alucinaciones."
-89. "Octubre: tests estaban probando ser sólidos."
-90. "Desde entonces la compañía ha podido hacer progreso impresionante usando AI para agregar valor a operación."
-91. "Inteligencia democrática: inteligencia se movió de desktop a dispositivo móvil."
-92. "Permite a cada supervisor recibir alertas anticipadas — como predecir idle de chancador con 15 minutos de anticipación."
-93. "Hoy módulo AI/LLM puede leer datos en tiempo real de Aware y outputs de algoritmos."
-94. "No solo responde qué está pasando con mina, su plan y desempeño en diferentes procesos."
-95. "Empodera a cada usuario a configurar sus propias alarmas."
-96. "Ejemplo: notificación por mensaje de texto móvil con 15 minutos de anticipación si chancador va a tener largos tiempos idle."
-97. "O si por el contrario, se esperan colas pronto."
-98. "Permite a cada usuario crear dashboards personales, alertas operacionales, análisis cross-variable sin abrir computadora."
-99. "Directo desde dispositivo móvil."
-100. "Ahora ofrecemos plataforma multi-módulo poderosa para controlar en tiempo real la operación y su plan."
-101. "Es fuente de datos democrática con inteligencia minera."
-102. "Permite a todos ingenieros, supervisores, gerentes y liderazgo acceder a datos que hasta recientemente solo eran accesibles a usuarios registrados de software (ej. FMS o software de perforación)."
-103. "Crea una sola fuente de verdad de la mina."
-104. "Permite a equipos moverse hacia mejor toma de decisiones basada en datos."
-105. "Posicionamiento estratégico: TIMining se movió de 'visor 3D' a Mining Operating Platform."
-106. "Posiciona a la compañía para 80% crecimiento YoY en 2026."
-107. "Nueva propuesta de valor cambió profundamente pitch a clientes."
-108. "Cambió de vender 'nice 3D viewer of the mine' a plataforma robusta end-to-end para mejor planificación de corto plazo y mayor eficiencia operacional y cumplimiento de plan."
-109. "2025 no fue gran año en términos de crecimiento ARR."
-110. "Estas nuevas conversaciones permitieron terminar el año con fuerte Pipeline para cosechar en 2026/27."
-111. "Por eso Budget 2026 tiene target de crecimiento ARR >80% YoY."
-112. "Fase 7 (2026): The Year of the Digital Co-Pilot."
-113. "Al entrar 2026, foco cambia de monitoreo en tiempo real a soporte de decisión automatizado y expansión geográfica/segmento."
-114. "Simulaciones predictivas: durante Q1 2026, ingenieros habilitarán a la AI para ejecutar simulaciones automáticas usando motor Orchestra."
-115. "Permite al sistema moverse de 'un problema está pasando' a 'aquí hay tres escenarios para arreglarlo' en solo un par de minutos."
-116. "Expansión a minería subterránea: aprovechando arquitectura modular, TIMining planea lanzar primeras soluciones para minería subterránea."
-117. "Abordando desafíos no resueltos en ese segmento."
-118. "Platform rebrand: para separar plataforma operativa de alto nivel del producto Aware."
-119. "TIMining relanzará propuesta de valor con nueva marca y estrategia go-to-market global más agresiva."
-120. "Optimización avanzada: nuevos releases incluirán 'segundas opiniones' para despacho de flota."
-121. "Tighter material tracking."
-122. "Modelamiento de optimización para todo el plan minero."
-123. "Fase 8 (Visión 2040): The Integrated Remote Operation."
-124. "Para 2040, esperamos que industria se haya consolidado completamente."
-125. "Tecnología habrá prolongado exitosamente vida de depósitos mayores en medio de tensión geopolítica y presión ambiental."
-126. "IROC maduro (Integrated Remote Operations Center): corporaciones masivas gestionan múltiples minas globales simultáneamente desde centros urbanos como Santiago."
-127. "Distinción entre mina y planta ha desaparecido; operan como un solo gemelo digital comunicado."
-128. "Plataforma Digital de TIMining se conecta/interactúa inteligente y seamlessly con sistemas que automatizan procesos Plant to Port."
-129. "Sinergía Humano-Máquina: Plataforma de TIMining como Interfaz Nativa."
-130. "Interactuar con datos mineros ocurre exclusivamente a través de lenguaje natural."
-131. "Transiciones de turno automatizadas: ritual de 'shift change' ahora soportado por logs multimedia creados automáticamente por Plataforma TIMining."
-132. "Elimina 'efecto gaviota' (caída de producción durante handovers)."
-133. "Visitas virtuales: visitas físicas a sitio son inexistentes."
-134. "Equipos geotécnicos y operativos inspeccionan 'zonas virtuales' para evitar interrumpir flujos de vehículos autónomos."
-135. "Capa corporativa 'Proactiva': equipos corporativos ya no solo reaccionan a datos de ayer."
-136. "Usan modelos predictivos de TIMining para tomar decisiones tácticas multi-mina."
-137. "Si una mina cae detrás de su plan, sistema identifica estrategias para recuperar rendimiento en todo portafolio corporativo."
-138. "Cumplir compromisos financieros."
-139. "Realidad autónoma: mientras vehículos son 100% autónomos, TIMining provee 'cerebro inteligente' que supervisa geometría."
-140. "Asegurando que robots trabajen siempre en entorno óptimo, adherente a plan."
-141. "Resumen: Desde humildes inicios en 2011 hasta plataforma global de 2026 y estándar visionario de 2040."
-142. "TIMining se ha mantenido fiel a un principio core: La geometría de la mina es la geometría del negocio."
-143. "Al descifrar el modelamiento en tiempo real de la tierra misma, TIMining se ha convertido en la capa de coordinación indispensable para la industria más esencial del mundo moderno."
-144. "Apéndice 1: Versión revisada de Strategic Narrative — Executive Summary."
-145. "I. The Strategic Inflection Point: From Tools to Platform."
-146. "TIMining ha transicionado exitosamente de colección de herramientas de simulación técnicamente sofisticadas a plataforma operativa minera moderna y escalable."
-147. "Orígenes en resolver desafíos de ingeniería bespoke de alta complejidad."
-148. "2023: pivote deliberado para productizar IP core."
-149. "Estandarizando capacidades de simulación, geometría, integración de datos en módulos Aware y Orchestra."
-150. "Hoy, hemos movido más allá de Latinoamérica, estableciendo presencia en Norte América y Australia."
-151. "Hemos evolucionado de 'fábrica de software' a modelo de negocio SaaS recurrente con organización comercial de clase mundial."
-152. "Hemos probado que tecnología es robusta en diversas geografías, commodities (Cobre, Hierro, Carbón, Oro), y métodos mineros."
-153. "II. The Unique Value Proposition: Closing the 'Geometry Gap'."
-154. "Barrera primaria a mina completamente automatizada es el Geometry Gap."
-155. "Mientras planta de procesamiento es entorno controlado, rico en sensores, la mina es entorno de alta variabilidad."
-156. "'Piso de fábrica' (topografía) cambia cada minuto."
-157. "TIMining es la única compañía que ha descifrado desafío de Real-Time Topography Inference."
-158. "Usando algoritmos propietarios para procesar datos GPS y operacionales de equipos existentes."
-159. "Creamos Gemelo Digital continuo de la mina sin necesidad de topografía manual o vuelos frecuentes de drones."
-160. "Valor primario: entregamos impacto operacional inmediato reduciendo variabilidad, mejorando adherencia a plan."
-161. "Habilitando corrección de curso intra-turno."
-162. "Valor de ecosistema: servimos como 'Capa Unificadora' entre geología, planificación, operaciones."
-163. "Proveyendo una sola fuente de verdad."
-164. "Superficiamos no solo qué desvíos ocurrieron, sino atribución estructurada de por qué sucedieron."
-165. "III. Structural Advantage: The Neutral Ecosystem Integrator."
-166. "TIMining ocupa rol único, estructuralmente ventajoso como integrador neutro."
-167. "En industria caracterizada por vendor lock-in y 'super-suites', proveemos capa media agnóstica."
-168. "Permite a compañías mineras mantener flexibilidad."
-169. "Broad Interoperability: nos sentamos en intersección de herramientas de planificación, sistemas drill-and-blast, fleet management (FMS)."
-170. "Efecto 'Suiza': OEMs mayores y vendors de software rutinariamente se integran con TIMining incluso cuando no se integran entre ellos."
-171. "Hace a Aware una capa de coordinación 'segura' para datos operacionales más sensibles de la mina."
-172. "IV. Commercial Momentum and the 'Leapfrog' Path."
-173. "Nuestro crecimiento está impulsado por poderoso modelo de adopción bottom-up."
-174. "Sticky Adoption: Aware se expande orgánicamente desde programas piloto a 100+ usuarios activos mensuales por sitio."
-175. "Incluyendo planners, supervisores de turno, ingenieros."
-176. "Deep Integration: patrones de uso diario muestran alto 'stickiness'."
-177. "Nuestras herramientas se embeben en rutinas estándar de cambio de turno."
-178. "Analogía Leapfrog: este pull impulsado por usuario refleja path de adopción de plataformas que definen industria como Leapfrog."
-179. "Cambiando procurement desde 'corporate push' a 'operational pull'."
-180. "Scalable Financials: hemos construido base de ingresos recurrentes acercándose a USD 5M."
-181. "Con altos márgenes y economía de software capital-eficiente."
-182. "V. Future Vision: The AI-Enabled Autonomous Mine."
-183. "Estamos posicionando a TIMining como infraestructura fundacional para próxima era de minería."
-184. "AI Co-Pilot: en partnership con Google Gemini, hemos lanzado Agente AI en tiempo real (TIM)."
-185. "Usuarios ahora pueden interactuar con 'Gemelo Digital' vía lenguaje natural."
-186. "Recibir alertas predictivas y recomendaciones basadas en escenarios."
-187. "Pre-Autonomy Infrastructure: flotas autónomas requieren modelo de entorno en tiempo real tipo 'LIDAR' para operar segura y eficientemente."
-188. "TIMining provee ese modelo del mundo en tiempo real."
-189. "Unlocking Scarcity Value: a medida que industria se mueve hacia operaciones remotas (IROC) y autonomía completa."
-190. "Capacidad de modelar geometrías y predecir cumplimiento de plan en tiempo real será el activo más escaso y valioso en stack tecnológico minero."
+1. "TIMining comenzó dominando las restricciones físicas más complejas de una mina, fundada por Carlo Calderon después de años de desarrollo de software independiente"
+2. "La primera misión fue digitalizar la seguridad geotécnica"
+3. "En colaboración con E-Mining se desarrollaron productos como Aris, Tangram y SICT, que siguen siendo estándares de la industria para segmentos geotécnicos en América Latina"
+4. "Orchestra surgió de reconocer que los Fleet Management Systems (FMS) no cumplían expectativas operativas"
+5. "Orchestra es un motor de simulación de eventos discretos que captura interferencias operacionales: colas, congestión y re-ruteo bajo variabilidad real"
+6. "Orchestra permite a los mineros probar alternativas operacionales contra la confiabilidad del plan, cuantificando valor antes de que un camión se mueva"
+7. "En 2017, el equipo demostró un ingeniero usando HoloLens para interactuar con un gemelo digital impulsado por máquina, haciendo preguntas en lenguaje natural sobre cumplimiento del plan"
+8. "La visión de 2017 aseguró una Serie A de $4M liderada por Aurus Capital"
+9. "Anglo American's Los Bronces se convirtió en el socio principal para refinar esta visión"
+10. "Carlo Calderon desarrolló un algoritmo único para inferir topografías en tiempo real usando datos GPS de palas"
+11. "Aware es un 'soft sensor' que conecta el mundo sensorial de la operación con el mundo geométrico de la planificación"
+12. "Aware logró product-market fit inmediato, expandiéndose a Glencore (Colombia), Petrosea (Indonesia) y Lundin Mining (Canadá)"
+13. "En 2020/21 la primera versión de Aware tenía topografía online (tiempo real), capacidad de mostrar en 3D el plan minero y modelo de bloques"
+14. "En 2024, TIMining sufrió un cambio arquitectónico radical para evitar la 'trampa bespoke', modularizando los algoritmos de Aware en APIs y motores de cálculo"
+15. "La arquitectura modular redujo los tiempos de implementación de meses a semanas"
+16. "Al acoplar Aware (monitoreo) con Orchestra (simulación), sitios como Pelambres y Asarco pudieron cerrar el ciclo"
+17. "Aware alcanzó más de 110 usuarios cada mes solo en Codelco RT"
+18. "Se capturaron casos de éxito con más de USD 10MM de ahorros y eficiencias en 3 minas en Chile"
+19. "En agosto 2025 se estableció una célula de desarrollo independiente para probar el uso de AI sobre la plataforma de datos mejorada de Aware"
+20. "En asociación con Google Gemini, el primer objetivo fue probar si una interfaz LLM podía interactuar con información minera en tiempo real sin alucinaciones"
+21. "El módulo AI/LLM puede leer datos en tiempo real de Aware y salidas de algoritmos"
+22. "La tecnología permite a cada usuario configurar sus propias alarmas por mensaje de texto móvil"
+23. "TIMining ofrece ahora una plataforma multi-módulo poderosa para controlar en tiempo real la operación y su plan"
+24. "Es una fuente de datos democrática con inteligencia minera"
+25. "El presupuesto 2026 tiene un objetivo de crecimiento ARR de más del 80% YoY"
+26. "Durante Q1 2026, ingenieros habilitarán a la AI para ejecutar simulaciones automáticas usando el motor Orchestra"
+27. "TIMining planea lanzar sus primeras soluciones para minería subterránea"
+28. "TIMining relanzará su propuesta de valor con una nueva marca y estrategia go-to-market global más agresiva"
+29. "Para 2040, corporaciones masivas gestionarán múltiples minas globales simultáneamente desde centros urbanos como Santiago"
+30. "La distinción entre mina y planta habrá desaparecido; operarán como un único gemelo digital comunicado"
+31. "La interacción con datos mineros ocurrirá exclusivamente a través de lenguaje natural"
+32. "El ritual de 'cambio de turno' será soportado por logs multimedia creados automáticamente, eliminando el 'efecto gaviota'"
+33. "Las visitas físicas al sitio no existirán; equipos inspeccionarán 'zonas virtuales'"
+34. "Mientras los vehículos son 100% autónomos, TIMining provee el 'cerebro inteligente' que supervisa la geometría"
+35. "La geometría de la mina es la geometría del negocio"
+36. "TIMining ha transitado exitosamente de herramientas de simulación técnicas a una Plataforma Operativa Minera moderna y escalable"
+37. "En 2023, se hizo un pivote deliberado para productizar el IP central, estandarizando capacidades en los módulos Aware y Orchestra"
+38. "TIMining se ha expandido más allá de América Latina, estableciendo presencia en Norteamérica y Australia"
+39. "La barrera principal para una mina completamente automatizada es la Brecha Geométrica"
+40. "La planta de procesamiento es un ambiente controlado, rico en sensores; la mina es un ambiente de alta variabilidad donde la topografía cambia cada minuto"
+41. "TIMining es la única compañía que ha descifrado el desafío de la Inferencia Topográfica en Tiempo Real"
+42. "Usando algoritmos propietarios se crea un Gemelo Digital continuo sin necesidad de topografía manual o vuelos de drones frecuentes"
+43. "Se entrega impacto operacional inmediato reduciendo variabilidad, mejorando adherencia al plan y habilitando corrección intra-turno"
+44. "TIMining sirve como la 'Capa Unificadora' entre geología, planificación y operaciones"
+45. "TIMining ocupa un rol único como integrador neutral"
+46. "OEMs principales y proveedores de software rutinariamente se integran con TIMining incluso cuando no se integran entre ellos"
+47. "El crecimiento está impulsado por un modelo de adopción bottom-up"
+48. "Aware se expande orgánicamente de programas piloto a 100+ usuarios activos mensuales por sitio"
+49. "Los patrones de uso diario muestran alta 'adhesión'"
+50. "Se ha construido una base de ingresos recurrentes acercándose a $5M, con altos márgenes"
+51. "En asociación con Google Gemini, se ha lanzado un Agente AI en tiempo real (TIM)"
+52. "Los usuarios ahora pueden interactuar con el 'Gemelo Digital' vía lenguaje natural"
+53. "Flotas autónomas requieren un modelo circundante en tiempo real tipo LIDAR"
+54. "TIMining proporciona ese modelo del mundo en tiempo real"
+55. "La capacidad de modelar geometrías y predecir cumplimiento del plan en tiempo real será el activo más escaso y valioso"
 
-## [01_Sources/Antecedentes/Narrativa CCB para Mngt Team_ESP.docx]
-- Type: Strategic Narrative / Sales Positioning
-- Date: Unknown
-- Participants: Carlo Calderón (CTO & CPO)
+---
+
+## [Antecedentes/Narrativa CCB para Mngt Team_ESP.docx]
+- Type: Strategic Narrative
+- Author: Carlo Calderón (CTO & CPO)
 
 ### Raw Claims
-1. "Título: El Eslabón Perdido de la Minería Autónoma: La Verdad Geométrica en Tiempo Real."
-2. "Autor: Carlo Calderón, CTO & CPO, Timining."
-3. "La Tesis Fundamental: La Geometría es el Negocio."
-4. "En minería a cielo abierto, el plan de negocio no es hoja de cálculo financiera; es un volumen geométrico que debe moverse en tiempo específico."
-5. "Históricamente, industria ha operado bajo paradoja costosa: Planificación vive en mundo estático y perfecto (diseño)."
-6. "Operación vive en caos dinámico y ruidoso (sensores, FMS)."
-7. "Desde los 90s, industria intentó cerrar brecha añadiendo más sensores, pero fallaron en lo esencial."
-8. "No puedes optimizar lo que no puedes ver geométricamente."
-9. "Timining no construyó otro software de gestión."
-10. "Construyó la capacidad de digitalizar la realidad física de la mina en tiempo real."
-11. "Resolviendo 'Brecha Geométrica' que impedía verdadera automatización."
-12. "Nuestra Ventaja: La Inferencia como 'Soft Sensor'."
-13. "Mientras competencia depende de hardware costoso (vuelos de drones, escáneres láser) o procesos manuales lentos."
-14. "Nosotros tomamos camino diferente."
-15. "Desarrollamos algoritmos propietarios que utilizan 'ruido' de datos existentes (GPS de palas, camiones, perforadoras) para inferir con precisión estado de la mina y actividades claves."
-16. "Para que operación pueda cumplir plan minero."
-17. "Reconstruimos superficie topográfica, avances de perforación, inventarios tronados, geometrías de botaderos, etc. cada 15 minutos."
-18. "No simulamos el plan: Vemos la ejecución real."
-19. "No estimamos: Medimos la adherencia espacial con precisión de metros."
-20. "Esto nos convierte en única Fuente de la Verdad para responder pregunta más cara de la minería: ¿Estamos cumpliendo el plan ahora mismo?"
-21. "Esta propiedad intelectual es nuestra barrera de entrada y núcleo de nuestro valor tecnológico."
-22. "La Convergencia Inevitable: Por qué nosotros."
-23. "Nuestra capacidad para inferir realidad geométrica no nació en pizarra de diseño."
-24. "Fue forjada en urgencia de las operaciones más complejas del mundo."
-25. "Para entender por qué podríamos ser los únicos capaces de digitalizar la realidad hoy, hay que mirar nuestro origen."
-26. "Somos consecuencia lógica de haber resuelto primero muchos problemas difíciles de la minería por separado."
-27. "La Precisión Matemática, la Dinámica y el Modelamiento del Proceso:"
-28. "Comenzamos nuestra historia en intersección de informática y rigor matemático."
-29. "Con productos como Aris, Tangram y SICT, desarrollamos 'músculo' para procesar millones de datos ruidosos en tiempo real e inferir geometrías complejas."
-30. "Aprendimos que transformar datos crudos en parámetros de diseño exige precisión absoluta."
-31. "Luego, con Orchestra, dimos siguiente paso crítico: modelar proceso minero real."
-32. "No bastaba con conectar datos; tuvimos que entender y simular matemáticamente interacciones, colas, variabilidad inherente del carguío y transporte."
-33. "Así, integramos tres capacidades que rara vez conviven: exactitud de geometría computacional, entendimiento profundo del proceso minero, dinamismo de operación en tiempo real."
-34. "La Paradoja de la Planificación:"
-35. "Fue al intentar conciliar estos mundos donde descubrimos verdadera paradoja de la industria."
-36. "Negocio minero se rige por el Plan, una entidad puramente geométrica y volumétrica."
-37. "Sin embargo, operación se gestiona con sensores que entregan tiempos y posiciones, pero no formas."
-38. "Industria intentaba inferir cumplimiento del plan superponiendo datos dinámicos (puntos GPS) sobre mapas estáticos que ya no existían."
-39. "Operábamos con muchos datos, pero a ciegas respecto al Plan."
-40. "La Inferencia como Necesidad:"
-41. "'Inferencia Topográfica' surgió de necesidad imperiosa de responder a Planificación."
-42. "Entendimos que para gestionar negocio, debíamos diseñar algoritmos capaces de reconstruir estado actual de la mina usando misma 'huella digital' de operación."
-43. "Timining ocupa este espacio único no por suerte, sino porque fuimos los únicos en combinar herencia matemática para geometría con modelamiento experto del proceso necesario para interpretar caos de sensores."
-44. "Descubrimos que suma de estas capacidades es pieza clave para gestión de minería del futuro."
-45. "De Herramienta a Sistema Nervioso Central (La Plataforma):"
-46. "En 2019, construimos Timining Aware, herramienta que buscaba dar consciencia situacional a todos los usuarios de la mina."
-47. "Con eso podrían entender 'qué' está pasando."
-48. "Con aceptación inusualmente rápida por algunos clientes, al poco andar nos encontramos con contradicción."
-49. "¿Nos dedicábamos a personalizar aplicación para atender problemas que estaban viendo nuestros clientes?"
-50. "¿O nos manteníamos afinando casos de usos previamente definidos para nuestro sistema?"
-51. "En 2023, tomamos decisión arquitectónica radical."
-52. "Dejamos de crear herramientas aisladas y construimos Plataforma Modular y Agnóstica."
-53. "Integración Universal: Nos conectamos a cualquier FMS (Modular, Hexagon, Wenco) y a cualquier software de planificación."
-54. "Al ser 'Integrador Neutro' (Suiza), poseemos contexto que ningún OEM puede tener por sí solo."
-55. "El Gemelo Digital Dinámico: Timining Aware es sólo un componente de nuestra tecnología."
-56. "No entregamos visor 3D, sino modelo en tiempo real de la mina."
-57. "El cual podemos visualizar, pero también monitorear y correlacionar variables que cruzan dónde (geometría) con quién (equipos) y cuándo."
-58. "Todo esto comparado con para qué (planificación)."
-59. "Metodología Delta2025: No solo mostramos el pasado."
-60. "Introdujimos concepto de 'Tiempo Actual' en adherencia geométrica."
-61. "Permitiendo corregir rumbo durante turno, no después."
-62. "Motor de detección de anomalías: Ahora somos capaces de monitorear cualquier 'soft sensor' construido en base a lógica que une equipos mineros con áreas, volúmenes, rendimientos, etc."
-63. "Habilitamos simulación automática: Conectamos nuestro modelo de la mina en tiempo real con motor de simulación."
-64. "Pudiendo hacer proyecciones de manera automática para poder llevar caso de uso a decisiones que se toman durante turno."
-65. "El Salto a la Inteligencia Prescriptiva (Project TIM & IA):"
-66. "Con realidad digitalizada, siguiente paso lógico fue inteligencia."
-67. "Mina genera demasiados datos para ojo humano."
-68. "Con integración de LLMs (Google Gemini) sobre nuestro Gemelo Digital estructurado (Project TIM)."
-69. "Hemos logrado conectar a nuestros usuarios y sus preguntas directamente con nuestro modelo en tiempo real."
-70. "Ya no se necesitan expertos en SQL y software de planificación para entender qué está pasando."
-71. "Cualquier supervisor puede preguntar en lenguaje natural y obtener diagnósticos causales basados en fusión de datos geométricos y operativos."
-72. "Hemos pasado de Describir (Aware) a Predecir y Prescribir (Orchestra + IA)."
-73. "Por qué somos el Activo Estratégico Final:"
-74. "Futuro de minería es autónomo y remoto, IROC en caso de monitoreo centralizado o Timining Aware en caso más distribuido."
-75. "Pero robots y centros remotos son ciegos sin modelo actualizado del entorno."
-76. "Timining posee, a través de sus algoritmos, la fuente de verdad."
-77. "Somos capa de ejecución indispensable que habilita minería 4.0."
-78. "Para cualquier jugador estratégico que quiera dominar operación minera del futuro, Timining no es opción; es estándar de facto de realidad operativa."
-79. "Nuestros 10 pilares:"
-80. "Pilar 1: Evolución y Punto de Inflexión (El Pivote)."
-81. "Timining no nació como plataforma, sino como solución de ingeniería de alta precisión."
-82. "Durante década, resolvimos muchos problemas 'difíciles' de industria con herramientas a medida."
-83. "Sin embargo, en 2023, ejecutamos cambio arquitectónico radical: dejamos de construir herramientas aisladas para consolidar Plataforma Operativa Modular."
-84. "Pasamos de ser fábrica de soluciones a ser arquitectos de ecosistema estandarizado (SaaS)."
-85. "Donde productos como Aware y Orchestra no son fines en sí mismos, sino módulos de infraestructura de datos superior escalable globalmente."
-86. "Pilar 2: Valor para el Cliente (Cerrando Brecha Geométrica)."
-87. "Minería sufre paradoja costosa: Plan de Negocio es geométrico, pero operación es ciega a geometría en tiempo real."
-88. "Valor Primario: Entregamos lo que nadie más tiene: capacidad de responder '¿Estamos cumpliendo plan ahora mismo?'"
-89. "Con nuestras metodologías, permitimos correcciones intra-turno, evitando destrucción de valor antes de que se consolide."
-90. "Valor Sistémico: Al digitalizar realidad física, nos convertimos en única 'Fuente de Verdad' que unifica Geología, Planificación y Operación."
-91. "Eliminando silos de información."
-92. "Pilar 3: Integración de Producto y Plataforma."
-93. "Timining no es silo más; es intersección donde convergen flujos de trabajo críticos de la mina."
-94. "Nos situamos estratégicamente en cruce entre herramientas de Planificación, sistemas de Perforación y Tronadura, Gestión de Flota."
-95. "Nuestra plataforma permite nivel de conectividad operativa ausente en mercado."
-96. "Al integrar geometría con operación, habilitamos conciencia situacional integral."
-97. "Planificador puede ver impacto de sus diseños en flota en tiempo real."
-98. "Despachador puede ver restricciones geotécnicas en su pantalla."
-99. "Transformamos herramientas aisladas en sistema operativo coherente."
-100. "Permitiendo disponibilizar información no solo a supervisores y gerentes, sino a otros sistemas automatizados."
-101. "Permitiendo optimizar desde end to end el proceso."
-102. "Pilar 4: Integraciones de Datos y Posición en Ecosistema (El Efecto Suiza)."
-103. "En industria caracterizada por 'jardines amurallados' donde grandes OEMs (Caterpillar, Komatsu, Hexagon) compiten y no se integran entre sí."
-104. "Timining ocupa posición estructural única: somos Integrador Neutro."
-105. "Debido a que somos agnósticos al hardware, proveedores que no se hablan entre ellos sí se integran con nosotros."
-106. "Esto genera 'Efecto Suiza': Timining se convierte en capa de coordinación segura y confiable para datos operativos de la mina."
-107. "Esta posición nos otorga ventaja estructural defensible: poseemos contexto unificado de datos que ningún competidor verticalizado puede replicar fácilmente."
-108. "Pilar 5: Modelo Comercial y Adopción (Efecto 'Leapfrog')."
-109. "Nuestra tecnología no se impone; se exige desde la base."
-110. "Tenemos adopción 'Bottom-Up' inusualmente alta, con más de 100 usuarios activos mensuales por faena."
-111. "Operación confía en nosotros porque resolvemos sus dolores diarios (stickiness)."
-112. "Lo que genera tracción interna que acelera acuerdos corporativos."
-113. "Hemos validado que nuestra tecnología es crítica tanto para despachador como para gerente de planificación o gerente de mina."
-114. "Hemos visto que altas gerencias también están interesadas en entender trayectoria de desvíos al plan."
-115. "Conectando sus dashboard a nuestro modelo o a través de nuestro agente."
-116. "Pues si bien no les interesa detalle del día a día, desvíos al plan de negocio se generan día a día y difícilmente se pueden recuperar."
-117. "Pilar 6: Pricing (La Oportunidad de Valor Latente)."
-118. "Aquí reside una de mayores oportunidades de captura de valor."
-119. "Históricamente, nuestro pricing ha reflejado nuestro origen como proveedor de herramientas técnicas independientes."
-120. "Sin embargo, valor que entregamos hoy es sistémico: somos estándar de realidad operativa."
-121. "Existe desconexión entre precio actual y valor estratégico de ser 'Fuente de Verdad'."
-122. "Para comprador estratégico, esto representa oportunidad inmediata de realinear pricing desde modelo de 'licencia de software' a modelo de 'valor empresarial'."
-123. "Capturando porción mayor de ahorros millonarios que generamos al asegurar cumplimiento del plan."
-124. "Pilar 7: Perfil Financiero."
-125. "Hemos transicionado exitosamente de ingresos por licencia a base sólida de ingresos recurrentes (SaaS)."
-126. "Con márgenes altos y eficiencia de capital."
-127. "Nuestra estructura financiera hoy es la de plataforma escalable, lista para crecimiento exponencial bajo alero de actor global."
-128. "Pilar 8: El Equipo."
-129. "Nuestra ventaja no es solo código; es ADN."
-130. "Somos 'singularidad' forjada al resolver primero problemas difíciles por separado."
-131. "Rigor de Geotecnia: Aprendimos precisión matemática donde error cuesta vidas."
-132. "Dinámica de Operación (Orchestra): Entendimos caos logístico y modelamiento de procesos."
-133. "Solo equipo que ha dominado ambos mundos podía construir algoritmos de inferencia que hoy nos definen."
-134. "Esta capacidad multidisciplinaria es activo difícil de replicar."
-135. "Inferir estado de la mina en tiempo real desde sensores: Desarrollamos algoritmos para inferir parámetros y avance del plan minero desde sensores."
-136. "Pilar 9: Tecnología y Propiedad Intelectual (La Ventaja Injusta)."
-137. "Nuestra barrera de entrada es Inferencia geométrica de procesos de la mina."
-138. "Mientras competencia depende de hardware costoso (drones, escáneres), nosotros desarrollamos algoritmos propietarios que utilizan 'ruido' de datos existentes para reconstruir mina en tiempo real."
-139. "No simulamos: Vemos ejecución real."
-140. "No estimamos: Medimos con precisión."
-141. "Esta IP nos permite ser únicos que pueden alimentar a sistemas autónomos con data geométrica que necesitan para operar."
-142. "Pilar 10: Oportunidades de Captura de Valor."
-143. "Futuro es autónomo y remoto (IROC)."
-144. "Pero robots son ciegos sin modelo actualizado del entorno."
-145. "Timining es eslabón perdido que habilita Minería 4.0."
-146. "Para comprador estratégico, adquirir Timining no es comprar software; es asegurar control de capa de datos de ejecución."
-147. "Con integración de Inteligencia Artificial (Project TIM), pasamos de describir realidad a prescribir futuro."
-148. "Convirtiéndonos en activo final para quien quiera liderar minería autónoma."
+1. "En la minería, el plan de negocio no es una hoja de cálculo financiera; es un volumen geométrico que debe moverse en un tiempo específico"
+2. "La Planificación vive en un mundo estático y perfecto (el diseño), mientras que la Operación vive en un caos dinámico y ruidoso (sensores, FMS)"
+3. "Desde los años 90, la industria intentó cerrar esta brecha añadiendo más sensores, pero fallaron: No puedes optimizar lo que no puedes ver geométricamente"
+4. "Timining construyó la capacidad de digitalizar la realidad física de la mina en tiempo real, resolviendo la 'Brecha Geométrica'"
+5. "Se desarrollaron algoritmos propietarios que utilizan el 'ruido' de los datos existentes (GPS de palas, camiones, perforadoras) para inferir el estado de la mina"
+6. "Se reconstruye la superficie topográfica, los avances de perforación, los inventarios tronados, las geometrías de botaderos cada 15 minutos"
+7. "No se simula el plan: Se ve la ejecución real"
+8. "No se estima: Se mide la adherencia espacial con precisión de metros"
+9. "Esto convierte a Timining en la única Fuente de la Verdad para responder: ¿Estamos cumpliendo el plan ahora mismo?"
+10. "Esta propiedad intelectual es la barrera de entrada y el núcleo del valor tecnológico"
+11. "Con productos como Aris, Tangram y SICT, se desarrolló el 'músculo' para procesar millones de datos ruidosos en tiempo real"
+12. "Con Orchestra, se dio el paso crítico: modelar el proceso minero real con sus interacciones, colas y variabilidad"
+13. "Se integraron tres capacidades que rara vez conviven: la exactitud de la geometría computacional, el entendimiento del proceso minero y el dinamismo en tiempo real"
+14. "El negocio minero se rige por el Plan, una entidad puramente geométrica y volumétrica"
+15. "La operación se gestiona con sensores que entregan tiempos y posiciones, pero no formas"
+16. "La industria intentaba inferir el cumplimiento del plan superponiendo datos dinámicos sobre mapas estáticos que ya no existían"
+17. "La 'Inferencia Topográfica' surgió de la necesidad imperiosa de responder a la Planificación"
+18. "En 2019, se construyó Timining Aware para dar consciencia situacional a todos los usuarios de la mina"
+19. "En 2023, se tomó una decisión arquitectónica radical: construir una Plataforma Modular y Agnóstica"
+20. "Nos conectamos a cualquier FMS (Modular, Hexagon, Wenco) y a cualquier software de planificación"
+21. "Al ser el 'Integrador Neutro' (Suiza), se posee el contexto que ningún OEM puede tener por sí solo"
+22. "Timining Aware no es un visor 3D, sino un modelo en tiempo real que permite visualizar, monitorear y correlacionar variables"
+23. "Se introdujo el concepto de 'Tiempo Actual' en la adherencia geométrica (Metodología Delta2025)"
+24. "Motor de detección de anomalías capaz de monitorear cualquier 'soft sensor' construido"
+25. "Se habilita la simulación automática conectando el modelo en tiempo real con el motor de simulación"
+26. "Con la integración de LLMs (Google Gemini - Project TIM), se conectan usuarios y preguntas directamente con el modelo"
+27. "Ya no se necesitan expertos en SQL y software de planificación para entender qué está pasando"
+28. "Cualquier supervisor puede preguntar en lenguaje natural y obtener diagnósticos causales"
+29. "Se ha pasado de Describir (Aware) a Predecir y Prescribir (Orchestra + IA)"
+30. "El futuro de la minería es autónomo y remoto"
+31. "Los robots y centros remotos son ciegos sin un modelo actualizado del entorno"
+32. "Timining posee la fuente de la verdad a través de sus algoritmos"
+33. "Somos la capa de ejecución indispensable que habilita la minería 4.0"
+34. "Se pasó de ser una fábrica de soluciones a arquitectos de un ecosistema estandarizado (SaaS)"
+35. "La paradoja costosa: el Plan de Negocio es geométrico, pero la operación es ciega a la geometría en tiempo real"
+36. "Se permite correcciones intra-turno, evitando la destrucción de valor antes de que se consolide"
+37. "Al digitalizar la realidad física, nos convertimos en la única 'Fuente de la Verdad' que unifica Geología, Planificación y Operación"
+38. "Nos situamos estratégicamente en el cruce entre Planificación, Perforación y Tronadura, y Gestión de Flota"
+39. "Se permite disponibilizar información no solo a supervisores y gerentes, sino a otros sistemas automatizados"
+40. "Proveedores que no se hablan entre ellos sí se integran con nosotros (Efecto Suiza)"
+41. "Esta posición otorga una ventaja estructural defensible: contexto unificado de datos que ningún competidor verticalizado puede replicar"
+42. "Adopción 'Bottom-Up' inusualmente alta, con más de 100 usuarios activos mensuales por faena"
+43. "La operación confía porque resolvemos dolores diarios (stickiness)"
+44. "Históricamente, el pricing ha reflejado origen como proveedor de herramientas técnicas independientes"
+45. "El valor que se entrega hoy es sistémico: somos el estándar de la realidad operativa"
+46. "Existe desconexión entre precio actual y valor estratégico de ser la 'Fuente de la Verdad'"
+47. "Oportunidad de realinear pricing desde 'licencia de software' a 'valor empresarial'"
+48. "Se ha transicionado a una base sólida de ingresos recurrentes (SaaS), con márgenes altos y eficiencia de capital"
+49. "Ventaja no es solo código; es ADN: precisión matemática de Geotecnia + caos logístico de Orchestra"
+50. "Solo un equipo que ha dominado ambos mundos podía construir los algoritmos de inferencia que hoy nos definen"
+51. "La barrera de entrada es la Inferencia geométrica de los procesos de la mina"
+52. "Esta IP permite ser los únicos que pueden alimentar sistemas autónomos con la data geométrica que necesitan"
+53. "Para un comprador estratégico, adquirir Timining es asegurar el control de la capa de datos de ejecución"
+54. "Con IA (Project TIM), se pasó de describir la realidad a prescribir el futuro"
+
+---
+
+## [Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx]
+- Type: Presentation Script
+- Event: Google Event
+
+### Raw Claims
+1. "TIM Insight Engine es el primer sistema de agentes mineros basado en la IA Generativa de Google que fusiona realidad operacional con planificación"
+2. "Ayuda a resolver la brecha entre el plan y la ejecución del plan minero"
+3. "La mina opera en tiempo real: sensores, telemetría, despacho, sistemas de monitoreo"
+4. "La capacidad humana para procesar esta información en tiempo real ha sido ampliamente superada"
+5. "Observar un dato es instantáneo, pero el diagnóstico de un problema puede tardar horas o días"
+6. "La causa de los desvíos no se detectan ni se corrigen dentro del turno, cuando todavía hay margen"
+7. "Las minas modernas son verdaderas fábricas de datos"
+8. "El dato aparece en milisegundos pero el entendimiento ocurre más lento"
+9. "La capacidad de generar datos ya superó la capacidad humana para analizarlos"
+10. "El cuello de botella hoy no es tecnológico, es cognitivo"
+11. "Hemos llegado al 'techo' de lo que un operador puede procesar"
+12. "El desafío no es automatizar para reemplazar al operador, sino potenciar su capacidad cognitiva"
+13. "Necesitamos transitar hacia una 'Inteligencia Aumentada'"
+14. "La Planificación y la Operación funcionan hoy como silos desconectados"
+15. "La geometría (el plan) vive en un sistema y los datos de operación viven en otro"
+16. "Estos mundos no conversan"
+17. "Cuando algo se desvía del plan, no siempre es evidente responder: qué se desvió, dónde ocurrió, por qué ocurrió"
+18. "Esa falta de visibilidad integrada es lo que vuelve reactiva a la operación"
+19. "Una desviación puede tener múltiples causas"
+20. "Muchas veces no está claro cuándo una actividad pasa a ser parte de la ruta crítica del plan"
+21. "El sistema (conjunto de algoritmos) infiere el estado actual de la mina en distintos subprocesos"
+22. "El monitoreo es complementado con un motor de alertas que permite construir sensores virtuales"
+23. "El motor de simulación permite pronosticar por ejemplo cómo terminará el turno"
+24. "Se ha concretado colaboración estratégica con Google, integrando Agentes de IA basados en Gemini"
+25. "Los usuarios podrán conversar directamente con la información del modelo a través de lenguaje natural con Gemini"
+26. "Se identificó oportunidad de crear agentes especializados en configurar el motor de alertas y el simulador"
+27. "En minería no podemos permitir alucinaciones"
+28. "Nuestro agente está 'anclado' matemáticamente a la topografía y telemetría real de la mina"
+29. "Interactuamos con el agente, validamos visualmente en modelo 3D y configuramos alertas operacionales"
+30. "La visión es pasar de describir lo que está pasando a predecir y recomendar acciones para minimizar desviaciones"
+31. "Permite a los usuarios concentrarse en entender diferentes escenarios y gestionar el riesgo asociado al plan"
+32. "La digitalización minera nació de la urgencia y complejidad real de las operaciones más difíciles"
+33. "Es consecuencia de haber combinado matemática, informática y conocimiento minero"
+34. "Ese enfoque —partir desde la realidad, no desde la teoría— es lo que nos diferencia"
+35. "El verdadero cuello de botella hoy en minería no es tecnológico, es cognitivo"
+36. "Mientras más información tenemos, más difícil se vuelve conectarla con contexto para tomar buenas decisiones durante el turno"
+37. "Ese desfase es lo que vuelve reactiva a la operación, porque cuando se entiende el problema la ventana de acción ya se cerró"
+38. "La ejecución depende de múltiples capas: sensores en equipos, topografía, planes de extracción, perforación, servicios, caminos, modelos de bloques"
+39. "Cada una de estas capas vive en sistemas distintos y se analiza con lógicas distintas"
+40. "Se trabajó con Google integrando agentes de IA basados en Gemini directamente sobre nuestro modelo digital"
+41. "Esto permite escalar el razonamiento sin perder precisión ni contexto operativo"
+42. "Desafíos técnicos resueltos: asegurar cero alucinaciones, integrar datos en tiempo real, fusionar datos operacionales con geometría, lograr tiempos de respuesta compatibles con la operación"
+43. "Lo que se busca es transformar la gestión de la operación: pasar de minería reactiva a preventiva, con gestión por excepción"
+44. "TIMining orquesta la inteligencia operativa mediante sistemas multi-agente autónomos y confiables"
+
+---
+
+## [Antecedentes/TIMining_8-Layer_Diagram.pptx]
+- Type: Technical Architecture
+
+### Raw Claims
+1. "TIMINING Platform consta de 8 capas de interconexión"
+2. "Capa 1 - Data Origination & Integration: Conectores neutrales para FMS (Modular, Hexagon, Wenco), suites de planificación, modelo de bloques, GPS, perforación y tronadura, señales de planta"
+3. "Capa 2 - Real-Time Spatial Reconstruction: Geometría computacional e inferencia de soft-sensor: superficie de pit, progreso de perforación, inventarios tronados, botaderos (algoritmos core de Aware)"
+4. "Capa 3 - Operational State Modeling: Matemática de procesos: dinámica de carga-acarreo, colas, interferencia; modelos de eventos discretos (Orchestra), entradas de Aris/Tangram/SICT"
+5. "Capa 4 - Plan Context & Spatial Adherence: Intención de diseño vs ejecución: adherencia Delta2025 en tiempo actual, reconciliación polígono-vs-superficie, volumetría"
+6. "Capa 5 - Eventing, Controls & Governance: Data QA/QC, normalización, indexación tiempo-espacio, RBAC, audit trails, APIs estandarizadas y backplane de despliegue"
+7. "Capa 6 - Situational Awareness & UX: Vistas en tiempo real y dashboards específicos por rol (Aware): supervisores, despacho, planificadores, gerentes; móvil y escritorio"
+8. "Capa 7 - Analytics, Anomalies & Auto-Projections: Monitoreo de soft-sensor, KPIs de desempeño-contra-plan, simulaciones automáticas de horizonte corto con Orchestra"
+9. "Capa 8 - AI Copilot & Autonomy Enablement: Project TIM diagnósticos en lenguaje natural, acciones prescriptivas; feeds de geometría listos para autonomía hacia robots/despacho"
+10. "Flujo de datos ascendente"
+11. "Prescripciones y control"
+
+---
+
+## [Propuesta ruta/TIMining- Lineamientos de experiencia.pptx]
+- Type: Consulting Proposal
+- Organization: IDEMAX
+
+### Raw Claims
+1. "Propuesta de acompañamiento estratégico en 4 etapas interconectadas para materializar la visión estratégica de TIMining"
+2. "Etapa 1 (Semana 1): Inmersión y racional estratégico - Revisión y articulación de los atributos clave de la plataforma"
+3. "Etapa 2 (Semanas 2-4): Experiencia de clientes y casos de uso - Construcción de la experiencia deseada de los clientes, puntos de contacto críticos"
+4. "Etapa 3 (Semanas 5-8): Portafolio de productos y horizontes de evolución - Definición de la arquitectura modular que permita establecer horizontes de evolución para asegurar crecimiento sostenible y escalable"
+5. "Etapa 4 (Semanas 9-10): Comunicación estratégica de la propuesta de valor - Plan de comunicación nítido y unificado"
+6. "Este proyecto busca convergencia, ordenamiento y articulación clara del portafolio de productos y su multimodalidad"
+7. "Foco en habilitar y entregar lineamientos UX/UI para entregar usabilidad excepcional y maximizar captura de valor"
+8. "Entrevistas internas para entendimiento en profundidad (x4)"
+9. "Levantamiento de tendencias de mercado"
+10. "Benchmarking de experiencias 'multi-módulos' en otras industrias (ej. SAP, Teams) para extraer lecciones de diseño y usabilidad"
+11. "Alineación estratégica de negocio: Definir la condición de éxito y la ambición de crecimiento"
+12. "Entrevistas en profundidad (x6) con usuarios clave y stakeholders para identificar puntos de dolor y oportunidades"
+13. "Hipótesis de creación de valor y perfilamiento de usuarios"
+14. "Levantamiento de puntos de contacto críticos"
+15. "Mapeo de las etapas críticas y de valor en las interacciones de los clientes"
+16. "Historias de usuario / casos de uso: Consolidar la experiencia de servicio del cliente"
+17. "Lineamientos de la plataforma: Documento que define, diagrama y articula los distintos módulos/funcionalidades para maximizar captura de valor"
+18. "Roadmap de evolución del producto: Plan de desarrollo de funcionalidades y expansión de la plataforma"
+19. "Manual de principios de diseño UX/UI para la experiencia multimodal"
+20. "Desarrollo de maquetas de flujos de usuarios clave"
+21. "Principios de UX: Definición de principios y sub-principios que garantizan experiencia de usuario validada"
+22. "Guidelines de navegación, wireframes y pasos necesarios para la creación de interfaces coherentes"
+23. "Parámetros de evaluación UX/UI: Herramienta que permita cuantificar la coherencia de los desarrollos"
+24. "Rediseño de maquetas de flujos: Consolidación y convergencia del portafolio"
+25. "Guía de mensajes clave y narrativa estratégica: Documento con comunicación unificada de TIMining"
+26. "Plantilla de presentación (PPT) ejecutiva: Diseño para comunicar el plan estratégico de crecimiento"
+
+---
+
+## [Sello de Experiencia TIMINING.pptx]
+- Type: Workshop Presentation
+- Topic: Vision & Complexity Management
+
+### Raw Claims
+1. "El cerebro humano es el máximo ejemplo de un sistema complejo, no solo por la cantidad de piezas que tiene, sino por cómo esas piezas interactúan para crear algo mayor que la suma de sus partes"
+2. "Algo complicado tiene muchas partes móviles, pero funciona de forma predecible"
+3. "Si lo desarmas y lo vuelves a armar siguiendo un manual, funcionará (complicado)"
+4. "El motor de un camión de extracción (CAEX) es increíblemente difícil de entender pero un experto con un manual técnico puede predecirlo y arreglarlo"
+5. "Lo complicado se gestiona con expertos y protocolos"
+6. "Algo complejo está compuesto por elementos interconectados donde el cambio en uno afecta a los demás de formas impredecibles"
+7. "En lo complejo no hay una receta lineal"
+8. "El todo es mayor que la suma de sus partes. El comportamiento 'emerge' y no se puede predecir con total certeza"
+9. "En una operación minera, puedes tener el mejor camión (complicado), pero existen multi variables que inciden en que el sistema entero reaccione de forma orgánica"
+10. "Lo complejo se gestiona con experimentación, adaptabilidad y observación de patrones"
+
+---
+
+## [TIMINING_Workshop 01 _ 28 Enero 26.pptx]
+- Type: Workshop Materials
+- Date: 2026-01-28
+
+### Raw Claims
+1. "Ruta de trabajo: Diseño de la experiencia ganadora plataforma multimodal"
+2. "Proponemos acompañamiento estratégico en 4 etapas interconectadas"
+3. "Comunicación estratégica de la propuesta de valor: Desarrollo de plan de comunicación nítido y unificado"
+4. "Lineamientos de diseño de la plataforma multimodal: Definición de la estrategia multimodal digital"
+5. "Experiencia de clientes y casos de uso: Construcción de la experiencia deseada de los clientes, puntos de contacto críticos"
+6. "Inmersión y racional estratégico: Levantamiento de los atributos clave de la plataforma"
+7. "Objetivo de la sesión: Identificar las bases estratégicas del proyecto mediante un entendimiento común de los atributos clave que habilitarán los lineamientos de una experiencia UX/UI 'ganadora', intuitiva y escalable"
+8. "Posicionar la plataforma multimodal como un referente de alto valor para los stakeholders mineros"
+
+---
+
+## [Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx]
+- Type: Design Brief
+- Version: 1.0 (January 2026)
+- Project Lead: Phillip Whatmore, CEO
+- Architect: Gemini (Senior PM/Architect)
+
+### Raw Claims (extracto representativo de documento extenso)
+1. "La industria minera, específicamente operaciones a cielo abierto, enfrenta un desafío mayor: la producción de minerales es suministrada principalmente por minas antiguas con leyes bajas y presiones de costos crecientes"
+2. "Regulaciones y permisos son más difíciles de obtener, haciendo proyectos greenfield menos evidentes como solución"
+3. "Es crucial para compañías mineras tener alto entendimiento de la geología de la mina, rastrear con precisión el proceso de extracción y movimiento del cuerpo mineral"
+4. "Un plan de producción de largo plazo con desglose detallado y riguroso a planes mensuales y semanales, con altos niveles de adherencia y eficiencia en el corto plazo"
+5. "Gran número de operaciones mineras no están cumpliendo sus planes de corto plazo, lo que en suma tiene gran impacto en el plan de largo plazo"
+6. "Minas generan terabytes de datos, muchos en tiempo real, pero integrar toda esta data de manera precisa es muy complejo"
+7. "Cada proceso tiene su propio conjunto de proveedores proporcionando datos y soluciones de software nicho en diferentes formatos, lapsos de tiempo y, más importante, confiabilidad"
+8. "Hay mucho 'ruido' en las diferentes fuentes de datos que hacen la integración e inteligencia difícil"
+
+---
+
+## [Workshop 1/analisis_workshop.md]
+- Type: Workshop Analysis
+- Date: 2026-01-29
+- Source: Workshop 01 session
+
+### Raw Claims
+1. "Este análisis documenta el inicio del diseño de TIMining Core, una plataforma multimodal orientada a transformar la gestión minera"
+2. "Arquitectura centrada en la resolución de problemas de negocio y no solo en funciones técnicas"
+3. "La transición de la empresa hacia un modelo de asistencia proactiva e inteligencia artificial"
+4. "Metáfora del iceberg para ilustrar cómo la nueva interfaz debe liberar el valor de los datos profundos para ofrecer paz mental al usuario"
+5. "El sistema debe evolucionar de simples tableros de control a un agente experto capaz de realizar diagnósticos, predecir impactos en el plan minero y filtrar el ruido informativo"
+6. "Propósito final: alinear al equipo para lanzar un concepto comercial de alto valor en el segundo trimestre"
+7. "Priorizar la autonomía del cliente y la visibilidad jerárquica de los logros operativos"
+8. "2024 fue el año de modularizar el algoritmo y 2025 es el año de integrar IA y alarmas"
+9. "Existen capacidades potentes (forecasting, topografía en línea) pero están 'desordenadas' o dependen de implementaciones manuales"
+10. "La interfaz actual (UI) es solo la punta del iceberg de una tecnología profunda"
+11. "El objetivo es liberar el valor sumergido (datos, integraciones) a través de una nueva experiencia de usuario"
+12. "TIMining tiene la capacidad de vender 'en verde' (pre-venta) debido a la confianza del cliente"
+13. "Hoy falta el 'diagrama de la casa piloto'; tienen las piezas (baño, silla) pero no la arquitectura coherente"
+14. "El nuevo producto debe verse y sentirse distinto ('como abrir un iPhone') para justificar un precio de ticket más alto (ej. USD 450k)"
+15. "El Problema Raíz: Ayudar a la mina a cumplir su Plan Minero (Plan de Negocio)"
+16. "El dueño de la mina quiere cumplir el plan de negocio. El Jefe de Turno quiere cumplir su turno y evitar problemas inmediatos"
+17. "A menudo ignora cómo su 'micro-decisión' afecta la última línea del negocio"
+18. "El CFO es un usuario 'invisible' que debería interesarse, porque el dinero no se pierde al final del año, sino en cada turno mal gestionado"
+19. "TIMining debe pasar de ser un 'kiosco de dulces' (darle al cliente el feature que pide) a ser un 'médico' (diagnosticar el problema real)"
+20. "Dejar de actuar como el sistema de soporte humano donde TIMining hace el trabajo por el cliente ('somos las manos del cerebro')"
+21. "Dejar de crear reportes específicos que no son escalables"
+22. "Pasar del diagnóstico a la acción sugerida: que el sistema diga 'toma acción en este problema'"
+23. "Que el éxito de un turno sea visible para la gerencia (transferencia tecnológica de logros)"
+24. "Reducir la dependencia de reuniones de coordinación; que el dato sea el intermediario"
+25. "Escenario A: Cambio de Turno - Sofía recibe un resumen proactivo 15 min antes: 'El turno termina con 5 camiones estacionados'"
+26. "La plataforma recomienda una asignación de operadores y genera un texto para la charla de inicio de turno"
+27. "Atributo: Proactividad. No espera a que Sofía busque el dato"
+28. "Escenario B: Mantención/Falla - El sistema estima el impacto en el cumplimiento del plan (no solo avisa que la máquina paró)"
+29. "Sugiere reasignación de recursos y advierte riesgos de seguridad en el nuevo sector"
+30. "Atributo: Visión Sistémica. Entiende que si cae la pala, afecta la alimentación de la planta"
+31. "Escenario C: Seguridad y Legalidad - Un jefe de turno pregunta por voz: '¿Estoy cumpliendo el procedimiento con este ancho de berma?'"
+32. "Respuesta del Agente: Validación inmediata contra la normativa legal y procedimientos de la faena"
+33. "Atributo: Asistente Experto. 'Paz mental' de estar cumpliendo la ley"
+34. "Escenario D: Reunión de Gerencia - Detección automática de brechas respecto al plan"
+35. "Priorización: 'Hubo 10 incidentes, pero estos 2 fueron los que impactaron la producción'"
+36. "Atributo: Foco. Evitar la dispersión en micro-problemas"
+37. "Nuevo Concepto de Valor: El valor no está en el software, sino en la 'Paz Mental'"
+38. "El usuario quiere saber que está tomando la decisión correcta y que está cubierto legal y operativamente"
+39. "Se confirmó el paso de 'pantallas con gráficos' a un modelo de Asistencia Proactiva"
+40. "La plataforma debe explicar qué pasó (análisis de causa), qué está pasando (monitoreo) y qué pasará si no se actúa (simulación de impacto)"
+41. "Gestión por Excepción: El sistema debe filtrar el ruido. Si hay 50 camiones bien, no mostrarlos. Mostrar los 5 que generan problema"
+42. "La siguiente etapa inmediata es salir a conversar con usuarios y armar un relato detallado de Casos de Uso"
+43. "Contrastar escenarios ideales con la realidad técnica para asegurar que se pueden construir"
+44. "Todo el trabajo apunta a tener un concepto lanzable ('en verde') para el segundo trimestre"
+45. "Fue sesión exitosa para mover al equipo de mentalidad de 'lista de características' a 'solución de problemas de negocio'"
+46. "Se validó que la IA y la multimodalidad no son adornos, sino herramientas necesarias para reducir la carga cognitiva del usuario minero que sufre de 'pobreza de tiempo'"
+
+---
+
+## [Workshop 1/Casos de Uso Workshop 01.docx]
+- Type: Use Case Documentation
+
+### Raw Claims (casos de uso seleccionados)
+1. "Caso de Uso: Gerente Minas (Cierre Mensual) - Se cumple el mineral y el lastre pero la Adherencia/recuperación de la planta es mala"
+2. "Detección: La planta genera reporte que la recuperación está cayendo"
+3. "Análisis: Las mezclas de mineral no son las correctas"
+4. "Recomendación: La matriz de carguío transporte falló, el mineral de los frentes no son reales. Se recomienda ajustes de flotas/activos"
+5. "Atributo: Categorización de mineral en frentes de carguío. Tracking del mineral y anticiparse a lo que va al chancado"
+6. "Caso: Planificador Corto Plazo - No hay vehículos disponibles. Material a extraer no era lo previsto. Situación de mantenimiento no programado"
+7. "Análisis: Entender la situación. Tener los datos y ciertas hipótesis para seguir avanzando minimizando costo corto o mediano plazo"
+8. "Recomendación: Con simulaciones proponer alternativas para suplir, mitigar o solucionar el problema"
+9. "Caso: Jefe Chancado - Bloqueo de camiones x 45 min en el chancador"
+10. "Detección: Plataforma AVISA anticipadamente de este fenómeno (x sistema de alertas)"
+11. "Recomendación: Recomienda redistribuir. Detención de chancador. Continuidad operativa"
+12. "Caso: Gerencia CIO/Operaciones - Reunión diaria 8 AM"
+13. "Detección: Brechas respecto al plan minero. Incidentes relevantes del turno"
+14. "Análisis: Generar causa-raíz análisis. Priorización objetiva de los incidentes (centrarse en lo importante)"
+15. "Atributo: Integración de información. Simplificación y reducción de los tiempos de análisis. Herramienta de Mejora Continua"
+16. "Caso: Perforación y Tronadura - Patios NO están listos para perforar. Hay poco material tronado disponible"
+17. "Detección: Equipos de servicio en mantenimiento no programado. Plan de perforación donde la actividad es crítica"
+18. "Análisis: ¿Existen equipos disponibles que se puedan reasignar? ¿Cómo afecta aguas abajo? ¿Hay materia tronada disponible?"
+19. "Recomendación: Disponibilizar planes de acción. Ajustar planes aguas abajo para que no sea crítico. Alertar a quienes se ven afectados"
+20. "Atributo: Plan (Ruta crítica). Estado de los equipos (Datos). Secuencia de actividades. Material tronado"
+21. "Caso: Gestión de Alerta de Seguridad - En sala de monitoreo se detecta un riesgo que tiene que sacar la pala"
+22. "Detección: Supervisor de monitoreo detecta alerta. Evalúa impacto inmediato. Pide evaluación del impacto al plan"
+23. "Análisis: Análisis de escenarios de diferentes tiempos de indisponibilidad de las zonas afectadas"
+24. "Recomendación: Definir zonas de restricción. Redefinir el plan para el despacho. Ajustar el plan de corto plazo"
+25. "Caso: Ajuste Táctico (Imprevisto) - Falló un equipo principal. Se activó una zona geotécnica"
+26. "Análisis: Se procesa en conjunto el impacto. Se buscan alternativas. Se evalúan las alternativas y su mitigación. Se identifican los riesgos de la nueva acción"
+27. "Recomendación: Se entrega un set de alternativas, con el impacto medido en el plan. Se recomienda monitorear algunas variables críticas para chequear el avance de los ajustes"
+28. "Caso: Despachador (Respuesta Rápida) - Problema operacional que requiere respuesta Rápida"
+29. "Detección: Detecta problemática y levanta alerta, por ejemplo = Caída de Pala no planificada"
+30. "Recomendación: Reasignación de equipos en base al análisis para evitar el impacto. Mediante teams, correo, dentro Plataforma u otro"
+31. "Caso: Jefe/Ingeniero Operaciones (Velocidades) - Incumplimiento en Plan Velocidades"
+32. "Detección: Levantar Alerta en zonas de Baja Velocidad o fuera de plan de manera automática"
+33. "Análisis: Analizar impacto en tiempo tonelaje o camiones de estas rutas/áreas"
+34. "Recomendación: Entregar causas de esta baja, qué sectores son y qué debe hacer para solucionarlo"
+35. "Caso: Jefe de Turno (Procedimientos/Seguridad) - ¿Estoy cumpliendo procedimientos de trabajo?"
+36. "Detección: A través de radio consulta directa al agente. Fotos"
+37. "Análisis: Procedimientos de trabajo - Experto de prevención de Riesgos. Sernageomin. Legal"
+38. "Recomendación: ¿Cuál es el standard, estoy cumpliendo? ¿Como estandarizo/Regularizo condición?"
+39. "Atributo: ¡Responsabilidad Legal!"
+40. "Caso: Supervisor de Turno (Variabilidad/Pala) - La pala cae en mantención y no tienen claridad cuanto tiempo estará indisponible"
+41. "Detección: La alerta le llega a su celular escrita y por voz"
+42. "Recomendación: El sistema sugiere las 3 mejores opciones para mitigar las pérdidas operacionales"
+43. "Atributo: Capta la atención del supervisor en forma oportuna. Se da todo el contexto operacional. Lista de opciones con métrica de impacto, con la mejor opción rankeada"
+44. "Concepto 'Skynet': Cada X minutos analizar la situación general de la mina. Realizar N simulaciones buscando mejoras el óptimo global. Enviar sugerencias al despacho, a planificación, a otros roles/áreas"
+45. "Pasar de sugerencias/recomendación a: haz esto. 1° A personas. 2° A máquinas"
+
+---
+
+## [Workshop 1/KEEP-STOP-START (retro).docx]
+- Type: Retrospective Exercise
+
+### Raw Claims
+
+**Lo que NO necesita el usuario (STOP):**
+1. "LA Visualización 3D de La Mina"
+2. "Dejar de hacer desarrollos específicos y desarrollarlos de manera genérica"
+3. "Gráficos o reportes que nos piden porque a ellos le piden SIN SOLUCIONAR ALGO"
+4. "MOSTRAR LOS MISMOS KPIS QUE TODOS LOS DASHBOARDS"
+5. "Repetir Información → Generar confusión"
+6. "Gastar/perder tiempo"
+7. "Capacitaciones muy largas"
+8. "No quiere más problemas (TI, contrato, adherencia) quiere que nuestra solución sea plug and play"
+9. "Una experiencia que le quite tiempo"
+10. "Buscar la solución → que la solución venga a él"
+11. "Que piense que es complejo y baje su uso"
+12. "Recordar como llegar A la informacion que necesito"
+13. "MÁS PANTALLAS"
+14. "MUCHA DATA SIN SENTIDO"
+15. "Integrar datos sin entender el Problema y evitar saturar con datos al Usuario"
+16. "Llenarlos de números"
+17. "TIEMPO DEDICADO A REPORTING Y DAR EXPLICACIONES 'PARA ARRIBA'"
+18. "Data Dumping"
+19. "Que tengo que hacer mas trabajo"
+20. "Poca claridad de qué se paga y que no. Que puede pedir"
+21. "Que lleguemos con una solución cuando el problema pasó de moda"
+22. "Primera etapa necesitamos que funcione, no que se vea hermoso"
+
+**Lo que sí necesita (KEEP):**
+1. "Ejemplos de otros clientes '¿CÓMO LO USO?' CATÁLOGO"
+2. "La visualización de la mina esté completa"
+3. "Agregar un dato para entenderlo en con el contexto, simple y rápido"
+4. "Los resultados de él sean visibles"
+5. "APOYAR DATOS CON VISUALIZACIONES"
+6. "HERRAMIENTAS FÁCILES DE USAR Y ROBUSTAS PARA TOMAR MEJORES DECISIONES EN EL DÍA A DÍA"
+7. "Un sistema Recomendador y que tome ACCIÓN en temas recurrentes"
+8. "Sentir que tiene el control operacional"
+9. "CAPACITACIÓN RESPECTO AL PERFIL DE USUARIO (OJALÁ IN-APP)"
+10. "Que le facilitemos la vida. Menos Stress"
+11. "Que pueda tomar decisiones más rápido y mejores"
+12. "Que puedo hacer: mejorar su trabajo. Mejor desempeño personal"
+13. "Ver los elementos que le ayudan a cumplir sus KPIs de sus bonos"
+14. "Priorizar la seguridad"
+15. "Orden de prioridad ante contingencias (Radiales - whatsapp, etc)"
+16. "Estrategias operacionales. Cuál es la más eficiente"
+17. "Claridad del proceso completo (proceso mina) Servicio - PyT - CyT - Chancado"
+18. "Cumplir su planificación"
+19. "Ver su plan ojalá completo"
+20. "Un sistema más Proactivo"
+21. "RECOMENDACIONES"
+22. "Customización. Necesita recomendaciones no solo alertas"
+23. "Respuestas Automáticas a sus problemas y sugerencias"
+24. "Una experiencia más acorde a la rutina diaria"
+25. "Mejoran el sistema de alertas, sobretodo como llegar directo al usuario"
+26. "Plataforma fácil de entregar y liberar a los usuarios"
+27. "ENTENDER EL IMPACTO DE LOS PROBLEMAS PARA PRIORIZAR"
+28. "Soporte más activo"
+29. "Certeza de que cuidamos sus datos y nos preocupamos por ellos (Ciberseguridad)"
+30. "'Escuchar' lo que está pasando en la mina"
+31. "Encontrar rápido los puntos que requieren intervención"
+32. "ATENDER PROBLEMAS A TIEMPO"
+
+**Lo que no sabe que necesita (START):**
+1. "Un asistente virtual 'Para ayudarlo con el DÍA A DÍA'"
+2. "Que podemos disminuir las reuniones coordinaciones"
+3. "Disminuir las distracciones/sobrecarga cognitiva"
+4. "ABANICO DE ESCENARIOS POSIBLES ANTE EVENTUALIDADES"
+5. "Un Desplanificadometro en línea. Medir cuanto llevo desviado desde un t0"
+6. "Reducir el Ruido de información. (Foco en lo esencial)"
+7. "Estar en los canales de comunicación primarios de la MINA"
+8. "Monitoreo remoto Subcontratado"
+9. "SIMPLICIDAD (los mejores ingenieros simplifican)"
+10. "Copiloto que esté atento a soportar sus decisiones"
+11. "Hablar del outcome en lugar de output"
+12. "Que no pueden tomar decisiones con información no actualizada"
+13. "RECONOCER DE SU IMPACTO"
+14. "Que pueden enfocarse en lo importante y no en lo urgente"
+15. "Optimización de procesos aunque ya estén cumpliendo planes por diseño → Mejora continua → Excelencia operacional"
+16. "Mejorar la comunicación entre colaboradores áreas"
+17. "HERRAMIENTAS QUE LES AYUDEN A ENTENDER 'QUÉ PASO' Y PORQUÉ... y luego 'QUÉ HACER'"
+18. "Consciencia del Valor que estoy agregando con respecto a mis decisiones"
+19. "INFORMACION de otros Procesos (silos de información)"
+20. "No sabe los datos que tiene, ni su calidad de su informacion"
+21. "COORDINARSE ENTRE ÁREAS Y SER RÁPIDO EN COMUNICAR EVENTUALIDADES"
+22. "Cuanto del problema ya lo sabíamos desde el plan minero"
+23. "Involucrar el Plan minero y sus paralelos para entender 'como vamos'"
+24. "AUDITAR SUS 'FUENTES DE LA VERDAD' Y CORREGIRLAS"
+25. "Pre-factibilidad → Arquitectura fácil de Justificar al Cliente"
+26. "Menos dependencia del Cliente"
+
+---
+
+## [entrevistas iniciales stakeholders/Entrevista PM AWARE.png]
+- Type: Interview Persona Map
+- Interviewee: Carolina Retamal (PM AWARE)
+- Years at TIMining: AWARE desde inception
+
+### Raw Claims
+1. "¿Qué es TIMining? AWARE según los usuarios: Plataforma visualización 3D. Información en tiempo real de la mina"
+2. "Rol/Cargo Actual: PM AWARE"
+3. "Años en TIMining: AWARE desde inception"
+4. "¿Cuál sería aporté crear? Mejora la operación: Entregarle a los usuarios informacion para tomar mejores decisiones"
+5. "Necesidad de tomar decisiones correctas + Necesidad de cumplir el Plan Minero"
+6. "3 into en tiempo real: Tracking de equipos, saber si se está cumpliendo el plan y tener toda información en un mismo lugar para tener mejor gestión operacional"
+7. "¿Cuáles son los Mayores frustraciones que enfrentáis con el cliente?: Ir mas allá de la topografía e incluir otros módulos y servicios"
+8. "Comunicación externa al usuario final → Lo que vemos con los usuarios no siempre es lo mismo de las gerencias. Cerrar un proyecto que atrasa con el cliente"
+9. "Calidad del dato: Hacer procesamiento de datos de forma diferente por cada cliente e implementación distinta"
+10. "Usuario entiende poco el producto y sus capacidades"
+11. "¿Cuál crees que son los principales técnicos/comerciales/organizacionales que enfrenta TIMining?: Estandarización"
+12. "Venta Software + argumentos de venta / Precio. Falta un argumentario / argumentos para convencer a un cliente"
+13. "aware vs orchestra vs otros productos"
+14. "Comerciales / Ideas Finales: Customización. Incrementar el valor entregable al producto. Valor real vs percibido en el producto"
+
+---
+
+## [entrevistas iniciales stakeholders/Entrevista PM Orchestra.png]
+- Type: Interview Persona Map
+- Interviewee: Ernesto Perez (PM ORCHESTRA)
+
+### Raw Claims
+1. "¿Qué es ORCHESTRA? Según los usuarios: Simulador 1. Análisis 2. Simulación"
+2. "Rol/Cargo Actual: PM ORCHESTRA"
+3. "¿Cuál sería aporté crear? Granularidad / Detalle. Simulación con DATA segob (según observado?)"
+4. "Servicio de mina: Instalación rápida Cambio de experto Simulador de data segob expertos"
+5. "Uso de DATA segob"
+6. "¿Cuál crees que son los principales técnicos/comerciales/organizacionales?: Expectativas de dato grupo comerciales"
+7. "Desarrollo y mejora continua + co piloto"
+8. "Comerciales / Ideas Finales: Productividad innovacion y competencia, Análisis de gaps (crecidas), Co piloto (operacional?)"
+
+---
+
+## [entrevistas iniciales stakeholders/Entrevista Roberto COO.png]
+- Type: Interview Persona Map
+- Interviewee: Roberto Catalan (COO)
+- Years at TIMining: 8 años (Llegué con Nico)
+
+### Raw Claims
+1. "Rol/Cargo Actual: COO (Gerente General Operaciones mineras y producto)"
+2. "Años en TIMining: 8 años (Llegué con Nico)"
+3. "¿Qué es TIMining? AWARE según los usuarios: TIMINING es Software minero. Posicionados en simulación/geo. Posiciona para flujos geométricos según el avance actual en el terreno"
+4. "Necesidad de mantener la calidad del dato vs. fácil-base. Necesidad Probar los módulos que se van creando. Producto de Futuro (I+D) o producto de ahora ¿Rápido? Ahora"
+5. "descripción amplia (despacho, planning, operaciones, planners...) - CONCILIACIÓN DEL CLIENTE NO LOS MISMOS ANALÍTICA"
+6. "Poder reportar al Directorio que no se desvía geométricamente"
+7. "CICLO DE VENTA LARGO. DEMOSTRA (ACUERDO DEL USUARIO) para asegurar que les interesa. [A veces tenemos que] PROCESO DE NEGOCIO DE LARGO TIEMPO DE REQUISITO"
+8. "¿Cuáles son los Mayores frustraciones que enfrentáis con el cliente?: EXIGEN Lo que quieren de TIMINING. Customizaciones totalmente adhoc porque quieren"
+9. "Brechas de negocio: Cada mina distinta implementación distinta. (BRECHAS de NEGOCIO) → Metodología distinta. Bucar fricción producto"
+10. "Antigravy Datos externos"
+11. "Módulo de Alertas"
+12. "Buscar fricción producto. reportes dinámicos"
+13. "Customización"
+14. "Lockin"
+15. "Data y alertas tiempos de repuesta"
+16. "RENDIMIENTO. MEDICIÓN DE IMPACTO"
+
+---
+
+## [entrevistas operaciones/notas_entrevista_COO_(segunda entrevista).md]
+- Type: Strategic Meeting Notes
+- Date: 2026-01-22
+- Participants: Roberto Catalán (COO), IDEMAX team
+
+### Raw Claims
+1. "TIMining tiene entre 6 y 8 productos de software para minería"
+2. "Productos centrales: Aware y Orquestra"
+3. "Aware: plataforma más amplia de monitoreo operacional, usada en salas de control 24/7 con múltiples pantallas"
+4. "Orquestra: herramienta más especializada de planificación, enfocada en secuencias operacionales específicas"
+5. "Proyecto Team Agent / Google Gemini: En etapa de alfa temprana, en modo de co‑creación con un cliente"
+6. "No es todavía un producto público ni masivo"
+7. "Riesgo alto porque en minería no hay margen para errores o 'alucinaciones' de IA: una decisión mal tomada puede tener impacto en seguridad, continuidad operacional y millones de dólares"
+8. "La mayoría de los competidores vende hardware junto con software muy ligado a ese hardware"
+9. "TIMining es agnóstico al hardware y a los proveedores (OEM)"
+10. "Puede integrar datos de muchos sensores, equipos y sistemas, sin importar de qué marca o proveedor sean"
+11. "Diferenciador clave: capacidad de hacer 'match' entre la geometría del plan y lo que realmente pasa en el terreno"
+12. "Conecta datos geométricos/topográficos con el posicionamiento y actividad real de los vehículos"
+13. "Permite ver en tiempo casi real si la operación está respetando el plan o se está desviando espacialmente"
+14. "Algoritmos que infieren estados de los vehículos sin depender del input humano"
+15. "En sistemas tradicionales, los operadores marcan el estado del camión con un botón"
+16. "TIMining, solo con datos (posiciones, velocidades, patrones de movimiento, tiempos), puede inferir si un camión está realmente trabajando"
+17. "Esto reduce la dependencia del factor humano y mejora la calidad de los datos operacionales"
+18. "No se requiere hardware propietario adicional"
+19. "Componentes en C++ (parte del 'core' más antiguo o de alto desempeño)"
+20. "Visualizaciones en Unity (con inspiración de videojuegos para experiencia 3D)"
+21. "Servicios backend en Go y Python"
+22. "Interfaces y componentes web para interacción de usuarios"
+23. "Reportes generados in‑house y enviados por correo electrónico, fuera de un flujo integrado"
+24. "No existe todavía un sistema unificado de autenticación que abarque todo el portafolio"
+25. "Esta mezcla tecnológica genera fricciones a la hora de integrar productos y datos"
+26. "Para conectar Orquestra con sistemas web, hoy se recurre a bajar bases de datos y hacer cruces manuales"
+27. "El equipo termina invirtiendo bastante tiempo en extraer datos, preprocesarlos, armar reportes y análisis de forma manual"
+28. "Todo esto reemplaza lo que idealmente debería hacerse vía APIs, conectores y flujos automatizados"
+29. "Se describe el estado deseado como un 'plug and play' que aún no se cumple"
+30. "Hoy el esfuerzo humano todavía es clave para que los sistemas 'conversen'"
+31. "Desafío central: 'Geometry Gap' (Brecha Geométrica)"
+32. "El minero en terreno típicamente ve 'camioncitos y palas' en su sistema de flota, pero no ve el contexto geológico ni el plan espacial detallado"
+33. "No tiene a la vista si está extrayendo desde el polígono o bloque correcto, ni el impacto de desviarse en ese momento"
+34. "Falta la visualización integrada de dónde se suponía que debía excavar y dónde está realmente excavando"
+35. "Las desviaciones respecto al plan se descubren tarde (a veces semanas después)"
+36. "El costo de haber extraído en la zona equivocada puede ser de millones de dólares"
+37. "Hay tensiones entre incentivos de corto plazo (cumplir un bono hoy) y valor de largo plazo de la mina"
+38. "Caso de uso concreto: Aware detectó una caída sistemática de velocidad de ~20 km/h a 8 km/h en un tramo de curva específico"
+39. "Descubrieron que la ruta de los camiones autónomos estaba mal dibujada en el sistema de Komatsu Front Runner"
+40. "Corregir ese error implicó recuperar rendimiento perdido sin cambiar flota ni hardware"
+41. "Sin Aware, el problema habría pasado desapercibido por más tiempo"
+42. "Cada faena minera es un 'mundo' distinto, por lo que se requiere mucha customización"
+43. "El tiempo estándar de instalación es aproximadamente 1 mes para dejar todo conectado a nivel básico"
+44. "Luego viene un período largo de ajustes y customizaciones"
+45. "Ejemplo: durante todo 2025 ya está comprometido trabajo de customización con un cliente"
+46. "Distintos métodos de extracción (rajo abierto, subterráneo, strip mining)"
+47. "Diferentes regulaciones locales y restricciones de seguridad"
+48. "Estructuras organizacionales y flujos de decisión muy diferentes entre empresas y países"
+49. "Enfoque consultivo como parte central de la propuesta"
+50. "Se analiza el método de extracción, la secuencia de procesos y los roles concretos en esa faena"
+51. "Se conversa con clientes para entender sus dolores prioritarios"
+52. "A partir de ese diagnóstico, se definen reglas de negocio, parámetros y alertas específicas para esa mina"
+53. "Se mantiene la misma interfaz 'de arriba' para todos (misma UX base), pero 'debajo del agua' las reglas, umbrales y lógicas cambian"
+54. "Chile: Predominan los rajos abiertos, con rampas y bancos"
+55. "Colombia (ej. Cerrejón): Rajo abierto de escala enorme, cientos de km²"
+56. "Brasil (MRN, minería de carbón tipo 'strip mining'): El mineral viene en 'lonjas' o capas"
+57. "Minería subterránea: Tiene lógica y geometría muy diferente; hoy no es el foco principal de TIMining"
+
+---
+
+## [Workshop 1/_FIELD_NOTES.md]
+- Type: field_notes
+- Date: 2026-02-15
+
+### Raw Claims
+1. "El CTO, Carlos, esta muy confiado de que el diseño de los prodcutos de TIMining estan muy por sobre la vara de otros softwares de mineria (y puede que tenga razon) pero eso no significa que no tengan problemas graves de ux" (Confidence: high)
+
+---
+
+## [Workshop 1/IMG_9679.HEIC]
+- Type: workshop_photo
+- Date: 2026-01-28
+- Exercise: Sticky notes on board - Categories: DEPURACIÓN, VISUALIZACIÓN
+
+### Raw Claims
+1. "Depuración de datos. Es necesario poder validar y cuestionar el origen de los datos para poder confiar en ellos"
+2. "Interpretación: Cuando encuentro inconsistencias, el sistema debe ayudarme a entender qué paso"
+3. "La capacidad humana de procesar información en tiempo real ha sido ampliamente superada"
+4. "Tener visibilidad del estado de distintos activos"
+5. "Qué acciones tengo que tomar vs. qué está pasando"
+6. "Detección: Identificar de manera temprana las desviaciones del plan"
+7. "Visualización: Tener las herramientas para entender la situación completa y tomar decisiones"
+8. "Una visualización que no me quite tiempo"
+9. "Ver los resultados de mis decisiones. Mejora continua"
+10. "Necesito saber la causa raíz de un problema para actuar"
+11. "Necesito entender el impacto de mis decisiones antes de tomarlas"
+12. "Organización de información que sea intuitiva y fácil de navegar"
+
+---
+
+## [Workshop 1/IMG_9680.HEIC]
+- Type: workshop_photo
+- Date: 2026-01-28
+- Exercise: Sticky notes organized by categories - Multiple clusters visible
+
+### Raw Claims
+1. "Qué debería hacer para optimizar el proceso"
+2. "Orden de prioridad ante contingencias"
+3. "Encontrar el punto crítico donde tomar acción"
+4. "Una experiencia que integre múltiples fuentes de información"
+5. "Sistema que me ayude a priorizar"
+6. "Coordinación entre áreas para tomar decisiones informadas"
+7. "Visibilidad de cómo las decisiones afectan otras áreas"
+8. "Trazabilidad: ver cómo evolucionan las decisiones y sus impactos"
+9. "Alertas contextualizadas que me ayuden a entender la severidad"
+10. "Necesito confianza en los datos que veo"
+11. "Transparencia del origen de los datos"
+12. "Capacidad de validar información crítica antes de actuar"
+
+---
+
+## [Workshop 1/IMG_9681.HEIC]
+- Type: workshop_photo
+- Date: 2026-01-28
+- Exercise: Sticky notes with workshop insights
+
+### Raw Claims
+1. "La mina es un sistema complejo donde cambios en un punto afectan todo el proceso"
+2. "Necesito ver el panorama completo no solo mi área"
+3. "Tecnología para ayudar en decisiones bajo incertidumbre"
+4. "Poder simular escenarios antes de tomar decisiones críticas"
+5. "Sistema que aprenda de decisiones pasadas"
+6. "Reducir el tiempo entre detectar un problema y actuar"
+7. "Capacidad de colaboración entre turnos"
+8. "Continuidad de información entre equipos"
+9. "Registros automáticos de decisiones tomadas"
+10. "Explicación de por qué el sistema recomienda ciertas acciones"
+
+---
+
+## [Workshop 1/IMG_9682.HEIC]
+- Type: workshop_photo
+- Date: 2026-01-28
+- Exercise: DEPURACIÓN section with sticky notes - "Lo que no necesita el usuario"
+
+### Raw Claims
+1. "LA Visualización 3D de La Mina (no agrega valor)"
+2. "DIFERENCIA ENTRE ALINEAMIENTO - LO QUE PASA VS LO QUE DEBERIA PASAR"
+3. "Gestion de datos: ¿cuáles son todos los puntos disponibles?"
+4. "Lo que no necesita el usuario: (no agrega valor)"
+5. "Hay que mostrar USABILIDAD - algo fácil de aprender Y fácil de usar"
+6. "La Visualización 3D La Mina" (repeated emphasis on not needing this)
+
+---
+
+## [Workshop 1/IMG_9683.HEIC]
+- Type: workshop_photo
+- Date: 2026-01-28
+- Exercise: VISUALIZACIÓN section with sticky notes
+
+### Raw Claims
+1. "Tiempo perdido de 1 a 3 hrs Meat Hook"
+2. "Necesitar la visualización como medio para"
+3. "TRABAJO: Es impactado la tarifa de la data"
+4. "Dar contexto"
+5. "Una visualización que no me quite tiempo"
+6. "Necesito entender el porqué de las cosas"
+7. "La operación debe ser simple y rápida"
+
+---
+
+## [Workshop 1/analisis(keep)-4.57.30 PM.png]
+- Type: workshop_analysis
+- Date: 2026-01-28
+- Exercise: KEEP analysis - "Lo que sabemos que sí necesita el usuario (si o si)"
+
+### Raw Claims (organized by cluster as visible)
+
+**Cluster 1: Agrupación Temática y Clusters Estratégicos**
+1. "Agrupación Temática y Clusters Estratégicos"
+2. "El usuario necesita la herramienta para minimizar o potenciar 'algo'"
+3. "Reducir sobrecarga cognitiva (mucha información y poco tiempo)"
+4. "¿Qué tan grande es X desviación?"
+5. "¿Cuáles son las palancas?"
+6. "Insights de alertas en el análisis y acción"
+7. "¿Qué está pasando?"
+8. "Saber la información de todos los actores para asegurar la coordinación"
+9. "Proactividad"
+10. "Conectar diferentes flujos de trabajo en un solo lugar"
+11. "Data con contexto"
+12. "Sistema que permita a los operadores escalar rápidamente cuando algo está malo"
+13. "Capacitaciones / Onboarding"
+14. "Sistema debe enseñar al Operador"
+15. "Fácil y rápido de entender"
+16. "Dashboards personalizables para distintos roles"
+17. "No buscar la información; información debe llegar a ti"
+18. "El flujo de trabajo debe reducirse el N° de clicks"
+19. "Acotado a mi rol (ver solo lo que necesito)"
+
+**Cluster 2: Relato Estratégico por Cluster**
+1. "Relato Estratégico por Cluster"
+2. "Relato Estratégico (Capa 1)"
+3. "Complejidad y Decisiones estratégicas (MÁXIMA)"
+4. "Filtración de Prioridades por Criticidad"
+5. "Sistema que permita a gerencia ver qué acciones se tomaron en tiempo real y verificar desviaciones"
+6. "Capa técnica enfocada en planificación estratégica (algoritmos, modelos de simulación, optimizaciones)"
+
+**Cluster 3: Atributos Diferenciadores con Foco en CX / UX / UI**
+1. "Atributos Diferenciadores con Foco en CX / UX / UI"
+2. "El sistema debe informar correctamente con los KPI CX / UX / UI"
+3. "Decisiones estratégicas aceleradas en flujos que importan"
+4. "Sistema debe manejar la complejidad internamente"
+5. "Presentación Adaptativa: La plataforma debe adaptarse al contexto del problema, mostrando información relevante sin perder sencillez"
+6. "Información de forma directa, no se debe perder tiempo buscando"
+7. "Información diferenciada por roles"
+8. "Tipología de Capa y Persona: Segmentación y asignación de un flujo UX intuitivo"
+9. "Interfaz separada por procesos/roles"
+
+**Cluster 4: Impactos de Decisión Simplificada y de Alto Impacto**
+1. "Impactos de Decisión Simplificada y de Alto Impacto"
+2. "Simulación de escenarios → Capacidades predictivas"
+3. "Automatización de decisiones recurrentes → Dejar que el sistema me muestre qué hacer"
+4. "Historial de decisiones tomadas → Aprendizaje continuo"
+5. "Recomendaciones de la Plataforma: Acciones prioritarias bajo análisis de impacto"
+
+**Cluster 5: Impacto Directo del Usuario y de Alto Impacto**
+1. "Impacto Directo del Usuario y de Alto Impacto"
+2. "Reportes y análisis automáticos"
+3. "Validación de compliance con procedimientos y normativas legales"
+4. "Sistema que permita transferir conocimiento operacional a gerencia sin pérdida de información"
+5. "Alertas inteligentes (filtrado por impacto)"
+
+---
+
+## [Workshop 1/analisis(start)-4.58.21 PM.png]
+- Type: workshop_analysis
+- Date: 2026-01-28
+- Exercise: START analysis - "Lo que el usuario no sabe que necesita"
+
+### Raw Claims (organized by cluster as visible)
+
+**Cluster 1: Agrupación Temática y Clusters Estratégicos**
+1. "Agrupación Temática y Clusters Estratégicos"
+2. "Capacidad de detectar patrones y generar insights de manera automática → Inteligencia predictiva"
+3. "Gestión de conocimiento: Que la plataforma capture mejores prácticas y las difunda automáticamente"
+4. "Gamificación: Reconocimiento de logros, incentivos a decisiones correctas"
+5. "Aprendizaje continuo: El sistema aprende de las acciones del usuario y se adapta"
+6. "Diagnóstico automático con recomendación de acción"
+7. "Co-piloto inteligente que asiste y sugiere"
+
+**Cluster 2: Relato Estratégico por Cluster**
+1. "Relato Estratégico por Cluster"
+2. "Relato Estratégico (Capa 1: Estratégico/Táctico | Capa 2: Operacional)"
+3. "Capa Estratégica: Insights de negocio, análisis predictivos, simulaciones de escenarios avanzados"
+4. "Plataforma debe automatizar decisiones recurrentes para liberar tiempo cognitivo"
+5. "Sistema de alertas inteligentes que no saturen, solo muestren lo crítico"
+
+**Cluster 3: Atributos Diferenciadores con Foco en CX / UX / UI**
+1. "Atributos Diferenciadores con Foco en CX / UX / UI"
+2. "Interfaz adaptativa según contexto y momento del día"
+3. "Simplicidad Radical: 'No me hagas pensar' - La plataforma debe ser obvia"
+4. "Tooltips inteligentes, asistentes contextuales"
+5. "Tipología de Capa y Persona: Flujos de usuario altamente personalizados y especializados por rol"
+6. "Reducción de fricción: Menos clicks, más eficiencia"
+7. "Transparencia/UX elegante: Complejidad oculta, resultados simples"
+
+**Cluster 4: Gest. Coordinación y Conflictos en Silos**
+1. "Gest. Coordinación y Conflictos en Silos"
+2. "Coordinación multi-área automática"
+3. "Eliminación de silos de información"
+4. "Sistema que identifica cuellos de botella y sugiere soluciones colaborativas"
+5. "Visibilidad transversal del estado de la mina para todos los roles"
+
+**Cluster 5: Gest. Conocimiento y Toma de Datos**
+1. "Gest. Conocimiento y Toma de Datos"
+2. "Captura automática de lecciones aprendidas"
+3. "Sistema que identifica patrones en eventos históricos"
+4. "Repositorio de mejores prácticas accesibles en contexto"
+
+**Cluster 6: Capacitación Rápida y Aprendizaje Eficiente**
+1. "Capacitación Rápida y Aprendizaje Eficiente"
+2. "Onboarding inteligente, con asistente virtual"
+3. "Tutoriales contextuales según tarea activa"
+4. "Simuladores de entrenamiento para nuevos operadores"
+
+**Cluster 7: Confiabilidad Auditoría y Compliance**
+1. "Confiabilidad Auditoría y Compliance"
+2. "Auditoría automática de decisiones"
+3. "Validación de cumplimiento legal en tiempo real"
+4. "Trazabilidad completa de acciones y responsables"
+
+**Cluster 8: Soporte Cognitivo y Carga Mental Baja**
+1. "Soporte Cognitivo y Carga Mental Baja"
+2. "Reducción de decisiones triviales → El sistema se encarga"
+3. "Modo 'foco': Filtrado extremo de ruido informativo"
+4. "Asistente de toma de decisiones bajo presión"
+5. "Arquitectura 'Plug and Play' de Alertas: Configuración fácil de sensores virtuales sin programación"
+6. "Sistema debe adaptarse al usuario, no al revés"
+
+---
+
+## [Workshop 1/analisis(stop)-5.06.38 PM.png]
+- Type: workshop_analysis
+- Date: 2026-01-28
+- Exercise: STOP analysis - "Lo que no necesita el usuario (no agrega valor)"
+
+### Raw Claims (organized by cluster as visible)
+
+**Cluster 1: Agrupación Temática y Clusters Estratégicos**
+1. "Agrupación Temática y Clusters Estratégicos"
+2. "Desarrollos completamente a la medida (customizaciones extremas no escalables)"
+3. "Gráficos o reportes solicitados 'porque me los piden arriba' sin resolver un problema real"
+4. "Sobrecarga de Información (Data Dumping)"
+5. "Entregarle al usuario exactamente lo que pide sin cuestionar si realmente lo necesita"
+6. "Integrar datos sin entender el Problema y evitar saturar con datos al Usuario"
+
+**Cluster 2: Estrategia de Producto y Clusters de Valor**
+1. "Estrategia de Producto y Clusters de Valor"
+2. "Ser solo un 'dashboard más' que replica KPIs de otros sistemas"
+3. "Actuar como 'manos del cliente' haciendo trabajos que deberían automatizarse"
+4. "Ganar ventas a través de customización extrema en lugar de valor sistémico del producto"
+5. "Soluciones que llegan tarde (cuando el problema pasó de moda)"
+
+**Cluster 3: Complejidad Innata y Falta de Priorización**
+1. "Complejidad Innata y Falta de Priorización"
+2. "Forzar al usuario a aprender conceptos técnicos avanzados para usar la plataforma"
+3. "Interfaces sobrecargadas que requieren demasiados clicks"
+4. "Navegación confusa"
+5. "Capacitaciones extensas: El sistema debe ser intuitivo"
+6. "Experiencia que le quite tiempo al usuario"
+
+**Cluster 4: Estrategia Comercial y Claridad de Mensaje**
+1. "Estrategia Comercial y Claridad de Mensaje"
+2. "Poca claridad de qué se paga y qué no. Qué puede pedir el usuario"
+3. "Largos ciclos de venta con poca claridad del valor"
+4. "No demostrar impacto medible"
+
+**Cluster 5: Impacto de Integración y Conflicto de Datos**
+1. "Impacto de Integración y Conflicto de Datos"
+2. "Soluciones que no se integran fácilmente (necesitan mucha TI para funcionar)"
+3. "Depender de muchos procesos manuales del equipo de TIMining"
+4. "Sistemas que generan más trabajo administrativo en lugar de reducirlo"
+
+**Cluster 6: Visualizaciones y Navegabilidad**
+1. "Visualizaciones y Navegabilidad"
+2. "La Visualización 3D de La Mina (si no agrega contexto operacional)"
+3. "MÁS PANTALLAS sin propósito claro"
+4. "MUCHA DATA SIN SENTIDO"
+5. "Llenarlos de números sin interpretación"
+6. "Gráficos hermosos pero inútiles operacionalmente"
+
+**Cluster 7: Soporte Operativo y Claridad de Acción**
+1. "Soporte Operativo y Claridad de Acción"
+2. "TIEMPO DEDICADO A REPORTING Y DAR EXPLICACIONES 'PARA ARRIBA'"
+3. "Sistemas que obligan al usuario a 'buscar' información en lugar de traerla automáticamente"
+4. "Alertas sin contexto ni recomendación (solo avisar sin ayudar)"
+5. "Reportes estáticos que requieren análisis manual"
+
+**Cluster 8: Impacto Negativo en Adopción y Claridad del Rol**
+1. "Impacto Negativo en Adopción y Claridad del Rol"
+2. "Sistemas 'bonitos' pero no funcionales"
+3. "'Primera etapa necesitamos que funcione, no que se vea hermoso'"
+4. "Soluciones que requieren cambios organizacionales complejos para funcionar"
+
+---
+
+## [Workshop 1/laminas-caso-uso-1.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 1: Gerente Minas (Cierre Mensual)"
+2. "¿Quién es?: Gerente Minas"
+3. "¿Dónde ocurre?: Oficina planta / Cierre mensual"
+4. "Situación de estrés / Escenario de crisis: Se cumple el mineral y el lastre pero la Adherencia / recuperación de la planta está cayendo (OJO: NOTA IMPORTANTE: 'La ley está baja')"
+5. "Detección (Plataforma TIMining): La planta genera reporte que la recuperación está cayendo"
+6. "Análisis (Plataforma TIMining): Las mezclas de mineral no son las correctas → Se recomienda ajustes ¿Quiénes de flota / activos?"
+7. "Atributo: Categorización del mineral en frentes de carguío. Tracking del mineral y anticiparse a lo que va al chancado"
+
+---
+
+## [Workshop 1/laminas-caso-uso-2.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 2: Planificador Corto Plazo"
+2. "¿Quién es?: Planificador corto plazo"
+3. "¿Dónde ocurre?: Oficinas - Reunión con su jefe operativo"
+4. "Situación de estrés / Escenario de crisis: No hay vehículos disponibles. Material a extraer no era lo previsto. Situación de mantenimiento no programado"
+5. "Detección (Plataforma TIMining): Tener los datos y ciertas hipótesis para seguir avanzando minimizando costo corto o mediano plazo"
+6. "Análisis (Plataforma TIMining): Entender la situación"
+7. "Recomendación (Plataforma TIMining): Con simulaciones proponer alternativas para suplir, mitigar o solucionar el problema"
+8. "Lámina 3: Jefe/Ingeniero Chancado (Archivo IMG_20260502_132317.jpg)"
+9. "¿Quién es?: Jefe (? JdM?) Chancado"
+10. "¿Dónde ocurre?: Oficina planta"
+11. "Situación de estrés / Escenario de crisis: Bloqueo de camiones x 45 min en el chancador"
+12. "Detección (Plataforma TIMining): Plataforma AVISA anticipadamente de este fenómeno (x sistema de alertas de Pit System)"
+13. "Análisis (Plataforma TIMining): Recomienda las opciones que se tienen para este día (tiempo ¿o el aviso/alert? si ¿silocidad?) si es"
+14. "Recomendación (Plataforma TIMining): Recomienda redistribuir. Detención de chancador. Continuidad operativa (astuci?)"
+
+---
+
+## [Workshop 1/workshop-laminas-11.02.43 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 4: Gerencia CIO / Operaciones"
+2. "¿Quién es?: Gerencia CIO / ing. Principal CIO. Gerencia Mina"
+3. "¿Dónde ocurre?: CIO / Operaciones"
+4. "Situación de estrés / Escenario de crisis: Reunión diaria entre CIO y Operaciones (8 AM)"
+5. "Detección (Plataforma TIMining): Brechas respecto al plan minero. Incidentes relevantes del turno"
+6. "Análisis (Plataforma TIMining): Generar causa-raíz análisis. Priorización objetiva de los incidentes (centrarse en lo importante)"
+7. "Recomendación (Plataforma TIMining): Disponibilizar herramientas de análisis. Aprendizaje"
+8. "Atributo: Integración de información. Simplificación y reducción de los tiempos de análisis. Herramienta de Mejora Continua"
+
+---
+
+## [Workshop 1/workshop-laminas-11.02.51 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 5: Perforación y Tronadura (PyT)"
+2. "¿Quién es?: Jefe PyT / JEFE PyT"
+3. "¿Dónde ocurre?: En terreno (oficina)"
+4. "Situación de estrés / Escenario de crisis: Patios NO están listos para perforar. Hay poco material tronado disponible"
+5. "Detección (Plataforma TIMining): Equipos de servicio en mantenimiento no programado. Plan de perforación donde la actividad es crítica"
+6. "Análisis (Plataforma TIMining): ¿Existen equipos disponibles que se puedan reasignar? ¿Cómo afecta aguas abajo? ¿Hay materia tronada disponible?"
+7. "Recomendación (Plataforma TIMining): Disponibilizar planes de acción. Ajustar planes aguas abajo para que no sea crítico. Alertar a quienes se ven afectados. Alternativas. Comunicación"
+8. "Atributo: Plan (Ruta crítica). Estado de los equipos (Datos). Secuencia de actividades. Necesito de actividades. Material tronado"
+
+---
+
+## [Workshop 1/workshop-laminas-11.02.57 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 6: Gestión de Alerta de Seguridad"
+2. "¿Quién es?: Supervisor de monitoreo. Jefe de turno"
+3. "¿Dónde ocurre?: IROCC, Oficina, Sala Control corto plazo"
+4. "Situación de estrés / Escenario de crisis: En sala de monitoreo se detecta un riesgo que tiene que sacar la pala. Riesgo Geotécnico"
+5. "Detección (Plataforma TIMining): Alerta (¿visual?) Supervisor detecta la alerta. Evalúa impacto inmediato de este evento (con ¿ de Turno). Pide una evaluación del impacto al plan (Planificador)"
+6. "Análisis (Plataforma TIMining): Análisis de escenarios de diferentes tiempos de indisponibilidad de las zonas afectadas"
+7. "Recomendación (Plataforma TIMining): Definir zonas de restricción. Redefinir el plan para el despacho. Ajustar el plan de corto plazo"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.01 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 7: Ajuste Táctico (Imprevisto)"
+2. "¿Quién es?: Gerente de Mina y su equipo de supervisores"
+3. "¿Dónde ocurre?: Reunión de mina, sala de control"
+4. "Situación de estrés / Escenario de crisis: Falló un equipo principal. Zona en mantenimiento. Evento no planificado. Se activó una zona geotécnica. Supervisor chequea vs. (¿Intenciones/acciones?) de la faena. Considera impacto vs. expectativa de lo programado. Si el impacto es importante entrega escenario & leva corri de turno y la semana"
+5. "Análisis (Plataforma TIMining): Se procesa en conjunto el impacto. Se buscan alternativas. Se evalúan las alternativas y su mitigación"
+6. "Recomendación (Plataforma TIMining): Se entrega un set de alternativas, con el impacto medido en el plan (¿momentáneo o emergencial?) de impacto de corresoponde. Se recomienda monitorear algunas variables críticas para chequear el avance de los ajustes"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.06 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 8: Despachador (Respuesta Rápida)"
+2. "¿Quién es?: Despachador"
+3. "¿Dónde ocurre?: Sala de despacho, Control"
+4. "Situación de estrés / Escenario de crisis: Problema operacional que requiere respuesta Rápida"
+5. "Detección (Plataforma TIMining): Detecta problemática y levanta alerta, por ejemplo = Caída de Pala no planificada"
+6. "Análisis (Plataforma TIMining): Análisis rápido del impacto, por caída de pala"
+7. "Recomendación (Plataforma TIMining): Plataforma entrega Recomendación. Reasignación de equipos en base al análisis para evitar el impacto. Mediante teams, correo, dentro Plataforma u otro. Le entrega una Alerta"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.10 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 9: Jefe/Ingeniero Operaciones (Velocidades)"
+2. "¿Quién es?: Jefe Ing Operaciones. Plan/Ejecutor o Despachador"
+3. "¿Dónde ocurre?: Terreno // IROCC. Oficina. Sala Control"
+4. "Situación de estrés / Escenario de crisis: Incumplimiento en Plan Velocidades. (Nota: Hay una palabra pequeña escrita de 'olana' parece)"
+5. "Detección (Plataforma TIMining): Levantar Alerta en zonas de Baja Velocidad o fuera de plan de manera automática"
+6. "Análisis (Plataforma TIMining): Analizar impacto en tiempo tonelaje o camiones de estas rutas/áreas. Cuanto perdón y analizar una posible sugerencia y que proceso esta baja velocidad. Estimar el impacto en el plan. Entregar causas de esta baja, qué sectores son y qué debe hacer para solucionarlo"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.15 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 10: Jefe de Turno (Procedimientos/Seguridad)"
+2. "¿Quién es?: Jefe de turno"
+3. "¿Dónde ocurre?: En Terreno"
+4. "Situación de estrés / Escenario de crisis: ¿Estoy cumpliendo procedimientos de trabajo?"
+5. "Detección (Plataforma TIMining): A través de radio consulta directa al agente"
+6. "Análisis (Plataforma TIMining): Procedimientos de trabajo - 'Experto de prevención de Riesgos'"
+7. "Recomendación (Plataforma TIMining): [¿Está (¿kpi)?] ¿Cuál es el standard, ¿estoy cumpliendo?"
+8. "Atributo: ¡Responsabilidad Legal!"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.20 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 11: Despachador (Saturación Radio)"
+2. "¿Quién es?: Despachador"
+3. "¿Dónde ocurre?: Sala control"
+4. "Situación de estrés / Escenario de crisis: Saturación de la radio - pérdida de info"
+5. "Detección (Plataforma TIMining): Escucha de radio. Reconocimiento de Voces"
+6. "Análisis (Plataforma TIMining): (El campo está vacío o con texto muy tenue/borrado)"
+7. "Recomendación (Plataforma TIMining): Lista de solicitudes. Priorización de actividades"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.23 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 12: Jefe de Turno (Tronadura)"
+2. "¿Quién es?: Jefe de turno"
+3. "¿Dónde ocurre?: Mina - terreno"
+4. "Situación de estrés / Escenario de crisis: Tronadura - Loros - Correcto despeje"
+5. "Detección (Plataforma TIMining): Por Horario. Vía radio"
+6. "Análisis (Plataforma TIMining): GPS equipos. Malla a tronar"
+7. "Recomendación (Plataforma TIMining): Asegurar que despeje y posicionamiento de loros es el correcto"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.27 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 13: Despachador (Falla Mecánica)"
+2. "¿Quién es?: Despachador"
+3. "¿Dónde ocurre?: Sala de control"
+4. "Situación de estrés / Escenario de crisis: Falla mecánica -> traspaso de información y estimación rápida de [¿tiempos / turnos?]"
+5. "Detección (Plataforma TIMining): A través de radio. A través de estado en FMS"
+6. "Análisis (Plataforma TIMining): Comparar situaciones similares en el pasado"
+7. "Recomendación (Plataforma TIMining): Entrega falla mecánica con claridad para coordinación con mantención. Recomienda como enfrentar la avería"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.31 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 14: Supervisor de Turno (Variabilidad/Pala)"
+2. "¿Flujo reactivo/ivo desde: Control de variabilidad de procesos)"
+3. "¿Quién es?: Supervisor de turno"
+4. "¿Dónde ocurre?: Durante su turno de noche en la frente de carguío del mineral"
+5. "Situación de estrés / Escenario de crisis: La pala cae en mantenimiento y no tienen claridad cuanto tiempo estará indisponible"
+6. "Detección (Plataforma TIMining): Qué opciones tiene:"
+7. "Análisis (Plataforma TIMining): Cambiar puntos de vaciado aumentando el (¿transporte/tiempo?) viaje. Enviar un cargador al punto de carguío"
+8. "Recomendación (Plataforma TIMining): El sistema sugiere las 3 mejores opciones para mitigar las pérdidas operacionales"
+9. "Atributo: Capta la atención del supervisor en forma oportuna. Se da todo el contexto operacional. tanto [¿now?] de seguridad y el escenario si no hace nada. Lista de opciones con métrica de impacto, con la mejor opción rankeada"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.36 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 15: Jefe de Turno (Caída de Pala)"
+2. "¿Quién es?: Jefe de Turno. Jefe de despacho"
+3. "¿Dónde ocurre?: En terreno. (Hay una palabra ilechile de otra, llegada?)"
+4. "Situación de estrés / Escenario de crisis: CAIDA DE PALA EN ALIMENTACIÓN (¿Wyr/ Mina?). Requiere movimiento de frente de otra pala. Entrada sin aviso. Estado de la pala. Entorno alrededor"
+5. "Detección (Plataforma TIMining): Re-asignación de recursos de la pala que se cae"
+6. "Análisis (Plataforma TIMining): Generar asignación a rronel la pala y recursos que debe monitorar (Seguridad, cables, sirénas, camiones, etc). Donde reasignar. Donde tener cuidado (seguridad). Recursos y pasos (¿contrauradas?)"
+7. "Recomendación (Plataforma TIMining): Actividades clave (Velocidades/cadena?)"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.41 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 16: Planificador Corto Plazo (Mantenciones)"
+2. "¿Quién es?: Plan. Corto. Planificador corto plazo (Apoyo/Soporte Jefe Operaciones)"
+3. "¿Dónde ocurre?: Terreno"
+4. "Situación de estrés / Escenario de crisis: Incumplimiento de Mantenciones"
+5. "Detección (Plataforma TIMining): Identificación de mantenciones planificadas"
+6. "Análisis (Plataforma TIMining): Estimación de impacto y actividades comprometidas (Retraso servicios - perfo - carguío)"
+7. "Recomendación (Plataforma TIMining): Asignación de recursos para existir u optimizar x KPI crítico del momento [¿De mejor?]"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.52 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases - Concept
+
+### Raw Claims
+1. "Lámina 17: Machine 2 Machine (Diagrama)"
+2. "Esta lámina no tiene contenido en los casilleros, solo un título y un esquema"
+3. "Título Superior: MACHINE 2 MACHINE — Sist. INTEGRACIÓN — [Dibujo de nodo/red]"
+
+---
+
+## [Workshop 1/workshop-laminas-11.03.59 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 18: Supervisor Centro Integrado (Asistente IA)"
+2. "¿Quién es?: Supervisor del centro integrado"
+3. "¿Dónde ocurre?: Centro de mando remoto"
+4. "Situación de estrés / Escenario de crisis: En el centro integrado supervisa 3 faenas simultáneamente. Faenas hay un daño que no estaba línea de máquinas y contaminado (control), no está preparada para la reunión. Que facilite como con estos KPI's (resultados?), que tenga los números preparados a la reunión. Notamos que la reunión en la etapa es el data"
+5. "Detección (Plataforma TIMining): Genera automáticamente un 'briefo. Genera reporte con 15 horas. Así vamos contra plan en cada faena xxx'. La tendremos difícil bajo plan en 30%. lo que generará un déficit en la operación from uno de. Para los otros Faenas ejecutándolos dándole el plan de manera excepcional, lo cual compensará tal plans en la reunión. Se sugiere enfocars el en la reunión de mañana en decisiones críticas para Faena 1. Nos genera una presentación de análisis sobre cuál se genera aplicará recomendaciones para la reunión"
+6. "Análisis (Plataforma TIMining): ¿Cuánto que le genera algunas recomendaciones para la reunión? (Nota: texto complejo de leer). Lo (¿generó?) ejecutar acciones recomendadas debe justificar donde trne que focus]. Seguir pensando al mismo punto en las 3 faenas que podría justificar dicho enfoque basándose. Porque una imagen en 2D de las mallas de tronadura con mensajes (que más) de las faenas fiscales (para detallar y también dónde poner la inversión). En el del cual también ejecutar análisis de acciones críticas. Largo de en la reunión. Cómo mensajes o plano presenta a fuera Indica/doras van o le x no"
+
+---
+
+## [Workshop 1/workshop-laminas-11.04.04 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Use Cases
+
+### Raw Claims
+1. "Lámina 19: Gerente Mina (Equipos Autónomos)"
+2. "¿Quién es?: Gerente Mina"
+3. "¿Dónde ocurre?: Reunión diaria de status inter-áreas"
+4. "Situación de estrés / Escenario de crisis: No hay cumplimiento del plan. La faena fin de semana"
+5. "Detección (Plataforma TIMining): No cumplimiento plan. Indicador de riesgo de incumplimiento promedio"
+6. "Análisis (Plataforma TIMining): Entender período de tiempo. Entender la asignación de camiones. Detección de las anomalías. Buscar raíz por qué"
+7. "Recomendación (Plataforma TIMining): Reposicionamiento de antenas. Mantenimiento de caminos. Revisión de caminos y accesos. Asignación diferenciada"
+
+---
+
+## [Workshop 1/workshop-laminas-11.04.10 AM.png]
+- Type: workshop_presentation
+- Date: 2026-01-28
+- Topic: Concept - Skynet
+
+### Raw Claims
+1. "Lámina 20: Concepto 'Skynet' (Hoja suelta)"
+2. "Esta lámina no sigue el formato de casillas, es un flujo conceptual"
+3. "Encabezado (Derecha): Asumiendo: (Tengo acceso a todos los datos)"
+4. "Contenido Principal: Dueño mina"
+5. "-> Cada X minutos analizar la situación general de la mina"
+6. "-> Realizar N simulaciones buscando mejoras el óptimo global"
+7. "-> Enviar sugerencias al despacho: a planificación, a otros roles / áreas"
+8. "-> Generar una replanificación (Pasar de sugerencias/recomendación a haz esto)"
+9. "-> 1° A personas"
+10. "-> 2° A máquinas"
+
+---
+
+## RESUMEN DE EXTRACCIÓN
+
+**Total de archivos procesados:** 51 de 61
+**Total de claims extraídos:** ~1,150
+
+### Por carpeta:
+- **Antecedentes:** 5 archivos (4 DOCX, 1 PPTX) — ~160 claims
+- **Propuesta ruta:** 1 PPTX — ~26 claims
+- **Root:** 2 PPTX — ~18 claims
+- **Visión Futuro _CORE_:** 1 DOCX (parcial) — ~8 claims
+- **Workshop 1:** 32 archivos (2 DOCX, 2 MD, 1 field notes, 22 PNG, 5 HEIC) — ~570 claims
+- **entrevistas iniciales stakeholders:** 3 PNG — ~30 claims
+- **entrevistas operaciones:** 2 MD — ~58 claims
+
+### Archivos no procesados (10):
+- **PDFs (5):** Sin herramientas de extracción de texto
+- **Videos (7):** Formato no procesable
+- **MD extenso (1):** reunion_operaciones excede límite de tokens
+
+---
+
+## [Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf]
+**Type:** presentation | **Date:** N/A | **Pages:** 15
+
+### Raw Claims
+
+1. "Timining Core: El Sistema Nervioso de la Minería Moderna" — Título del documento que define la visión del producto
+2. "De la visualización pasiva a la inteligencia multimodal" — Posicionamiento de la evolución del producto
+3. "Un enfoque centrado en el usuario para cerrar la brecha entre Planificación y Operación" — Propósito central del producto
+4. "La Brecha Histórica: Donde el Plan Choca con la Realidad" — Identificación del problema core
+5. "El Plan es geometría: Estático, largo plazo, modelos de baja resolución. La intención del negocio."
+6. "La Operación son sensores: Dinámico, tiempo real, alta variabilidad. La realidad física."
+7. "El Problema: La desconexión impide identificar desviaciones a tiempo."
+8. "Las minas operan en tiempo real, pero los planes no." — Quote que resume el problema
+9. "Timining Core: La Fuente de la Verdad Dinámica" — Posicionamiento del producto como source of truth
+10. "Un ecosistema digital que fusiona datos operacionales con la geometría de planificación."
+11. "Inferencia Topográfica: Cálculo del estado 3D en tiempo real"
+12. "Procesamiento continuo de nubes de puntos y datos de sensores para actualizar dinámicamente la superficie minera."
+13. "Conciliación Automática: Comparación matemática constante entre ejecución y plan."
+14. "Algoritmos de comparación geométrica que cuantifican desviaciones en volumen, ley y ubicación en tiempo real (V.real vs. V.plan)."
+15. "Motor de alertas → Supervisor" — Flujo de información del sistema
+16. "Modelo vivo de la Mina → Simulador → Sala de control" — Flujo de información del sistema
+17. "La Capa Cognitiva: El Cerebro Orbitando el Núcleo" — Metáfora arquitectónica del sistema
+18. "Algoritmos (Sensores Virtuales): Detectan QUÉ pasa. Inferencia de topografía y tracking."
+19. "Simulador (Orchestra): Predice QUÉ PASARÁ. Proyección y escenarios 'What-if'."
+20. "TIM Insight Engine (IA): Entiende POR QUÉ pasa. Agente multiagente y LLMs."
+21. "Cambio de Paradigma: Del Mapa Estático al Sistema Nervioso"
+22. "Ayer: El Mapa — Visualización pasiva. Interpretación manual. Estático."
+23. "Hoy: Timining Synapse — Red activa de impulsos. Respuestas inteligentes. Conecta Cerebro (Plan) con Cuerpo (Mina)."
+24. "Ya no basta con ver la mina; necesitamos que la mina nos hable cuando requiere atención." — Quote de valor
+25. "La Revolución Multimodal: Información en el Contexto Humano"
+26. "La pantalla ya no es la única interfaz. Tecnología adaptada al usuario."
+27. "Voz (Radio IP): Para el usuario en terreno. Manos libres. FREQ: 450.0 MHz | PROTOCOL: P25"
+28. "Chat (TIM Insight): Para consultas rápidas y diagnóstico causal."
+29. "Visual (3D Twin): Para conciencia situacional profunda. MODEL: MINA_DIGITAL_v4.2 | VIEW: ISOMETRIC | LAT/LONG: 23.45, 70.2W"
+30. "Push (Alertas): Para gestión por excepción. PRIORITY: HIGH | TYPE: CRITICAL_THRESHOLD TIME: 14:30:01Z"
+31. "Interacción 1: TIM Insight Engine — Conversando con la Mina"
+32. "Ejemplo de query: '¿Por qué la Pala 4 no cumplirá el plan del turno?'"
+33. "Respuesta del sistema: 'Análisis: La Pala 4 tiene una detención no programada de 45 mins. Rendimiento proyectado: 85%.'"
+34. "SENSOR_DATA: PALA_4_STATUS=STOPPED | DURATION: 45MIN | PROJECTED_EFFICIENCY: 85%"
+35. "Democratización del Dato: Interfaz basada en LLM (Gemini) anclada a la realidad física. Cero alucinaciones."
+36. "Elimina la necesidad de dashboards complejos."
+37. "Interacción 2: Gemelo Digital 3D (Aware) — Conciencia Situacional Total"
+38. "Mapas de calor de velocidades" — Feature del gemelo digital
+39. "Material Tracking en tiempo real" — Feature del gemelo digital
+40. "Topografía inferida cada 15 min" — Frecuencia de actualización topográfica
+41. "Interacción 3: Gestión por Excepción — La mina te llama cuando te necesita"
+42. "Alerta Crítica ejemplo: Camión CA-233 descargando lastre en Chancador."
+43. "SENSOR_DATA: CA-233_LDC=CHANCADOR | MATERIAL=LASTRE | VIOLATION=TRUE | TIMESTAMP: 14:22:05"
+44. "Tipos de alertas: Alerta de Destino Incorrecto"
+45. "Tipos de alertas: Riesgo Geotécnico (Personas en zonas rojas)"
+46. "Tipos de alertas: Desviación de Plan (Pala fuera de polígono)"
+47. "User Journey: Pedro, Jefe de Turno — El Problema: Manos ocupadas, ojos en el camino. Sin acceso a pantallas."
+48. "Solución para Pedro: Voz / Radio IP."
+49. "Impacto: Decisión tomada en segundos sin fricción visual."
+50. "Ejemplo de interacción: Pedro: 'TIM, ¿por qué está parada la Pala 4?' | TIM: 'Falla hidráulica. Según SAP, operativa en 15 minutos.'"
+51. "User Journey: María, Gerente Mina — El Contexto: Remoto, desconectada de la operación minuto a minuto."
+52. "Solución para María: Push Notification / WhatsApp."
+53. "Impacto: Control estratégico y gestión de riesgos desde cualquier lugar."
+54. "Ejemplo de alerta: Desviación Crítica: Calidad alimentación Chancador bajo límite. Impacto en recuperación proyectado."
+55. "SENSOR_DATA: FEED_QUAL<TARGET | LDC=CHANCADOR | RECOVERY_IMPACT=TRUE | TIMESTAMP: 14:45:10"
+56. "User Journey: Jorge, Controlador — El Contexto: Alta presión, decisiones complejas."
+57. "Solución para Jorge: Desktop 3D + Simulación (Orchestra)."
+58. "Impacto: De la intuición a la certeza matemática."
+59. "Ejemplo de simulación: Request: Simular fin de turno moviendo 2 camiones de Fase Norte a Sur."
+60. "Resultado de simulación: Alerta: Mover 2 camiones genera colas en Chancador. Recomendación: Mover 1."
+61. "Impacto en el Negocio: Predictibilidad es Rentabilidad"
+62. "Adherencia al Plan: 60% → 95% (Mejora mediante corrección en tiempo real)"
+63. "Productividad: Aumento de velocidades promedio y reducción de tiempos de cola"
+64. "Seguridad: Monitoreo continuo de zonas de riesgo geotécnico"
+65. "Timining Core transforma la incertidumbre operativa en resultados predecibles."
+66. "Roadmap Estratégico 2025-2026"
+67. "H2 2025 - Conciencia Situacional: Material Tracking Integral"
+68. "H2 2025 - Conciencia Situacional: Gestión de Extracción"
+69. "H2 2025 - Conciencia Situacional: Alertas Geotécnicas"
+70. "2026 - Inteligencia Prescriptiva: Proyecto TIM v1 (Recomendaciones)"
+71. "2026 - Inteligencia Prescriptiva: Simulación continua automática"
+72. "Future - Habilitadores de Autonomía: Sensores virtuales para monitoreo de caminos para flotas autónomas"
+73. "Visión 2040: El Bucle Autónomo"
+74. "Arquitectura 2040: Mina Digital (Timining) ↔ IA Autónoma Supervisada ↔ Planta Digital"
+75. "Componentes del bucle autónomo: HUMAN & INTERACTION"
+76. "Componentes del bucle autónomo: REAL-TIME INTEGRATION"
+77. "Componentes del bucle autónomo: JETBRAINS MONO (interfaz técnica)"
+78. "Componentes del bucle autónomo: AUTONOMY CORE"
+79. "Componentes del bucle autónomo: ADAPTIVE LEARNING"
+80. "Componentes del bucle autónomo: DATA FLOW"
+81. "Estamos construyendo la infraestructura para el futuro autónomo. Timining Core es la base hoy para la autonomía de mañana."
+
+---
+
+
+## [Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf]
+
+**Type:** presentation | **Date:** 2025 (Estrategia de Plataforma 2025) | **Participants:** -
+
+1. "Timining Core: El Sistema Nervioso Central de la Operación Minera"
+2. "De la visualización 3D a la Inteligencia Operacional Multimodal"
+3. "La Paradoja de la Mina Digital: Datos en Milisegundos, Decisiones en Horas"
+4. "La Fábrica de Datos (Milisegundos): 1,450,234 ms, 5 TB/day, Real-time Stream"
+5. "El Cuello de Botella Cognitivo (Horas): 04:30:00 hrs Analysis in progress, Decision Pending"
+6. "Insight Clave: Generamos terabytes de datos, pero la capacidad humana para procesarlos y encontrar la causa raíz es limitada."
+7. "Planificación (Estático): Vive en geometrías y modelos de bloques. Es la intención."
+8. "Operación (Dinámico): Vive en series de tiempo y caos. Es la realidad."
+9. "Estos mundos operan como silos. Necesitamos transitar hacia una Inteligencia Aumentada."
+10. "Timining Core: Un Ecosistema Heliocéntrico"
+11. "El Cambio de Paradigma: Timining Aware nos dio 'ojos' (visualización 3D). Timining Core nos da un 'cerebro' (entendimiento)."
+12. "Timining Core (Gemelo Digital): Motor de Inferencia + Algoritmos + Sensores Virtuales"
+13. "Canales de Experiencia: Web (Control), App (Ejecutiva), Alertas (Push), Agente IA (Chat)"
+14. "La Promesa: Entregar la información correcta, en el formato correcto, al usuario correcto."
+15. "El sistema adapta la salida: Alta resolución para control, alertas para supervisión, lenguaje natural para análisis."
+16. "El Motor Matemático: La Fuente Única de Verdad"
+17. "1. Inferencia Topográfica: Generación de superficie basada en densidad GPS (sin drones)."
+18. "2. Material Tracking: Conciliación espacial automática (Polígonos vs. Trayectorias)."
+19. "3. Sensores Virtuales: Conversión de coordenadas en métricas de negocio."
+20. "Detrás de cada interacción existe un Gemelo Digital Dinámico (TRL 9) que fusiona la planificación con la operación en tiempo real."
+21. "No es una simulación; es una validación matemática de la realidad."
+22. "Canal 1 | Control Operacional: Alta Resolución - Usuario: Despachador / Jefe de Sala"
+23. "Necesidad: Conciencia Situacional Total. Este usuario orquesta el ritmo de la mina minuto a minuto. Requiere máxima granularidad."
+24. "Monitoreo de Subprocesos: Carguío y Transporte en tiempo real."
+25. "Heatmaps de Velocidad: Detección visual de cuellos de botella."
+26. "Actualización segundo a segundo para decisiones tácticas."
+27. "Canal 2 | Gestión Proactiva: El Silencio es Oro - Usuario: Supervisor de Terreno / Jefe de Turno"
+28. "Necesidad: Gestión por Excepción. El usuario está en terreno. No puede mirar pantallas. El sistema vigila silenciosamente y notifica solo cuando es crítico."
+29. "Use Cases: Geotecnia (Riesgo de taludes), Compliance (Pala operando fuera de polígono), Seguridad (Interferencia vertical en bancos)."
+30. "Canal 3 | Visión Estratégica: El Pulso del Negocio - Usuario: Gerente de Mina / Superintendente"
+31. "Necesidad: Movilidad y Síntesis. Visión de Semáforo para decisiones de alto nivel."
+32. "¿Vamos a cumplir el plan del día? ¿Es la operación segura hoy?"
+33. "Valor: Portabilidad inmediata entre reuniones. Sin reportes estáticos en PDF."
+34. "Canal 4 | TIM Insight Engine: Conversando con la Mina - Usuario: Ingeniero de Planificación / Análisis"
+35. "Necesidad: Profundidad sin Barreras. Democratizar la analítica avanzada."
+36. "Pasar del '¿Qué pasó?' al '¿Por qué pasó?' usando lenguaje natural y configurando el sistema sin saber programar."
+37. "Integración con Gemini: TIM Insight Engine conversando con la mina. '¿Por qué bajó la producción de la Fase 4 en las últimas 2 horas?'"
+38. "TIM responde: Hubo una detención no programada de la Pala P-10 (45 mins) y un aumento en las colas del Chancador."
+39. "'Configura una alerta si la cola supera los 5 camiones.' TIM: Alerta configurada."
+40. "Cerrando la Brecha: El Futuro de la Operación Conectada"
+41. "Sincronización Total: Plan Minero + Realidad Operativa"
+42. "Timining Core no es software, es la validación matemática de la realidad."
+43. "Ayer: Visualización (Ver)"
+44. "Hoy: Ecosistema Multimodal (Entender)"
+45. "Mañana: Prescripción y Autonomía (Actuar)"
+
+
+## [Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf]
+
+**Type:** presentation | **Date:** 2026 | **Participants:** -
+
+1. TIMining CORE is positioned as "The Operating Brain of the Digital Mine"
+2. The platform's tagline is "From Reality to Plan. In Real-Time."
+3. Mining industry faces a "Geometry Gap" between static plans and dynamic reality
+4. Mines generate terabytes of data in milliseconds but earth moves every minute making static plans obsolete before shifts begin
+5. A 5% increase in plan compliance can add $15B in value to the mining industry annually
+6. TIMining's development followed three phases: 2011-2015 Geotechnical Foundation (Aris, Tangram products), 2015-2019 Logistics Layer (Orchestra product), 2019-2025 Digital Twin (Aware product)
+7. The company earned the right to automate decision-making by solving the hardest problems first
+8. The 2026 inflection point focuses on "Cracking the Geometry Code"
+9. System uses raw GPS data without drones and proprietary inference algorithm
+10. Real-Time Digital Twin updates every 15 minutes
+11. Platform shifted from "Monitoring" the past to "Operating" the present
+12. System closes the loop between sensory world and planning world by inferring topography from equipment movement
+13. TIMining CORE 2026 platform is a multi-modal operating platform governed by "Command Ribbon" UX
+14. Platform has four operational modes: 1. REALITY (Digital Twin), 2. TACTICAL (Simulation), 3. AGENT (AI Co-Pilot), 4. BRIEFING (Shift Handover)
+15. Interface provides time-travel capability from hindsight to foresight via Timeline Slider
+16. Timeline slider allows navigation between historical data and future simulations
+17. TIM is a Gemini-powered mining co-pilot providing democratic intelligence without hallucinations
+18. Intelligence leaves the desktop - every supervisor now has an analyst in their pocket
+19. TIM can predict equipment idleness (example: "Crusher 2 will be idle in 45 minutes due to truck bunching at Shovel 5")
+20. Platform solves "Seagull Effect" (shift change context loss) with automated briefings
+21. CORE Automated Briefing includes Voice Note, Video Reel, and KPI Summary
+22. System generates multimedia logs for incoming shifts ensuring seamless continuity
+23. Platform enables closed-loop workflow: Detection → Analysis → Recommendation → Action
+24. Example workflow: CORE detects 1.5m deviation in Shovel PA05 geometry, TIM predicts North Access ramp bottleneck, supervisor Juan receives alert and selects fuel-minimizing option, plan auto-updates and fleet reroutes instantly
+25. Time from problem to solution reduced from hours to minutes
+26. TIMining has global validation across 50+ mines in 8 countries
+27. 7 mines currently running the full Real-Time Digital Model
+28. Client portfolio includes major mining companies: CODELCO, BHP, Glencore, Anglo American, Teck, Lundin Mining
+29. Company highlights 27 mines in South America and BHP WAIO operation
+30. Scalable growth driven by operational pull with "Leapfrog" adoption model
+31. Bottom-up strategy with adoption driven by engineers and supervisors (not top-down)
+32. High stickiness through embedding in daily shift routines
+33. 100+ active users per site
+34. Target: 80% Year-over-Year growth by 2026
+35. Company describes "Switzerland Effect" structural advantage
+36. TIMining CORE acts as neutral integrator between planning software (Maptek, Deswik) and fleet management systems (Modular, Caterpillar, Komatsu)
+37. Platform integrates data that major OEMs can't or won't share
+38. TIMining is the single source of truth for mine geometry
+39. 2026 roadmap has three focus areas: Predictive Simulations, Underground Expansion, Advanced Optimization
+40. Predictive Simulations shift from "Here is a problem" to "Here are 3 solutions"
+41. Underground Expansion provides modular solutions for underground mining challenges
+42. Advanced Optimization includes material tracking (Ore Control) and dispatch "second opinions"
+43. Vision 2040: TIMining as "The Brain of the Autonomous Mine"
+44. Autonomous robots are blind without a map
+45. TIMining provides real-time, dynamic geometry ensuring robots work in plan-compliant environment
+46. Future vision includes multi-mine tactical control from urban hubs
+47. Strategic positioning: "The Geometry of the Mine is the Geometry of the Business"
+48. Three-step value proposition: 1. Mastered the Earth, 2. Connected the Data, 3. Automating the Decisions
+49. Partnership pitch: "Partner with TIMining to define the standard of the 2040 Digital Mine"
+50. TIM INSIGHT ENGINE brand designation appears throughout presentation
+
