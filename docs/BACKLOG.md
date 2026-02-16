@@ -8,6 +8,225 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
+### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
+
+**Status:** Proposed
+**Priority:** P0 — CRITICAL (blocking production use)
+**Origin:** QA v3 (2026-02-16, Opus 4.6 test on TIMining 61 files)
+**Related:** BL-26 (auto-batching), QA3-BUG-02, QA3-PERF-01
+
+**Problem:**
+
+Pipeline BLOCKED on 61-file project. Context overflow at 6m 42s, compaction failed with "Conversation too long", no recovery path.
+
+**Evidence from QA v3:**
+
+```
+Test: TIMining project, 61 source files
+Duration: 6m 42s to complete failure
+Result: 0/61 files written to disk
+Error: "Error during compaction: Error: Conversation too long"
+Status: Session unrecoverable, pipeline blocked
+```
+
+**Root causes:**
+
+1. **Auto-batching (BL-26) did NOT activate**
+   - Large Project Strategy exists in skill instructions
+   - Detection logic: "if >40 files OR multiple PDFs >10MB"
+   - Agent did NOT execute batching strategy
+   - Attempted to process all 61 files in single run
+
+2. **Parallel agents accumulate context**
+   - 6 Task agents launched simultaneously
+   - Each loads full skill instructions + processes files
+   - Agent outputs accumulate in main context
+   - No intermediate writes before context limit
+
+3. **/tmp permission issues force inefficient fallback**
+   - Converted files (DOCX→txt, PPTX→txt) written to `/tmp`
+   - Task agents cannot read `/tmp` (permission denied)
+   - Forces direct extraction in main context
+   - Compounds context pressure
+
+**Current behavior:**
+
+```
+/extract discovers 61 files
+→ Launches 6 parallel Task agents
+→ Agents hit /tmp permission issues
+→ Fallback to direct extraction
+→ Context limit at 6m 42s
+→ All agents complete but hit context limit
+→ Main context: "Conversation too long"
+→ Compaction fails
+→ BLOCKED, no recovery
+```
+
+**Desired behavior:**
+
+```
+/extract discovers 61 files
+→ Detects >40 files, activates batching
+→ Batch 1 (files 1-20):
+   - Process files
+   - Write EXTRACTIONS.md (append)
+   - Write SOURCE_MAP.md (update)
+   - Clear working memory
+→ Batch 2 (files 21-40):
+   - Process files
+   - Write EXTRACTIONS.md (append)
+   - Write SOURCE_MAP.md (update)
+   - Clear working memory
+→ Batch 3 (files 41-61):
+   - Process files
+   - Write EXTRACTIONS.md (append)
+   - Write SOURCE_MAP.md (update)
+   - Complete
+→ Final validation & report
+→ SUCCESS: 61/61 files processed
+```
+
+**User stories:**
+
+> **As a researcher with 61 source files**, I expect /extract to complete successfully by processing files in batches with intermediate writes, preventing context overflow and ensuring all files are processed.
+
+> **As a project manager evaluating PD-Spec**, I expect the pipeline to handle real-world projects (40-100 files) without session failures, blocked states, or unrecoverable errors.
+
+> **As a developer maintaining PD-Spec**, I expect auto-batching to activate reliably based on file count, with clear logging of batch progress and intermediate state saves.
+
+**Acceptance criteria:**
+
+✅ **AC1: Mandatory batching for >40 files**
+- Detection: Count files in Phase 1 discovery
+- If count >40: MUST activate batching (not optional)
+- Batch size: 15-20 files per batch
+- Log: "Batching activated: 61 files → 4 batches of 15-16 files"
+
+✅ **AC2: Intermediate writes after EACH batch**
+- After batch completes: Write EXTRACTIONS.md + SOURCE_MAP.md immediately
+- Use Edit tool to append sections (not full rewrite)
+- Log: "Batch 1/4 complete → EXTRACTIONS.md updated (20 sections)"
+- Working memory cleared after write
+
+✅ **AC3: No parallel agents for large projects**
+- If batching activated: disable Task agent parallelization
+- Process files sequentially within each batch
+- Reduces context pressure, avoids /tmp permission issues
+
+✅ **AC4: Converted files written to repo temp dir**
+- Create `02_Work/_temp/` for conversions (not `/tmp`)
+- Cleaned after extraction completes
+- Avoids Task agent permission issues
+- Pattern: `02_Work/_temp/converted_[hash].txt`
+
+✅ **AC5: Resume from interruption**
+- If context limit hit mid-batch:
+  - Write current batch to disk
+  - Log last processed file
+  - Next run: Read SOURCE_MAP, skip 'processed' files, continue
+- No data loss on interruption
+
+✅ **AC6: Progress reporting per batch**
+```
+Batch 1/4: Processing files 1-15... (0/15)
+Batch 1/4: Completed file 5/15 (Antecedentes/file.md)
+Batch 1/4: Completed file 10/15 (Workshop/photo.jpg)
+Batch 1/4: Writing intermediate state... ✓
+Batch 1/4: Complete (15 files, 187 claims extracted)
+
+Batch 2/4: Processing files 16-30... (0/15)
+[...]
+```
+
+✅ **AC7: Test case passes**
+- Test: 61-file TIMining project
+- Expected: 61/61 files processed in 4 batches
+- Expected: <5 min total duration
+- Expected: 0 context compaction events (or max 1)
+- Expected: EXTRACTIONS.md contains all 61 sections
+- Expected: SOURCE_MAP.md shows 61 'processed' entries
+
+**Proposed implementation:**
+
+**File:** `.claude/skills/extract/SKILL.md`
+
+**Changes:**
+
+1. **Phase 1: Add mandatory batch detection**
+```markdown
+### Phase 1: Discover Sources
+
+4. **Batch detection (MANDATORY for >40 files):**
+   - Count total files discovered
+   - If count <= 40: Process all files in single pass
+   - If count > 40: ACTIVATE BATCHING
+     - Batch size: 15 files
+     - Total batches: ceil(count / 15)
+     - Log: "Batching activated: {count} files → {batches} batches"
+     - Disable Task agent parallelization
+```
+
+2. **Phase 2: Add batch loop**
+```markdown
+### Phase 2: Read & Extract (with Batching)
+
+If batching activated:
+  For each batch (1 to N):
+    a. Process 15 files from queue
+    b. Extract claims (3-5/page, 1-2/slide, 1-3/image)
+    c. Write to EXTRACTIONS.md (append new sections via Edit)
+    d. Update SOURCE_MAP.md (append new rows via Edit)
+    e. Log: "Batch X/N complete: Y files, Z claims"
+    f. Clear working memory (no agent state retention)
+
+If batching NOT activated:
+  Process all files in single pass (current behavior)
+```
+
+3. **Phase 3: Change temp directory**
+```markdown
+### Office File Conversions
+
+- DOCX: textutil → `02_Work/_temp/conv_{hash}.txt`
+- PPTX: Python zipfile → `02_Work/_temp/pptx_{hash}.txt`
+- HEIC: sips → `02_Work/_temp/img_{hash}.jpg`
+
+After extraction complete: rm -rf 02_Work/_temp/
+```
+
+4. **Add resume logic**
+```markdown
+### Phase 1b: Resume Detection
+
+If SOURCE_MAP.md exists AND contains 'processed' entries:
+  - Read SOURCE_MAP
+  - Filter discovered files: only process if NOT in map OR status='error'
+  - Log: "Resume mode: X files already processed, Y new/modified"
+  - Continue with batching on remaining files
+```
+
+**Testing plan:**
+
+1. **Unit test:** 15-file project → single batch, no batching activated
+2. **Integration test:** 45-file project → 3 batches of 15, intermediate writes verified
+3. **Stress test:** 100-file project → 7 batches, all complete, <10 min
+4. **Resume test:** 61-file project interrupted at batch 2 → resume processes batches 3-4 only
+5. **TIMining validation:** 61 files → 4 batches → 61/61 processed → /analyze synthesis works
+
+**Risk mitigation:**
+
+- **Batch size too small (10)**: More writes, slower, but safer for context
+- **Batch size too large (30)**: Faster but risk context overflow in batch
+- **Sweet spot: 15-20 files** balances performance vs safety
+
+**Dependencies:**
+
+- None (self-contained fix in extract skill)
+- Complements BL-28 (incremental /analyze) — after extraction works, analysis is already incremental
+
+---
+
 ### [BL-18] Observation → Insight Synthesis Layer (ARCH-03)
 
 **Status:** ✅ IMPLEMENTED (v4.3, commit 11d8c26)
