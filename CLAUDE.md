@@ -190,6 +190,37 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 
 If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
 
+## Documentation Guidelines
+
+PD-Spec maintains multiple documentation files. Each has a specific purpose and audience:
+
+| File | Purpose | Audience | Content Type |
+|---|---|---|---|
+| **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
+| **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
+| **QA findings** (`docs/QA_*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
+| **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (session resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Append-only. Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
+| **README.md** | Project overview and onboarding. | New users, contributors | What PD-Spec is, how to get started, quick examples, architecture overview. |
+
+### Content Flow Example
+
+When a bug is discovered during formal QA:
+1. **Document in QA findings** (`QA_V2_FINDINGS.md`) — detailed evidence, screenshots, reproduction steps, raw observations
+2. **Create BACKLOG item** (e.g., `BL-23`) — user story, proposed fix, priority, acceptance criteria
+3. **Implement fix** — commit with reference to BACKLOG item
+4. **Update CHANGELOG** — user-facing highlight of what was fixed
+5. **Archive in BACKLOG** — move BL-23 to "✅ Implemented" section with summary
+6. **QA findings remain** — historical record for future debugging
+
+**Note:** Bugs discovered during iterative development (not formal QA sessions) can be documented directly in BACKLOG with necessary detail. QA findings docs are for systematic testing sessions with multiple findings.
+
+### Writing Style
+
+- **CHANGELOG:** Conversational, benefit-focused. "You can now extract Office files without dependencies."
+- **BACKLOG:** Technical, implementation-focused. "Add Bash to allowed-tools. Fallback: textutil → zipfile."
+- **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
+- **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
+
 ## Current State
 
 > Update this section as the project evolves.
