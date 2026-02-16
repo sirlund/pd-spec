@@ -1,5 +1,79 @@
 # Changelog
 
+## [4.3.0] — 2026-02-16
+
+### Highlights
+
+**Pipeline now production-ready.** After testing with 61 real files (TIMining project), we fixed 5 critical bugs blocking extraction and added incremental processing to `/analyze`. The pipeline now runs end-to-end without manual intervention.
+
+**Synthesis layer: 161 observations → 18 strategic insights.** `/analyze` no longer dumps atomic claims on you. It consolidates patterns, names recurring concepts from your sources ("Geometry Gap", "Auto de Homero Simpson"), and detects ambiguities that need resolution. You review 18 insights with confidence levels, not 161 raw observations.
+
+**Incremental `/analyze` — only process what's new.** After initial extraction, adding 3 new files triggers `/analyze` to process only ~30 new claims (30 seconds), not re-analyze all 756 claims (5 minutes). Pipeline state is tracked via timestamps.
+
+**No more silent skips.** `/extract` now processes 100% of discovered files. The agent cannot skip files based on "assumed redundancy" — every file is either processed or reported as unprocessable with a technical reason.
+
+### Extraction (BL-23, BL-24, BL-27)
+
+- **Mandatory processing rule.** Agent cannot make editorial decisions. Every file discovered must be processed or explicitly reported as unprocessable. "Redundancy" is not a valid reason to skip.
+- **Correct PDF approach.** Default is `Read(pdf)` without pages parameter (no poppler required). Only image-only PDFs require poppler. Large PDFs (>10MB) are processed with intermediate writes to prevent context overflow.
+- **Large project auto-batching.** Projects with >40 files or multiple large PDFs automatically process in batches of 20-30 with intermediate writes.
+- **SOURCE_MAP integrity validation.** On every run, `/extract` cross-checks SOURCE_MAP.md entries against EXTRACTIONS.md sections. Corrupted entries from interrupted runs are detected and re-processed.
+- **Extraction timestamps.** Each section in EXTRACTIONS.md carries an `Extracted: YYYY-MM-DDTHH:MM` timestamp, enabling `/analyze` incremental mode.
+
+### Analysis (BL-28, BL-18)
+
+- **Incremental processing by default.** `/analyze` reads the last execution timestamp from MEMORY.md and processes only sections extracted after that timestamp. Use `/analyze --full` to force re-analysis of all claims.
+- **Convergence updates.** When incremental run finds duplicate claims, it increments convergence count on existing insight (e.g., 2/18 → 3/18) instead of creating duplicates.
+- **Synthesis layer (Phase 3).** After extracting atomic observations, `/analyze` consolidates them into strategic insights:
+  - Thematic clustering (problems, solutions, constraints, vision)
+  - Named concepts from source quotes (not invented by agent)
+  - Narrative synthesis (2-3 sentences per insight with evidence trail)
+  - Convergence weighting by Voice/Authority (user quotes prioritized over hypotheses)
+  - Target: 15-25 strategic insights for large projects, 5-8 for small ones
+- **Ambiguity detection (6 types).** Automatically flags: imprecisions ("6-8 productos" when only 6 documented), conflicts between sources, single-source critical claims, definition gaps, unresolved contradictions, perspective conflicts.
+- **Research gap identification.** Suggests missing validations with recommended methodologies (stakeholder interview, user workshop, competitive benchmark).
+- **User approval gate.** Synthesis report presented before writing — you approve insights, decide how to resolve ambiguities, and choose which research gaps to pursue.
+
+### Testing results (TIMining project, 61 files)
+
+**Before v4.3:**
+- Extraction: 23/61 files processed (38%), 27 workshop photos skipped as "redundant"
+- Analysis: 756 claims → 161 atomic insights (unmanageable volume)
+- Pipeline broken: incremental extraction worked, but /analyze re-processed everything
+
+**After v4.3:**
+- Extraction: 61/61 files processed (100%), zero skips
+- Analysis: 756 claims → 18 synthesized insights + 3 ambiguities + 5 research gaps
+- Pipeline works: add 3 new files → /extract processes 3, /analyze processes only ~30 new claims
+
+<details>
+<summary>Technical details</summary>
+
+**Commits:**
+- `f250d57` — BL-23: Editorial decisions prevention (no skip rule, disk validation, extraction methodology)
+- `745b6e6` — BL-24: Correct PDF processing (Read(pdf) default, intermediate writes for large files)
+- `13de3f5` — BL-27: SOURCE_MAP corruption detection (integrity validation on startup)
+- `39e1909` — Extraction timestamp support (prerequisite for incremental /analyze)
+- `b06ac93` — BL-28: Incremental /analyze (timestamp-based filtering, convergence updates, --full flag)
+- `11d8c26` — BL-18: Synthesis layer (consolidation, ambiguity detection, research gaps, user approval)
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — No-skip mandate, PDF instructions, SOURCE_MAP validation, extraction timestamps
+- `.claude/skills/analyze/SKILL.md` — Incremental mode, Phase 3 SYNTHESIS, ambiguity types, research gap suggestions
+
+**BACKLOG impact:**
+- BL-23: ✅ IMPLEMENTED
+- BL-24: ✅ IMPLEMENTED
+- BL-25: ✅ Covered by BL-23 disk validation
+- BL-26: ✅ Covered by BL-24 auto-batching
+- BL-27: ✅ IMPLEMENTED
+- BL-28: ✅ IMPLEMENTED
+- BL-18: ✅ IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.1.0] — 2026-02-15
 
 ### Highlights
