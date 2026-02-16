@@ -499,10 +499,11 @@ Pass 2: 9/16 ✓ (19 claims)
 
 ### [BL-35] /status Performance Fix — Eliminate Synthesis Overhead
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.4, 2026-02-16)
 **Priority:** P0 — CRITICAL (blocks BL-30)
 **Origin:** QA v3 testing (2026-02-16), QA3-UX-04
 **Related:** BL-30 (auto-generate status), BL-34 (compact output)
+**Implemented:** 2026-02-16 (evening session)
 
 **Problem:**
 
@@ -619,7 +620,31 @@ NO HTML source, NO JSON expansion.
 
 **Expected improvement:** 10min → <10s (60x faster)
 
-**Implementation:**
+**Implementation Summary (2026-02-16):**
+
+Modified `.claude/skills/status/SKILL.md` with three fixes:
+
+**✅ Fix 1: Eliminated conflict label inference** (line 146)
+- **Before:** "provide specific flag_label and research_label derived from the conflict data"
+- **After:** Generic labels (no inference): "Flag for stakeholder review", "Validate with additional research"
+- **Impact:** Eliminates ~4-5min thinking overhead per conflict
+
+**✅ Fix 2: Simplified evidence gap detection** (line 47)
+- **Before:** "insights with weak or single-source backing" (subjective evaluation)
+- **After:** "Read Convergence field. If convergence < 2 sources, add to gaps list" (objective)
+- **Impact:** Eliminates ~1min subjective analysis
+
+**✅ Fix 3: Compact output** (Phase 4)
+- **Before:** Shows full HTML/JSON (1571 + 494 lines)
+- **After:** Shows only summary: `✓ Dashboard: STATUS.html [stats]`
+- **Impact:** Prevents context compaction, conserves tokens
+
+**Testing plan:**
+1. Test on TIMining (61 sources): verify <60s execution
+2. Test on small project (3 sources): verify <10s execution
+3. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+
+**Original implementation steps:**
 1. Edit `.claude/skills/status/SKILL.md`:
    - Line 146: Replace inference instruction with generic labels
    - Line 47: Replace subjective evaluation with convergence < 2 check
