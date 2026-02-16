@@ -160,8 +160,6 @@ When processing a document, apply these criteria for claim extraction:
 
 **PASS 1: Light Files (md, txt, png, jpg < 1MB)**
 
-Create temp directory once: `mkdir -p 02_Work/_temp`
-
 For each Light batch (batch size = 10 files):
   1. **Select batch** — Take next 10 Light files from processing queue
   2. **Process batch directly** — For each of the 10 files in this batch:
