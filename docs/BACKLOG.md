@@ -10,10 +10,11 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-18] Observation → Insight Synthesis Layer (ARCH-03)
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.3, commit 11d8c26)
 **Priority:** High
 **Origin:** ARCH-03 (QA v2, 2026-02-15)
 **Updated:** 2026-02-16 (Gemini comparison analysis)
+**Implemented:** 2026-02-16 (overnight implementation)
 
 **Problem (Expanded):**
 
@@ -383,10 +384,11 @@ Missing EXTRACTIONS.md, RESEARCH_BRIEF.md, wrong pipeline. Fixed in branch claud
 
 ### [BL-23] BUG: /extract Editorial Decisions (CRITICAL)
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.3, commit f250d57)
 **Priority:** P0 — Critical
 **Origin:** TIMining QA testing (2026-02-15/16)
 **Related:** BL-17
+**Implemented:** 2026-02-16 (overnight implementation)
 
 **Problem:**
 Agent skips files based on "assumed redundancy" or subjective judgment. In TIMining test:
@@ -476,10 +478,11 @@ This is **not** an excuse to skip files. It's guidance on how to extract **strat
 
 ### [BL-24] BUG: /extract Fallbacks Not Used (CRITICAL)
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.3, commit 745b6e6)
 **Priority:** P0 — Critical
 **Origin:** TIMining QA testing (2026-02-15/16)
 **Related:** BL-17
+**Implemented:** 2026-02-16 (overnight implementation)
 
 **Problem:**
 Skill has fallback tools (Read PDF, Read with offset/limit) but agent doesn't use them. Reports files as "unprocessable" without attempting fallbacks.
@@ -534,10 +537,11 @@ Same for large MD files: MUST attempt Read(file, offset=0, limit=1000) before re
 
 ### [BL-25] BUG: /extract False Numerical Reports (HIGH)
 
-**Status:** Proposed
+**Status:** ✅ COVERED BY BL-23 (commit f250d57)
 **Priority:** P1 — High
 **Origin:** TIMining QA testing (2026-02-15/16)
 **Related:** BL-17, BL-23
+**Resolution:** Disk validation logic in Phase 4 Report (BL-23 commit) resolves this issue
 
 **Problem:**
 Agent reports inflated numbers (intent-based) instead of verified counts (disk-based). SOURCE_MAP.md contains "EXTRACTED" entries for files never processed.
@@ -581,9 +585,10 @@ If discrepancy detected:
 
 ### [BL-26] BUG: /extract No Auto-Batching for Large Projects (MEDIUM)
 
-**Status:** Proposed
+**Status:** ✅ COVERED BY BL-24 (commit 745b6e6)
 **Priority:** P2 — Medium
 **Origin:** TIMining QA testing (2026-02-15/16)
+**Resolution:** Large Project Strategy in BL-24 commit adds auto-batching for >40 files or multiple PDFs >10MB
 
 **Problem:**
 Projects with >50 files processed in single run → context overflow → incomplete extraction. No automatic batching strategy.
@@ -613,9 +618,10 @@ Batch size: 20-30 files per batch (conservative for mixed formats)
 
 ### [BL-27] BUG: /extract SOURCE_MAP Corruption on Interruption (MEDIUM)
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.3, commit 13de3f5)
 **Priority:** P2 — Medium
 **Origin:** TIMining QA testing (2026-02-15/16)
+**Implemented:** 2026-02-16 (overnight implementation)
 **Related:** BL-17
 
 **Problem:**
@@ -656,8 +662,9 @@ Before trusting SOURCE_MAP.md:
 
 ### [BL-28] /analyze Incremental Processing — Track Processed Claims (CRITICAL)
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.3, commits 39e1909 + b06ac93)
 **Priority:** P0 — Critical (architectural gap)
+**Implemented:** 2026-02-16 (overnight implementation)
 **Origin:** TIMining QA testing (2026-02-16)
 **Related:** BL-17, BL-18
 **Depends on:** BL-17 (SOURCE_MAP.md)
