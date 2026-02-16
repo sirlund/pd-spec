@@ -294,12 +294,15 @@ When processing a document, apply these criteria for claim extraction:
    - Type: [from metadata or _CONTEXT.md]
    - Date: [from metadata]
    - Participants: [if applicable]
+   - Extracted: [YYYY-MM-DDTHH:MM timestamp when this section was processed]
 
    ### Raw Claims
    1. "[exact quote or factual claim from source]"
    2. "[another claim]"
    ...
    ```
+
+   **Timestamp rule:** Always include the `Extracted: YYYY-MM-DDTHH:MM` metadata line with the current timestamp when writing or updating a section. This enables `/analyze` incremental mode to skip unchanged extractions.
 
    - Preserve the header and description at the top of the file.
    - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
