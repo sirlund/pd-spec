@@ -8,6 +8,53 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
+### [BL-30] Skill Name Collision — /status conflicts with Claude Code command
+
+**Status:** Proposed
+**Priority:** P2 — Medium (UX confusion)
+**Origin:** User testing (2026-02-16, parallel project)
+
+**Problem:**
+
+PD-Spec skill `/status` conflicts with Claude Code's built-in `/status` command, causing confusion about which command is being invoked.
+
+**Evidence:**
+User report: "nuestro skill status se confunde con el comando /status de claude-code"
+
+**Impact:**
+- User confusion: unclear which `/status` is being called
+- Possible invocation errors or unexpected behavior
+- Reduces discoverability of PD-Spec status skill
+
+**Proposed solutions:**
+
+**Option A: Rename skill** (recommended)
+- `/status` → `/dashboard` or `/research-status`
+- Update all references in skills, docs, outputs
+- Clear differentiation from Claude Code command
+
+**Option B: Namespace prefix**
+- `/status` → `/pd-status`
+- Follows convention for scoped commands
+- Backward compatible with alias
+
+**Option C: Keep as-is, document clearly**
+- Add note in README: "Use `/status` for dashboard (PD-Spec skill)"
+- Claude Code's `/status` is for CLI status, different context
+- Rely on user learning curve
+
+**User story:**
+> As a PD-Spec user, I expect `/status` to clearly invoke the research dashboard without confusion about whether I'm calling a Claude Code command or a PD-Spec skill.
+
+**Acceptance criteria:**
+- ✅ Skill name does not conflict with Claude Code built-in commands
+- ✅ Documentation clearly explains the difference (if keeping name)
+- ✅ User can invoke dashboard command without ambiguity
+
+**Note:** Review later — document conflict for now, decide on rename strategy.
+
+---
+
 ### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
 
 **Status:** Proposed
