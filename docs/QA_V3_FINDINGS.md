@@ -1125,3 +1125,250 @@ AskUserQuestion({
 
 ---
 
+### [QA3-UX-05] Dashboard UX Issues — Multiple Improvements Needed
+
+**Severity:** Medium (usability friction)
+**Component:** STATUS.html dashboard template
+**Context:** User testing after /status generation (2026-02-16, TIMining project)
+
+**User feedback after extended dashboard use:**
+
+> "Estuve un rato usando el dashboard, logré aprobar los insights y me hicieron sentido. Luego en conflicts pude tomar decisiones y aportar mi visión."
+
+**Issues identified:**
+
+**1. Source Coverage section is basic — lacks detail**
+
+**Current:** Shows folder names, file counts, extraction status
+**Missing:**
+- Progress per folder (X/Y files processed)
+- Global progress indicator
+- Summary of each folder (what type of content, key themes)
+- Most valuable claims per folder (convergence tracking)
+
+**Impact:** User can't assess research quality or identify gaps quickly
+
+---
+
+**2. Evidence Gaps — suggested actions get lost**
+
+**Current:** Gap description + suggestion in same block
+**Problem:** Suggestions blend into description text, hard to spot actionable items
+
+**Proposed:**
+- Separate "Description" and "Action" visually
+- Action buttons or prominent callouts
+- Group by priority (critical, high, medium)
+
+**Impact:** User misses research opportunities
+
+---
+
+**3. System Map — Open Questions hidden, no links**
+
+**Current:**
+```
+Open Questions:
+- "¿Cuáles son las necesidades core de cada perfil? (Requiere aprobación de IG-SYNTH-09)"
+```
+
+**Problems:**
+- Open questions buried at bottom of System Map module
+- Reference IDs (IG-SYNTH-09) are plain text, not clickable
+- User can't navigate to referenced insight to review
+
+**Proposed:**
+- Make open questions more prominent (separate section or callout)
+- Convert [IG-XX] references to clickable links (already works elsewhere via _base.js convertRefs)
+- Auto-link should work: STATUS.html#IG-SYNTH-09
+
+**Impact:** User doesn't see critical questions that need resolution
+
+---
+
+**Proposed fixes:**
+
+**Fix 1: Enhanced Source Coverage**
+```json
+"sources": [
+  {
+    "folder": "Workshop 1/",
+    "files": 32,
+    "processed": 32,
+    "progress": 100,
+    "types": ["md", "docx", "png"],
+    "extraction_status": "Extraído (757 claims)",
+    "summary": "Workshop sticky notes y transcripts — usuarios finales, flujos actuales",
+    "top_claims": ["IG-SYNTH-06 (25 sources)", "IG-SYNTH-09 (12 sources)"]
+  }
+]
+```
+
+Add to template:
+- Progress bars per folder
+- Global progress: "48/54 files processed (89%)"
+- Folder summaries visible
+- Top insights linked
+
+**Fix 2: Evidence Gaps visual hierarchy**
+
+Current structure:
+```html
+<div class="gap-card">
+  <div class="gap-desc">Description + suggestion mixed</div>
+</div>
+```
+
+Proposed:
+```html
+<div class="gap-card">
+  <div class="gap-desc">Description only</div>
+  <div class="gap-action">
+    <strong>Action:</strong> Specific next step
+    <button class="gap-btn">Add to backlog</button>
+  </div>
+</div>
+```
+
+**Fix 3: Open Questions prominence + auto-linking**
+
+- Already have convertRefs function in _base.js (line 15-25)
+- Apply to System Map open questions
+- Move open questions to separate prominent section (not buried)
+
+---
+
+**Acceptance criteria:**
+- [ ] Source coverage shows progress bars (per folder + global)
+- [ ] Source coverage includes folder summaries and top claims
+- [ ] Evidence gaps have separate "Action" section with visual emphasis
+- [ ] Open questions are prominent (separate section or callout)
+- [ ] [IG-XX] references in open questions are clickable links
+- [ ] User can click IG-SYNTH-09 reference and navigate to that insight
+
+**Related:** BL-33 (phase dashboard) — these improvements apply to both current STATUS.html and future phase-based design
+
+---
+
+### [QA3-ARCH-02] Dashboard Static vs Dynamic Data — Regeneration Friction
+
+**Severity:** High (workflow blocker)
+**Component:** STATUS.html Template+JSON architecture
+**Context:** User testing workflow (2026-02-16)
+
+**User observation:**
+
+> "Lo más complejo es el flujo de toma de decisiones o agregar contexto extra. Estos generan un prompt que hay que correr en el chat con instrucciones que inyectan info en insights_graph y agregan sources en el caso de add context o corren synthesis en el caso de actions. En ambos casos habría que volver a generar status.html y esperar muchos minutos para ver un ajuste grande o pequeño."
+
+**Current workflow (high friction):**
+
+```
+1. Open STATUS.html in browser
+2. Review insights, make decisions (approve/reject/add context)
+3. Click "Generate prompt" → copies structured text
+4. Paste prompt in terminal
+5. Prompt updates 02_Work/INSIGHTS_GRAPH.md (or runs /synthesis)
+6. Close browser
+7. Run /status again (wait 10min with BL-35 unfixed, or <10s after BL-35)
+8. Reload STATUS.html
+9. See changes
+```
+
+**User question:**
+
+> "Ese status no debería leer lo que hay en los archivos de work tal como están? En ese caso bastaría con reload del html y ver los cambios?"
+
+**Ideal workflow (low friction):**
+
+```
+1. Open STATUS.html in browser
+2. Review insights, make decisions
+3. Decisions update 02_Work/ files directly (or via prompt as intermediary)
+4. Press F5 to reload page
+5. Dashboard reads current state from 02_Work/ files
+6. See changes immediately (no /status regeneration)
+```
+
+**Technical constraint:**
+
+Template+JSON architecture embeds data at generation time:
+- STATUS.html = static template + JSON snapshot
+- JSON is injected once during /status execution
+- Dashboard shows state at moment of generation
+- Changes to 02_Work/ files NOT reflected until regeneration
+
+**Why user's proposal doesn't work (browser security):**
+
+HTML opened in browser (file:// protocol) cannot read local filesystem due to CORS/same-origin policy. JavaScript cannot fetch(`02_Work/INSIGHTS_GRAPH.md`) without a server.
+
+**Possible solutions:**
+
+**Option A: Local development server (adds complexity)**
+- User runs `python3 -m http.server 8000` in repo root
+- Opens `localhost:8000/03_Outputs/STATUS.html`
+- JavaScript can fetch(`../02_Work/INSIGHTS_GRAPH.md`) via HTTP
+- F5 reloads latest data from files
+- **Pros:** True dynamic dashboard, instant updates
+- **Cons:** User must run server, extra setup, not "just open HTML"
+
+**Option B: Fix BL-35 to make regeneration instant (<10s)**
+- Keep Template+JSON architecture
+- Optimize /status to <10s execution
+- Workflow: make changes → /status → F5 → see updates (10s delay)
+- **Pros:** No architecture change, simpler
+- **Cons:** Still requires terminal command + 10s wait per change
+
+**Option C: Hybrid — dashboard writes files directly (requires file system API)**
+- Use File System Access API (Chrome 86+)
+- User grants permission once
+- Dashboard JavaScript writes to 02_Work/ files directly
+- Still needs /status regeneration OR local server to re-read
+- **Pros:** Eliminates prompt copy/paste
+- **Cons:** Browser compatibility, permission prompts, still needs reload mechanism
+
+**Option D: WebSocket + file watcher (complex but ideal)**
+- Background process watches 02_Work/ for changes
+- WebSocket pushes updates to open dashboard
+- Dashboard updates in real-time without F5
+- **Pros:** Best UX, instant updates, no regeneration
+- **Cons:** Significant architecture change, requires background process
+
+**Recommendation:**
+
+**Short term (v4.4):** Option B — Fix BL-35 (P0 CRITICAL)
+- Make /status <10s, regeneration becomes acceptable
+- Workflow friction reduced: 10s delay vs 10min delay
+
+**Medium term (v4.5):** Option A — Local server mode
+- Add `/serve` skill that starts local server
+- Dashboard reads live data from files
+- F5 reloads latest state (instant)
+- Optional: user can still use static HTML if prefers
+
+**Long term (v5.0):** Option D — Real-time dashboard
+- Background file watcher + WebSocket
+- Dashboard auto-updates without reload
+- Best UX but requires significant investment
+
+**User story:**
+> As a researcher reviewing insights in the dashboard, I want to see my changes reflected immediately without waiting 10 minutes for regeneration, so I can iterate quickly and make better decisions.
+
+**Acceptance criteria (medium term):**
+- [ ] `/serve` skill starts local HTTP server (port 8000)
+- [ ] STATUS.html JavaScript detects server mode vs static mode
+- [ ] In server mode: fetches 02_Work/ files on page load
+- [ ] F5 reload shows latest data from files (no /status regeneration)
+- [ ] Static mode still works (backward compatible)
+
+**Impact:**
+- 🚨 Current friction: 10min wait per change (blocks iteration)
+- ✅ Short term (BL-35): 10s wait per change (acceptable)
+- ✅ Medium term (local server): instant F5 reload (ideal)
+
+**Related:**
+- BL-35 (P0): Must be fixed first — makes Option B viable
+- BL-30: Dashboard regeneration becomes part of /analyze flow
+- QA3-UX-05: Dashboard improvements apply to both static and dynamic modes
+
+---
+
