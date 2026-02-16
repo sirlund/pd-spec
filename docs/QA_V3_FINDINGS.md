@@ -847,3 +847,134 @@ Press esc twice to go up a few messages and try again.
 - 4 md + 4 png + 4 converted files + 2 PDFs = context overflow
 - Intermediate writes help but don't prevent accumulation within a batch
 
+---
+
+## 🏗️ ARCHITECTURE
+
+### [QA3-ARCH-01] Pipeline Flow Friction — /analyze and /synthesis Should Be Unified
+
+**Severity:** High (UX friction)
+**Component:** /analyze + /synthesis skills
+**Related:** BL-30 (status as auto-step), BL-33 (phase dashboard)
+
+**Current behavior:**
+
+User runs separate commands for sequential operations:
+```
+/extract → /analyze → /synthesis → /ship
+          ↓         ↓           ↓
+        claims   insights    verified
+                 (PENDING)   insights
+```
+
+**Problem:**
+
+"Analizar sin sintetizar no sirve" — leaving everything as PENDING requires a second skill invocation. User must:
+1. Run /analyze → writes 21 insights as PENDING
+2. Run /status → generates STATUS.html dashboard
+3. Open browser → review insights, click approve/reject buttons
+4. Click "Generate /synthesis prompt" → copies structured prompt
+5. Paste prompt in terminal → run /synthesis with instructions
+6. Run /status again → see updated statuses
+
+**This is friction:**
+- 6 steps when it should be 2
+- Context switching (terminal → browser → terminal)
+- Dashboard is interactive but indirect (generates prompts instead of writing files directly)
+- /synthesis exists as separate skill only for edge cases (re-synthesis after adding sources)
+
+**User's actual workflow (validated 2026-02-16):**
+
+> "Nunca he hecho un partial approval en el terminal, los apruebo todos y luego los reviso en status.html, si uno no aplica lo rechazo y eso genera un prompt de synthesis"
+
+1. /analyze presents 21 insights → user approves ALL in chat
+2. Writes 21 as PENDING to INSIGHTS_GRAPH.md
+3. Later: opens STATUS.html, clicks reject on 2-3 that don't apply
+4. Dashboard generates prompt: `Approve: IG-01, IG-02, ... Reject: IG-05, IG-18`
+5. User copies prompt, runs in terminal
+6. /synthesis updates files
+
+**Proposed solution: AskUserQuestion as decision point**
+
+Instead of free-text approval, use Claude Code's native interactive menu (like screenshot provided):
+
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "¿Qué hacer con los 21 insights sintetizados?",
+      header: "Synthesis",
+      options: [
+        {
+          label: "Aprobar todos como PENDING (Recommended)",
+          description: "Escribe los 21 como PENDING. Puedes revisar individualmente después en STATUS.html y generar prompt de /synthesis."
+        },
+        {
+          label: "Aprobar todos como VERIFIED",
+          description: "Escribe los 21 como VERIFIED directamente. Omite revisión individual en dashboard."
+        },
+        {
+          label: "Revisar uno por uno ahora",
+          description: "Presentar cada insight para aprobación individual antes de escribir."
+        }
+      ]
+    },
+    {
+      question: "¿Cómo resolver las 6 ambigüedades detectadas?",
+      header: "Ambiguities",
+      options: [
+        {
+          label: "Guardar para /synthesis (Recommended)",
+          description: "Marcar como PENDING, resolver después con contexto completo en STATUS.html"
+        },
+        {
+          label: "Resolver ahora",
+          description: "Presentar cada ambigüedad con opciones para decisión inmediata"
+        }
+      ]
+    }
+  ]
+})
+```
+
+**Advantages:**
+
+✅ **No sale de la terminal** — navegación con Tab/Arrow keys
+✅ **Ya existe en Claude Code** — cero implementación custom
+✅ **Opciones estructuradas** — reduce ambigüedad vs respuestas libres
+✅ **Flow natural** — /analyze → AskUserQuestion → write files → done
+✅ **Dashboard sigue siendo útil** — para partial rejection después (user's validated workflow)
+
+**Workflow with AskUserQuestion:**
+
+```
+/extract → /analyze → [AskUserQuestion] → writes files based on selection
+                              ↓
+         Option 1: Pending → later review in STATUS.html
+         Option 2: Verified → skip dashboard review
+         Option 3: Review now → one-by-one approval in terminal
+```
+
+**Impact:**
+
+- ✅ Reduces 6-step flow to 2-3 steps
+- ✅ Eliminates mandatory context switching (terminal → browser → terminal)
+- ✅ Dashboard becomes optional (for partial rejection only)
+- ✅ /synthesis still exists for edge cases (re-synthesis, conflict resolution after adding sources)
+
+**Relates to:**
+
+- BL-30: Auto-flow between skills (instead of separate commands)
+- BL-33: Phase dashboard (terminal UI can replace HTML dashboard for simple approvals)
+- QA3-UX-01: Express mode (Option 2 "Aprobar como VERIFIED" enables fast flow)
+
+**Acceptance criteria:**
+
+- [ ] /analyze uses AskUserQuestion instead of free-text prompt for synthesis approval
+- [ ] 3 options: PENDING (review later), VERIFIED (skip review), Review now (one-by-one)
+- [ ] 2 options for conflicts: Defer to /synthesis, Resolve now
+- [ ] User can complete full pipeline without opening browser (if approving all)
+- [ ] STATUS.html dashboard remains functional for partial rejection workflow
+
+---
+
