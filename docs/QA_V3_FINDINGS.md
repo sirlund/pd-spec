@@ -519,6 +519,44 @@ Phase 2: Atomic Insights
 
 ---
 
+**Evidence from Option E test (TIMining, 61 files):**
+
+**Current verbose output:**
+```
+✓ Pass 2 — File 7/16 complete: TIMining_s strategic position...pdf, 27 claims extracted
+Now updating SOURCE_MAP.md and proceeding to heavy file 8/16.
+Update(~/Dev/repos/pd-spec-test/02_Work/SOURCE_MAP.md)
+  Added 1 line
+  [shows exact line added with full path and metadata]
+Now processing heavy file 8/16: Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx
+Bash(cd "/Users/nlundin/Dev/repos/pd-spec-test/01_Sources/Antecedentes/Ppt & videos evento Google" && md5 -q "[Evento Google] FINAL SCRIPT - V4.docx" && textutil -convert txt ...)
+  Done
+Read 1 file (ctrl+o to expand)
+Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
+  Added 32 lines
+  [shows all 32 lines of extracted claims verbatim]
+```
+
+**Impact:**
+- 51/61 files processed → 2 context compactions (22min elapsed)
+- ~30min projected total duration (vs <2min target)
+- User feedback: "es un gloton de tokens" 😂
+
+**Proposed compact output:**
+```
+Pass 2: 7/16 ✓ (27 claims)
+Pass 2: 8/16 ✓ (24 claims)
+Pass 2: 9/16 ✓ (19 claims)
+```
+
+**Benefits of compact version:**
+- 90% reduction in output tokens
+- Fewer compactions (preserve context longer)
+- Faster execution (less generation overhead)
+- User sees progress without noise
+
+---
+
 ## 🏗️ ARCHITECTURAL NOTES
 
 ### [QA3-ARCH-XX] Title
