@@ -318,18 +318,204 @@ Multiple "Context limit reached" messages after 6m 42s:
 
 ## 💡 UX OBSERVATIONS
 
-### [QA3-UX-XX] Title
+### [QA3-UX-01] Pipeline Feels Slow Even on Small Projects — Need Express Mode
 
-**Component:** [where observed]
+**Component:** /analyze (synthesis layer)
+**Context:** Triviapp-pd project (11 files, 220 claims)
 
 **Observation:**
-[What could be better]
+
+User feedback: *"lo siento muy lento incluso en este contexto de mini proyecto"*
+
+For small projects (11 files, 220 claims), full synthesis layer creates overhead:
+- 220 claims → 35 atomic → 7 synthesized + 5 standalone
+- Clustering, narratives, evidence trails, convergence analysis
+- Processing time feels disproportionate to project complexity
+- Ratio insights/claims: 21% (high for small project)
 
 **User impact:**
-[How this affects workflow]
+- Fast iteration blocked by unnecessary synthesis
+- Small projects don't need strategic consolidation
+- Synthesis layer adds value for large projects (>500 claims) but overhead for small
 
-**Suggestion:**
-[Potential improvement]
+**Proposal: Auto Express Mode**
+
+**Auto-detect project size and adjust processing:**
+
+```
+IF project < 30 files OR < 500 claims:
+  → Express mode (default)
+  → Atomic insights only (no clustering, no synthesis)
+  → Log: "⚡ Express mode: 11 files, 220 claims. Use /analyze --full for deeper synthesis."
+
+IF project > 50 files OR > 1000 claims:
+  → Full mode (synthesis activated)
+  → Log: "🔍 Large project detected (65 files, 1,200 claims). Running full synthesis..."
+
+IF 30-50 files OR 500-1000 claims:
+  → Express mode + suggest full
+  → Log: "⚡ Express mode: 40 files, 800 claims. Consider /analyze --full for complex projects."
+```
+
+**Express mode behavior:**
+- ✅ Atomic insights (one per claim cluster)
+- ✅ Conflict detection (still works)
+- ✅ Fast dashboard generation
+- ❌ No synthesis layer (clustering, narratives)
+- ❌ No convergence weighting
+- ❌ No strategic consolidation
+
+**Full mode (`/analyze --full`):**
+- ✅ Synthesis layer active
+- ✅ Strategic insights (7-25 consolidated from atomics)
+- ✅ Convergence weighting, narratives, evidence trails
+- ✅ Ambiguity detection (6 types)
+
+**Benefits:**
+- Fast iteration for small projects (majority of use cases)
+- User controls depth via `--full` flag when needed
+- Clear logic: project size determines mode
+- Backward compatible (--full preserves current behavior)
+
+---
+
+### [QA3-UX-02] No Visual Progress Per Phase — User Can't Review Incrementally
+
+**Component:** /analyze, /synthesis (whole pipeline)
+**Context:** Triviapp-pd session, multiple propose-approve cycles
+
+**Observation:**
+
+Current flow requires multiple roundtrips:
+1. /analyze presents synthesis report → user approves → writes INSIGHTS_GRAPH.md
+2. /status (manual invocation) → generates dashboard
+3. /synthesis presents conflict resolutions → user decides → writes SYSTEM_MAP.md
+4. /ship presents structure → user approves → writes PRD.html
+
+**Problems:**
+- No visual progress tracking across phases
+- Each skill isolated, user can't see "where we are"
+- Dashboard (/status) is separate skill, must invoke manually
+- User can't review progress incrementally (all-or-nothing approvals)
+
+**User impact:**
+- Hard to understand pipeline state
+- Can't make informed decisions without seeing full context
+- Manual /status invocation adds friction (BL-30 addresses this)
+
+**Proposal: Phase-Based Dashboard — Visual Progress in STATUS.html**
+
+**Auto-generated dashboard shows progress per phase:**
+
+```markdown
+┌─────────────────────────────────────────────────────────┐
+│ 📊 Triviapp Research Dashboard                          │
+├─────────────────────────────────────────────────────────┤
+│ Phase 1: Sources Loaded                                 │
+│ ✅ 11 files, 220 claims extracted                       │
+│ [Ver EXTRACTIONS.md] [Add more sources]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 2: Atomic Insights                                │
+│ ✅ 35 insights created (12 PENDING approval)            │
+│ [Approve/Reject inline] [View insights]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 3: Synthesis                                      │
+│ ⏭️ SKIPPED (Express mode active)                        │
+│ [Run /analyze --full for synthesis layer]              │
+├─────────────────────────────────────────────────────────┤
+│ Phase 4: Conflicts                                      │
+│ ⚠️ 3 conflicts detected (3 PENDING resolution)          │
+│ [Resolve conflicts inline] [View conflicts]             │
+├─────────────────────────────────────────────────────────┤
+│ Phase 5: System Map                                     │
+│ ⏳ PENDING (run /synthesis after resolving conflicts)   │
+│ [Start synthesis] [Skip to /ship]                       │
+├─────────────────────────────────────────────────────────┤
+│ Phase 6: Deliverables                                   │
+│ 📄 PRD.html available                                   │
+│ [View PRD] [Generate more outputs]                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Key features:**
+- ✅ Visual progress tracker (completed → pending → skipped)
+- ✅ Inline actions (approve/reject, resolve conflicts)
+- ✅ User sees "where we are" at all times
+- ✅ Dashboard auto-updates after each skill
+- ✅ User interacts from dashboard, not chat (reduces roundtrips)
+
+**Implementation:**
+- /analyze generates STATUS.html with Phase 1-4 populated
+- /synthesis updates STATUS.html with Phase 5 populated
+- /ship updates STATUS.html with Phase 6 populated
+- Dashboard is living document, not one-time snapshot
+
+**Connection to BL-30:**
+BL-30 proposes auto-generating STATUS.html in /analyze. This extends that: dashboard becomes phase-based progress tracker, not just static report.
+
+---
+
+### [QA3-UX-03] Context Compaction Interrupts Flow — Need Compact Skill Output
+
+**Component:** All skills (verbose output)
+**Context:** Triviapp-pd session required manual resumption after compaction
+
+**Observation:**
+
+Session summary: *"Sesión continuada desde una conversación previa que se quedó sin contexto."*
+
+Context compaction interrupts workflow:
+- Skills generate verbose output (progress logs, explanations, proposals)
+- Consumes context rapidly
+- Compaction forces session restart, user must summarize manually
+- Loss of momentum, frustration
+
+**User impact:**
+- Workflow interrupted mid-task
+- Manual resumption required (read MEMORY.md, understand state)
+- Lost time explaining context to new session
+
+**Proposal: Compact Skill Output — Preserve Context Longer**
+
+**Reduce verbosity across all skills:**
+
+**Current output (verbose):**
+```
+Processing Phase 2: Extract atomic observations...
+Reading EXTRACTIONS.md (315 lines)...
+Found section 1: 00_requerimiento_original.md (37 claims)
+Processing claims 1-37...
+  Claim 1: "Destello (sparkle), sonido agudo..."
+  Claim 2: "Barra de progreso visual..."
+  ...
+Created insight IG-01: Feedback Dopaminico
+Created insight IG-02: ...
+Total: 35 insights created from 220 claims.
+```
+
+**Proposed output (compact):**
+```
+Phase 2: Atomic Insights
+✓ Processed 220 claims → 35 insights created
+[View details in INSIGHTS_GRAPH.md]
+```
+
+**Principles:**
+- Progress indicators: concise (emoji + summary)
+- Details: defer to output files (INSIGHTS_GRAPH.md, CONFLICTS.md)
+- Proposals: structured, minimal (not essay-style)
+- Logging: essential only (skip intermediate steps)
+
+**Benefits:**
+- ✅ Longer context preservation (fewer compactions)
+- ✅ Faster skill execution (less output generation)
+- ✅ User reads dashboard, not chat logs
+- ✅ Interruptions minimized
+
+**Acceptance criteria:**
+- Skill output ≤50% of current verbosity
+- Context compaction frequency reduced by 30%+
+- User can complete small project (11 files) without compaction
 
 ---
 
