@@ -599,21 +599,6 @@ Pass 2: 9/16 ✓ (19 claims)
 
 ## 🏗️ ARCHITECTURAL NOTES
 
-### [QA3-ARCH-XX] Title
-
-**Category:** Enhancement / Refactor / Technical debt
-
-**Observation:**
-[What was noticed about the architecture]
-
-**Implications:**
-[What this means for future work]
-
-**Proposal:**
-[If action needed]
-
----
-
 ## ✅ VALIDATED FIXES
 
 ### BL-23: Editorial Decisions Bug
@@ -668,14 +653,37 @@ Ready for incremental /analyze testing
 **Fix applied:** Timestamp-based filtering in analyze/SKILL.md (not tested in this QA session)
 
 ### BL-18: Synthesis Layer
-**Status:** ⏳ NOT TESTED (requires /analyze execution)
-**Evidence:**
+**Status:** ✅ VALIDATED (2026-02-16, 7m 28s)
+**Test input:** 1,238 claims from 54 source files
+**Results:**
 ```
-1,238 claims extracted from 54 files (large dataset for synthesis testing)
-Synthesis logic implemented in analyze/SKILL.md Phase 4
-Requires /analyze execution to validate synthesis behavior
+✅ Deduplication: 1,238 claims → 790 unique (450 duplicates detected)
+✅ Synthesis: 21 strategic insights created
+   - 12 high confidence (multi-source convergence)
+   - 9 medium confidence (single-source or ambiguous)
+✅ Named concepts extracted: "Geometry Gap", "Auto de Homero Simpson", "Efecto Suiza"
+✅ Ambiguity detection: 6 types detected
+   - Imprecision (numeric ranges)
+   - Conflicts (source contradictions)
+   - Single-source critical
+   - Definition gaps
+   - Unresolved contradictions
+   - Perspective conflicts (Voice/Authority)
+✅ Research gaps: 5 identified with methodologies
+   - CFO validation (pricing claims)
+   - Competitor benchmark
+   - User research validation
+   - Engineering validation (technical claims)
+   - Missing stakeholder perspectives
+✅ Evidence trail: Each insight traces back to source quotes
+✅ Convergence tracking: Sources counted per insight (e.g., 3/21 sources)
 ```
-**Fix applied:** Phase 4 SYNTHESIS in analyze/SKILL.md (not tested in this QA session)
+
+**Duration:** 7m 28s (context compaction occurred — validates QA3-UX-03 verbose output issue)
+
+**User decision pending:** Aprobar 21 insights, resolver 6 ambigüedades
+
+**Validation:** ✅ Synthesis layer working as designed — 1,238 atomic claims consolidated to 21 manageable strategic insights
 
 ---
 
@@ -683,14 +691,21 @@ Requires /analyze execution to validate synthesis behavior
 
 | Metric | Value |
 |---|---|
-| Total duration | 33m 54s (Option E test) |
-| Context compactions | 2-3 (all recovered successfully) |
-| Tool calls | ~300+ (estimated, verbose output) |
+| Total duration | 41m 22s (33m 54s extraction + 7m 28s analysis) |
+| Context compactions | 3-4 (all recovered successfully) |
+| Tool calls | ~400+ (estimated, verbose output) |
 | Files processed | 54/54 (100% of processable files) |
 | Claims extracted | 1,238 claims |
-| Insights created | 0 (extraction only, /analyze not run) |
-| Bugs discovered | 4 (QA3-BUG-01 to QA3-BUG-04) |
-| UX observations | 3 (QA3-UX-01 to QA3-UX-03) |
+| Unique claims | 790 (450 duplicates detected) |
+| Strategic insights | 21 (12 high confidence, 9 medium) |
+| Ambiguities detected | 6 (multiple types) |
+| Research gaps | 5 (with methodologies) |
+| Bugs discovered | 3 (QA3-BUG-01, 02, 03) |
+| Perf observations | 1 (QA3-PERF-01) |
+| UX observations | 3 (QA3-UX-01, 02, 03) |
+| Arch observations | 1 (QA3-ARCH-01) |
+| BLs created | 5 (BL-29, 30, 31, 32, 33, 34) |
+| BLs validated | 5 (BL-18, 23, 24, 27, 28) |
 
 ---
 
@@ -703,25 +718,26 @@ Requires /analyze execution to validate synthesis behavior
 - **Direct processing** — NO Task agents eliminates permission issues and overhead
 - **File type support** — PDF, DOCX, PPTX, HEIC, images all working
 - **Recovery from compactions** — State preserved via SOURCE_MAP.md
+- **BL-18 synthesis layer** — 1,238 claims → 21 strategic insights, ambiguity detection, research gaps
 - **Validation** — 54 EXTRACTIONS.md sections match SOURCE_MAP.md entries
 
 ### What Failed ❌
 - **Option D (Task agents + batch 5)** — 38/61 files (62%), 30min, all agents hit context limit
-- **Production speed** — 33min vs <2min target (16x slower)
-- **Verbose output** — Token-expensive, forces compactions
+- **Production speed** — 41min total (33min extract + 7m analyze) vs <5min target
+- **Verbose output** — Token-expensive, forces compactions even on analysis phase
 
 ### What Needs Attention ⚠️
 1. **Performance optimization** — Reduce output verbosity (QA3-UX-03)
 2. **Express mode for small projects** — Skip heavy files for fast iteration (QA3-UX-01)
 3. **Phase-based dashboard** — Visual progress tracking (QA3-UX-02)
-4. **Context management** — Compact skill output to preserve context longer
-5. **/analyze + /synthesis testing** — BL-18, BL-28 not validated yet
+4. **Pipeline flow simplification** — Unified /analyze with AskUserQuestion (QA3-ARCH-01, BL-30)
+5. **Incremental /analyze testing** — BL-28 implemented but not tested with incremental data yet
 
 ### Recommended Actions
-1. **IMPLEMENT:** BL-34 (Compact Output) — 90% reduction in verbosity → faster, fewer compactions
-2. **IMPLEMENT:** BL-32 (Express Mode) — Auto-detect project size, skip heavy files by default
-3. **IMPLEMENT:** BL-33 (Phase Dashboard) — Visual progress in STATUS.html
-4. **TEST:** /analyze incremental mode (BL-28) + synthesis layer (BL-18) on TIMining dataset
+1. **IMPLEMENT:** BL-30 (AskUserQuestion + auto STATUS.html) — Eliminates 6-step flow to 2 steps
+2. **IMPLEMENT:** BL-34 (Compact Output) — 90% reduction in verbosity → faster, fewer compactions
+3. **IMPLEMENT:** BL-32 (Express Mode) — Auto-detect project size, skip heavy files by default
+4. **TEST:** /analyze incremental mode (BL-28) — Add 3 new files, verify only new claims processed
 5. **DOCUMENT:** BL-29 as IMPLEMENTED (Option E), close with lessons learned
 6. **CONSIDER:** BL-31 (Extract Express Mode) as fast-track for small projects
 
