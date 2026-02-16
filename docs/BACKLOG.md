@@ -426,6 +426,54 @@ EVERY file discovered in Phase 1 MUST be:
 
 ---
 
+**Note: Editorial Judgment vs Methodological Rigor**
+
+There's a distinction between two types of "editorial decisions":
+
+**❌ PROHIBITED: Skipping entire files**
+- Claiming "photos redundant with transcript" without processing them
+- Omitting files based on assumptions about content
+- **This is the bug BL-23 addresses**
+
+**✅ RECOMMENDED: Applying UX research methodology within files**
+- A real UX researcher extracts **3-5 key claims per page**, not 10-15 exhaustive claims
+- Focuses on strategic insights, user pain points, and critical constraints
+- Filters out repetitive details, formatting artifacts, and low-signal content
+- **This is methodological rigor, not laziness**
+
+**Example comparison:**
+
+| Approach | Page Count | Claims Extracted | Quality |
+|---|---|---|---|
+| **Exhaustive extraction** | 10 pages | 100-150 claims | High volume, low signal, many duplicates |
+| **UX research methodology** | 10 pages | 30-50 claims | Curated, strategic, actionable |
+
+**The rule:**
+- ✅ Process EVERY file discovered
+- ✅ Within each file, apply methodological judgment to extract what matters
+- ❌ Do NOT skip files based on assumed redundancy
+
+**Implementation guidance for /extract:**
+
+When processing a document:
+1. **Read the full content** (don't skip pages or sections)
+2. **Extract claims that meet these criteria:**
+   - User needs, pain points, or behaviors (direct quotes preferred)
+   - Business constraints, success metrics, or strategic decisions
+   - Technical capabilities, limitations, or architectural decisions
+   - Competitive insights or market context
+   - Verifiable facts (metrics, dates, contractual terms)
+3. **Filter out:**
+   - Repetitive statements already captured
+   - Formatting artifacts, tables of contents, footers
+   - Vague or unsupported assertions ("users probably want X")
+   - Obvious background that adds no new information
+4. **Target extraction density:** ~3-5 claims per page for text-heavy documents, ~1-2 per slide for presentations
+
+This is **not** an excuse to skip files. It's guidance on how to extract **strategic signal** from processed content.
+
+---
+
 ### [BL-24] BUG: /extract Fallbacks Not Used (CRITICAL)
 
 **Status:** Proposed
@@ -603,6 +651,189 @@ Before trusting SOURCE_MAP.md:
 
 **User stories:**
 > As a researcher whose extraction was interrupted, I expect the next run to detect and correct inconsistencies between SOURCE_MAP.md and EXTRACTIONS.md automatically.
+
+---
+
+### [BL-28] /analyze Incremental Processing — Track Processed Claims (CRITICAL)
+
+**Status:** Proposed
+**Priority:** P0 — Critical (architectural gap)
+**Origin:** TIMining QA testing (2026-02-16)
+**Related:** BL-17, BL-18
+**Depends on:** BL-17 (SOURCE_MAP.md)
+
+**Problem:**
+
+/extract is INCREMENTAL (BL-17) but /analyze processes ALL claims every time, breaking the pipeline efficiency and risking duplicates.
+
+**Current behavior:**
+- /extract (incremental): 60 existing files + 3 new → processes only 3 new files (30 claims) ✅
+- /analyze (full): reads ALL 756 claims (726 old + 30 new)
+- Re-processes 726 claims that already became insights
+- Deduplication check prevents duplicates BUT wastes processing time
+- At scale (100+ files), this becomes prohibitively slow
+
+**Consequence:**
+The benefit of incremental /extract is lost. Adding 3 files to a 60-file project still requires full /analyze run.
+
+**Desired behavior:**
+- /analyze tracks which claims already processed
+- On incremental run, only processes NEW claims (30)
+- Updates convergence on existing insights if new claims match
+- Example: 60 files + 3 new → /extract processes 3, /analyze processes 30 new claims ✅
+
+---
+
+**Implementation Options:**
+
+**Option A: Claim-level tracking in EXTRACTIONS.md**
+
+Add processing status to each claim:
+
+```markdown
+## [file.md] (extracted 2026-02-15, last analyzed 2026-02-15)
+
+1. First claim text here
+   Status: PROCESSED → [IG-42]
+
+2. Second claim text here
+   Status: PROCESSED → [IG-43]
+
+3. New claim added later
+   Status: PENDING
+```
+
+**Pros:**
+- Explicit tracking per claim
+- Can see which claims became which insights
+
+**Cons:**
+- Pollutes EXTRACTIONS.md with status metadata
+- Makes file harder to read
+- More complex parsing
+
+---
+
+**Option B: Separate EXTRACTIONS_LOG.md**
+
+Track claim hash → insight ID mappings in separate log:
+
+```markdown
+# Extractions Processing Log
+
+claim_hash_abc123 → [IG-42] (processed 2026-02-15T10:30)
+claim_hash_def456 → [IG-43] (processed 2026-02-15T10:30)
+claim_hash_789xyz → PENDING (extracted 2026-02-16T14:00)
+```
+
+**Pros:**
+- Keeps EXTRACTIONS.md clean
+- Easy to query "what's unprocessed"
+- Can track processing history
+
+**Cons:**
+- Additional file to maintain
+- Hash-based matching adds complexity
+- Log can get large over time
+
+---
+
+**Option C: Timestamp-based (simplest)**
+
+/analyze remembers last run timestamp from MEMORY.md, processes only files extracted after that:
+
+```markdown
+### Phase 1: Load Extractions (Incremental Mode)
+
+1. Read 02_Work/MEMORY.md to find last /analyze timestamp
+2. Read EXTRACTIONS.md and identify sections with "extracted YYYY-MM-DDTHH:MM" after that timestamp
+3. Process ONLY those sections
+4. For claims matching existing insights: increment convergence, add new source ref
+5. For new claims: create new PENDING insights
+
+**Example:**
+- Last /analyze run: 2026-02-15T10:00
+- EXTRACTIONS.md has 3 sections extracted 2026-02-16T14:00 (new files)
+- Process only those 3 sections (30 claims)
+- Skip 26 sections extracted before 2026-02-15T10:00
+```
+
+**Pros:**
+- Simplest implementation
+- No new files or metadata pollution
+- Leverages existing MEMORY.md timestamps
+- Natural fit with SOURCE_MAP.md architecture
+
+**Cons:**
+- If MEMORY.md is manually edited/cleared, loses tracking
+- Can't selectively re-process specific old files without --full flag
+
+---
+
+**Recommended: Option C** (timestamp-based)
+
+MEMORY.md already logs every skill execution with timestamps. /analyze can check:
+1. Find last `/analyze` entry in MEMORY.md
+2. Extract timestamp (e.g., `2026-02-15T10:00`)
+3. Process only EXTRACTIONS sections with `extracted` timestamp AFTER that
+4. Update MEMORY with new timestamp
+
+**Fallback:** If no previous /analyze found in MEMORY, run in FULL mode (process everything).
+
+**Flag:** Add `--full` flag to force full re-analysis when needed (e.g., after changing analysis logic).
+
+---
+
+**User Stories:**
+
+**US-01: Incremental Processing Performance**
+> As a researcher adding 3 new sources to a 60-file project, I expect /analyze
+> to process only the new 30 claims (extracted from those 3 files), not re-process
+> all 756 claims. Processing time should scale with new content, not total project size.
+
+**US-02: Pipeline Consistency**
+> As a developer, when /extract is incremental (BL-17), I expect /analyze to also
+> be incremental so the pipeline remains efficient at scale. The workflow should be:
+> add sources → /extract (fast, incremental) → /analyze (fast, incremental) → /synthesis.
+
+**US-03: Convergence Updates**
+> As a researcher, when a new claim matches an existing insight, I expect /analyze
+> to increment the convergence count and add the new source reference, not create
+> a duplicate insight.
+
+**US-04: Full Re-analysis Option**
+> As a developer debugging analysis logic, I expect to force full re-analysis with
+> `/analyze --full`, ignoring incremental timestamps and re-processing everything.
+
+---
+
+**Implementation Notes:**
+
+1. **Timestamp format:** MEMORY.md uses ISO format `YYYY-MM-DDTHH:MM` consistently
+2. **Incremental detection:** Compare EXTRACTIONS section timestamps against last /analyze timestamp
+3. **Deduplication:** Still run deduplication check (existing logic) to handle edge cases
+4. **Convergence updates:** When new claim matches existing insight, update convergence ratio (e.g., `2/18 sources` → `3/18 sources`)
+5. **MEMORY logging:** Log incremental stats: "Processed 30 new claims from 3 files. Skipped 726 claims from 57 unchanged files."
+
+---
+
+**Testing Criteria:**
+
+- ✅ 60-file project + 3 new files → /analyze processes only 30 new claims
+- ✅ New claim matching existing insight → convergence increments, no duplicate created
+- ✅ `/analyze --full` forces full re-processing
+- ✅ First run (no MEMORY) → processes all claims (full mode)
+- ✅ Performance: incremental run 10x faster than full run on large projects
+
+---
+
+**Impact:**
+
+At scale (100+ files, 1000+ claims), this is the difference between:
+- **Without BL-28:** Adding 1 file requires re-processing 1000 claims (~5-10 minutes)
+- **With BL-28:** Adding 1 file processes only 10 new claims (~30 seconds)
+
+This is critical for BL-22 (RAG layer) viability — incremental analysis is prerequisite for scaling beyond 100 sources.
 
 ---
 
