@@ -600,18 +600,39 @@ Output:
      [Full HTML template + CSS + JS printed to chat]
 ```
 
-**Root causes:**
+**Root causes (identified via SKILL.md analysis):**
 
-1. **Verbose output (13.3k tokens):**
+1. **Hidden synthesis overhead (Phase 2, line 146):** 🚨 MAIN CULPRIT
+   ```markdown
+   "For each PENDING conflict, provide specific flag_label (who to involve and topic)
+   and research_label (what to research) derived from the conflict data."
+   ```
+   - Skill instructions ask agent to INFER conflict resolution context for each conflict
+   - Requires reading conflict, understanding context, deriving who should be involved
+   - This is SYNTHESIS work, not data formatting
+   - Evidence: `thought for 258s` (4min 18s) in TIMining test
+   - With 6 conflicts: ~40-50s thinking per conflict = 4+ minutes overhead
+
+2. **Evidence gap analysis (Phase 1, line 47):**
+   ```markdown
+   "Claim-level gaps — insights with weak or single-source backing"
+   ```
+   - "Weak" backing requires subjective evaluation of each insight
+   - Should be objective: count convergence field, no thinking needed
+   - Estimated overhead: ~1 minute for 21 insights
+
+3. **Verbose output (Phase 3, Write tool):**
    - Write tool expands full 1571-line HTML file to terminal
-   - User doesn't need to see HTML source code
+   - 13.3k tokens output
    - Forces context compaction at 5m 30s
 
-2. **Slow execution (6m 50s total):**
-   - Unknown cause — requires profiling
-   - Possible: Template+JSON construction overhead
-   - Possible: Multiple file reads/writes
-   - Possible: Unnecessary processing steps
+**Validation (TIMining 61 sources benchmark):**
+```
+Tinkering… (6m 35s · thought for 258s)
+```
+- 61 sources took same time as 3 sources (6m 50s vs 6m 35s)
+- Confirms overhead is NOT scaling by project size
+- Bottleneck is thinking time (258s = 4min 18s), not I/O
 
 **Impact:**
 - 🚨 **BLOCKER:** /status unusable on small projects (7min for 3 sources)
@@ -633,60 +654,61 @@ Open in browser: file:///path/to/03_Outputs/STATUS.html
 
 **Proposed fixes:**
 
-**Fix 1: Compact output (immediate)**
+**Fix 1: Eliminate conflict label inference (saves ~4min)** 🎯 HIGH IMPACT
 
-Add to /status skill instructions:
-
+Current (line 146):
 ```markdown
-### Phase 3: Write STATUS.html
-
-IMPORTANT: After Write tool completes, DO NOT show file contents.
-
-Output format:
-✓ Dashboard generated: 03_Outputs/STATUS.html
-  Summary: {insights_total} insights ({insights_verified} VERIFIED, {insights_pending} PENDING),
-           {conflicts_total} conflicts ({conflicts_pending} PENDING),
-           {gaps_total} evidence gaps
-
-Open: file://{absolute_path_to_STATUS_html}
+provide specific flag_label and research_label derived from the conflict data
 ```
 
-**Fix 2: Performance investigation (urgent)**
+Fixed:
+```markdown
+Use generic labels (no inference, no thinking):
+- flag_label: "Flag for stakeholder discussion"
+- research_label: "Needs more research"
 
-Profile /status execution to identify bottleneck:
-- [ ] Time Phase 1 (load Work layer files)
-- [ ] Time Phase 2 (construct JSON)
-- [ ] Time Phase 3 (write HTML)
-- [ ] Identify slow operations (multiple file reads? JSON parsing? template injection?)
-- [ ] Target: <10s for 3-source projects (not 7min)
+OR read labels directly from CONFLICTS.md if already present.
+NO derivation, NO synthesis, NO thinking required.
+```
+
+**Fix 2: Simplify evidence gap detection (saves ~1min)**
+
+Current (line 47):
+```markdown
+insights with weak or single-source backing
+```
+
+Fixed:
+```markdown
+Read convergence field from each insight.
+If convergence < 2: add to gaps list.
+NO subjective "weak" evaluation.
+```
+
+**Fix 3: Compact output (prevents compaction)**
+
+Add after Phase 3 Write:
+```markdown
+IMPORTANT: DO NOT show file contents after Write.
+
+Output only:
+✓ Dashboard: 03_Outputs/STATUS.html
+  Summary: {insights_total} insights, {conflicts_total} conflicts, {gaps_total} gaps
+  Open: file://{absolute_path}
+```
 
 **Acceptance criteria:**
-- [ ] /status output ≤100 lines (not 1571 lines)
-- [ ] No HTML source shown in terminal
-- [ ] Execution time: <10s for small projects (<10 sources)
+- [ ] Execution time: <10s for small projects (<10 sources) — down from 7min
 - [ ] Execution time: <30s for medium projects (10-50 sources)
 - [ ] Execution time: <60s for large projects (50+ sources)
-- [ ] Small projects (3-10 sources) complete without compaction
+- [ ] /status output ≤100 lines (not 1571 lines)
+- [ ] No HTML source shown in terminal
+- [ ] No "thought for X seconds" delays (no inference/synthesis)
+- [ ] Small projects complete without triggering compaction
 
-**Related:** BL-30 (auto-generate STATUS.html at end of /analyze) makes this more critical since dashboard generation becomes more frequent.
+**Expected improvement:** 6m 50s → <10s (40x faster by eliminating thinking overhead)
 
-**Impact:**
-- 51/61 files processed → 2 context compactions (22min elapsed)
-- ~30min projected total duration (vs <2min target)
-- User feedback: "es un gloton de tokens" 😂
-
-**Proposed compact output:**
-```
-Pass 2: 7/16 ✓ (27 claims)
-Pass 2: 8/16 ✓ (24 claims)
-Pass 2: 9/16 ✓ (19 claims)
-```
-
-**Benefits of compact version:**
-- 90% reduction in output tokens
-- Fewer compactions (preserve context longer)
-- Faster execution (less generation overhead)
-- User sees progress without noise
+**Related:** BL-30 (auto-generate STATUS.html at end of /analyze) — BLOCKED until this fix applied
 
 ---
 
