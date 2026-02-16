@@ -100,6 +100,116 @@ User feedback during testing: *"analyze deberia tener un output, no entiendo que
 
 ---
 
+### [BL-31] Extract Express Mode — Skip Heavy Files for Fast Iteration
+
+**Status:** Proposed
+**Priority:** P1 — High (scaling strategy)
+**Origin:** QA v3 testing (2026-02-16), post-Option E discussion
+**Related:** BL-29 (batching), BL-22 (RAG scaling)
+
+**Problem:**
+
+Heavy files (PDF, DOCX, PPTX, >5MB) cause disproportionate overhead:
+- 20% of files consume 80% of extraction time
+- Context pressure from large file reads
+- Blocks fast iteration on light files (md, images)
+
+**User need:**
+
+*"For most projects, I want insights NOW from md/images, and PDFs later if needed."*
+
+Fast feedback loop is critical for UX. Waiting 10-30min for full extraction breaks flow.
+
+**Proposed solution:**
+
+**Extract Express Mode** — Skip heavy files, mark as pending, process later.
+
+**Option A: Express by default (fast-first)** ⭐ RECOMMENDED
+
+```bash
+/extract              # Express: process only light files, mark heavy as pending
+/extract --full       # Full: process all files including heavy
+/extract --heavy      # Process only pending heavy files
+```
+
+**Option B: Full by default (complete-first)**
+
+```bash
+/extract              # Full: process all files (current behavior)
+/extract --express    # Express: skip heavy files, mark pending
+/extract --heavy      # Process only pending heavy files
+```
+
+**Implementation:**
+
+1. **File classification (already exists in Option E):**
+   - Light: .md, .txt, .png, .jpg < 1MB
+   - Heavy: .pdf, .docx, .pptx, any file ≥ 5MB
+
+2. **Express mode behavior:**
+   - Process all Light files (batch 10, write after batch)
+   - Skip all Heavy files
+   - Mark Heavy files in SOURCE_MAP.md with status: `pending-heavy`
+   - Log: "⚠️ 17 heavy files marked pending-heavy. Run `/extract --heavy` to process."
+
+3. **Full mode behavior (default or --full flag):**
+   - Process all files (Light + Heavy)
+   - Current Option E logic
+
+4. **Heavy-only mode (--heavy flag):**
+   - Read SOURCE_MAP.md
+   - Filter files with status=`pending-heavy`
+   - Process only those files (batch 1, write after each)
+   - Update status to `processed` in SOURCE_MAP.md
+
+**User story:**
+
+> As a PD-Spec user with 100 source files (80 md/images + 20 PDFs), I want to extract insights from light files in 2-3min and defer heavy PDFs until later, so I can iterate quickly without waiting 30min for full extraction.
+
+**Acceptance criteria:**
+
+- ✅ `/extract` (express mode): processes only light files, marks heavy as pending
+- ✅ `/extract --full`: processes all files (backward compatible)
+- ✅ `/extract --heavy`: processes only pending-heavy files
+- ✅ SOURCE_MAP.md: status=`pending-heavy` for skipped files
+- ✅ Dashboard (STATUS.html): shows "17 heavy files pending" warning
+- ✅ Log clearly indicates mode: "Express mode: 44 light files processed, 17 heavy pending"
+- ✅ MEMORY.md logs mode used: "/extract [express|full|--heavy]"
+
+**Benefits:**
+
+- ✅ Fast iteration for majority of projects (80% are light files)
+- ✅ User controls when to invest time in heavy files
+- ✅ Pipeline useful even without PDFs ("insights from md/images first")
+- ✅ Reduces context pressure (fewer large reads)
+- ✅ Backward compatible (--full flag preserves current behavior)
+
+**Trade-offs:**
+
+- ⚠️ Critical info in PDFs may be missed initially
+- ⚠️ Complexity: 3 modes (express, full, heavy-only)
+- ⚠️ User may forget to process pending files
+- ⚠️ Dashboard must clearly warn about pending files
+
+**Rationale for Option A (express by default):**
+
+- Most projects are 80% light files (md, txt, images)
+- Heavy files are minority but cause 80% of extraction time
+- Fast feedback loop is critical for UX
+- Power users who need PDFs can explicitly run `/extract --full`
+- Aligns with "make it work, make it right, make it fast" — express mode is "make it fast"
+
+**Connection to scaling strategy:**
+
+Express mode is part of larger scaling strategy:
+- **BL-29 (batching):** Handle 40-100 files
+- **BL-31 (express mode):** Handle 100-200 files by deferring heavy files
+- **BL-22 (RAG layer):** Handle 200+ files with embeddings + retrieval
+
+Express mode bridges the gap between batching and full RAG implementation.
+
+---
+
 ### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
 
 **Status:** Proposed
