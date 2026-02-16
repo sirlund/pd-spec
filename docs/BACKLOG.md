@@ -210,12 +210,230 @@ Express mode bridges the gap between batching and full RAG implementation.
 
 ---
 
-### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
+### [BL-32] Auto Express Mode — Smart Project Size Detection
 
 **Status:** Proposed
+**Priority:** P1 — High (UX improvement)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-01
+**Related:** BL-31 (Express Mode manual), BL-18 (Synthesis layer), BL-34 (Compact Output)
+
+**Problem:**
+
+Pipeline feels slow even on small projects (11 files, 220 claims → "muy lento incluso en este contexto de mini proyecto"). Synthesis layer (BL-18) adds value for large projects (>500 claims) but creates overhead for small projects.
+
+**Evidence from QA v3:**
+- Triviapp project: 11 files, 220 claims → synthesis creates 47 insights (ratio 21%)
+- User perception: "lento" — disproportionate processing time for project complexity
+- Option E test: 54 files, 1,238 claims → 33min duration (synthesis not tested yet)
+
+**Proposal: Auto-detect project size and adjust processing depth**
+
+**Detection logic:**
+```
+IF project < 30 files OR < 500 claims:
+  → Express mode (default)
+  → Atomic insights only (no clustering, no synthesis)
+  → Log: "⚡ Express mode: 11 files, 220 claims. Use /analyze --full for deeper synthesis."
+
+IF project > 50 files OR > 1000 claims:
+  → Full mode (synthesis activated)
+  → Log: "🔍 Large project: 65 files, 1,200 claims. Running full synthesis..."
+
+IF 30-50 files OR 500-1000 claims:
+  → Express mode + suggest full
+  → Log: "⚡ Express mode: 40 files, 800 claims. Consider /analyze --full for complex projects."
+```
+
+**Express mode behavior:**
+- ✅ Atomic insights (one per claim cluster)
+- ✅ Conflict detection (still works)
+- ✅ Fast dashboard generation
+- ❌ No synthesis layer (clustering, narratives)
+- ❌ No convergence weighting
+- ❌ No strategic consolidation
+
+**Full mode (`/analyze --full`):**
+- ✅ Synthesis layer active
+- ✅ Strategic insights (7-25 consolidated from atomics)
+- ✅ Convergence weighting, narratives, evidence trails
+- ✅ Ambiguity detection (6 types)
+
+**User story:**
+> As a researcher with a small project (11 files, 200 claims), I expect fast iteration with atomic insights in <2min, not waiting for synthesis overhead that adds little value at this scale.
+
+**Acceptance criteria:**
+- ✅ Auto-detect project size in /analyze Phase 1
+- ✅ Express mode: skip Phase 4 (Synthesis), output atomic insights only
+- ✅ Clear log explaining mode and how to activate full
+- ✅ --full flag overrides auto-detection
+- ✅ Small projects complete /analyze in <2min (vs 5-10min with synthesis)
+
+**Benefits:**
+- Fast iteration for majority of use cases (80% of projects are <500 claims)
+- User controls depth via --full when needed
+- Clear logic: project size determines mode
+- Backward compatible (--full preserves current behavior)
+
+---
+
+### [BL-33] Phase-Based Progress Dashboard — Visual Pipeline Tracking
+
+**Status:** Proposed
+**Priority:** P1 — High (UX improvement)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-02
+**Related:** BL-30 (auto-generate STATUS.html in /analyze), BL-32 (Express Mode)
+
+**Problem:**
+
+No visual progress tracking across pipeline phases. Current flow requires multiple roundtrips:
+1. /analyze presents synthesis report → user approves → writes INSIGHTS_GRAPH.md
+2. /status (manual invocation) → generates dashboard
+3. /synthesis presents conflict resolutions → user decides → writes SYSTEM_MAP.md
+4. /ship presents structure → user approves → writes deliverable
+
+User can't see "where we are" at all times. Dashboard (/status) is separate skill, must invoke manually.
+
+**Evidence from QA v3:**
+- Triviapp session: multiple propose-approve cycles, no incremental progress view
+- User feedback: "analyze deberia tener un output" — expects visible deliverable per phase
+- BL-30 addresses part of this (auto-generate STATUS.html in /analyze) but doesn't show phase progress
+
+**Proposal: Phase-Based Dashboard in STATUS.html**
+
+**Auto-generated dashboard shows progress per phase:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📊 TIMining Research Dashboard                          │
+├─────────────────────────────────────────────────────────┤
+│ Phase 1: Sources Loaded                                 │
+│ ✅ 54 files, 1,238 claims extracted                     │
+│ [Ver EXTRACTIONS.md] [Add more sources]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 2: Atomic Insights                                │
+│ ✅ 35 insights created (12 PENDING approval)            │
+│ [Approve/Reject inline] [View insights]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 3: Synthesis                                      │
+│ ⏭️ SKIPPED (Express mode active)                        │
+│ [Run /analyze --full for synthesis layer]              │
+├─────────────────────────────────────────────────────────┤
+│ Phase 4: Conflicts                                      │
+│ ⚠️ 3 conflicts detected (3 PENDING resolution)          │
+│ [Resolve conflicts inline] [View conflicts]             │
+├─────────────────────────────────────────────────────────┤
+│ Phase 5: System Map                                     │
+│ ⏳ PENDING (run /synthesis after resolving conflicts)   │
+│ [Start synthesis] [Skip to /ship]                       │
+├─────────────────────────────────────────────────────────┤
+│ Phase 6: Deliverables                                   │
+│ 📄 PRD.html available                                   │
+│ [View PRD] [Generate more outputs]                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Key features:**
+- ✅ Visual progress tracker (✅ completed, ⏳ pending, ⏭️ skipped)
+- ✅ Inline actions (approve/reject, resolve conflicts)
+- ✅ User sees "where we are" at all times
+- ✅ Dashboard auto-updates after each skill
+- ✅ User interacts from dashboard, not chat (reduces roundtrips)
+
+**Implementation:**
+- /analyze generates STATUS.html with Phase 1-4 populated
+- /synthesis updates STATUS.html with Phase 5 populated
+- /ship updates STATUS.html with Phase 6 populated
+- Dashboard is living document, not one-time snapshot
+
+**User story:**
+> As a researcher running the PD-Spec pipeline, I expect to see visual progress across phases in a single dashboard, so I can understand pipeline state and make informed decisions without multiple /status invocations.
+
+**Acceptance criteria:**
+- ✅ STATUS.html shows 6 phases with clear status indicators
+- ✅ Auto-updates after /analyze, /synthesis, /ship
+- ✅ Inline actions for approvals (no chat roundtrips)
+- ✅ Express mode shows "SKIPPED" for Phase 3 (Synthesis)
+- ✅ User can navigate between phases visually
+
+---
+
+### [BL-34] Compact Skill Output — Preserve Context Longer
+
+**Status:** Proposed
+**Priority:** P0 — CRITICAL (performance blocker)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-03
+**Related:** BL-29 (Option E), QA3-PERF-01
+
+**Problem:**
+
+Verbose skill output consumes context rapidly, forcing compactions and slowing execution.
+
+**Evidence from QA v3:**
+
+**Option E test (TIMining, 54 files):**
+- 51/54 files processed → 2 context compactions (22min elapsed)
+- 54/54 files complete → 33m 54s total (vs <2min target, 16x slower)
+- User feedback: "es un gloton de tokens" 😂
+
+**Current verbose output:**
+```
+✓ Pass 2 — File 7/16 complete: TIMining_s strategic position...pdf, 27 claims extracted
+Now updating SOURCE_MAP.md and proceeding to heavy file 8/16.
+Update(~/Dev/repos/pd-spec-test/02_Work/SOURCE_MAP.md)
+  Added 1 line
+  [shows exact line added with full path and metadata]
+Now processing heavy file 8/16: Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx
+Bash(cd "/Users/nlundin/Dev/repos/pd-spec-test/01_Sources/Antecedentes/Ppt & videos evento Google" && md5 -q "[Evento Google] FINAL SCRIPT - V4.docx" && textutil -convert txt ...)
+  Done
+Read 1 file (ctrl+o to expand)
+Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
+  Added 32 lines
+  [shows all 32 lines of extracted claims verbatim]
+```
+
+**Proposed compact output:**
+```
+Pass 2: 7/16 ✓ (27 claims)
+Pass 2: 8/16 ✓ (24 claims)
+Pass 2: 9/16 ✓ (19 claims)
+```
+
+**Principles for compact output:**
+- Progress indicators: concise (emoji + summary)
+- Details: defer to output files (INSIGHTS_GRAPH.md, CONFLICTS.md)
+- Proposals: structured, minimal (not essay-style)
+- Logging: essential only (skip intermediate steps)
+
+**Benefits:**
+- ✅ 90% reduction in output tokens
+- ✅ Longer context preservation (fewer compactions)
+- ✅ Faster execution (less output generation overhead)
+- ✅ User reads dashboard, not chat logs
+
+**User story:**
+> As a researcher using PD-Spec, I expect skills to execute efficiently without flooding chat with verbose logs, so I can complete projects without context compactions and work faster.
+
+**Acceptance criteria:**
+- ✅ Skill output ≤50% of current verbosity (target: 90% reduction)
+- ✅ Context compaction frequency reduced by 30%+
+- ✅ User can complete small project (11 files) without compaction
+- ✅ Option E test: 54 files in <15min (vs 33min baseline)
+- ✅ Large project (100+ files) completes with max 1 compaction
+
+**Implementation:**
+- Update all skills (extract, analyze, synthesis, ship) to use compact output format
+- Move detailed logs to files (MEMORY.md gets full log, user sees concise progress)
+- Dashboard shows progress, not chat
+
+---
+
+### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
+
+**Status:** ✅ IMPLEMENTED (v4.3.1, Option E)
 **Priority:** P0 — CRITICAL (blocking production use)
 **Origin:** QA v3 (2026-02-16, Opus 4.6 test on TIMining 61 files)
 **Related:** BL-26 (auto-batching), QA3-BUG-02, QA3-PERF-01
+**Implemented:** 2026-02-16 (commit 8639af7, Option E)
 
 **Problem:**
 
@@ -426,6 +644,40 @@ If SOURCE_MAP.md exists AND contains 'processed' entries:
 
 - None (self-contained fix in extract skill)
 - Complements BL-28 (incremental /analyze) — after extraction works, analysis is already incremental
+
+---
+
+**Implementation Results (Option E, 2026-02-16):**
+
+✅ **Test:** TIMining project, 61 source files (54 processable + 7 videos unsupported)
+✅ **Result:** 54/54 files processed (100%)
+✅ **Duration:** 33m 54s
+✅ **Claims extracted:** 1,238 claims
+✅ **Context compactions:** 2-3 (all recovered successfully)
+✅ **Validation:** 54 EXTRACTIONS.md sections match 54 SOURCE_MAP.md entries
+
+**What worked:**
+- Two-pass strategy: 38 light files (Pass 1) + 16 heavy files (Pass 2)
+- Per-file writes for heavy files (batch size 1)
+- Direct processing (NO Task agents)
+- Recovery from compactions via SOURCE_MAP.md
+- All file types working (PDF, DOCX, PPTX, HEIC, images)
+
+**What needs optimization:**
+- Duration 33min (vs <5min target in AC7) — caused by verbose output
+- Related to QA3-UX-03 (Compact Output) — needs 90% reduction in verbosity
+- See BL-34 for optimization plan
+
+**Commits:**
+- `8639af7` — Option E implementation (eliminate Task agents, per-file writes)
+- `4314189` — Pre-create 02_Work/_temp/ directory
+- `332c4e8` — QA v3 findings documentation
+
+**Lessons learned:**
+- Task agents NOT suitable for extraction (context accumulation, permission issues)
+- Per-file writes critical for heavy files (prevents context overflow)
+- Batch size 1 for heavy files is safest (predictable, recoverable)
+- Verbose output is bottleneck (see BL-34 for fix)
 
 ---
 
