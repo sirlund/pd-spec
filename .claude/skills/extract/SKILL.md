@@ -95,6 +95,15 @@ EVERY file discovered in Phase 1 MUST be:
 
 10. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
 
+**Large Project Strategy:**
+
+If total files to process > 40 OR multiple PDFs >10MB detected:
+1. Process files in batches of 20-30
+2. Write EXTRACTIONS.md + SOURCE_MAP.md after each batch (use Phase 3 and Phase 4b procedures)
+3. Report progress: "Batch 1/3 complete (20 files)"
+4. Prevents context accumulation and enables resume on interruption
+5. After each batch write, continue with next batch until all files processed
+
 ### Phase 2: Read & Extract
 
 **Extraction Methodology:**
@@ -153,7 +162,34 @@ When processing a document, apply these criteria for claim extraction:
    3. **Extract claims for all images in the batch** in a single pass — write one `## [folder/image.ext]` section per image, but process them together so the agent sees the full visual context (e.g., a sequence of whiteboard photos that form a connected flow).
    4. **Shared context benefit** — workshop photos often form a series (whiteboard evolution, post-it clusters from the same session). Batching lets the agent understand cross-image connections (e.g., "photo 3 continues the flow from photo 1") that are invisible when processing one image at a time.
    5. **Still produce per-file sections** — each image gets its own `## [folder/filename.ext]` header in EXTRACTIONS.md, even if processed in a batch.
-   - **PDFs** — Read using the Read tool with `pages` parameter (mandatory for >10 pages, max 20 pages per request). For large PDFs, read in chunks: pages `1-20`, then `21-40`, etc. **If a PDF returns empty or garbled content** (likely an image-only scan without text layer), report it as: "PDF appears to be image-only (no text layer). Export with OCR or provide a `_CONTEXT.md` description." Never silently skip a PDF — always attempt to read it, and always report the outcome.
+
+   **PDF Processing — MANDATORY APPROACH:**
+
+   1. **MUST attempt `Read(pdf)` WITHOUT pages parameter first**
+      - Extracts text from PDF (no poppler required)
+      - Works for PDFs with text layer
+      - This is the default approach for ALL PDFs
+
+   2. **For large PDFs or projects with multiple PDFs >10MB:**
+      - Process ONE PDF at a time
+      - Write to EXTRACTIONS.md after EACH PDF
+      - Update SOURCE_MAP.md after EACH PDF
+      - Intermediate writes clear working memory and prevent request accumulation
+      - NEVER read multiple large PDFs in same context without intermediate writes
+
+   3. **For very large text content (>2000 lines):**
+      - Use `Read(pdf, offset=0, limit=2000)` to read in chunks
+      - Iterate with offset=2000, 4000, etc.
+
+   4. **ONLY use pages parameter if PDF is image-only (no text layer):**
+      - Requires poppler installation
+      - Warn user: "PDF appears to be scanned images. Install poppler for OCR, or provide manual summary in _CONTEXT.md"
+
+   5. **ONLY report as UNPROCESSABLE if:**
+      - `Read(pdf)` returns error, OR
+      - Single PDF exceeds 20MB request limit even in clean context
+      - Log which attempts were made and their error messages
+
    - **CSV/TSV** — Read directly as text. Extract data points, column headers, and notable values as claims.
 
    *Office files (DOCX, PPTX, XLSX) — convert-then-read:*
