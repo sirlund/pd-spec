@@ -13,10 +13,339 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 **Status:** Proposed
 **Priority:** High
 **Origin:** ARCH-03 (QA v2, 2026-02-15)
+**Updated:** 2026-02-16 (Gemini comparison analysis)
 
-**Problem:** 142 atomic observations make dashboard review impossible. Need synthesis layer: observations → ~25 insights with convergence.
+**Problem (Expanded):**
 
-**User stories:** See original entry in archive below.
+161 atomic observations are unmanageable. But synthesis is not just grouping — it's **resolving ambiguity with methodological rigor**.
+
+**Current behavior:**
+- /extract → 756 claims to EXTRACTIONS.md
+- /analyze → 161 insights to INSIGHTS_GRAPH.md (1:1 conversion, too granular)
+- User drowns in volume, can't see strategic patterns
+- Vague claims repeated without correction ("6-8 productos" when only 6 documented)
+- No uncertainty management (ambiguities not flagged, conflicts not detected)
+
+**Desired behavior:**
+- /extract → 756 claims to EXTRACTIONS.md
+- **/analyze → automatic synthesis** claims → observations → 15-25 real insights
+  - Detect multi-source convergence (≥2 sources = candidate)
+  - Thematic clustering (Geometry Gap, Efecto Suiza, etc.)
+  - Consolidate 161 → 15-25 strategic insights with **narrative**
+  - **Detect ambiguities** ("6-8 productos" → flag discrepancy, present options)
+  - **Suggest research gaps** when critical claims are single-source
+  - **Name concepts** memorably ("Auto de Homero Simpson", "Desplanificadómetro")
+- User reviews synthesis (18 insights + ambiguity report), NOT 161 items
+- /synthesis → resolves conflicts, approves insights
+
+---
+
+**Inspiration: Gemini vs PD-Spec Analysis**
+
+Analysis of Gemini outputs for TIMining project revealed what strategic synthesis should look like:
+
+| Aspect | Gemini (good) | PD-Spec (current) | Hybrid Goal (BL-18) |
+|---|---|---|---|
+| **Synthesis level** | ✅ Strategic (18 insights) | ❌ Granular (161 insights) | ✅ Strategic (15-25 insights) |
+| **Narrative** | ✅ Tells stories | ❌ Lists IDs | ✅ Stories WITH evidence |
+| **Naming** | ✅ Memorable concepts | ❌ Generic labels | ✅ Memorable WITH source citation |
+| **Traceability** | ❌ None | ✅ Every insight sourced | ✅ Maintain rigor |
+| **Conflict detection** | ❌ 0 detected | ✅ 6 detected (TIMining) | ✅ Active contradiction search |
+| **Aspirational marking** | ❌ Mixes everything | ✅ (current) vs (aspirational) | ✅ Explicit tags |
+| **Uncertainty handling** | ❌ Repeats vague claims | ❌ No handling | ✅ Present options + suggest research |
+| **Fact vs opinion** | ❌ Mixes without marking | ✅ Only facts in INSIGHTS_GRAPH | ✅ Mark (hallazgo) vs (recomendación) |
+
+**What to adopt from Gemini:**
+1. **Strategic narrative** — "Kiosco de Datos → Médico Operacional" (makes insights USABLE in team conversations)
+2. **Memorable naming** — "Efecto Suiza", "Auto de Homero Simpson" (concepts that stick)
+3. **Thematic synthesis** — group 161 observations into ~18 strategic clusters
+4. **Benchmark UX inter-industry** — investigate design patterns from other industries (optional `/ship benchmark-ux`)
+
+**What to avoid from Gemini:**
+1. ❌ Mixing fact with opinion without marking
+2. ❌ No traceability (impossible to verify sources)
+3. ❌ Not detecting contradictions (0 conflicts found)
+4. ❌ Not correcting vague claims ("6-8" → should report "6 documented")
+
+---
+
+**Types of Uncertainty the Agent Must Handle:**
+
+| Type | Example (TIMining) | Agent Should Do | Output |
+|---|---|---|---|
+| **Imprecision** | "6-8 productos" but only 6 named | Report verifiable + flag discrepancy | "6 productos documentados (Aware, Orchestra, Delta, SIC, Tangram, ARIS). Source claims '6-8' but doesn't name other 2." |
+| **Conflict** | Source A: "Aware sold alone", Source B: "Aware+Orchestra bundle" | Create conflict [CF-XX] with options | Present both versions with convergence + ask user decision |
+| **Single-source critical** | Strategic claim backed by 1 source only | Flag for validation | "Insight [IG-XX] is critical but single-source. Suggest: CFO interview to validate pricing." |
+| **Definition gap** | "CORE" mentioned 14x without defining scope | Generate question | "¿CORE es rebrand, nueva plataforma, o suite completa? Suggest: Workshop to clarify." |
+| **Unresolved contradiction** | 3 sources disagree, no consensus | Present options with authority levels | "A: X (2 sources, stakeholder voice), B: Y (1 source, CEO strategic). Decision needed." |
+| **Perspective conflict** | Users: "Aware es confuso" (5x) vs CTO: "No saben usarlo bien" (1x) | Detect conflict by Voice/Authority, NOT just convergence count | "**Perspective conflict:** Users report confusion (UX issue, 5/5 direct-quotes) vs CTO attributes to training gap (1/1 stakeholder opinion). Root cause: UX design or user capability? Suggest: UX audit + training assessment." |
+
+---
+
+**Convergence Weighting by Voice/Authority:**
+
+Not all sources carry equal evidentiary weight. Synthesis must weight convergence by **who says it** and **how they know it**:
+
+| Scenario | Voice | Authority | Weight | Reasoning |
+|---|---|---|---|---|
+| 5 operators say "Aware timing is confusing" | `user` | `direct-quote` | ⚡️⚡️⚡️ High | Direct user pain, multi-source convergence |
+| CTO says "Users don't read the manual" | `stakeholder` | `hypothesis` | ⚡️ Medium | Internal opinion, not observed fact |
+| Design Brief states "$6M captured Jan-May 2025" | `document` | `fact` | ⚡️⚡️⚡️ High | Verifiable metric with source attribution |
+| Workshop: "In 2040, mines will be fully remote" | `stakeholder` | `vision` | ⚡️ Low | Aspirational, not current state |
+| Field note: "Hunch: users might prefer mobile" | `researcher` | `hypothesis` | ⚡️ Low | Unvalidated assumption, needs testing |
+
+**Synthesis rule:** When consolidating insights, prioritize:
+1. **High convergence + user voice + direct-quote** (e.g., 5 users reporting same pain)
+2. **Facts from documents** (metrics, dates, technical specs)
+3. **Stakeholder observations** (what they've seen, not what they think should happen)
+4. **Single-source stakeholder opinions** (useful for understanding internal perspective, but flag for validation)
+5. **Visions and hypotheses** (mark as aspirational, not current state)
+
+**Perspective conflict detection:**
+
+When Voice/Authority metadata reveals conflicting interpretations of the same phenomenon:
+
+```markdown
+## [CF-XX] UX Complexity vs User Training Gap — Perspective Conflict
+
+**Insight A [IG-05]:** "Aware data timing confuses users — don't understand refresh rates"
+- Voice: `user` (operators, supervisors)
+- Authority: `direct-quote` (interview transcripts)
+- Convergence: 3/21 sources
+- Status: VERIFIED
+
+**Insight B [IG-YY]:** "Users don't invest time learning the tool properly"
+- Voice: `stakeholder` (CTO)
+- Authority: `hypothesis` (not observed, inferred)
+- Convergence: 1/21 sources
+- Status: PENDING
+
+**Type:** Perspective conflict (not factual contradiction)
+
+**Analysis:** Users report symptom (confusion), CTO proposes cause (training gap).
+Both may be partially true — UX complexity AND insufficient training can coexist.
+
+**Resolution options:**
+A. Prioritize UX simplification (believe user pain reports)
+B. Prioritize training improvements (believe CTO diagnosis)
+C. Address both (likely correct — simplify UX AND improve onboarding)
+
+**Recommended action:** UX audit to measure task completion rates + training assessment
+to measure comprehension after onboarding. Data will reveal root cause split.
+```
+
+---
+
+**New /analyze Architecture (with integrated synthesis):**
+
+```
+/analyze [--full|--incremental]
+├── Phase 1: Load extractions (actual)
+├── Phase 2: Diversity check (actual)
+├── Phase 3: Extract atomic observations (actual, generates 161)
+│
+├── 🆕 Phase 4: SYNTHESIS (new)
+│   ├── 4.1 Detect convergence (≥2 sources = candidate)
+│   ├── 4.2 Thematic clustering (Geometry Gap, Efecto Suiza, etc.)
+│   ├── 4.3 Consolidate observations → insights (161 → 15-25)
+│   ├── 4.4 Detect uncertainty (imprecision, conflicts, gaps)
+│   ├── 4.5 Name concepts (memorable + source-backed)
+│   ├── 4.6 Present synthesis + ambiguity report
+│   └── 4.7 Wait for user approval
+│
+├── Phase 5: Write to INSIGHTS_GRAPH.md (real insights only)
+├── Phase 6: Write ambiguities to CONFLICTS.md (with questions)
+└── Phase 7: Update MEMORY
+```
+
+---
+
+**Example Output: Synthesis Report**
+
+```markdown
+## Synthesis Report — TIMining CORE (2026-02-16)
+
+**Observations:** 161 atomic claims
+**Real Insights:** 18 strategic insights
+**Method:** Convergence (≥2 sources) + thematic clustering + narrative synthesis
+
+---
+
+### ✅ High Confidence Strategic Insights (12)
+
+#### **[IG-SYNTH-01] Geometry Gap — El Problema Central**
+**Consolidates:** IG-19, IG-20, IG-161
+**Convergence:** 3/21 sources
+**Category:** user-need (current)
+**Voice:** stakeholder (COO), workshop, PDF vision
+
+> **Narrative:** Miners see "trucks and shovels" on fleet systems but lack
+> geological/spatial context — don't know if extracting from correct polygon/block.
+> Deviations discovered late (weeks), costing millions. TIMining solves this by
+> fusing geometric plan with real operations.
+
+**Evidence trail:**
+- COO Roberto: "Brecha Geométrica — el minero ve camioncitos pero no contexto"
+- Workshop: "Plan minero se pierde en cada turno"
+- GEMINI PDF: "Closing loop between sensory world and planning world"
+
+**Named concept:** "Geometry Gap" (naming from sources, not invented)
+
+---
+
+#### **[IG-SYNTH-06] Auto de Homero Simpson — Customization Risk**
+**Consolidates:** IG-8, IG-36, IG-37, IG-38, IG-39, IG-108
+**Convergence:** 3/21 sources
+**Category:** user-need + constraint (current)
+**Voice:** stakeholder (Ana), workshop, operations
+
+> **Narrative:** Clients request many features then don't use them well. High
+> customization per mine (different extraction methods, regulations, incentives)
+> creates risk of "Homer's Car" — too many features nobody uses. Ana (Comms):
+> "No podemos estar prevalidos del tipo de deseos del cliente."
+
+**Evidence trail:**
+- Operations meeting: "Riesgo auto de Homero — clientes piden funcionalidades pero no las usan"
+- Ana interview: Tensión entre flexibilidad y decir "no" a customizaciones
+- Workshop retro: "DESARROLLOS ESPECÍFICOS [STOP]"
+
+**Named concept:** "Auto de Homero Simpson" (literal quote from source)
+
+---
+
+### ⚠️ Medium Confidence (4 insights)
+
+#### **[IG-SYNTH-17] Product Ecosystem — 6 productos documentados**
+**Consolidates:** IG-1, IG-2, IG-3, IG-4, IG-31
+**Convergence:** 2/21 sources
+**Category:** technical + business (current)
+
+> **Narrative:** TIMining has **6 documented products** across 2 domains:
+> Operations/Planning (Aware, Orchestra, Delta) + Geotechnical/Geology
+> (SIC, Tangram, ARIS). Aware+Orchestra sold together (Aware=real-time,
+> Orchestra=historical ROI). Delta = corporate entry point.
+
+**Ambiguity flagged:** Source claims "6-8 productos" but only names 6.
+Either 2 undocumented products exist or claim is imprecise.
+
+**Action suggested:** Interview Product Team to confirm full product list.
+
+---
+
+### 🔴 Ambiguities Detected (3)
+
+**[AMB-01] Product Count Discrepancy**
+- **Source claim:** "TIMining posee 6-8 productos"
+- **Verification:** Only 6 named (Aware, Orchestra, Delta, SIC, Tangram, ARIS)
+- **Options:**
+  - A: Report as "6 products" (verified, conservative)
+  - B: Report as "6-8 products" with note "2 undocumented"
+  - C: Flag as research gap requiring validation
+- **Recommended action:** Interview COO/Product — "¿Son 6 u 8 productos? ¿Cuáles son los otros 2?"
+
+**[AMB-02] CORE Platform Definition**
+- **Problem:** 14 sources mention "TIMining CORE" without defining scope
+- **Ambiguity:** Is CORE a rebrand of Aware, new unified platform, or full suite?
+- **Impact:** Affects roadmap interpretation and product strategy
+- **Recommended action:** Workshop question: "¿Qué es CORE exactamente? ¿Reemplaza Aware o integra portafolio?"
+
+**[AMB-03] Pricing Model Conflict**
+- **Source A:** "Aware se vendía sin Orchestra antes"
+- **Source B:** "Aware+Orchestra siempre juntos porque Aware solo no justifica ROI"
+- **Convergence:** 1 source each (tie)
+- **Recommended action:** Interview Sales/CFO to clarify go-to-market strategy
+
+---
+
+### 📋 Research Gaps (5 critical validations needed)
+
+1. **CFO Validation Missing** — Pricing strategy ($450K target) in vision docs but no CFO interview.
+   Suggest: CFO interview to validate pricing assumptions.
+
+2. **Competitor Benchmark Absent** — "Efecto Suiza" claims uniqueness but no competitive analysis.
+   Suggest: Competitive UX benchmark (Hexagon, Datamine, Modular Mining).
+
+3. **User Validation for 20 Use Cases** — Workshop scenarios are aspirational, no field testing.
+   Suggest: User validation workshop to prioritize by criticality.
+
+4. **Technical Claims Need Engineering Review** — TRL 9, "inferencia topográfica cada 15min" lack validation.
+   Suggest: CTO/Engineering technical review.
+
+5. **Market Sizing Breakdown** — "50+ mines, 8 countries" lacks regional/metal breakdown.
+   Suggest: Sales data analysis for market segmentation.
+
+---
+
+**User Decision Required:**
+
+□ Approve 18 synthesized insights?
+□ How to resolve 3 ambiguities? [Now / Defer to /synthesis / Schedule workshop]
+□ Add 5 research gaps to backlog? [All / Select / None]
+```
+
+---
+
+**User Stories:**
+
+**US-01: Detect Imprecision**
+> As a UX researcher, when /analyze finds "6-8 productos" but only documents 6,
+> I expect the agent to report "6 productos verificados" and flag the discrepancy,
+> not repeat the vague claim.
+
+**US-02: Present Options for Conflicts**
+> As a product owner, when two sources contradict (Aware sold alone vs bundle),
+> I expect the agent to present both options with convergence and authority levels,
+> asking for my decision.
+
+**US-03: Suggest Research for Single-Source Critical Claims**
+> As a strategic advisor, when a critical insight is single-source, I expect the
+> agent to suggest methodology for validation (interview CFO, benchmark, workshop)
+> instead of marking it VERIFIED automatically.
+
+**US-04: Synthesis Not Granularity**
+> As a researcher, after /analyze I expect to review 15-25 real insights with
+> narratives + ambiguity report, NOT 161 atomic observations.
+
+**US-05: Named Concepts for Communication**
+> As a team lead, I expect insights to have memorable names ("Geometry Gap",
+> "Efecto Suiza") sourced from actual stakeholder language, making them easy
+> to reference in meetings and decisions.
+
+**US-06: Distinguish Fact from Recommendation**
+> As a decision-maker, when reviewing synthesis I need to clearly distinguish
+> what's a finding from sources vs what's an agent recommendation, so I can
+> assess reliability.
+
+---
+
+**Implementation Notes:**
+
+1. **Convergence threshold:** ≥2 sources for candidate insights (single-source flagged for validation)
+2. **Naming strategy:** Extract memorable phrases from actual source quotes ("Auto de Homero Simpson"), not invent
+3. **Narrative template:** Problem statement + Evidence trail + Impact + Named concept
+4. **Ambiguity detection:** Scan for numeric ranges ("6-8"), undefined terms ("CORE"), contradictions between sources
+5. **Research gap criteria:** Single-source strategic claims, missing stakeholder perspectives (CFO, users), technical claims without validation
+6. **Target range:** 15-25 real insights (5-8 for small projects, 10-15 for medium, 15-25 for large like TIMining)
+
+---
+
+**Dependencies:**
+
+- Requires BL-17 (SOURCE_MAP.md) for source tracking
+- Synergy with BL-12 (Research Dashboard) for visualization of synthesis
+- Aligns with Agent Mandate #6 (Uncertainty Management)
+
+---
+
+**Testing Criteria:**
+
+- ✅ 161 TIMining observations → 18 strategic insights (demonstrated manually 2026-02-16)
+- ✅ Detects "6-8 productos" imprecision and corrects to "6 documented"
+- ✅ Identifies 3 ambiguities requiring user decision
+- ✅ Suggests 5 research gaps with specific methodologies
+- ✅ Named concepts traceable to source quotes
+- ✅ Synthesis readable by stakeholders (narrative format)
+- ✅ Maintains traceability (every synthesized insight lists source trail)
 
 ---
 
