@@ -579,9 +579,9 @@ Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
 
 ---
 
-### [QA3-UX-04] /status Verbose Output — Small Projects Trigger Premature Compaction
+### [QA3-UX-04] /status Execution Time — Small Projects Take 7 Minutes
 
-**Severity:** High (blocker for small projects)
+**Severity:** CRITICAL (blocker for all small projects)
 **Component:** /status skill
 **Context:** Minimal project (3 sources) testing
 
@@ -589,8 +589,9 @@ Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
 
 ```
 Project: 3 sources (minimal)
-/status execution: 5m 30s
-Context compaction triggered: ✽ Compacting conversation… (5m 30s · ↑ 13.3k tokens)
+/status execution: 6m 50s total
+Context compaction triggered at: 5m 30s (↑ 13.3k tokens)
+Final completion: 6m 50s
 
 Output:
 ⏺ Write(03_Outputs/STATUS.html)
@@ -599,19 +600,27 @@ Output:
      [Full HTML template + CSS + JS printed to chat]
 ```
 
-**Root cause:**
-- /status writes STATUS.html via Write tool
-- Write tool default: expand full file content in output
-- 1571 lines of HTML (template + inline CSS + inline JS) printed to terminal
-- User doesn't need to see HTML source code
-- 13.3k tokens output for a single file write
+**Root causes:**
+
+1. **Verbose output (13.3k tokens):**
+   - Write tool expands full 1571-line HTML file to terminal
+   - User doesn't need to see HTML source code
+   - Forces context compaction at 5m 30s
+
+2. **Slow execution (6m 50s total):**
+   - Unknown cause — requires profiling
+   - Possible: Template+JSON construction overhead
+   - Possible: Multiple file reads/writes
+   - Possible: Unnecessary processing steps
 
 **Impact:**
-- ❌ Small projects (3-10 sources) trigger compaction after /status
-- ❌ /status becomes "expensive" to run
+- 🚨 **BLOCKER:** /status unusable on small projects (7min for 3 sources)
+- ❌ Expected: <10 seconds for 3-source project
+- ❌ Observed: 6m 50s (40x slower than target)
 - ❌ User hesitates to regenerate dashboard
 - ❌ Negates benefit of interactive dashboard workflow
-- ❌ Forces session restart on minimal projects
+- ❌ Forces session restart (compaction at 5m 30s)
+- 🚨 **BL-30 impact:** If /status auto-generates at end of /analyze, adds 7min overhead to every analysis
 
 **Expected behavior:**
 
@@ -622,7 +631,9 @@ Output:
 Open in browser: file:///path/to/03_Outputs/STATUS.html
 ```
 
-**Proposed fix:**
+**Proposed fixes:**
+
+**Fix 1: Compact output (immediate)**
 
 Add to /status skill instructions:
 
@@ -640,11 +651,21 @@ Output format:
 Open: file://{absolute_path_to_STATUS_html}
 ```
 
+**Fix 2: Performance investigation (urgent)**
+
+Profile /status execution to identify bottleneck:
+- [ ] Time Phase 1 (load Work layer files)
+- [ ] Time Phase 2 (construct JSON)
+- [ ] Time Phase 3 (write HTML)
+- [ ] Identify slow operations (multiple file reads? JSON parsing? template injection?)
+- [ ] Target: <10s for 3-source projects (not 7min)
+
 **Acceptance criteria:**
 - [ ] /status output ≤100 lines (not 1571 lines)
 - [ ] No HTML source shown in terminal
-- [ ] Summary stats visible at a glance
-- [ ] File path provided for opening in browser
+- [ ] Execution time: <10s for small projects (<10 sources)
+- [ ] Execution time: <30s for medium projects (10-50 sources)
+- [ ] Execution time: <60s for large projects (50+ sources)
 - [ ] Small projects (3-10 sources) complete without compaction
 
 **Related:** BL-30 (auto-generate STATUS.html at end of /analyze) makes this more critical since dashboard generation becomes more frequent.
