@@ -44,7 +44,7 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 3. **Compute summary stats** — insights by status, conflicts by status, source count, evidence gaps.
 
 4. **Detect evidence gaps:**
-   - **Claim-level gaps** — insights with weak or single-source backing.
+   - **Claim-level gaps** — Read the `Convergence` field from each insight. If convergence < 2 sources, add to evidence gaps list with description: "[IG-XX] backed by single source".
    - **Source diversity gaps** — check which source types are present/missing from: interviews, benchmarks, analytics, workshops, surveys.
 
 ### Phase 2: Generate JSON
@@ -143,7 +143,11 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
    **Card styles:** `"ok"` (green border), `"warn"` (amber border), `"error"` (red border). Use `"warn"` when there are pending conflicts or evidence gaps, `"error"` when blockers exist.
 
-   **Conflict options context:** For each PENDING conflict, provide specific `flag_label` (who to involve and topic) and `research_label` (what to research) derived from the conflict data. The template renders these as radio button options.
+   **Conflict options:** For each PENDING conflict, use generic labels (NO inference, NO synthesis required):
+   - `flag_label`: "Flag for stakeholder review"
+   - `research_label`: "Validate with additional research"
+
+   The template renders these as radio button options. Users can customize resolution approaches in the generated prompt.
 
    **Source diversity:** Check folder names and file content for indicators of each source type. Mark as `present: true` if at least one source of that type exists.
 
@@ -159,8 +163,19 @@ The agent reads Work layer files, builds a JSON data object, and injects it into
 
 ### Phase 4: Report
 
-10. **Tell the user** the file was generated:
-   > Dashboard generated at `03_Outputs/STATUS.html`. Open it in your browser to review and make decisions.
+10. **Compact output** — After writing STATUS.html, output ONLY:
+   ```
+   ✓ Dashboard: STATUS.html
+   [Insights: X verified, Y pending | Conflicts: Z pending, W resolved | Sources: N folders]
+   ```
+
+   Do NOT show:
+   - File path repetition
+   - File contents
+   - JSON data block
+   - Verbose confirmations
+
+   Keep output minimal to conserve tokens.
 
 11. **Do NOT write to MEMORY.md** — `/status` is a read-only snapshot, not a pipeline action.
 
