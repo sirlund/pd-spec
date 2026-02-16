@@ -59,10 +59,16 @@ EVERY file discovered in Phase 1 MUST be:
 5. **Batch detection (MANDATORY for >40 files):**
    - Count total files discovered in step 1
    - **If count ≤ 40:** Process all files in single pass (standard mode)
-   - **If count > 40:** ACTIVATE BATCHING (mandatory)
-     - Batch size: 15 files per batch
-     - Total batches: ceil(count / 15)
-     - Log: "⚠️ Large project detected: {count} files → BATCHING ACTIVATED ({batches} batches of 15 files)"
+   - **If count > 40:** ACTIVATE TWO-PASS BATCHING (mandatory)
+     - Classify files by estimated context cost:
+       - **Light files:** .md, .txt, .png, .jpg (non-converted) < 1MB
+       - **Heavy files:** .pdf, converted DOCX/PPTX, any file ≥ 5MB
+     - Pass 1: Light files, batch size 15
+     - Pass 2: Heavy files, batch size 5
+     - Total batches: ceil(light_count / 15) + ceil(heavy_count / 5)
+     - Log: "⚠️ Large project detected: {count} files → TWO-PASS BATCHING ACTIVATED"
+     - Log: "  Pass 1: {light_count} light files ({light_batches} batches of 15)"
+     - Log: "  Pass 2: {heavy_count} heavy files ({heavy_batches} batches of 5)"
      - Set batching flag for Phase 2
      - **Disable Task agent parallelization** (process files sequentially within batches to reduce context pressure)
 
@@ -148,18 +154,40 @@ When processing a document, apply these criteria for claim extraction:
 
 **If batching was activated in step 5:**
 
-For each batch (1 to N batches):
-  1. **Select batch** — Take next 15 files from processing queue
-  2. **Create temp directory** — `mkdir -p 02_Work/_temp` (for file conversions)
+**Two-Pass Strategy:**
+
+**PASS 1: Light Files (md, txt, png, jpg < 1MB)**
+
+For each Light batch (batch size = 15 files):
+  1. **Select batch** — Take next 15 Light files from processing queue
+  2. **Create temp directory** — `mkdir -p 02_Work/_temp` (for HEIC conversions)
   3. **Process batch** — For each of the 15 files in this batch:
      - Read and extract claims (step 12 logic below)
-     - Log progress: "Batch X/N: Processed file Y/15 (filename)"
-  4. **Write intermediate state** — After all 15 files in batch processed:
+     - Log progress: "Pass 1 — Batch X/N: Processed file Y/15 (filename)"
+  4. **Write intermediate checkpoint** — After all 15 files in batch processed:
      - Write/append to EXTRACTIONS.md (new sections via Edit tool)
      - Write/update SOURCE_MAP.md (new rows via Edit tool)
      - Clean temp directory: `rm -rf 02_Work/_temp/*`
-     - Log: "✓ Batch X/N complete: 15 files processed, Z claims extracted"
-  5. **Continue to next batch** — Repeat until all batches complete
+     - Log: "✓ Pass 1 — Batch X/N complete: 15 files processed, Z claims extracted"
+  5. **Continue to next Light batch** — Repeat until all Light files complete
+
+**PASS 2: Heavy Files (pdf, DOCX/PPTX, files ≥ 5MB)**
+
+For each Heavy batch (batch size = 5 files):
+  1. **Select batch** — Take next 5 Heavy files from processing queue
+  2. **Ensure temp directory** — `mkdir -p 02_Work/_temp` (for DOCX/PPTX conversions)
+  3. **Process batch** — For each of the 5 files in this batch:
+     - Convert if needed (DOCX → txt, PPTX → txt)
+     - Read and extract claims (step 12 logic below)
+     - **CRITICAL: Write checkpoint after EACH file in Pass 2**
+       - Append to EXTRACTIONS.md (single section)
+       - Update SOURCE_MAP.md (single row)
+       - Prevents accumulation from large file reads
+     - Log progress: "Pass 2 — Batch X/N: Processed file Y/5 (filename)"
+  4. **Write final batch checkpoint** — After all 5 files in batch processed:
+     - Clean temp directory: `rm -rf 02_Work/_temp/*`
+     - Log: "✓ Pass 2 — Batch X/N complete: 5 heavy files processed, Z claims extracted"
+  5. **Continue to next Heavy batch** — Repeat until all Heavy files complete
 
 **If batching was NOT activated (≤40 files):**
 
