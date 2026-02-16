@@ -111,6 +111,101 @@ MANDATORY intermediate writes every 10-20 files, not just "if >40 files detected
 
 ---
 
+### [QA3-BUG-03] BL-29 Batch Size Still Too Large — PDFs Cause Overflow
+
+**Severity:** High (blocks completion)
+**Component:** /extract (BL-29 implementation)
+**Related:** BL-29, QA3-BUG-02
+
+**Observed behavior:**
+- Batching activated correctly (61 files → 5 batches)
+- Batch size: 15 files
+- Intermediate writes working (2 successful checkpoints)
+- Context limit reached at 6m 1s during batch 1, file 9/15
+- Failed while reading 2 PDFs in Antecedentes/
+
+**Expected behavior:**
+- Batch should complete all 15 files before hitting context limit
+- Write checkpoint after batch 1 completes
+- Continue to batch 2
+
+**Evidence:**
+```
+✅ Batch 1 started: 15 files (4 md + 4 png + 7 Antecedentes)
+✅ Checkpoint 1: After 4 md (170 lines, 131 claims)
+✅ Checkpoint 2: After 4 png (+105 lines, 73 claims)
+⏳ Processing: Antecedentes 4/7 files
+❌ Context limit: While reading 2 PDFs
+⏱️ Duration: 6m 1s (vs 6m 42s pre-BL-29, minimal improvement)
+```
+
+**Root cause:**
+- PDFs are context-expensive (large text extraction)
+- Batch size 15 works for md/png but not when PDFs included
+- Accumulation: 4 md + 4 png + 2 DOCX conversions + 1 PPTX conversion + 2 PDFs = overflow
+- Intermediate writes reduce risk but don't prevent intra-batch accumulation
+
+**Proposed fix (BL-29 refinement):**
+
+**Option A: Reduce batch size to 10 files**
+```markdown
+Step 5: Batch detection
+- If count > 40: Batch size = 10 files (not 15)
+- More batches, more writes, safer
+```
+
+**Option B: Weighted batching (file type aware)**
+```markdown
+Assign weights:
+- md/png: 1 unit
+- DOCX/PPTX converted: 2 units
+- PDF: 3 units
+
+Batch until weight = 10-12 units, not file count
+Example: 4 md (4) + 2 png (2) + 1 PDF (3) = 9 units → next batch
+```
+
+**Option C: Write after each subfolder (not batch)**
+```markdown
+Process files folder by folder:
+- entrevistas operaciones/ → write checkpoint
+- entrevistas iniciales/ → write checkpoint
+- Antecedentes/ → write checkpoint
+- etc.
+
+Eliminates batching, just process + write per folder
+```
+
+**Option D: Two-pass strategy (large files last)**
+```markdown
+Pass 1: Process small/medium files (md, png, jpg, txt)
+- Batch size: 15 files
+- Write checkpoint after each batch
+- Skip PDFs, DOCX, PPTX, large images >5MB
+
+Pass 2: Process large files (deferred from Pass 1)
+- Batch size: 5 files (conservative)
+- Write checkpoint after each batch
+- Process PDFs, converted DOCX/PPTX, large images
+
+Logic:
+1. Classify files by estimated context cost:
+   - Light: md, png, jpg, txt < 1MB
+   - Heavy: PDF, DOCX/PPTX (converted), files > 5MB
+2. Process all Light files first (batch 15)
+3. Process all Heavy files second (batch 5)
+4. Guarantees progress even if Heavy files hit limits
+```
+
+**Recommendation:** Option D (two-pass strategy)
+- Guarantees Light files always complete (majority of files)
+- Heavy files isolated in smaller batches
+- If Pass 2 fails, at least Pass 1 is done (partial success better than total failure)
+- Simple classification: file extension + size check
+- No complex weighting logic needed
+
+---
+
 ## ⚡ PERFORMANCE
 
 ### [QA3-PERF-01] Context Limit Reached During Extraction (6m 42s)
@@ -323,4 +418,50 @@ Press esc twice to go up a few messages and try again.
 - 61 files + 6 parallel agents + conversions = UNRECOVERABLE context state
 - Pipeline BLOCKED, cannot proceed to /analyze
 - **This is a hard limit for current architecture**
+
+---
+
+## 🔄 BL-29 Re-Test (2026-02-16, post-implementation)
+
+**Test environment:** Fresh session, same TIMining 61 files
+
+**Phase 1 Discovery:**
+✅ 61 files detected
+✅ **Batching activated:** "61 archivos > 40 → BATCHING ACTIVADO (5 lotes de ~12-15 archivos)"
+✅ Source organization validation: 4 issues detected
+✅ 54 processable files (7 videos excluded as unsupported)
+✅ Clean state (no previous extractions)
+✅ Fallback tools: markitdown unavailable → textutil/Python stdlib
+
+**Status:** Waiting for user approval to proceed with batched extraction...
+
+---
+
+### Batch Execution Results:
+
+**✅ What worked:**
+- Batching activated: "Lote 1/5" detected correctly
+- Intermediate writes: 2 successful checkpoints
+  - After 4 md files → Wrote EXTRACTIONS.md (170 lines, 131 claims)
+  - After 4 png files → Updated EXTRACTIONS.md (+105 lines, 73 claims)
+- 02_Work/_temp directory created
+- Conversions: textutil (DOCX) + Python (PPTX) working
+- Progress logging: "Procesando X — Y% (N/M archivos)"
+
+**❌ What failed:**
+- Context limit reached at **6m 1s** (similar to 6m 42s pre-BL-29)
+- Failed while processing batch 1, file 9-10 (reading 2 PDFs)
+- Only 8/15 files in batch 1 completed before failure
+
+**Progress achieved:**
+- 8 files successfully extracted (4 md + 4 png)
+- 204 claims extracted (131 + 73)
+- 2 folders complete: entrevistas operaciones/, entrevistas iniciales stakeholders/
+- 1 folder partial: Antecedentes/ (4/7 files, stopped on PDFs)
+
+**Root cause analysis:**
+- Batch size 15 is still too large when PDFs are involved
+- PDFs are context-expensive (large text content)
+- 4 md + 4 png + 4 converted files + 2 PDFs = context overflow
+- Intermediate writes help but don't prevent accumulation within a batch
 

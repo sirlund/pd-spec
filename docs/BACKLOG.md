@@ -8,6 +8,72 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
+### [BL-30] Skill Name Collision — /status conflicts with Claude Code command
+
+**Status:** Proposed
+**Priority:** P2 — Medium (UX confusion)
+**Origin:** User testing (2026-02-16, parallel project)
+
+**Problem:**
+
+PD-Spec skill `/status` conflicts with Claude Code's built-in `/status` command, causing confusion about which command is being invoked.
+
+**Evidence:**
+User report: "nuestro skill status se confunde con el comando /status de claude-code"
+
+**Impact:**
+- User confusion: unclear which `/status` is being called
+- Possible invocation errors or unexpected behavior
+- Reduces discoverability of PD-Spec status skill
+
+**Proposed solutions:**
+
+**Option A: Eliminate /status skill — auto-generate at end of /analyze** ⭐ RECOMMENDED
+- Remove `/status` as standalone skill
+- Add dashboard generation as final step of `/analyze` (after Phase 4 Report)
+- Pipeline becomes: `/extract` → `/analyze` (auto-generates STATUS.html) → `/synthesis`
+- Eliminates naming conflict entirely
+- Dashboard always up-to-date after analysis
+- Simplifies workflow (one less command to remember)
+- User still gets interactive dashboard, just automatically
+
+**Option B: Rename skill**
+- `/status` → `/dashboard` or `/research-status`
+- Update all references in skills, docs, outputs
+- Clear differentiation from Claude Code command
+
+**Option C: Namespace prefix**
+- `/status` → `/pd-status`
+- Follows convention for scoped commands
+- Backward compatible with alias
+
+**Option D: Keep as-is, document clearly**
+- Add note in README: "Use `/status` for dashboard (PD-Spec skill)"
+- Claude Code's `/status` is for CLI status, different context
+- Rely on user learning curve
+
+**Rationale for Option A (auto-generate):**
+- `/status` is never run in isolation — always after `/analyze`
+- Manual invocation adds extra step for no benefit
+- Auto-generation ensures dashboard is always current
+- Eliminates naming conflict without renaming
+- Aligns with pipeline flow: extract → analyze (with dashboard) → synthesis
+- Current behavior in v4.0+ pipeline already recommends `/analyze` → `/status` → `/synthesis` sequence
+
+**User story:**
+> As a PD-Spec user, I expect the research dashboard to be automatically generated after analysis completes, without needing to invoke a separate command that conflicts with Claude Code.
+
+**Acceptance criteria (Option A):**
+- ✅ `/analyze` final step: Generate STATUS.html automatically
+- ✅ Log: "Dashboard generated: 03_Outputs/STATUS.html (X insights, Y conflicts)"
+- ✅ No standalone `/status` skill exists
+- ✅ User can still manually regenerate if needed: `Regenerate STATUS.html from current Work layer state`
+- ✅ Pipeline flow: `/extract` → `/analyze` (auto-dashboard) → `/synthesis`
+
+**Implementation note:** Move status skill logic to Phase 5 of analyze skill, remove status/ skill directory.
+
+---
+
 ### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
 
 **Status:** Proposed
