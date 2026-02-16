@@ -20,6 +20,19 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
 
+## MANDATORY RULE: NO EDITORIAL DECISIONS
+
+The agent MUST NOT skip files based on:
+- Assumed redundancy
+- Subjective judgment about value or relevance
+- Optimization attempts to reduce processing time
+
+EVERY file discovered in Phase 1 MUST be:
+(a) Processed with claims extracted, OR
+(b) Reported as unprocessable with technical reason (unsupported format, conversion error, Read tool failure)
+
+"Redundancy" is NOT a valid technical reason. If two files appear to contain similar information, BOTH must be processed. Deduplication happens in `/analyze`, not here.
+
 ### Phase 1: Discover Sources
 
 1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_FIELD_NOTES_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
@@ -83,6 +96,26 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 10. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
 
 ### Phase 2: Read & Extract
+
+**Extraction Methodology:**
+
+When processing a document, apply these criteria for claim extraction:
+
+1. **Read full content** — Don't skip pages, sections, or files based on assumed redundancy
+2. **Extract claims meeting these criteria:**
+   - User needs, pain points, behaviors (direct quotes preferred)
+   - Business constraints, success metrics, strategic decisions
+   - Technical capabilities, limitations, architectural decisions
+   - Competitive insights, market context
+   - Verifiable facts (metrics, dates, contractual terms)
+3. **Filter out:**
+   - Repetitive statements already captured within the same file
+   - Formatting artifacts (tables of contents, headers, footers, page numbers)
+   - Vague or unsupported assertions ("it would be nice if...")
+   - Obvious background adding no new information
+4. **Target density:** ~3-5 claims/page (text documents), ~1-2/slide (presentations), ~1-3/photo (workshop images with visible text)
+
+**This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
 
 11. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
 
@@ -221,9 +254,26 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
    - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
-### Phase 4: Report
+### Phase 4: Report (Validation First)
 
-13. **Summarize to the user:**
+13. **Validate against disk BEFORE reporting:**
+
+   BEFORE reporting numbers to the user:
+   1. Re-read `02_Work/EXTRACTIONS.md` from disk
+   2. Count sections: use Grep to count lines matching `^## \[` pattern
+   3. Count claims: use Grep to count lines matching `^[0-9]+\.` pattern
+   4. Build list of processed files from section headers
+   5. Compare against Phase 1 discovery list (Glob results stored in memory)
+   6. Identify discrepancies:
+      - Files discovered but missing from EXTRACTIONS.md
+      - Files in EXTRACTIONS.md but not in discovery list (orphans)
+
+   If discrepancy detected:
+   - Report: "⚠️ Warning: intended X files, EXTRACTIONS.md shows Y sections"
+   - List missing files from Phase 1 discovery
+   - Update SOURCE_MAP entries as 'error' for missing files with reason "not found in EXTRACTIONS.md"
+
+14. **Summarize to the user** (using disk-validated numbers):
    - **Per-folder breakdown** — For EVERY folder discovered in Phase 1, report:
      - Folder name
      - Files processed (count and filenames)
@@ -232,8 +282,7 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
    - If a folder from Phase 1 discovery has zero entries in this report, that is a bug — report it.
    - Source organization issues found (list each one).
    - **Total:** Files processed, files not processed, total claims extracted.
-   - **Verify counts from disk, not memory.** After all writing is complete, re-read `02_Work/EXTRACTIONS.md` and count: (a) section headers (`## [`) = files processed, (b) numbered claim lines = total claims. Use THESE numbers in the report and MEMORY.md, not in-memory counters. Context compaction can corrupt in-memory counts — the file on disk is the source of truth.
-   - **Completeness check** — Compare the list of files in EXTRACTIONS.md (section headers) against the full file list from Phase 1 (Glob results). Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
+   - **Completeness check** — Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
    - **Remind the user:** "Run `/analyze` to process extractions into insights."
 
 ### Phase 4b: Update SOURCE_MAP
