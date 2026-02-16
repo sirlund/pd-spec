@@ -626,22 +626,38 @@ Output:
    - 13.3k tokens output
    - Forces context compaction at 5m 30s
 
-**Validation (TIMining 61 sources benchmark):**
+**Validation (TIMining 61 sources benchmark — COMPLETE):**
 ```
-Tinkering… (6m 35s · thought for 258s)
+✻ Brewed for 10m 2s
+Summary: 22 insights, 11 conflicts, 54 sources, 10 evidence gaps
+Intermediate state: Tinkering… (6m 35s · thought for 258s)
 ```
-- 61 sources took same time as 3 sources (6m 50s vs 6m 35s)
-- Confirms overhead is NOT scaling by project size
-- Bottleneck is thinking time (258s = 4min 18s), not I/O
+
+**Benchmark comparison:**
+
+| Project | Sources | Insights | Duration | Scaling |
+|---|---|---|---|---|
+| Small | 3 | ~12 | 6m 50s (410s) | baseline |
+| Large (TIMining) | 61 | 22 | **10m 2s (602s)** | 1.47x slower |
+
+**Analysis:**
+- 20x more sources → only 1.47x more time
+- **Overhead structure:** ~6-7min fixed + ~3min variable
+- Fixed overhead dominates (67% of total time)
+- Bottleneck confirmed: thinking time (258s = 4min 18s) + verbose output (494 lines JSON)
+- NOT primarily I/O bound — thinking and output generation are the killers
 
 **Impact:**
-- 🚨 **BLOCKER:** /status unusable on small projects (7min for 3 sources)
-- ❌ Expected: <10 seconds for 3-source project
-- ❌ Observed: 6m 50s (40x slower than target)
+- 🚨 **BLOCKER:** /status unusable on ALL projects
+  - Small (3 sources): 6m 50s vs <10s target (40x slower)
+  - Large (61 sources): 10m 2s vs <60s target (10x slower)
 - ❌ User hesitates to regenerate dashboard
 - ❌ Negates benefit of interactive dashboard workflow
 - ❌ Forces session restart (compaction at 5m 30s)
-- 🚨 **BL-30 impact:** If /status auto-generates at end of /analyze, adds 7min overhead to every analysis
+- 🚨 **BL-30 BLOCKED:** Cannot auto-generate STATUS.html if adds 10min to /analyze
+  - Current /analyze: 7m 35s
+  - With auto-status: 7m 35s + 10m = **17m 35s total** (UNACCEPTABLE)
+- 🚨 **User workflow broken:** "Quick iteration" becomes 20+ min cycles
 
 **Expected behavior:**
 
