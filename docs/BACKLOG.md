@@ -8,95 +8,165 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
-### [BL-30] Skill Name Collision — /status conflicts with Claude Code command
+### [BL-30] Pipeline Flow Simplification — Unified /analyze with Interactive Decisions
 
 **Status:** Proposed
-**Priority:** P2 — Medium (UX confusion)
-**Origin:** User testing (2026-02-16, parallel project)
+**Priority:** P0 — CRITICAL (UX blocker)
+**Origin:** QA v3 testing (2026-02-16), consolidated from QA3-ARCH-01
+**Related:** BL-33 (phase dashboard), QA3-UX-01 (express mode)
 
 **Problem:**
 
-PD-Spec skill `/status` conflicts with Claude Code's built-in `/status` command, causing confusion about which command is being invoked.
+Current pipeline has multiple friction points:
+1. **Skill name collision:** `/status` conflicts with Claude Code's built-in command
+2. **Missing output clarity:** `/analyze` doesn't have obvious deliverable (user must remember to run `/status` separately)
+3. **Unnecessary skill separation:** `/synthesis` as separate command when it's the logical next step after `/analyze`
+4. **Manual decision flow:** User approves in free-text, then must review in dashboard, generate prompt, copy/paste to run `/synthesis`
 
-**Evidence:**
-User report: "nuestro skill status se confunde con el comando /status de claude-code"
+**User feedback (validated 2026-02-16):**
 
-**Impact:**
-- User confusion: unclear which `/status` is being called
-- Possible invocation errors or unexpected behavior
-- Reduces discoverability of PD-Spec status skill
+> "analyze deberia tener un output, no entiendo que pasa ahi entre analyze, status y sintesis"
 
-**UX Evidence (2026-02-16, Triviapp project):**
+> "analizar sin sintetizar no sirve"
 
-User feedback during testing: *"analyze deberia tener un output, no entiendo que pasa ahi entre analyze, status y sintesis"*
+> "Nunca he hecho un partial approval en el terminal, los apruebo todos y luego los reviso en status.html, si uno no aplica lo rechazo y eso genera un prompt de synthesis"
 
-**Observed behavior (confusing):**
+**Current flow (6 steps, confusing):**
 ```
-/extract → EXTRACTIONS.md (output clear ✅)
-/analyze → presents draft → waits for approval → writes INSIGHTS_GRAPH.md (output unclear ❌)
-/status → STATUS.html (separate skill, must run manually)
-/synthesis → resolves conflicts
-```
-
-**Expected behavior (logical):**
-```
-/extract → EXTRACTIONS.md ✅
-/analyze → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html automatic ✅
-/synthesis → only for manual conflict resolution
+/extract → /analyze → /status → open browser → click approve/reject →
+           ↓                      generate prompt → copy → paste → /synthesis
+        asks for     manual       dashboard          indirect
+        approval     command      interaction        workflow
 ```
 
-**Core UX issue:** `/analyze` doesn't have an obvious "output" like `/extract` does. User must remember to run `/status` manually to see the dashboard, breaking the mental model of "skill → output file."
+**Proposed flow (2 steps, clear):**
+```
+/extract → /analyze
+           ↓
+        [AskUserQuestion interactive menu]
+           ↓
+        writes files + auto-generates STATUS.html
+           ↓
+        (optional) review in dashboard → reject specific insights →
+                   generate prompt → /synthesis for corrections
+```
 
-**Proposed solutions:**
+**Solution: AskUserQuestion as Decision Point**
 
-**Option A: Eliminate /status skill — auto-generate at end of /analyze** ⭐ RECOMMENDED
-- Remove `/status` as standalone skill
-- Add dashboard generation as final step of `/analyze` (after Phase 4 Report)
-- Pipeline becomes: `/extract` → `/analyze` (auto-generates STATUS.html) → `/synthesis`
-- Eliminates naming conflict entirely
-- Dashboard always up-to-date after analysis
-- Simplifies workflow (one less command to remember)
-- User still gets interactive dashboard, just automatically
+Use Claude Code's native terminal interactive menu instead of free-text approval:
 
-**Option B: Rename skill**
-- `/status` → `/dashboard` or `/research-status`
-- Update all references in skills, docs, outputs
-- Clear differentiation from Claude Code command
+**Phase 4 of /analyze (after synthesis consolidation):**
 
-**Option C: Namespace prefix**
-- `/status` → `/pd-status`
-- Follows convention for scoped commands
-- Backward compatible with alias
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "¿Qué hacer con los 21 insights sintetizados?",
+      header: "Synthesis",
+      multiSelect: false,
+      options: [
+        {
+          label: "Aprobar todos como PENDING (Recommended)",
+          description: "Escribe los 21 como PENDING. Puedes revisar individualmente después en STATUS.html y generar prompt para rechazar los que no apliquen."
+        },
+        {
+          label: "Aprobar todos como VERIFIED",
+          description: "Escribe los 21 como VERIFIED directamente. Omite revisión individual en dashboard (modo express)."
+        },
+        {
+          label: "Revisar uno por uno ahora",
+          description: "Presentar cada insight para aprobación individual antes de escribir (lento, solo para proyectos pequeños)."
+        }
+      ]
+    },
+    {
+      question: "¿Cómo resolver las 6 ambigüedades detectadas?",
+      header: "Ambiguities",
+      multiSelect: false,
+      options: [
+        {
+          label: "Guardar para /synthesis (Recommended)",
+          description: "Marcar como PENDING, resolver después con contexto completo usando dashboard"
+        },
+        {
+          label: "Resolver ahora",
+          description: "Presentar cada ambigüedad con opciones para decisión inmediata"
+        }
+      ]
+    }
+  ]
+})
+```
 
-**Option D: Keep as-is, document clearly**
-- Add note in README: "Use `/status` for dashboard (PD-Spec skill)"
-- Claude Code's `/status` is for CLI status, different context
-- Rely on user learning curve
+**After user selection:**
 
-**Rationale for Option A (auto-generate):**
-- **Solves both problems**: Eliminates naming conflict AND fixes UX confusion about /analyze output
-- `/status` is never run in isolation — always after `/analyze`
-- Manual invocation adds extra step for no benefit
-- Auto-generation ensures dashboard is always current
-- **Establishes clear output pattern**: Every skill has an obvious output file
-  - `/extract` → EXTRACTIONS.md
-  - `/analyze` → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html
-  - `/synthesis` → updates INSIGHTS_GRAPH.md + SYSTEM_MAP.md
-- Aligns with pipeline flow: extract → analyze (with dashboard) → synthesis
-- Current behavior in v4.0+ pipeline already recommends `/analyze` → `/status` → `/synthesis` sequence
-- **Validated by user testing**: "analyze deberia tener un output" — users expect visible deliverable
+1. Write insights to INSIGHTS_GRAPH.md with chosen status (PENDING or VERIFIED)
+2. Write conflicts to CONFLICTS.md as PENDING or present for resolution
+3. **Auto-generate STATUS.html** (eliminates manual `/status` command)
+4. Log to MEMORY.md
+5. Display: "Dashboard generated: 03_Outputs/STATUS.html (21 insights, 6 conflicts)"
+
+**Advantages:**
+
+✅ **No sale de la terminal** — Tab/Arrow key navigation, instant feedback
+✅ **Ya existe en Claude Code** — cero implementación custom, built-in feature
+✅ **Opciones estructuradas** — elimina ambigüedad de respuestas libres
+✅ **Flow natural** — /analyze completa sin comandos adicionales
+✅ **Express mode included** — Option 2 ("Aprobar como VERIFIED") permite flujo rápido para proyectos pequeños
+✅ **Dashboard sigue útil** — para partial rejection después (user's validated workflow)
+✅ **Elimina naming conflict** — no más `/status` skill separado
+
+**Role of /synthesis after this change:**
+
+`/synthesis` **still exists** but only for edge cases:
+- Re-synthesis after adding new sources (incremental research)
+- Manual conflict resolution when deferred with "Guardar para /synthesis"
+- Corrections after dashboard review (user clicks reject on specific insights, generates prompt)
+- NOT part of normal happy path (most users choose "Aprobar como PENDING" or "VERIFIED" and skip it)
+
+**Three workflow paths:**
+
+**Path 1: Express (small projects, high confidence)**
+```
+/extract → /analyze → [AskUserQuestion: Aprobar como VERIFIED] → Done ✅
+No dashboard review needed, insights written as VERIFIED directly
+```
+
+**Path 2: Standard (most common, validated by user)**
+```
+/extract → /analyze → [AskUserQuestion: Aprobar como PENDING] →
+writes files + STATUS.html → (later) review dashboard →
+reject 2-3 insights → generate prompt → /synthesis for corrections
+```
+
+**Path 3: Careful review (complex projects, low confidence)**
+```
+/extract → /analyze → [AskUserQuestion: Revisar uno por uno] →
+presents each insight individually → user approves/rejects in terminal →
+writes files + STATUS.html → Done ✅
+```
 
 **User story:**
-> As a PD-Spec user, I expect the research dashboard to be automatically generated after analysis completes, without needing to invoke a separate command that conflicts with Claude Code.
+> As a PD-Spec user, I want /analyze to guide me through decisions interactively and generate the dashboard automatically, so I don't have to remember separate commands or switch between terminal and browser unnecessarily.
 
-**Acceptance criteria (Option A):**
-- ✅ `/analyze` final step: Generate STATUS.html automatically
-- ✅ Log: "Dashboard generated: 03_Outputs/STATUS.html (X insights, Y conflicts)"
-- ✅ No standalone `/status` skill exists
-- ✅ User can still manually regenerate if needed: `Regenerate STATUS.html from current Work layer state`
-- ✅ Pipeline flow: `/extract` → `/analyze` (auto-dashboard) → `/synthesis`
+**Acceptance criteria:**
+- [ ] `/analyze` Phase 4 uses AskUserQuestion instead of free-text prompt
+- [ ] 3 synthesis options: PENDING (review later), VERIFIED (skip review), Review now (one-by-one)
+- [ ] 2 conflict options: Defer to /synthesis, Resolve now
+- [ ] STATUS.html auto-generated after writing files (no manual `/status` command)
+- [ ] `/status` skill removed from skills directory
+- [ ] User can complete full pipeline without opening browser (if choosing VERIFIED)
+- [ ] Dashboard remains functional for partial rejection workflow (Path 2)
+- [ ] MEMORY.md logs user's AskUserQuestion selections for session resume
+- [ ] Pipeline flow updated in README: `/extract` → `/analyze` (interactive) → optional `/synthesis`
 
-**Implementation note:** Move status skill logic to Phase 5 of analyze skill, remove status/ skill directory.
+**Implementation notes:**
+
+1. Add AskUserQuestion call to `.claude/skills/analyze/SKILL.md` Phase 4
+2. Move status generation logic from `.claude/skills/status/SKILL.md` to analyze Phase 5
+3. Remove `.claude/skills/status/` directory
+4. Update CLAUDE.md skills table (remove /status entry)
+5. Update 03_Outputs/_templates/status.html note: "Auto-generated by /analyze"
 
 ---
 
