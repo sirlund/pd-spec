@@ -206,6 +206,82 @@ Logic:
 
 ---
 
+### Option D Test Results (2026-02-16, 30m 22s)
+
+**Result:** ❌ FAILED
+
+| Metric | Result | Baseline | Target |
+|---|---|---|---|
+| Files processed | 38/61 (62%) | 8/61 (13%) | 61/61 (100%) |
+| Duration | 30m 22s | 6m 1s | <2min |
+| Light files (Pass 1) | ✅ 27/27 (100%) | — | — |
+| Heavy files (Pass 2) | ❌ 0/16 (0%) | — | — |
+| Context overflows | 7 agents | 1 event | 0 |
+
+**What worked:**
+- ✅ Two-pass classification (Light vs Heavy)
+- ✅ Light files completed successfully (27 workshop images)
+- ✅ Intermediate writes preserved state through compactions
+
+**What failed:**
+- ❌ Task agents hit context limits without writing partial progress
+- ❌ 7 agents launched, all failed with "Context limit reached"
+- ❌ Heavy files (DOCX, PPTX, PDF) completely unprocessed (0/16)
+- ❌ Duration unacceptable (30min vs 2min target, 15x slower)
+
+**Root cause:**
+- **Task agents architecture inadequate for /extract**
+  - Agents accumulate context without ability to make intermediate writes
+  - When agent hits limit, all work is lost (no partial writes)
+  - Each agent loads full skill instructions + processes multiple files
+  - No recovery mechanism within agent execution
+
+**Conclusion:**
+Option D strategy (two-pass) is sound, but **implementation with Task agents fails**. Need to eliminate Task agents and process directly in main context with frequent writes.
+
+---
+
+**Option E: Direct Processing with Per-File Writes (Heavy Files)** ⭐ NEW RECOMMENDATION
+
+**Strategy:**
+1. **Eliminate Task agents entirely** from /extract
+2. **Process all files sequentially** in main context
+3. **Light files:** Batch 10, write after batch
+4. **Heavy files:** Batch 1, write after EACH file
+5. **Frequent intermediate writes** prevent context accumulation
+
+**Implementation:**
+```markdown
+**Light Files (md, txt, png, jpg < 1MB):**
+- Batch size: 10 files
+- Process batch
+- Write EXTRACTIONS.md + SOURCE_MAP.md
+- Continue to next batch
+
+**Heavy Files (PDF, DOCX/PPTX, files ≥5MB):**
+- Batch size: 1 file (process one at a time)
+- Convert if needed (DOCX→txt, PPTX→txt)
+- Read and extract claims
+- Write to EXTRACTIONS.md + SOURCE_MAP.md IMMEDIATELY
+- Clean temp files
+- Continue to next file
+
+**NO Task agents. NO parallelization. Sequential + frequent writes.**
+```
+
+**Benefits:**
+- ✅ Simple, predictable execution
+- ✅ Progress persisted after every heavy file (recovery-friendly)
+- ✅ No context accumulation (writes clear working memory)
+- ✅ No agent overhead (no skill reload per file)
+- ✅ Works with incremental mode (SOURCE_MAP tracks progress)
+
+**Trade-offs:**
+- ⚠️ Slower than parallel processing (but parallel failed anyway)
+- ⚠️ More write operations (but prevents data loss)
+
+---
+
 ## ⚡ PERFORMANCE
 
 ### [QA3-PERF-01] Context Limit Reached During Extraction (6m 42s)
