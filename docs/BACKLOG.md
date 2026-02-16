@@ -26,6 +26,27 @@ User report: "nuestro skill status se confunde con el comando /status de claude-
 - Possible invocation errors or unexpected behavior
 - Reduces discoverability of PD-Spec status skill
 
+**UX Evidence (2026-02-16, Triviapp project):**
+
+User feedback during testing: *"analyze deberia tener un output, no entiendo que pasa ahi entre analyze, status y sintesis"*
+
+**Observed behavior (confusing):**
+```
+/extract → EXTRACTIONS.md (output clear ✅)
+/analyze → presents draft → waits for approval → writes INSIGHTS_GRAPH.md (output unclear ❌)
+/status → STATUS.html (separate skill, must run manually)
+/synthesis → resolves conflicts
+```
+
+**Expected behavior (logical):**
+```
+/extract → EXTRACTIONS.md ✅
+/analyze → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html automatic ✅
+/synthesis → only for manual conflict resolution
+```
+
+**Core UX issue:** `/analyze` doesn't have an obvious "output" like `/extract` does. User must remember to run `/status` manually to see the dashboard, breaking the mental model of "skill → output file."
+
 **Proposed solutions:**
 
 **Option A: Eliminate /status skill — auto-generate at end of /analyze** ⭐ RECOMMENDED
@@ -53,12 +74,17 @@ User report: "nuestro skill status se confunde con el comando /status de claude-
 - Rely on user learning curve
 
 **Rationale for Option A (auto-generate):**
+- **Solves both problems**: Eliminates naming conflict AND fixes UX confusion about /analyze output
 - `/status` is never run in isolation — always after `/analyze`
 - Manual invocation adds extra step for no benefit
 - Auto-generation ensures dashboard is always current
-- Eliminates naming conflict without renaming
+- **Establishes clear output pattern**: Every skill has an obvious output file
+  - `/extract` → EXTRACTIONS.md
+  - `/analyze` → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html
+  - `/synthesis` → updates INSIGHTS_GRAPH.md + SYSTEM_MAP.md
 - Aligns with pipeline flow: extract → analyze (with dashboard) → synthesis
 - Current behavior in v4.0+ pipeline already recommends `/analyze` → `/status` → `/synthesis` sequence
+- **Validated by user testing**: "analyze deberia tener un output" — users expect visible deliverable
 
 **User story:**
 > As a PD-Spec user, I expect the research dashboard to be automatically generated after analysis completes, without needing to invoke a separate command that conflicts with Claude Code.
