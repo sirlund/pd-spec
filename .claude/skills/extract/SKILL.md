@@ -56,13 +56,23 @@ EVERY file discovered in Phase 1 MUST be:
 4. **Report progress** — Log overall scope before starting:
    - "Starting extraction: X folders, Y total files"
 
+5. **Batch detection (MANDATORY for >40 files):**
+   - Count total files discovered in step 1
+   - **If count ≤ 40:** Process all files in single pass (standard mode)
+   - **If count > 40:** ACTIVATE BATCHING (mandatory)
+     - Batch size: 15 files per batch
+     - Total batches: ceil(count / 15)
+     - Log: "⚠️ Large project detected: {count} files → BATCHING ACTIVATED ({batches} batches of 15 files)"
+     - Set batching flag for Phase 2
+     - **Disable Task agent parallelization** (process files sequentially within batches to reduce context pressure)
+
 ### Phase 1b: Compute Delta (Incremental Extraction)
 
 **Purpose:** Only process new, modified, or failed files. Skip unchanged files to save time.
 
-5. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1.
+6. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1.
 
-6. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
+7. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
    - If missing → treat all files as NEW, proceed to Phase 2
    - If exists → parse the table to build a map of known files with their status and hash
 
@@ -81,21 +91,21 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ```
 5. Add corrupted files to RETRY queue
 
-7. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
+8. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
    ```bash
    md5 -q "path/to/file"
    ```
    - On macOS, `md5` is native (zero deps)
    - Store in memory: `{file_path: hash}`
 
-8. **Classify files** — Compare discovered files against SOURCE_MAP:
+9. **Classify files** — Compare discovered files against SOURCE_MAP:
    - **NEW** — file not in SOURCE_MAP → process
    - **UNCHANGED** — file in map, hash matches → skip (preserve existing claims in EXTRACTIONS.md)
    - **MODIFIED** — file in map, hash differs → reprocess (replace section in EXTRACTIONS.md)
    - **RETRY** — file in map with status=`error` → reprocess
    - **DELETED** — file in map but not discovered → remove section from EXTRACTIONS.md, mark as orphan
 
-9. **Report delta to user** — Before processing, show:
+10. **Report delta to user** — Before processing, show:
    ```
    Delta computation complete:
    - NEW: 3 files (will process)
@@ -108,16 +118,9 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ```
    Wait for user confirmation before proceeding.
 
-10. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
+11. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
 
-**Large Project Strategy:**
-
-If total files to process > 40 OR multiple PDFs >10MB detected:
-1. Process files in batches of 20-30
-2. Write EXTRACTIONS.md + SOURCE_MAP.md after each batch (use Phase 3 and Phase 4b procedures)
-3. Report progress: "Batch 1/3 complete (20 files)"
-4. Prevents context accumulation and enables resume on interruption
-5. After each batch write, continue with next batch until all files processed
+**REMOVED:** Large Project Strategy moved to mandatory batch detection (step 5)
 
 ### Phase 2: Read & Extract
 
@@ -141,7 +144,28 @@ When processing a document, apply these criteria for claim extraction:
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
 
-11. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
+**Batch Processing Logic (MANDATORY for >40 files):**
+
+**If batching was activated in step 5:**
+
+For each batch (1 to N batches):
+  1. **Select batch** — Take next 15 files from processing queue
+  2. **Create temp directory** — `mkdir -p 02_Work/_temp` (for file conversions)
+  3. **Process batch** — For each of the 15 files in this batch:
+     - Read and extract claims (step 12 logic below)
+     - Log progress: "Batch X/N: Processed file Y/15 (filename)"
+  4. **Write intermediate state** — After all 15 files in batch processed:
+     - Write/append to EXTRACTIONS.md (new sections via Edit tool)
+     - Write/update SOURCE_MAP.md (new rows via Edit tool)
+     - Clean temp directory: `rm -rf 02_Work/_temp/*`
+     - Log: "✓ Batch X/N complete: 15 files processed, Z claims extracted"
+  5. **Continue to next batch** — Repeat until all batches complete
+
+**If batching was NOT activated (≤40 files):**
+
+Process all files in single pass (step 12 below)
+
+12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
 
    **If Phase 1b was skipped** (--full flag or SOURCE_MAP missing), process all files from Phase 1.
 
@@ -169,7 +193,7 @@ When processing a document, apply these criteria for claim extraction:
 
    *Directly readable (Read tool):*
    - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
-   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out /tmp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the /tmp/ path.
+   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out 02_Work/_temp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the 02_Work/_temp/ path.
 
    **Image batching** — Images are token-expensive (each photo can consume 1-2k input tokens for visual reading). To reduce overhead, batch images from the same folder:
    1. **Group** all image files (PNG, JPG, converted HEIC→JPG) within a subfolder.
@@ -218,12 +242,12 @@ When processing a document, apply these criteria for claim extraction:
    ```
 
    **With markitdown** (optional dependency — `pip install markitdown`):
-   - Any office file: `python3 -m markitdown "file.ext" > /tmp/file.md`
+   - Any office file: `python3 -m markitdown "file.ext" > 02_Work/_temp/file.md`
    - Produces structured markdown with tables, lists, slide separators preserved.
    - Works for: DOCX, PPTX, XLSX, HTML, and more.
 
    **Without markitdown** (zero dependencies):
-   - **DOCX** — `textutil -convert txt "file.docx" -output /tmp/file.txt` (macOS native). Then read the `.txt`.
+   - **DOCX** — `textutil -convert txt "file.docx" -output 02_Work/_temp/file.txt` (macOS native). Then read the `.txt`.
    - **PPTX** — Extract slide text via Python stdlib:
      ```bash
      python3 -c "
@@ -234,7 +258,7 @@ When processing a document, apply these criteria for claim extraction:
            root = ET.parse(z.open(name)).getroot()
            texts = [t.text for t in root.iter('{http://schemas.openxmlformats.org/drawingml/2006/main}t') if t.text]
            if texts: print(f'--- {name} ---'); print('\n'.join(texts))
-     " > /tmp/file_slides.txt
+     " > 02_Work/_temp/file_slides.txt
      ```
    - **XLSX** — Extract cell data via Python stdlib:
      ```bash
@@ -256,7 +280,7 @@ When processing a document, apply these criteria for claim extraction:
              if c.get('t') == 's' and val: val = ss[int(val)]
              cells.append(val)
            print('\t'.join(cells))
-     " > /tmp/file_data.txt
+     " > 02_Work/_temp/file_data.txt
      ```
 
    *Unsupported formats (report, do not skip):*
@@ -306,7 +330,7 @@ When processing a document, apply these criteria for claim extraction:
 
    - Preserve the header and description at the top of the file.
    - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
-   - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `/tmp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
+   - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `02_Work/_temp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report (Validation First)
 
@@ -371,9 +395,19 @@ When processing a document, apply these criteria for claim extraction:
 
    **Use Edit tool** to update individual rows or append new ones. Do not rewrite the entire table unless necessary.
 
+### Phase 4c: Cleanup
+
+15. **Clean temporary directory:**
+   ```bash
+   rm -rf 02_Work/_temp
+   ```
+   - Removes all converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - Only runs after all batches complete (or single pass completes)
+   - Prevents repo bloat with temporary conversion files
+
 ### Phase 5: Write to MEMORY.md
 
-15. **Append entry to `02_Work/MEMORY.md`:**
+16. **Append entry to `02_Work/MEMORY.md`:**
    ```markdown
    ## [YYYY-MM-DDTHH:MM] /extract
    - **Request:** [what the user asked]
