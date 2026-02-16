@@ -26,53 +26,122 @@ Validating overnight implementation (BL-18, BL-23, BL-24, BL-27, BL-28):
 
 ## 🐛 BUGS
 
-### [QA3-BUG-XX] Title
+### [QA3-BUG-01] Subagents Cannot Read /tmp Converted Files (Permission Issue)
 
-**Severity:** Critical / High / Medium / Low
-**Component:** /extract | /analyze | /status | /synthesis
-**Related:** BL-XX
+**Severity:** High
+**Component:** /extract (parallel Task agents)
+**Related:** BL-24 (Office file conversion)
 
 **Observed behavior:**
-[What happened]
+Parallel Task agents launched for extraction hit permission issues when trying to read converted files in `/tmp`:
+- Agent 2, 3, 4: Failed on /tmp reads
+- Agent 1, 5: Partial success (in-repo files only)
+- Agent 6: Success (no /tmp dependency)
 
 **Expected behavior:**
-[What should have happened]
+Subagents should be able to read converted DOCX/PPTX files from `/tmp` directory.
 
 **Reproduction:**
 ```
-[Steps to reproduce]
+1. Convert DOCX to /tmp/file.txt via textutil
+2. Launch Task agent with subagent_type=general-purpose
+3. Agent attempts Read(/tmp/file.txt)
+4. Permission denied
 ```
 
 **Evidence:**
 ```
-[Logs, output, screenshots]
+"The subagents are hitting permission issues with /tmp files."
+"Agents 2, 3, 4 failed on /tmp reads"
+Opus had to switch strategy: "I'll do the extraction work directly"
 ```
 
 **Impact:**
-[How this affects the user]
+- Forces fallback to direct extraction in main context (slower, more context pressure)
+- Parallel extraction strategy fails
+- Negates performance benefits of parallelization
 
 **Proposed fix:**
-[If obvious]
+Option A: Write converted files to repo temp dir (e.g., `02_Work/_temp/`) instead of `/tmp`
+Option B: Task agents need elevated /tmp read permissions
+Option C: Don't use Task agents for extraction, use direct reads only
+
+---
+
+### [QA3-BUG-02] Pipeline Cannot Handle 61 Files — Unrecoverable Context State
+
+**Severity:** CRITICAL — BLOCKING
+**Component:** /extract (entire pipeline)
+**Related:** BL-26 (auto-batching), QA3-PERF-01
+
+**Observed behavior:**
+1. Extraction of 61 files triggers context limit at 6m 42s
+2. Attempt to `/compact` fails with: "Conversation too long"
+3. Pipeline completely blocked, cannot proceed to /analyze
+4. No recovery path available
+
+**Expected behavior:**
+- Auto-batching should activate for >40 files (BL-26)
+- Intermediate writes after each batch should prevent context overflow
+- OR compaction should recover from context limit
+
+**Evidence:**
+```
+Error during compaction: Error: Conversation too long.
+Press esc twice to go up a few messages and try again.
+```
+
+**Impact:**
+- **Pipeline is NOT production-ready for projects with >40 files**
+- Auto-batching (BL-26) did NOT activate
+- v4.3.0 cannot handle TIMining project (61 files)
+- Complete session loss, no way to recover partial work
+
+**Root cause:**
+- Large Project Strategy (BL-26) exists in instructions but was NOT executed
+- Parallel agents accumulated too much context before failure
+- No intermediate writes occurred (single batch attempted)
+
+**Proposed fix:**
+MANDATORY intermediate writes every 10-20 files, not just "if >40 files detected"
+- After 10 files: Write EXTRACTIONS.md + SOURCE_MAP.md
+- After 20 files: Write again
+- Repeat until complete
+- Each write clears working memory, prevents accumulation
 
 ---
 
 ## ⚡ PERFORMANCE
 
-### [QA3-PERF-XX] Title
+### [QA3-PERF-01] Context Limit Reached During Extraction (6m 42s)
 
-**Component:** [skill name]
-**Duration:** [actual] vs [expected]
+**Component:** /extract (direct + parallel agents)
+**Duration:** 6m 42s to context limit (extraction incomplete)
 
 **Observed:**
-[What was slow]
+Multiple "Context limit reached" messages after 6m 42s:
+- Main context: "Context limit reached · /compact or /clear to continue"
+- All 6 Task agents: "Context limit reached" upon completion
+- Extraction incomplete at this point
 
 **Context:**
-- File count: X
-- Insight count: Y
-- Compaction events: Z
+- File count: 61 source files
+- Conversions: 5 HEIC + 6 DOCX + 5 PPTX = 16 conversions
+- Parallel agents: 6 Task agents launched
+- Strategy: Changed from parallel to direct after /tmp permission failures
 
 **Impact:**
-[User experience impact]
+- Extraction taking much longer than expected (<2 min baseline)
+- Context compaction required mid-extraction
+- Risk of data loss if compaction corrupts state
+- User experience: "eterno" (as reported in previous test)
+
+**Analysis:**
+61 files + conversions + 6 parallel agents + their outputs = massive context overhead
+- Each agent loads full skill instructions
+- Each agent processes multiple files
+- Agent outputs accumulate in main context
+- Direct fallback after /tmp failure adds more load
 
 ---
 
@@ -183,5 +252,75 @@ Validating overnight implementation (BL-18, BL-23, BL-24, BL-27, BL-28):
 
 ## 📝 RAW NOTES
 
-[Add raw observations here as they happen during the test]
+### Extraction Phase (6 min elapsed)
+
+**Setup:**
+- ✅ Work layer reset complete (6 files)
+- ✅ 61 source files discovered
+- ✅ MD5 hashes computed
+- ❌ markitdown not installed → using fallbacks (expected)
+
+**Conversions:**
+- ✅ 5 HEIC → JPG (sips conversion successful)
+- ✅ 6 DOCX → TXT (textutil successful)
+- ✅ 5 PPTX → TXT (Python zipfile successful)
+
+**Parallel extraction:**
+- ✅ Opus launched 2 Task agents for parallel folder extraction
+- Agent 1: entrevistas folders
+- Agent 2: Antecedentes folder
+- Strategy: parallelization by folder (efficient)
+
+**Duplicate detection:**
+- ⚠️ 2 files share same MD5 hash (identical content):
+  - notas_entrevista_COO_(segunda entrevista).md
+  - reu_coo_roberto-catalan.md
+- Note: Should be processed once or flagged?
+
+**Multimodal reading:**
+- ✅ Workshop photos being read directly (IMG_9679.jpg, IMG_9680.jpg visible)
+- Can see sticky notes content in images (Spanish text visible)
+- BL-23 validation: NO skips observed so far
+
+**Current status:** 6/6 agents running in parallel, extraction in progress
+
+---
+
+### Context Limit Hit (6m 42s)
+
+**All agents completed but hit context limit:**
+- Agent 1 (entrevistas): ✅ Completed → Context limit
+- Agent 2 (Antecedentes): ✅ Completed → Context limit
+- Agent 3 (root+Propuesta+Vision): ✅ Completed → Context limit
+- Agent 4 (Workshop 1 images pt1): ✅ Completed → Context limit
+- Agent 5 (Workshop 1 images pt2): ✅ Completed → Context limit
+- Agent 6 (Workshop 1 text): ✅ Completed → Context limit
+
+**Permission issue discovered:**
+- Agents 2, 3, 4 failed to read /tmp converted files (permission denied)
+- Agents 1, 5 partial success (in-repo files only)
+- Agent 6 full success (PNG images, no /tmp dependency)
+
+**Strategy change:**
+- Opus switched from parallel agents to direct extraction
+- Reading 8 files in parallel directly → hit context limit immediately
+- "Baked for 6m 42s" → context compaction event
+
+**Status:** Extraction incomplete, context limit reached, compaction required
+
+---
+
+### CRITICAL: Compaction Failed (6m 42s+)
+
+**Error:**
+```
+Error during compaction: Error: Conversation too long.
+Press esc twice to go up a few messages and try again.
+```
+
+**Implication:**
+- Context accumulated so much that even compaction cannot recover
+- 61 files + 6 parallel agents + conversions = UNRECOVERABLE context state
+- Pipeline BLOCKED, cannot proceed to /analyze
+- **This is a hard limit for current architecture**
 
