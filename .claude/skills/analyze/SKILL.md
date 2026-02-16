@@ -1,8 +1,9 @@
 ---
 name: analyze
-description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first.
+description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first. Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
+argument-hint: "[--full]"
 ---
 
 # /analyze — Insight Extraction & Cross-Referencing
@@ -21,24 +22,54 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
-### Phase 1: Load Extractions
+### Phase 1: Load Extractions (with Incremental Support)
 
-1. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
+1. **Check for --full flag** — If user passed `/analyze --full`, force FULL mode (skip incremental logic, process all extractions).
 
-2. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+2. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
-3. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
+3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
 
-### Phase 2: Analysis (Draft)
+4. **Incremental mode detection:**
+   - Read `02_Work/MEMORY.md` to find last `/analyze` execution
+   - Extract timestamp from the most recent `/analyze` entry (format: `YYYY-MM-DDTHH:MM`)
+   - If found AND no `--full` flag: INCREMENTAL mode
+   - If not found OR `--full` flag: FULL mode (first run or forced re-analysis)
+   - Log mode: "Incremental mode: last /analyze at YYYY-MM-DDTHH:MM" OR "Full mode: processing all extractions"
 
-4. **Deduplication check** — Before creating any new insight, compare each candidate claim against ALL existing insights (not just their IDs — read the actual claim text). A claim is a duplicate if:
+5. **Filter sections (INCREMENTAL mode only):**
+   - For each section in EXTRACTIONS.md with header format `## [filename]`
+   - Look for extraction timestamp in section metadata (added by `/extract` in format: `extracted: YYYY-MM-DDTHH:MM`)
+   - If section has NO timestamp → process it (legacy extractions from before BL-17)
+   - If extraction timestamp > last /analyze timestamp → PROCESS this section
+   - If extraction timestamp <= last /analyze timestamp → SKIP this section
+   - Build filtered list of sections to process
+   - Log: "Incremental mode: processing X new/modified sections, skipping Y unchanged sections"
+
+6. **Load all sections (FULL mode):**
+   - Process ALL sections in EXTRACTIONS.md regardless of timestamps
+   - Build list of all sections to process
+   - Log: "Full mode: processing all N sections"
+
+7. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
+
+### Phase 2: Analysis (Draft — Incremental-Aware)
+
+8. **Process filtered sections** — Work only with the sections from Phase 1 (incremental filtered list or full list, depending on mode).
+
+9. **Deduplication check** — Before creating any new insight, compare each candidate claim against ALL existing insights (not just their IDs — read the actual claim text). A claim is a duplicate if:
    - It makes the same factual assertion as an existing insight, even if worded differently (semantic match, not string match).
    - It describes the same user need, pain point, or constraint from the same perspective.
    - **NOT a duplicate if:** the same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
-   - When a duplicate is found: do NOT create a new insight. Instead, increment the convergence count on the existing insight and add the new source ref. If the new source has a better quote, update the quote.
+   - **When a duplicate is found (INCREMENTAL convergence update):**
+     - Do NOT create a new insight
+     - Increment convergence count on existing insight (e.g., 2/18 → 3/18)
+     - Add new source ref if different file (use Edit tool to append to Ref line)
+     - If new source has a better/clearer quote, update the quote
+     - Log: "Updated convergence for [IG-XX]: 2/18 → 3/18"
    - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
 
-5. **Prepare new insights** — For each raw claim from EXTRACTIONS.md not already captured:
+10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
    - Reference the specific source file it came from.
@@ -72,7 +103,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
    **Insight grouping** — Use `## Section` headers in `INSIGHTS_GRAPH.md` to organize insights by theme (e.g., `## User Experience`, `## Business Model`, `## Technical Architecture`). Headers are a grouping mechanism, not a status. An insight's position under a header doesn't affect its status or category.
 
-6. **Cross-reference** — Compare new claims against ALL existing insights (VERIFIED and PENDING).
+11. **Cross-reference** — Compare new claims from filtered sections against ALL existing insights (VERIFIED and PENDING).
    - **Actively seek contradictions** — don't just note obvious conflicts. Look for:
      - Direct contradictions ("users love X" vs "users avoid X").
      - Tensions ("team wants simplicity" vs "client demands customization").
@@ -81,7 +112,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    - For each potential conflict, cite the specific claims from both sides.
    - **Convergence boost** — When multiple new claims from different sources converge on the same point, note the convergence ratio. High convergence (>50% of sources) is a strong signal worth highlighting. Single-source insights are fragile and should be noted as such.
 
-7. **Detect evidence gaps** — Two levels of gap detection:
+12. **Detect evidence gaps** — Two levels of gap detection:
 
    **a. Claim-level gaps** — Areas where claims are made without sufficient source backing, or where important product areas have no source coverage.
 
@@ -127,7 +158,7 @@ All insights are written as `PENDING`. The real approval happens downstream — 
 
 > **⚠️ STOP — If the model supports propose-before-execute mode (non-fast/planning mode):** before writing, present a summary of findings to the user (source org issues, insight table, conflicts table, evidence gaps) and wait for approval. If the model is in fast/auto mode, proceed directly to writing.
 
-8. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
+13. **Write insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, two-digit minimum: `IG-01`…`IG-99`, then `IG-100`+)
    - Category and temporal tag in parentheses: `(user-need, current)`, `(technical, aspirational)`, `(business)`, `(constraint)`
    - Atomic claim — one idea per insight
@@ -139,18 +170,22 @@ All insights are written as `PENDING`. The real approval happens downstream — 
    - Status: `PENDING` (plain text, no formatting)
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
-9. **Log conflicts** — For each detected contradiction:
+14. **Log conflicts** — For each detected contradiction:
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-10. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+15. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
-    ## [YYYY-MM-DDTHH:MM] /analyze
-    - **Request:** [what the user asked]
-    - **Actions:** [extractions processed, cross-referencing performed]
-    - **Result:** [insights added, conflicts logged, gaps flagged]
-    - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
+    ## [YYYY-MM-DDTHH:MM] /analyze [--full]
+    - **Request:** /analyze [incremental|full]
+    - **Mode:** INCREMENTAL (processed X new claims from Y sections, skipped Z unchanged sections) OR FULL (processed X claims from Y sections)
+    - **Actions:**
+      - New insights created: N
+      - Convergence updated: M existing insights
+      - Conflicts detected: K
+    - **Result:** Total insights: T (V VERIFIED, P PENDING) · C conflicts PENDING
+    - **Snapshot:** T insights (V VERIFIED, P PENDING) · C conflicts PENDING · O outputs
     ```
 
 ### Phase 3b: Research Brief
@@ -201,9 +236,11 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 
 ### Phase 4: Report
 
-11. **Summarize to the user** what was written:
+16. **Summarize to the user** what was written:
+    - **Mode:** INCREMENTAL (processed X new sections, skipped Y) OR FULL (processed all Z sections)
     - Source organization issues found (list each one).
     - **Deduplication** — how many candidate claims were deduplicated into existing insights (count + which IDs absorbed them).
+    - **Convergence updates** — how many existing insights had convergence incremented (count + which IDs).
     - Insights added (count, ID range, and breakdown by category).
     - Conflicts logged (count, ID range, with a 1-line summary of each tension).
     - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
