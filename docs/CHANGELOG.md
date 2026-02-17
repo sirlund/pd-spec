@@ -1,5 +1,31 @@
 # Changelog
 
+## [4.6.0] — 2026-02-17
+
+### Highlights
+
+**`/extract` now runs silently.** Instead of narrating every file being processed, `/extract` outputs one compact line per batch during Pass 1 and one line per file during Pass 2 (heavy files). The final report shows totals only — no per-folder file listings. Less noise, same completeness guarantees.
+
+### Changes (BL-34)
+
+- **Removed per-file progress logs.** Pass 1 (light files) now logs only after completing each 10-file batch: `✓ Batch X/Y: 10 files, Z claims`. No per-file narration inside batches.
+- **Simplified Pass 2 log.** Heavy files log: `✓ [filename] → Z claims (X/N)` — concise format, same information.
+- **Compact final report.** End of extraction shows: `✓ Extraction complete: N files · Z claims` + only unprocessable files if any. No per-folder breakdowns.
+- **Silent execution rule.** New instruction in Phase 2: no narration between tool calls ("Now reading...", "Now updating..."). Execute silently, log only when a `Log:` directive specifies the message.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 2 batch log format, Phase 2 progress reporting rule, Phase 4 final report format, new silent execution rule
+
+**BACKLOG impact:**
+- BL-34: ✅ IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.5.0] — 2026-02-16
 
 ### Highlights

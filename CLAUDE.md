@@ -224,7 +224,7 @@ When a bug is discovered during formal QA:
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-16
-- **Status:** v4.3.0 — Production-ready pipeline. /extract processes 100% of files (no skips), /analyze incremental + synthesis layer (161 observations → 18 strategic insights), ambiguity detection, research gap identification. Tested end-to-end on 61-file TIMining project.
+- **Last updated:** 2026-02-17
+- **Status:** v4.6.0 — /extract runs silently with compact batch-level output (BL-34). Full pipeline: /extract → /analyze (interactive + auto-dashboard) → /synthesis → /ship.
 - **Insights count:** 0
 - **Conflicts count:** 0

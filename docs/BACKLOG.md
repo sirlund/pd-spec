@@ -429,9 +429,10 @@ User can't see "where we are" at all times. Dashboard (/status) is separate skil
 
 ### [BL-34] Compact Skill Output — Preserve Context Longer
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.6, 2026-02-17)
 **Priority:** P0 — CRITICAL (performance blocker)
 **Origin:** QA v3 testing (2026-02-16), QA3-UX-03
+**Implemented:** 2026-02-17
 **Related:** BL-29 (Option E), QA3-PERF-01
 
 **Problem:**
@@ -494,6 +495,12 @@ Pass 2: 9/16 ✓ (19 claims)
 - Update all skills (extract, analyze, synthesis, ship) to use compact output format
 - Move detailed logs to files (MEMORY.md gets full log, user sees concise progress)
 - Dashboard shows progress, not chat
+
+**Implementation Results (2026-02-17):**
+- `/extract` skill: 4 changes — (1) removed per-file log inside Pass 1 batches, (2) simplified batch-complete log to one-liner, (3) shortened Pass 2 heavy-file log format, (4) replaced verbose per-folder final report with compact totals-only summary + unprocessable list
+- Added "Silent execution rule" to Phase 2: no narration between tool calls
+- `/analyze` skill: already had compact Phase 6 output — no changes needed
+- `/synthesis`, `/ship`: no per-file loops, not targets for this fix
 
 ---
 
