@@ -81,3 +81,14 @@
 - **Actions:** Inyectado [IG-02] (PENDING, constraint current, researcher observation, confidence: high). Creado field note en Propuesta ruta/_FIELD_NOTES.md. Relacionado con CF-07 e IG-SYNTH-02.
 - **Result:** 1 insight inyectado, 1 field note creado
 - **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 2 outputs
+
+## [2026-02-17T01:00] Entregables session (non-pipeline)
+- **Request:** Consolidado benchmark + light/dark toggle + investigación fuentes
+- **Actions:**
+  - Generado `03_Outputs/entregables-timining/BENCHMARK.html` — 25 referentes, 4 pilares, 12 champions, 13 secundarios
+  - Agregado light/dark toggle (localStorage, key `pd-theme`) a 4 archivos: PILARES.html, CASOS_DE_USO.html, BENCHMARK.html, presentacion_v3.8_original.html
+  - Investigación fuentes: IG-SYNTH-17 (5 fuentes), Aware USD 300k (1 fuente, fragile), USD 450k (4 fuentes), "iPhone-like" origen confirmado en Workshop 01 transcript (Philippe/CEO)
+  - Identificada Sello de Experiencia TIMINING.pptx como fuente derivada (Idemax), no primaria
+  - Commit `0ed74ee` pushed to `working/entregables-timining`
+- **Result:** 3 HTML reports + 1 presentation con toggle. Source traceability research completada.
+- **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 5 outputs (PRD, PERSONAS, PILARES, CASOS_DE_USO, BENCHMARK)

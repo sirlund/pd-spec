@@ -342,3 +342,28 @@ Photorealistic close-up of a smartphone held in a gloved hand (mining safety glo
 - [x] Referentes con logo + link — DONE
 - [x] Tipografía jerarquía mono/sans — DONE
 - [x] Hoja de ruta alineada con Idemax — DONE
+
+### BENCHMARK.html — Consolidado de referentes — DONE
+- 25 referentes de 15 industrias organizados por los 4 pilares
+- 12 champions (3 por pilar) con análisis detallado: Factor X, "Qué robar", conexión a fichas
+- 13 referentes secundarios con patrones complementarios
+- Cada referente: logo (Clearbit), link externo, badge industria, análisis
+- Tablas resumen: conteo por pilar + mapeo fichas→referentes
+- Archivo: `03_Outputs/entregables-timining/BENCHMARK.html`
+
+### Light/Dark toggle — DONE
+- Agregado switch light/dark a los 4 entregables (PILARES, CASOS_DE_USO, BENCHMARK, presentación)
+- Documentos: toggle 36px top-right, CSS variables con `[data-theme="light"]`
+- Presentación: toggle 48px bottom-left, `!important` para override inline styles, attribute selectors
+- Persistencia vía localStorage (key: `pd-theme`, compartida entre archivos)
+
+### Investigación de fuentes — DONE
+- **IG-SYNTH-17 (adopción bottom-up):** 5 fuentes — Evolution deck (3 claims), Narrativa CCB, Workshop PPT, Design Brief, GEMINI exercises PDF
+- **"Aware USD 300k/año":** 1 sola fuente — Design Brief (claim 13). Fragile.
+- **USD 450k:** 4 fuentes — transcript, analysis, Sello PPT, Design Brief
+- **"iPhone-like" origen real:** Philippe (CEO) en Workshop 01 transcript. Cita: "si abro el IOS del celular..." y "te compráis un auto que es más caro, cuando lo abrís se tiene que ver diferente". Sello de Experiencia PPT (Idemax) lo etiquetó como "iPhone-like" pero es fuente derivada, no primaria.
+- **Sello de Experiencia TIMINING.pptx:** Identificada como fuente derivada/retroalimentada de Idemax (consultora), no fuente primaria independiente.
+
+### Commit & Push — DONE
+- `0ed74ee` — docs: add HTML reports (pilares, casos de uso, benchmark) + light/dark toggle
+- Pushed to `working/entregables-timining`
