@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casos de Uso — TIMining CORE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f12;
+            --card: #0d1117;
+            --border: #1a2028;
+            --text: #e0e0e0;
+            --muted: #888;
+            --cyan: #00f3ff;
+            --cyan-dim: rgba(0,243,255,0.08);
+            --red: #ff4d4d;
+            --amber: #ff9800;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            line-height: 1.6;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 50px 80px;
+        }
+        .doc-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+        }
+        .doc-brand { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: 1px; margin-bottom: 16px; }
+        .doc-brand span { color: var(--cyan); font-weight: 600; }
+        .doc-title { font-family: var(--mono); font-size: 36px; font-weight: 600; color: #fff; letter-spacing: -1px; margin-bottom: 8px; }
+        .doc-subtitle { font-size: 16px; color: var(--muted); }
+        .doc-meta { margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+        h2 { font-family: var(--mono); font-size: 24px; font-weight: 500; color: #fff; margin-top: 48px; margin-bottom: 6px; letter-spacing: -0.5px; }
+        h3 { font-family: var(--mono); font-size: 13px; text-transform: uppercase; color: var(--cyan); margin-bottom: 10px; letter-spacing: 0.5px; font-weight: 600; }
+        h4 { font-family: var(--mono); font-size: 17px; font-weight: 500; color: #fff; margin-bottom: 6px; }
+        p { font-size: 14px; color: #b0b0b0; margin-bottom: 12px; }
+        strong { color: #fff; font-weight: 600; }
+        /* Domain header */
+        .domain-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .domain-icon {
+            width: 40px; height: 40px; border-radius: 8px;
+            background: var(--cyan-dim); border: 1px solid rgba(0,243,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--cyan); font-size: 16px; flex-shrink: 0;
+        }
+        .domain-quote { font-size: 16px; color: #ccc; font-style: italic; }
+        .domain-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+        th {
+            text-align: left; font-family: var(--mono); font-size: 11px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px;
+            border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);
+        }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: #c0c0c0; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        /* Note boxes */
+        .note-box {
+            background: rgba(255,255,255,0.02);
+            border-left: 3px solid var(--muted);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #999;
+        }
+        /* Ficha cards */
+        .ficha {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .ficha-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 28px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .ficha-num {
+            font-family: var(--mono);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--cyan);
+            opacity: 0.4;
+            min-width: 40px;
+        }
+        .ficha-title-block h4 { font-size: 20px; margin-bottom: 4px; }
+        .ficha-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag {
+            font-family: var(--mono); font-size: 10px; padding: 3px 8px;
+            border-radius: 4px; text-transform: uppercase;
+        }
+        .tag-domain { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,243,255,0.2); }
+        .tag-pilar { background: rgba(255,255,255,0.04); color: #ccc; border: 1px solid #333; }
+        .tag-laminas { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+        .ficha-body { padding: 20px 28px; }
+        .ficha-body > p { margin-bottom: 16px; }
+        /* D→A→R table inside fichas */
+        .dar-table { margin: 0; }
+        .dar-table td:first-child {
+            font-family: var(--mono); font-weight: 600; font-size: 12px;
+            text-transform: uppercase; white-space: nowrap; width: 110px;
+        }
+        .dar-table .dar-d td:first-child { color: var(--red); }
+        .dar-table .dar-a td:first-child { color: var(--amber); }
+        .dar-table .dar-r td:first-child { color: var(--cyan); }
+        .dar-table .dar-post td:first-child { color: var(--muted); }
+        .dar-table td:last-child { font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
+        /* Referente inside ficha */
+        .ficha-ref {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .ficha-ref-logo {
+            width: 24px; height: 24px; border-radius: 5px;
+            background: #1a1a1a; border: 1px solid #333; object-fit: contain; flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .ficha-ref-text { flex: 1; }
+        .ficha-ref-name {
+            font-family: var(--mono); font-size: 14px; font-weight: 600; color: #fff;
+            text-decoration: none; border-bottom: 1px dotted rgba(0,243,255,0.4);
+        }
+        .ficha-ref-name:hover { color: var(--cyan); }
+        .ficha-ref-name i { font-size: 9px; margin-left: 5px; opacity: 0.5; }
+        .ficha-ref-desc { font-size: 13px; color: #999; margin-top: 4px; }
+        /* Evidence footer */
+        .ficha-evidence {
+            padding: 12px 28px;
+            background: rgba(255,255,255,0.015);
+            border-top: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .ref-tag { font-family: var(--mono); font-size: 11px; color: var(--cyan); }
+        /* Comparison */
+        .comparison-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .comparison-col {
+            flex: 1; background: var(--card); border: 1px solid var(--border);
+            border-radius: 6px; padding: 16px 20px;
+        }
+        .comparison-col h4 { font-size: 14px; margin-bottom: 8px; }
+        .comparison-col p { font-size: 12px; margin-bottom: 4px; }
+        /* Print */
+        @media print {
+            body { background: #fff; color: #222; padding: 20px; }
+            .ficha, .comparison-col { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+            .doc-title, h2, h4, strong { color: #111; }
+            h3, .ref-tag, .tag-domain { color: #555; }
+            p, td, .ficha-ref-desc, .note-box { color: #444; }
+            th { color: #666; background: #f5f5f5; }
+            td, th { border-color: #ddd; }
+            .domain-icon { border-color: #ccc; background: #f0f0f0; color: #555; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="doc-header">
+    <div class="doc-brand">TIMining <span>CORE</span></div>
+    <div class="doc-title">Casos de Uso por Dominio</div>
+    <div class="doc-subtitle">20 escenarios de workshop sintetizados en 4 dominios y 6 fichas maestras</div>
+    <div class="doc-meta">Fuentes: Workshop 01 (20 láminas), Estrategia Maestra v3.4, PD-Spec (54 fuentes) | Patrón transversal: D→A→R (Clear Path)</div>
+</div>
+
+<!-- ==================== DOMINIO A ==================== -->
+<h2>Dominio A: Respuesta a Crisis</h2>
+<div class="domain-header">
+    <div class="domain-icon"><i class="fa-solid fa-bolt"></i></div>
+    <div>
+        <div class="domain-quote">"Algo se rompió — ¿qué hago?"</div>
+        <div class="domain-meta">Pilar: Quiet UI | Láminas: L6, L7, L8, L13, L14, L15 | Objetivo: Minimizar variabilidad y asegurar continuidad</div>
+    </div>
+</div>
+
+<table>
+    <thead><tr><th>Caso</th><th>Láminas</th><th>Rol</th><th>Situación</th><th>Recomendación CORE</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Crisis Caída de Equipo</strong></td><td>L8, L14, L15</td><td>Despachador / Supervisor</td><td>Pala cae en turno noche, tiempo incierto</td><td>3 opciones rankeadas: detener flota, cambiar vaciado, enviar cargador.</td></tr>
+        <tr><td><strong>Riesgo Geotécnico</strong></td><td>L6, L7</td><td>Monitorista / Gte Mina</td><td>Riesgo geotécnico obliga a sacar pala</td><td>Zonas de restricción, redefinir despacho, alternativas con impacto medido.</td></tr>
+        <tr><td><strong>Falla Mecánica</strong></td><td>L13</td><td>Despachador</td><td>Falla mecánica, traspaso de info urgente</td><td>Detalle de falla para mantención. Comparativa con fallas históricas.</td></tr>
+    </tbody>
+</table>
+
+<div class="note-box">Gemini incluía L19 (Autónomos) en Crisis. La movemos a Alineación Estratégica: es post-mortem (fin de semana), no respuesta inmediata.</div>
+
+<!-- ==================== DOMINIO B ==================== -->
+<h2>Dominio B: Anticipación Operativa</h2>
+<div class="domain-header">
+    <div class="domain-icon"><i class="fa-solid fa-clock"></i></div>
+    <div>
+        <div class="domain-quote">"Va a fallar — actúa ahora."</div>
+        <div class="domain-meta">Pilar: Time Sight | Láminas: L3, L5, L9, L16 | Objetivo: Optimizar flujo y cumplimiento de plan</div>
+    </div>
+</div>
+
+<table>
+    <thead><tr><th>Caso</th><th>Láminas</th><th>Rol</th><th>Situación</th><th>Recomendación CORE</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Continuidad Chancado</strong></td><td>L3</td><td>Jefe Chancado</td><td>Bloqueo camiones en 45 min</td><td>Redistribuir flujo hacia stock o saturar controladamente.</td></tr>
+        <tr><td><strong>Ruta Crítica PyT</strong></td><td>L5, L16</td><td>Planificador PyT</td><td>Patios sin perforar, mantenciones retrasadas</td><td>Reasignar equipos, alertar impacto en KPI del día.</td></tr>
+        <tr><td><strong>Control Velocidades</strong></td><td>L9</td><td>Jefe Operaciones</td><td>Incumplimiento Plan de Velocidades</td><td>Causa raíz: Vía, Equipo u Operador.</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== DOMINIO C ==================== -->
+<h2>Dominio C: Asistencia Inteligente</h2>
+<div class="domain-header">
+    <div class="domain-icon"><i class="fa-solid fa-headset"></i></div>
+    <div>
+        <div class="domain-quote">"Procesa esto por mí."</div>
+        <div class="domain-meta">Pilar: Omni Sense | Láminas: L4, L10, L11, L12, L18 | Objetivo: Reducir carga cognitiva</div>
+    </div>
+</div>
+
+<table>
+    <thead><tr><th>Caso</th><th>Láminas</th><th>Rol</th><th>Situación</th><th>Recomendación CORE</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Asistencia "Sofía"</strong></td><td>L18</td><td>Supervisor IROC</td><td>Reunión en 15 min, saturada</td><td>Briefing WhatsApp: resumen vs plan, texto listo.</td></tr>
+        <tr><td><strong>Reunión Diaria CIO</strong></td><td>L4</td><td>Gerencia CIO</td><td>Reunión 8 AM coordinación</td><td>Priorización de incidentes, causa-raíz, plan de acción.</td></tr>
+        <tr><td><strong>Copiloto Legal</strong></td><td>L10</td><td>Jefe de Turno</td><td>"¿Cumplo norma de berma?"</td><td>Confirma cumplimiento o indica pasos. Voz o foto.</td></tr>
+        <tr><td><strong>Triage Radio</strong></td><td>L11, L12</td><td>Despachador</td><td>Radio saturada + aseguramiento tronadura</td><td>Escucha, transcribe, prioriza. Alerta loros mal posicionados.</td></tr>
+    </tbody>
+</table>
+
+<div class="note-box">Gemini omitió L4 (Reunión Diaria). Comparte el mismo flujo que L18 — el sistema prepara al usuario para una reunión.</div>
+
+<!-- ==================== DOMINIO D ==================== -->
+<h2>Dominio D: Alineación Estratégica</h2>
+<div class="domain-header">
+    <div class="domain-icon"><i class="fa-solid fa-chart-line"></i></div>
+    <div>
+        <div class="domain-quote">"¿Cómo vamos contra el plan?"</div>
+        <div class="domain-meta">Pilar: Time Sight | Láminas: L1, L2, L19 | Objetivo: Conectar operación con resultado financiero</div>
+    </div>
+</div>
+
+<table>
+    <thead><tr><th>Caso</th><th>Láminas</th><th>Rol</th><th>Situación</th><th>Recomendación CORE</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Cierre Mensual</strong></td><td>L1</td><td>Gerente Minas</td><td>Cumple mineral pero mala recuperación planta</td><td>Categorización real de mineral, tracking al chancado.</td></tr>
+        <tr><td><strong>Planificación Recursos</strong></td><td>L2</td><td>Planificador CP</td><td>Sin vehículos, material distinto al previsto</td><td>Simula alternativas para suplir o mitigar.</td></tr>
+        <tr><td><strong>Equipos Autónomos</strong></td><td>L19</td><td>Gerente Mina</td><td>Camiones parados fin de semana</td><td>Análisis de período, causa raíz, reposicionar antenas.</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== OUTLIERS ==================== -->
+<h2>Outliers</h2>
+<table>
+    <thead><tr><th>Lámina</th><th>Descripción</th><th>Razón de Exclusión</th></tr></thead>
+    <tbody>
+        <tr><td>L17</td><td>Machine 2 Machine — diagrama de integración</td><td>Arquitectura técnica, no caso de uso.</td></tr>
+        <tr><td>L20</td><td>Concepto "Skynet" — optimización global autónoma</td><td>North star / visión aspiracional. Usado como cierre de presentación.</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== MAPEO ==================== -->
+<h2>Mapeo Dominios → Pilares</h2>
+<table>
+    <thead><tr><th>Dominio</th><th>Pilar Dominante</th><th>Transversal</th><th>Lógica</th></tr></thead>
+    <tbody>
+        <tr><td><strong>A. Crisis</strong></td><td style="color:var(--cyan)">Quiet UI</td><td>Clear Path</td><td>Silencio roto por falla → alternativas rankeadas</td></tr>
+        <tr><td><strong>B. Anticipación</strong></td><td style="color:var(--cyan)">Time Sight</td><td>Clear Path</td><td>Foresight: "va a pasar en 45 min"</td></tr>
+        <tr><td><strong>C. Asistencia</strong></td><td style="color:var(--cyan)">Omni Sense</td><td>Clear Path</td><td>Canal correcto, formato correcto</td></tr>
+        <tr><td><strong>D. Estrategia</strong></td><td style="color:var(--cyan)">Time Sight</td><td>Clear Path</td><td>Hindsight: plan vs realidad</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== 6 FICHAS ==================== -->
+<h2 style="margin-top: 56px;">Fichas Sintetizadas — 6 Casos Maestros</h2>
+<p style="margin-bottom: 28px;">20 láminas del workshop reducidas a 6 fichas por flujo de experiencia compartido. Cada ficha asigna un pilar dominante y conecta con un referente del benchmark.</p>
+
+<!-- FICHA 1 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">01</div>
+        <div class="ficha-title-block">
+            <h4>Caída de Equipo Crítico</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Crisis</span>
+                <span class="tag tag-pilar">Quiet UI</span>
+                <span class="tag tag-laminas">L8 L13 L14 L15</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Despachador IROC, Supervisor de Turno, Jefe de Turno</p>
+        <p>Turno de noche, sala IROC o terreno. Equipo crítico cae sin planificación. Tiempo incierto. Cables aéreos y zonas de seguridad complican movimiento.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>Alerta multicanal (celular + voz + IROC). Pantalla acromática se ilumina solo con la anomalía.</td><td>Quiet UI</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Impacto en tonelaje. Comparativa fallas históricas. Riesgos: cables, zonas restringidas.</td><td>Time Sight</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>3 opciones rankeadas: detener flota, cambiar vaciado, enviar cargador. Pérdida estimada.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Coordinación con mantención. Comunicación a equipos por canal correcto.</td><td>Omni Sense</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/crowdstrike.com" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://www.crowdstrike.com" target="_blank">CrowdStrike<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Achromatic Design — consola 95% gris/negro, color exclusivo para amenazas. Adaptación: pantalla IROC silenciosa que se enciende solo ante caída de equipo.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-07]</span> Gestión por Excepción (8/54) · <span class="ref-tag">[IG-SYNTH-06]</span> D→A→R (25/54) · <span class="ref-tag">[IG-SYNTH-16]</span> Paz Mental (5/54)</div>
+</div>
+
+<!-- FICHA 2 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">02</div>
+        <div class="ficha-title-block">
+            <h4>Riesgo Espacial y Seguridad</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Crisis + Asistencia</span>
+                <span class="tag tag-pilar">Omni Sense</span>
+                <span class="tag tag-laminas">L6 L7 L12</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Supervisor de Monitoreo, Gerente Mina, Jefe de Turno</p>
+        <p>Zona de riesgo geotécnico activada o tronadura planificada. Seguridad innegociable con responsabilidad legal. El sistema cruza radares, prismas, GPS y radio para dar certeza.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>Monitoreo geotécnico (ARIS) cruzado con GPS de equipos en zona de riesgo.</td><td>Omni Sense</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Simulación de indisponibilidad. Impacto plan semanal/mensual. Zonas restricción en tiempo real.</td><td>Time Sight</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>Definir restricciones, redefinir despacho, set de alternativas con impacto medido.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Monitoreo continuo. Alertas solo si situación cambia.</td><td>Quiet UI</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/anduril.com" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://www.anduril.com/lattice" target="_blank">Anduril Lattice OS<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Spatial Intelligence — identifica automáticamente el "interés" y lo proyecta en UI de baja carga cromática. Adaptación: CORE cruza sensores sin consultar múltiples sistemas.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-18]</span> Seguridad geotécnica (8/54) · <span class="ref-tag">[IG-SYNTH-01]</span> Geometry Gap (15/54) · <span class="ref-tag">[IG-SYNTH-06]</span> D→A→R (25/54)</div>
+</div>
+
+<!-- FICHA 3 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">03</div>
+        <div class="ficha-title-block">
+            <h4>Anticipación de Cuello de Botella</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Anticipación</span>
+                <span class="tag tag-pilar">Time Sight</span>
+                <span class="tag tag-laminas">L3 L5 L9 L16</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Jefe de Chancado, Planificador PyT, Jefe de Operaciones</p>
+        <p>Operación aparentemente normal. El sistema detecta que en 45 minutos habrá un problema. Todavía hay tiempo para actuar. El desafío no es reaccionar sino anticipar.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>Alerta predictiva: "en 45 min se bloquea el chancador." Integración PI System.</td><td>Time Sight</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Impacto aguas abajo en tonelaje y dinero. Causa raíz: vía, equipo u operador.</td><td>Time Sight</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>Redistribuir flujo, stockear o saturar controladamente. Reasignar equipos.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Notificación a áreas impactadas aguas abajo por canal correcto.</td><td>Omni Sense</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/chronosphere.io" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://chronosphere.io" target="_blank">Chronosphere<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Lens — zoom temporal para distinguir si un patrón es puntual o tendencia. Adaptación: ver si el bloqueo es aislado o recurrente.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-06]</span> D→A→R (25/54) · <span class="ref-tag">[IG-SYNTH-12]</span> Adherencia al plan (10/54) · <span class="ref-tag">[IG-SYNTH-03]</span> Confusión Temporal (4/54)</div>
+</div>
+
+<!-- FICHA 4 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">04</div>
+        <div class="ficha-title-block">
+            <h4>Briefing Inteligente</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Asistencia</span>
+                <span class="tag tag-pilar">Omni Sense</span>
+                <span class="tag tag-laminas">L4 L18</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Supervisor IROC ("Sofía"), Gerencia CIO/Operaciones</p>
+        <p>Reunión en 15 minutos. Saturado de correos y reuniones. No hay tiempo para prepararse. El sistema debe buscar al usuario, no al revés.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>15 min antes, WhatsApp con resumen vs plan. Canal: el usuario está caminando.</td><td>Omni Sense</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Priorización objetiva. Causa raíz de brechas. Métricas: tronadura -20%, 5 camiones, 2 riesgos.</td><td>Time Sight</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>Texto listo para indicaciones. Visualización 2D con call outs focales.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Seguimiento post-reunión: "tus indicaciones van ok" o "atención: desvío."</td><td>Omni Sense</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/samsara.com" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://www.samsara.com" target="_blank">Samsara<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Connected Workflows — múltiples fuentes sensoriales en flujos automatizados. Adaptación: briefing contextual que llega sin abrir dashboard.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-04]</span> Dashboard→Copiloto (12/54) · <span class="ref-tag">[IG-SYNTH-15]</span> Efecto Gaviota (5/54) · <span class="ref-tag">[IG-SYNTH-09]</span> Perfiles (12/54)</div>
+</div>
+
+<!-- FICHA 5 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">05</div>
+        <div class="ficha-title-block">
+            <h4>Copiloto en Terreno</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Asistencia</span>
+                <span class="tag tag-pilar">Omni Sense</span>
+                <span class="tag tag-laminas">L10 L11</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Jefe de Turno, Despachador</p>
+        <p>En terreno. Radio saturada. Duda urgente: "¿cumplo la norma de berma?" Las manos están ocupadas. Interfaz principal: voz y cámara del celular.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>Consulta por voz o foto. Radio: el sistema escucha, transcribe, identifica.</td><td>Omni Sense</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Cruce con normativa: Sernageomin, procedimientos faena. Priorización radio por urgencia.</td><td>Omni Sense</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>"Estás cumpliendo" o "Regulariza así: [pasos]." Lista priorizada de solicitudes pendientes.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Silencio una vez resuelto. No re-alertar.</td><td>Quiet UI</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/discord.com" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://discord.com" target="_blank">Discord<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Canales de voz Push-to-Talk — organiza múltiples canales simultáneos. Adaptación: solicitudes de radio como canales temáticos priorizados.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-08]</span> Democratización (9/54) · <span class="ref-tag">[IG-SYNTH-19]</span> 4 Lentes (7/54) · <span class="ref-tag">[IG-SYNTH-18]</span> Seguridad (8/54)</div>
+</div>
+
+<!-- FICHA 6 -->
+<div class="ficha">
+    <div class="ficha-top">
+        <div class="ficha-num">06</div>
+        <div class="ficha-title-block">
+            <h4>Análisis Plan vs Realidad</h4>
+            <div class="ficha-tags">
+                <span class="tag tag-domain">Estrategia</span>
+                <span class="tag tag-pilar">Time Sight</span>
+                <span class="tag tag-laminas">L1 L2 L19</span>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-body">
+        <p><strong>Perfil:</strong> Gerente Minas, Planificador Corto Plazo, Gerente Mina</p>
+        <p>Horizonte largo: fin de turno, fin de semana, cierre mensual. Los números parecen bien pero algo no cuadra. Se necesita entender la cadena causal completa.</p>
+        <table class="dar-table">
+            <tr class="dar-d"><td>Detección</td><td>Brecha plan vs realidad. Hindsight: ¿qué pasó? ¿por qué cayó la recuperación?</td><td>Time Sight</td></tr>
+            <tr class="dar-a"><td>Análisis</td><td>Categorización real vs reportada. Posición/velocidad autónomos. Anomalías.</td><td>Time Sight</td></tr>
+            <tr class="dar-r"><td>Recomendación</td><td>Ajustes dinámicos de flota. Reposicionar antenas. Tracking mineral al chancado.</td><td>Clear Path</td></tr>
+            <tr class="dar-post"><td>Post-acción</td><td>Foresight: si no se corrige, ¿cuál es el impacto en plan semanal/mensual?</td><td>Time Sight</td></tr>
+        </table>
+        <div class="ficha-ref">
+            <img class="ficha-ref-logo" src="https://logo.clearbit.com/tesla.com" alt="" onerror="this.style.display='none'">
+            <div class="ficha-ref-text">
+                <a class="ficha-ref-name" href="https://www.tesla.com/fleet" target="_blank">Tesla Fleet<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <div class="ficha-ref-desc">Time Scrubbing — rebobinar incidentes para entender causalidad segundo a segundo. Adaptación: navegar temporalmente una jornada de autónomos.</div>
+            </div>
+        </div>
+    </div>
+    <div class="ficha-evidence"><span class="ref-tag">[IG-SYNTH-12]</span> Adherencia al plan (10/54) · <span class="ref-tag">[IG-SYNTH-01]</span> Geometry Gap (15/54) · <span class="ref-tag">[IG-SYNTH-05]</span> Efecto Suiza (10/54)</div>
+</div>
+
+<!-- ==================== RESUMEN ==================== -->
+<h2>Resumen de Síntesis</h2>
+<table>
+    <thead><tr><th>#</th><th>Ficha</th><th>Dominio</th><th>Pilar</th><th>Láminas</th><th>Referente</th></tr></thead>
+    <tbody>
+        <tr><td>1</td><td><strong>Caída de Equipo</strong></td><td>A. Crisis</td><td>Quiet UI</td><td>L8, L13, L14, L15</td><td>CrowdStrike</td></tr>
+        <tr><td>2</td><td><strong>Riesgo Espacial</strong></td><td>A+C</td><td>Omni Sense</td><td>L6, L7, L12</td><td>Anduril</td></tr>
+        <tr><td>3</td><td><strong>Anticipación</strong></td><td>B. Anticipación</td><td>Time Sight</td><td>L3, L5, L9, L16</td><td>Chronosphere</td></tr>
+        <tr><td>4</td><td><strong>Briefing</strong></td><td>C. Asistencia</td><td>Omni Sense</td><td>L4, L18</td><td>Samsara</td></tr>
+        <tr><td>5</td><td><strong>Copiloto</strong></td><td>C. Asistencia</td><td>Omni Sense</td><td>L10, L11</td><td>Discord</td></tr>
+        <tr><td>6</td><td><strong>Plan vs Realidad</strong></td><td>D. Estrategia</td><td>Time Sight</td><td>L1, L2, L19</td><td>Tesla Fleet</td></tr>
+    </tbody>
+</table>
+<p><strong>Cobertura:</strong> 18/20 láminas en 6 fichas. Outliers: L17 (arquitectura), L20 (visión "Skynet").<br>
+<strong>Reducción:</strong> 70% (20 → 6) sin perder información. <strong>Clear Path (D→A→R)</strong> es transversal a las 6.</p>
+
+<!-- ==================== COMPARATIVA ==================== -->
+<h2>Comparativa vs Gemini</h2>
+<div class="comparison-row">
+    <div class="comparison-col">
+        <h4>Gemini (10 casos)</h4>
+        <p>L2, L4 omitidas; L10 perdida</p>
+        <p>3 casos inventados (#8 #9 #10)</p>
+        <p>Referentes débiles (Monday, Waze, Uber)</p>
+        <p>Sin evidencia [IG-XX]</p>
+        <p>Alta repetición entre casos</p>
+    </div>
+    <div class="comparison-col" style="border-color: var(--cyan);">
+        <h4 style="color: var(--cyan);">PD-Spec (6 fichas)</h4>
+        <p>18/20 láminas cubiertas</p>
+        <p>0 casos inventados</p>
+        <p>Referentes del benchmark verificado</p>
+        <p>Cada ficha con [IG-SYNTH-XX] y convergencia</p>
+        <p>Agrupados por flujo, mínima repetición</p>
+    </div>
+</div>
+
+<!-- Theme Toggle -->
+<style>
+    [data-theme="light"] {
+        --bg: #f5f6f8; --card: #ffffff; --border: #dfe1e6;
+        --text: #1a1a2e; --muted: #5a5a70;
+        --cyan: #0070a0; --cyan-dim: rgba(0,112,160,0.06);
+        --red: #cc0000; --amber: #b86800;
+    }
+    [data-theme="light"] body { background: var(--bg); color: var(--text); }
+    [data-theme="light"] h2, [data-theme="light"] h4, [data-theme="light"] strong,
+    [data-theme="light"] .doc-title, [data-theme="light"] .ficha-title-block h4 { color: #111; }
+    [data-theme="light"] h3 { color: var(--cyan); }
+    [data-theme="light"] p { color: #444; }
+    [data-theme="light"] td, [data-theme="light"] .note-box, [data-theme="light"] .ficha-ref-desc,
+    [data-theme="light"] .domain-quote, [data-theme="light"] .comparison-col p { color: #555; }
+    [data-theme="light"] th { color: #666; background: rgba(0,0,0,0.03); }
+    [data-theme="light"] td, [data-theme="light"] th { border-color: var(--border); }
+    [data-theme="light"] .ficha { background: var(--card); border-color: var(--border); }
+    [data-theme="light"] .ficha-top { border-color: var(--border); }
+    [data-theme="light"] .ficha-evidence { background: rgba(0,0,0,0.02); border-color: var(--border); }
+    [data-theme="light"] .ficha-ref { border-color: var(--border); }
+    [data-theme="light"] .ficha-ref-logo { background: #f0f0f0; border-color: #ddd; }
+    [data-theme="light"] .ficha-ref-name { color: #111; }
+    [data-theme="light"] .domain-icon { background: rgba(0,112,160,0.06); border-color: rgba(0,112,160,0.15); color: var(--cyan); }
+    [data-theme="light"] .domain-meta { color: var(--muted); }
+    [data-theme="light"] .tag-domain { background: rgba(0,112,160,0.06); color: var(--cyan); border-color: rgba(0,112,160,0.15); }
+    [data-theme="light"] .tag-pilar { background: rgba(0,0,0,0.03); color: #555; border-color: #ddd; }
+    [data-theme="light"] .tag-laminas { color: #888; border-color: #ddd; }
+    [data-theme="light"] .comparison-col { background: var(--card); border-color: var(--border); }
+    [data-theme="light"] .comparison-col h4 { color: #111; }
+    [data-theme="light"] .ref-tag { color: var(--cyan); }
+    [data-theme="light"] .doc-brand { color: var(--muted); }
+    [data-theme="light"] .doc-brand span { color: var(--cyan); }
+    [data-theme="light"] .doc-subtitle, [data-theme="light"] .doc-meta { color: var(--muted); }
+    [data-theme="light"] .note-box { border-color: #ccc; background: rgba(0,0,0,0.02); }
+    #theme-toggle {
+        position: fixed; top: 16px; right: 16px; z-index: 9999;
+        width: 36px; height: 36px; border-radius: 50%;
+        border: 1px solid var(--border); background: var(--card);
+        color: var(--muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; transition: all 0.3s ease; opacity: 0.7;
+    }
+    #theme-toggle:hover { opacity: 1; border-color: var(--cyan); color: var(--cyan); }
+    @media print { #theme-toggle { display: none; } }
+</style>
+<button id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro"><i class="fa-solid fa-sun"></i></button>
+<script>
+(function(){
+    var t=document.getElementById('theme-toggle'),i=t.querySelector('i'),s=localStorage.getItem('pd-theme');
+    if(s==='light'){document.documentElement.setAttribute('data-theme','light');i.className='fa-solid fa-moon';}
+    t.addEventListener('click',function(){
+        var c=document.documentElement.getAttribute('data-theme');
+        if(c==='light'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('pd-theme','dark');i.className='fa-solid fa-sun';}
+        else{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('pd-theme','light');i.className='fa-solid fa-moon';}
+    });
+})();
+</script>
+</body>
+</html>

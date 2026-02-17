@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmark de Diseño — TIMining CORE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f12;
+            --card: #0d1117;
+            --border: #1a2028;
+            --text: #e0e0e0;
+            --muted: #888;
+            --cyan: #00f3ff;
+            --cyan-dim: rgba(0,243,255,0.08);
+            --amber: #ff9800;
+            --amber-dim: rgba(255,152,0,0.08);
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            line-height: 1.6;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 50px 80px;
+        }
+        /* Header */
+        .doc-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+        }
+        .doc-brand { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: 1px; margin-bottom: 16px; }
+        .doc-brand span { color: var(--cyan); font-weight: 600; }
+        .doc-title { font-family: var(--mono); font-size: 36px; font-weight: 600; color: #fff; letter-spacing: -1px; margin-bottom: 8px; }
+        .doc-subtitle { font-size: 16px; color: var(--muted); }
+        .doc-meta { margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+        /* Sections */
+        h2 { font-family: var(--mono); font-size: 24px; font-weight: 500; color: #fff; margin-top: 56px; margin-bottom: 8px; letter-spacing: -0.5px; }
+        h3 { font-family: var(--mono); font-size: 13px; text-transform: uppercase; color: var(--cyan); margin-bottom: 10px; letter-spacing: 0.5px; font-weight: 600; }
+        h4 { font-family: var(--mono); font-size: 17px; font-weight: 500; color: #fff; margin-bottom: 6px; }
+        p { font-size: 14px; color: #b0b0b0; margin-bottom: 12px; }
+        strong { color: #fff; font-weight: 600; }
+        /* Pilar section header */
+        .pilar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .pilar-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            background: var(--cyan-dim); border: 1px solid rgba(0,243,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--cyan); font-size: 18px; flex-shrink: 0;
+        }
+        .pilar-info {}
+        .pilar-name-big { font-family: var(--mono); font-size: 22px; font-weight: 600; color: #fff; }
+        .pilar-tagline { font-size: 14px; color: var(--muted); margin-top: 2px; }
+        /* Referent card */
+        .ref-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 28px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .ref-card.champion::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--cyan);
+            border-radius: 8px 0 0 8px;
+        }
+        .ref-card.secondary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: #333;
+            border-radius: 8px 0 0 8px;
+        }
+        .ref-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .ref-logo {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: #1a1a1a; border: 1px solid #333;
+            object-fit: contain; flex-shrink: 0;
+        }
+        .ref-title-block { flex: 1; }
+        .ref-name {
+            font-family: var(--mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+        }
+        .ref-name:hover { color: var(--cyan); }
+        .ref-name i { font-size: 10px; margin-left: 6px; opacity: 0.4; }
+        .ref-industry {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .ref-badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .badge-champion { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,243,255,0.3); }
+        .badge-secondary { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid #333; }
+        /* Sections inside card */
+        .ref-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+        .ref-section h3 { margin-bottom: 6px; font-size: 11px; }
+        .ref-section p { font-size: 13px; color: #999; margin-bottom: 6px; }
+        .ref-factor {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.7;
+        }
+        .steal-list { list-style: none; padding: 0; }
+        .steal-list li {
+            font-size: 13px;
+            color: #b0b0b0;
+            padding: 5px 0 5px 18px;
+            position: relative;
+        }
+        .steal-list li::before {
+            content: '\f0e7';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--amber);
+            font-size: 10px;
+            top: 7px;
+        }
+        .ficha-tag {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255,152,0,0.1);
+            color: var(--amber);
+            border: 1px solid rgba(255,152,0,0.2);
+            margin-top: 10px;
+        }
+        /* Intro box */
+        .intro-box {
+            background: var(--cyan-dim);
+            border-left: 3px solid var(--cyan);
+            padding: 16px 20px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 32px;
+        }
+        .intro-box p { font-size: 13px; color: #ccc; margin-bottom: 4px; }
+        .intro-box strong { color: var(--cyan); }
+        /* Summary table */
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+        th {
+            text-align: left; font-family: var(--mono); font-size: 11px; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px;
+            border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02);
+        }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: #c0c0c0; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        /* Print */
+        @media print {
+            body { background: #fff; color: #222; padding: 20px; }
+            .ref-card { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+            .ref-card.champion::before, .ref-card.secondary::before { background: #999; }
+            .doc-title, h2, h4, strong, .ref-name, .pilar-name-big { color: #111; }
+            h3, .ref-industry { color: #555; }
+            p, td, .ref-factor, .steal-list li, .ref-section p { color: #444; }
+            th { color: #666; background: #f5f5f5; }
+            td, th { border-color: #ddd; }
+            .pilar-icon { border-color: #ccc; background: #f0f0f0; color: #555; }
+            .intro-box { background: #f0f7ff; border-color: #999; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="doc-header">
+    <div class="doc-brand">TIMining <span>CORE</span></div>
+    <div class="doc-title">Benchmark de Diseño</div>
+    <div class="doc-subtitle">Referentes inter-industria organizados por pilar de diseño</div>
+    <div class="doc-meta">Fuentes: Estrategia Maestra v3.4, PD-Spec (54 fuentes), Workshop 01 | No es analisis competitivo — es inspiracion de patrones</div>
+</div>
+
+<div class="intro-box">
+    <h3>Criterio de seleccion</h3>
+    <p><strong>Referentes de otras industrias</strong> que resuelven problemas analogos al de TIMining CORE: saturacion cognitiva en entornos criticos, operaciones 24/7, multiples fuentes sensoriales.</p>
+    <p>Cada referente tiene un <strong>Factor X</strong> (por que esta ahi), patrones <strong>robables</strong> (que se puede adaptar), y su conexion con los pilares y fichas de TIMining.</p>
+    <p><span class="ref-badge badge-champion">CHAMPION</span> = 2-3 referentes clave por pilar | <span class="ref-badge badge-secondary">SECONDARY</span> = complementario</p>
+</div>
+
+<!-- ==================== QUIET UI ==================== -->
+<h2><i class="fa-solid fa-volume-xmark" style="font-size:20px; margin-right:8px; opacity:0.5;"></i> Quiet UI</h2>
+<div class="pilar-header">
+    <div class="pilar-icon"><i class="fa-solid fa-volume-xmark"></i></div>
+    <div class="pilar-info">
+        <div class="pilar-name-big">Gestion por excepcion</div>
+        <div class="pilar-tagline">La interfaz permanece en silencio. El color y el sonido son recursos escasos reservados para la anomalia.</div>
+    </div>
+</div>
+
+<!-- CrowdStrike -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/crowdstrike.com" alt="CrowdStrike" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.crowdstrike.com" target="_blank">CrowdStrike<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Ciberseguridad (SOC / Endpoint)</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Achromatic Design.</strong> Consola de comando deliberadamente "aburrida" por diseno: 95% escala de grises y negro. El color es exclusivo para amenazas activas. Reduce fatiga visual en turnos de 12 horas frente a pantalla.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Paleta acromatica como default:</strong> pantalla IROC en reposo debe ser gris/negro. Cyan solo para anomalias. Elimina la "fiesta de colores" actual de Aware.</li>
+            <li><strong>Jerarquia por saturacion:</strong> en vez de usar colores distintos para categorias, usar saturacion (mas brillante = mas urgente).</li>
+            <li><strong>Fatiga cero:</strong> operadores de mina tienen turnos de 12h igual que analistas SOC. Si CrowdStrike puede hacer su consola "silenciosa", TIMining tambien.</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 01 — Caida de Equipo Critico</span>
+</div>
+
+<!-- Motive -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/gomotive.com" alt="Motive" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://gomotive.com" target="_blank">Motive<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Logistica / Flotas Autonomas</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Edge AI filtra 99% de alertas falsas.</strong> Solo escala lo que requiere intervencion humana. El sistema toma decisiones de descarte en el borde (camara/sensor), no en el dashboard.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Filtrado en el borde:</strong> CORE debe clasificar eventos antes de mostrarlos. Si la desviacion esta dentro de tolerancia, no aparece.</li>
+            <li><strong>Metrica del 99%:</strong> util como argumento de venta — "el sistema filtra el 99% del ruido para que veas solo lo que importa".</li>
+            <li><strong>Escalamiento por umbral:</strong> 3 niveles — info (log silencioso), warning (badge), critical (alerta multicanal).</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Compound -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/compound.finance" alt="Compound" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://compound.finance" target="_blank">Compound Finance<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">DeFi / Fintech</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Numerical Stillness.</strong> Numeros en gran escala con pesos tipograficos ligeros. "El estado no grita; respira." Los KPI principales usan fuentes ultra-thin que transmiten calma incluso mostrando millones.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Tipografia como canal emocional:</strong> numeros grandes + peso ligero = confianza. Numeros chicos + peso bold = tension. Usar esta dialectica para el tonelaje en dashboard IROC.</li>
+            <li><strong>"Respira, no grita":</strong> el dashboard de turno normal debe sentirse calmo. Los KPIs son informativos, no alarmistas.</li>
+            <li><strong>Contraste solo para delta:</strong> el numero base es neutro; el cambio (+ o -) es lo que tiene color.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- SpaceX -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/spacex.com" alt="SpaceX" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.spacex.com" target="_blank">SpaceX Dragon HMI<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Aeroespacial</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Touch-first en mision critica.</strong> Interfaz minimalista con fondo negro y elementos blancos/cyan. Cada control tiene un proposito inmediato. Cero decoracion.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Estetica aspiracional:</strong> "si es bueno para SpaceX, es bueno para mineria" — argumento de venta poderoso.</li>
+            <li><strong>Layout limpio:</strong> controles agrupados por funcion, no por dato. Cada zona de la pantalla tiene un proposito claro.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Linear -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/linear.app" alt="Linear" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://linear.app" target="_blank">Linear<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Productividad / Project Management</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Threaded Assets.</strong> Hilos anclados a objetos especificos (tickets). El contexto nunca se pierde porque la conversacion vive dentro del activo, no en un chat externo.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Conversacion en el activo:</strong> la discusion sobre una pala debe vivir en la ficha de la pala, no en un grupo de WhatsApp.</li>
+            <li><strong>Interfaz minimalista:</strong> demuestra que un producto B2B puede ser bello sin sacrificar funcionalidad.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Polestar -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/polestar.com" alt="Polestar" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.polestar.com" target="_blank">Polestar<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Automotriz / EV</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Scandinavian minimalism en HMI.</strong> Cluster de instrumentos con informacion minima. Solo muestra velocidad, bateria y navegacion. Todo lo demas esta a un toque.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Jerarquia de 2 niveles:</strong> nivel 1 = glanceable (3-4 KPIs). Nivel 2 = drill-down bajo demanda. No mezclar.</li>
+            <li><strong>Premium minimalista:</strong> refuerza el concepto "iPhone-like" mencionado por stakeholders para justificar el precio.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Ramify -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/ramify.fr" alt="Ramify" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.ramify.fr" target="_blank">Ramify<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Fintech / Wealth Management</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Micro-humanization.</strong> Dashboards dinamicos con sugerencias predictivas. Estetica sobria que proyecta "Visual Trust" — el usuario siente que su dinero esta bien cuidado.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Visual Trust:</strong> la interfaz debe proyectar "tu operacion esta bajo control" sin necesidad de verificar cada dato.</li>
+            <li><strong>Sugerencias predictivas en tono calmo:</strong> "tu portafolio esta OK, pero considera X" — mismo patron para "tu turno va bien, pero ojo con el chancador".</li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- ==================== CLEAR PATH ==================== -->
+<h2><i class="fa-solid fa-route" style="font-size:20px; margin-right:8px; opacity:0.5;"></i> Clear Path</h2>
+<div class="pilar-header">
+    <div class="pilar-icon"><i class="fa-solid fa-route"></i></div>
+    <div class="pilar-info">
+        <div class="pilar-name-big">Cada pantalla termina en una accion</div>
+        <div class="pilar-tagline">D->A->R: Deteccion, Analisis, Recomendacion. El sistema no te deja perdido en un laberinto de datos.</div>
+    </div>
+</div>
+
+<!-- SentinelOne Purple AI -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/sentinelone.com" alt="SentinelOne" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.sentinelone.com/platform/purple-ai/" target="_blank">SentinelOne Purple AI<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Ciberseguridad / AI SOC</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Triaje automatico a velocidad de maquina.</strong> Plataforma agentiva que detecta amenaza, analiza contexto, y recomienda accion — el patron D->A->R exacto. El analista SOC recibe la solucion, no el problema.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Patron D->A->R nativo:</strong> la interfaz muestra deteccion (que paso), analisis (por que importa), y accion recomendada en un solo flujo.</li>
+            <li><strong>Confianza en la IA:</strong> el sistema muestra su razonamiento ("por que recomiendo esto") para que el operador confie sin verificar cada dato.</li>
+            <li><strong>Radio de impacto:</strong> visualiza el alcance de un incidente en un grafo unificado — adaptable a "si cae esta pala, que mas se afecta".</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Vercel v0 -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/vercel.com" alt="Vercel" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://v0.dev" target="_blank">Vercel v0<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">IA / Desarrollo</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Generative UI.</strong> La intencion del usuario (texto) se convierte en interfaz ejecutable (componente). El sistema genera la vista optima para cada situacion, no una vista generica pre-construida.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Vistas de crisis generadas:</strong> cuando cae una pala, CORE genera una vista especifica para ESE evento con la informacion relevante, no un dashboard generico.</li>
+            <li><strong>Interfaz como respuesta:</strong> la interfaz no es un contenedor fijo — se adapta a lo que el operador necesita en ese momento.</li>
+            <li><strong>Interaccion conversacional:</strong> el operador describe lo que necesita, el sistema genera la visualizacion adecuada.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Datadog -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/datadoghq.com" alt="Datadog" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.datadoghq.com/product/platform/bits-ai/" target="_blank">Datadog Bits AI<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Observabilidad / DevOps</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Recomendaciones proactivas de correccion.</strong> Bits AI sugiere correcciones de codigo antes de que el ingeniero las busque. Archive Search permite consultar historico sin rehidratar logs — acceso inmediato a cualquier punto en el tiempo.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Recomendacion proactiva:</strong> el sistema no espera que preguntes — te dice "esto se puede arreglar asi" antes de que lo pidas.</li>
+            <li><strong>Archive Search:</strong> patron para consultar historico operacional sin cargar el sistema. "Que paso el martes a las 3AM" sin esperar 5 minutos.</li>
+            <li><strong>Gestion por excepcion en observabilidad:</strong> quiet by default, alertas solo cuando se sale del umbral.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- McLaren Atlas -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/mclaren.com" alt="McLaren" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.mclaren.com/racing/inside-the-mtc/" target="_blank">F1 McLaren Atlas<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Formula 1 / Telemetria</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — The Delta.</strong> No muestra datos absolutos sino la diferencia entre lo esperado y lo real. Cada vuelta se compara contra la vuelta ideal. Si el delta es cero, no hay nada que hacer.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Visualizacion de delta:</strong> "plan vs realidad" como comparacion visual continua. Si la barra esta verde, no mires. Si se pone roja, actua.</li>
+            <li><strong>Referente aspiracional:</strong> "F1" como argumento de venta para ingenieros mineros — ambos trabajan con telemetria en tiempo real.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Ramp -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/ramp.com" alt="Ramp" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://ramp.com" target="_blank">Ramp<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Fintech / Gastos Corporativos</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Actionable Automation.</strong> Cada transaccion sospechosa llega con una accion sugerida (aprobar, rechazar, pedir recibo). El usuario no busca que hacer — el sistema ya decidio.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Accion como default:</strong> cada alerta de CORE debe llegar con botones de accion, no solo informacion.</li>
+            <li><strong>Automatizacion silenciosa:</strong> las acciones rutinarias se ejecutan solas. Solo escala las excepciones.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Flexport -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/flexport.com" alt="Flexport" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.flexport.com" target="_blank">Flexport<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Logistica Global</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Threaded Asset Management.</strong> Cada contenedor tiene un log cronologico de eventos. Toda la historia del activo en un solo lugar — desde el puerto de origen hasta la entrega.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Historia del activo:</strong> cada camion/pala deberia tener un timeline completo — eventos, alertas, mantenciones, incidentes — en una sola vista.</li>
+            <li><strong>Complejidad operacional gestionada:</strong> Flexport maneja cadenas de suministro globales con una interfaz limpia. Prueba de que operaciones complejas no requieren interfaces complejas.</li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- ==================== TIME SIGHT ==================== -->
+<h2><i class="fa-solid fa-clock-rotate-left" style="font-size:20px; margin-right:8px; opacity:0.5;"></i> Time Sight</h2>
+<div class="pilar-header">
+    <div class="pilar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+    <div class="pilar-info">
+        <div class="pilar-name-big">Pasado, presente y futuro en una sola mirada</div>
+        <div class="pilar-tagline">Hindsight / Insight / Foresight. La misma interfaz, tres profundidades temporales.</div>
+    </div>
+</div>
+
+<!-- Tesla Fleet -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/tesla.com" alt="Tesla" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.tesla.com/fleet" target="_blank">Tesla Fleet<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Telemetria / Flotas EV</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Time Scrubbing.</strong> Interfaces que permiten "rebobinar" incidentes para entender la causalidad fisica exacta — segundo a segundo. Como un DVR para la operacion de la flota.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Slider temporal:</strong> control tipo video para navegar el tiempo. "Que estaba haciendo el camion autonomo a las 3:42 AM?" Arrastrar y ver.</li>
+            <li><strong>Correlacion temporal:</strong> al rebobinar un incidente, ver simultaneamente GPS, velocidad, payload y alertas sincronizados.</li>
+            <li><strong>Post-mortem visual:</strong> perfecto para la ficha 6 (Plan vs Realidad) — entender por que los camiones autonomos pararon el fin de semana.</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 06 — Analisis Plan vs Realidad</span>
+</div>
+
+<!-- SentinelOne Storylines -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/sentinelone.com" alt="SentinelOne" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.sentinelone.com/platform/singularity-xdr/" target="_blank">SentinelOne Storylines<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Ciberseguridad / XDR</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Reconstruccion forense narrativa.</strong> Storylines reconstruye la cadena de eventos de un incidente como una historia: que paso primero, que causo que, y como se propago. Hindsight operacional automatizado.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Narrativa causal:</strong> en vez de mostrar un log de eventos, contar la historia — "a las 2:30 cayo la pala, lo que causo retraso en 12 camiones, lo que impacto 340 toneladas".</li>
+            <li><strong>Grafo de propagacion:</strong> visualizar como un evento se propaga por el sistema. Un solo fallo tiene multiples impactos downstream.</li>
+            <li><strong>Analisis automatico de causa raiz:</strong> el sistema propone la causa mas probable antes de que el operador investigue.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Chronosphere -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/chronosphere.io" alt="Chronosphere" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://chronosphere.io" target="_blank">Chronosphere Lens<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Observabilidad / Infraestructura</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Retencion temporal ajustable.</strong> Lens permite establecer politicas de retencion de datos diferentes durante incidentes activos — guardas mas detalle cuando importa, menos cuando no. Zoom temporal inteligente.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Zoom temporal:</strong> durante una crisis, CORE guarda telemetria a 1 segundo de resolucion. En operacion normal, cada 5 minutos basta.</li>
+            <li><strong>Contexto temporal:</strong> distinguir si un patron es puntual o tendencia. "El chancador se bloqueo 1 vez" vs "3 veces esta semana".</li>
+            <li><strong>Costo-beneficio de datos:</strong> no guardar todo a maxima resolucion. El sistema decide que es importante retener.</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 03 — Anticipacion de Cuello de Botella</span>
+</div>
+
+<!-- Foxglove -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/foxglove.dev" alt="Foxglove" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://foxglove.dev" target="_blank">Foxglove<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Robotica / Visualizacion de Datos</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Visualizacion temporal de datos roboticos.</strong> Reproduce datos de sensores de robots sincronizados en el tiempo. Multiples canales (LIDAR, camara, GPS, IMU) en un timeline unificado.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Multicanal sincronizado:</strong> ver simultaneamente telemetria de camion autonomo (GPS + velocidad + payload + video) en un solo timeline.</li>
+            <li><strong>Debuggeo de autonomos:</strong> perfecto para analizar por que los camiones autonomos se detuvieron — rebobinar y ver que paso en cada sensor.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Axiom -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/axiom.co" alt="Axiom" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://axiom.co" target="_blank">Axiom<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Observabilidad / Logs</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Ingesta ilimitada sin costos explosivos.</strong> Guarda todo, busca despues. Modelo de pricing que no penaliza por volumen de datos — ideal para operaciones que generan terabytes de telemetria.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Modelo de retencion agresiva:</strong> no descartar datos operacionales por costo. Los patrones historicos son la base del foresight.</li>
+            <li><strong>Busqueda natural:</strong> interfaz de consulta conversacional sobre datos historicos.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Adobe Premiere -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/adobe.com" alt="Adobe" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.adobe.com/products/premiere.html" target="_blank">Adobe Premiere Pro<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Edicion de Video</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Navegacion temporal experta.</strong> Timeline profesional con zoom, marcadores, multicapa, scrubbing rapido. La metafora mas intuitiva del mundo para navegar el tiempo.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Timeline como paradigma de navegacion:</strong> en vez de tablas de datos, un timeline visual donde cada capa es un tipo de dato (produccion, alertas, flota, clima).</li>
+            <li><strong>Marcadores y clips:</strong> el operador puede marcar momentos clave ("aqui empezo el problema") para compartir con otros roles.</li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- ==================== OMNI SENSE ==================== -->
+<h2><i class="fa-solid fa-tower-broadcast" style="font-size:20px; margin-right:8px; opacity:0.5;"></i> Omni Sense</h2>
+<div class="pilar-header">
+    <div class="pilar-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+    <div class="pilar-info">
+        <div class="pilar-name-big">El sistema percibe, comprende y responde</div>
+        <div class="pilar-tagline">Multiples sentidos, un cerebro. El canal no es accesorio — el canal ES la inteligencia.</div>
+    </div>
+</div>
+
+<!-- Motive (Omni Sense) -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/gomotive.com" alt="Motive" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://gomotive.com" target="_blank">Motive<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Logistica / Flotas Autonomas</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — "Hey Motive".</strong> Asistente de voz + camaras + telematica integrada. Multiples sentidos alimentan una sola plataforma. El conductor habla, la camara ve, el GPS localiza — el sistema entiende el contexto completo.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Voz como interfaz primaria en terreno:</strong> "Hey TIM, cumple esta berma con Sernageomin?" — manos libres, ojos en la operacion.</li>
+            <li><strong>Fusion sensorial:</strong> CORE debe cruzar camara + GPS + radio + sensores para entender que pasa sin que el operador lo explique.</li>
+            <li><strong>Plataforma unica, multiples inputs:</strong> un solo sistema que recibe de todos los sentidos, no apps separadas.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Discord -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/discord.com" alt="Discord" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://discord.com" target="_blank">Discord<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Comunicaciones / Voz</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Canales de voz siempre activos + Push-to-Talk.</strong> Multiples canales de voz simultaneos donde los usuarios entran y salen libremente. Referente directo para el triage de radio IROC.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Triage de radio por canales:</strong> en vez de una radio saturada, canales tematicos (emergencias, operaciones, mantenciones) que el sistema prioriza.</li>
+            <li><strong>Push-to-Talk como interaccion:</strong> el operador presiona un boton, habla, y el sistema transcribe + clasifica + prioriza.</li>
+            <li><strong>Presencia visual:</strong> ver quien esta en cada canal sin preguntar. "Quien esta disponible para mover la pala?"</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 05 — Copiloto en Terreno</span>
+</div>
+
+<!-- Samsara -->
+<div class="ref-card champion">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/samsara.com" alt="Samsara" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.samsara.com" target="_blank">Samsara<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Operaciones de Campo / IoT</div>
+        </div>
+        <span class="ref-badge badge-champion">Champion</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Connected Workflows.</strong> Dashboard holistico que integra multiples fuentes sensoriales (GPS, camaras, sensores ambientales, Weather Intelligence) en flujos automatizados. Elimina papeleo y conecta silos.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Flujos automatizados:</strong> cuando el sensor detecta X, el sistema ejecuta Y sin intervencion humana. Solo escala las excepciones.</li>
+            <li><strong>Weather Intelligence:</strong> integrar condiciones climaticas en las decisiones operacionales — viento, lluvia, visibilidad afectan la mineria a tajo abierto.</li>
+            <li><strong>Briefing contextual:</strong> el resumen de turno llega automaticamente con los datos relevantes, sin abrir el dashboard.</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 04 — Briefing Inteligente</span>
+</div>
+
+<!-- Anduril Lattice OS -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/anduril.com" alt="Anduril" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.anduril.com/lattice" target="_blank">Anduril Lattice OS<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Defensa / Spatial Intelligence</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Spatial Intelligence.</strong> El sistema no pide mirar camaras. Identifica automaticamente el "interes" y lo proyecta en una UI de baja carga cromatica. Fusion autonoma de multiples sensores en una sola vista coherente.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Cruce automatico de sensores:</strong> CORE cruza ARIS (geotecnia) + GPS (flotas) + radar sin que el operador consulte 3 sistemas separados.</li>
+            <li><strong>Proyeccion espacial de alertas:</strong> las alertas aparecen en el mapa, no en una lista. El contexto geografico es la interfaz.</li>
+            <li><strong>Mision critica + UI limpia:</strong> demuestra que defensa resuelve problemas analogos a mineria con interfaces minimalistas.</li>
+        </ul>
+    </div>
+    <span class="ficha-tag">Ficha 02 — Riesgo Espacial y Seguridad</span>
+</div>
+
+<!-- Slack -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/slack.com" alt="Slack" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://slack.com" target="_blank">Slack<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Comunicacion / Productividad</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Comunicacion Estructurada (Threads).</strong> Ordena conversacion compleja bajo un tema especifico sin ensuciar el canal principal. Cada hilo es un contexto cerrado.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>Threads como modelo de comunicacion:</strong> una alerta de CORE puede tener un hilo de discusion donde los involucrados coordinan sin contaminar el canal general.</li>
+            <li><strong>Integraciones:</strong> el bot de CORE puede publicar alertas y resúmenes directamente en canales de Slack/Teams si el cliente ya usa esas herramientas.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Garmin G3000 -->
+<div class="ref-card secondary">
+    <div class="ref-top">
+        <img class="ref-logo" src="https://logo.clearbit.com/garmin.com" alt="Garmin" onerror="this.style.display='none'">
+        <div class="ref-title-block">
+            <a class="ref-name" href="https://www.garmin.com/en-US/p/82650" target="_blank">Garmin G3000<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <div class="ref-industry">Aviacion / Avionics</div>
+        </div>
+        <span class="ref-badge badge-secondary">Secondary</span>
+    </div>
+    <p class="ref-factor"><strong>Factor X — Vision sintetica 3D en mision critica.</strong> Genera un modelo 3D del terreno en tiempo real para que el piloto "vea" a traves de nubes y oscuridad. Multiples sensores fusionados en una sola representacion.</p>
+    <div class="ref-section">
+        <h3>Que robar</h3>
+        <ul class="steal-list">
+            <li><strong>3D con proposito:</strong> si CORE usa 3D, debe ser como Garmin — para ver lo que no se puede ver a simple vista (zonas de riesgo bajo tierra, proyeccion de avance). No 3D decorativo.</li>
+            <li><strong>Fusion sensorial critica:</strong> GPS + radar + altimetro en una vista. Analogo a ARIS + GPS + camaras en mineria.</li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- ==================== RESUMEN ==================== -->
+<h2>Resumen por Pilar</h2>
+<table>
+    <thead>
+        <tr><th>Pilar</th><th>Champions</th><th>Secondary</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Quiet UI</strong></td>
+            <td>CrowdStrike, Motive, Compound</td>
+            <td>SpaceX Dragon, Linear, Polestar, Ramify</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td><strong>Clear Path</strong></td>
+            <td>SentinelOne Purple AI, Vercel v0, Datadog</td>
+            <td>McLaren Atlas, Ramp, Flexport</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td><strong>Time Sight</strong></td>
+            <td>Tesla Fleet, SentinelOne Storylines, Chronosphere</td>
+            <td>Foxglove, Axiom, Adobe Premiere</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td><strong>Omni Sense</strong></td>
+            <td>Motive, Discord, Samsara</td>
+            <td>Anduril Lattice OS, Slack, Garmin G3000</td>
+            <td>6</td>
+        </tr>
+    </tbody>
+</table>
+<p style="margin-top:8px; font-size:13px; color:#666;"><strong>Total:</strong> 25 referentes unicos (Motive y SentinelOne aparecen en 2 pilares) de 15 industrias distintas. Cero competidores directos de mineria.</p>
+
+<!-- ==================== MAPEO FICHAS ==================== -->
+<h2>Mapeo Fichas → Referentes</h2>
+<table>
+    <thead>
+        <tr><th>#</th><th>Ficha</th><th>Pilar</th><th>Referente Champion</th><th>Patron Robado</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>01</td><td><strong>Caida de Equipo Critico</strong></td><td>Quiet UI</td><td>CrowdStrike</td><td>Achromatic — pantalla silenciosa que se enciende solo ante falla</td></tr>
+        <tr><td>02</td><td><strong>Riesgo Espacial</strong></td><td>Omni Sense</td><td>Anduril Lattice OS</td><td>Spatial Intelligence — cruce automatico de sensores en mapa</td></tr>
+        <tr><td>03</td><td><strong>Anticipacion</strong></td><td>Time Sight</td><td>Chronosphere</td><td>Lens — distinguir si patron es puntual o tendencia</td></tr>
+        <tr><td>04</td><td><strong>Briefing Inteligente</strong></td><td>Omni Sense</td><td>Samsara</td><td>Connected Workflows — briefing sin abrir dashboard</td></tr>
+        <tr><td>05</td><td><strong>Copiloto en Terreno</strong></td><td>Omni Sense</td><td>Discord</td><td>Push-to-Talk — triage de radio por canales priorizados</td></tr>
+        <tr><td>06</td><td><strong>Plan vs Realidad</strong></td><td>Time Sight</td><td>Tesla Fleet</td><td>Time Scrubbing — rebobinar para entender causalidad</td></tr>
+    </tbody>
+</table>
+
+<!-- Theme Toggle -->
+<style>
+    [data-theme="light"] {
+        --bg: #f5f6f8; --card: #ffffff; --border: #dfe1e6;
+        --text: #1a1a2e; --muted: #5a5a70;
+        --cyan: #0070a0; --cyan-dim: rgba(0,112,160,0.06);
+        --amber: #b86800; --amber-dim: rgba(184,104,0,0.06);
+    }
+    [data-theme="light"] body { background: var(--bg); color: var(--text); }
+    [data-theme="light"] h2, [data-theme="light"] h4, [data-theme="light"] strong,
+    [data-theme="light"] .doc-title, [data-theme="light"] .pilar-name-big,
+    [data-theme="light"] .ref-name { color: #111; }
+    [data-theme="light"] h3 { color: var(--cyan); }
+    [data-theme="light"] p, [data-theme="light"] .ref-factor { color: #444; }
+    [data-theme="light"] td, [data-theme="light"] .ref-section p,
+    [data-theme="light"] .steal-list li, [data-theme="light"] .intro-box p { color: #555; }
+    [data-theme="light"] th { color: #666; background: rgba(0,0,0,0.03); }
+    [data-theme="light"] td, [data-theme="light"] th { border-color: var(--border); }
+    [data-theme="light"] .ref-card.champion::before { background: var(--cyan); }
+    [data-theme="light"] .ref-card.secondary::before { background: #ccc; }
+    [data-theme="light"] .intro-box { background: rgba(0,112,160,0.04); border-color: var(--cyan); }
+    [data-theme="light"] .ref-logo { background: #f0f0f0; border-color: #ddd; }
+    [data-theme="light"] .ref-section { border-color: var(--border); }
+    [data-theme="light"] .badge-champion { background: rgba(0,112,160,0.08); color: var(--cyan); border-color: rgba(0,112,160,0.2); }
+    [data-theme="light"] .badge-secondary { background: rgba(0,0,0,0.03); color: #888; border-color: #ddd; }
+    [data-theme="light"] .ficha-tag { background: rgba(184,104,0,0.06); color: var(--amber); border-color: rgba(184,104,0,0.15); }
+    [data-theme="light"] .steal-list li::before { color: var(--amber); }
+    [data-theme="light"] .pilar-icon { background: rgba(0,112,160,0.06); border-color: rgba(0,112,160,0.15); color: var(--cyan); }
+    [data-theme="light"] .pilar-tagline { color: var(--muted); }
+    [data-theme="light"] .ref-industry { color: var(--muted); }
+    [data-theme="light"] .doc-brand { color: var(--muted); }
+    [data-theme="light"] .doc-brand span { color: var(--cyan); }
+    [data-theme="light"] .doc-subtitle, [data-theme="light"] .doc-meta { color: var(--muted); }
+    #theme-toggle {
+        position: fixed; top: 16px; right: 16px; z-index: 9999;
+        width: 36px; height: 36px; border-radius: 50%;
+        border: 1px solid var(--border); background: var(--card);
+        color: var(--muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; transition: all 0.3s ease; opacity: 0.7;
+    }
+    #theme-toggle:hover { opacity: 1; border-color: var(--cyan); color: var(--cyan); }
+    @media print { #theme-toggle { display: none; } }
+</style>
+<button id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro"><i class="fa-solid fa-sun"></i></button>
+<script>
+(function(){
+    var t=document.getElementById('theme-toggle'),i=t.querySelector('i'),s=localStorage.getItem('pd-theme');
+    if(s==='light'){document.documentElement.setAttribute('data-theme','light');i.className='fa-solid fa-moon';}
+    t.addEventListener('click',function(){
+        var c=document.documentElement.getAttribute('data-theme');
+        if(c==='light'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('pd-theme','dark');i.className='fa-solid fa-sun';}
+        else{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('pd-theme','light');i.className='fa-solid fa-moon';}
+    });
+})();
+</script>
+</body>
+</html>

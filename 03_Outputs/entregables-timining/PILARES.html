@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilares de Diseño — TIMining CORE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f12;
+            --card: #0d1117;
+            --border: #1a2028;
+            --text: #e0e0e0;
+            --muted: #888;
+            --cyan: #00f3ff;
+            --cyan-dim: rgba(0,243,255,0.08);
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 50px 80px;
+        }
+        /* Header */
+        .doc-header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+        }
+        .doc-brand {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .doc-brand span { color: var(--cyan); font-weight: 600; }
+        .doc-title {
+            font-family: var(--mono);
+            font-size: 36px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .doc-subtitle {
+            font-size: 16px;
+            color: var(--muted);
+        }
+        .doc-meta {
+            margin-top: 12px;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+        /* Section */
+        h2 {
+            font-family: var(--mono);
+            font-size: 24px;
+            font-weight: 500;
+            color: #fff;
+            margin-top: 48px;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        h3 {
+            font-family: var(--mono);
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--cyan);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        p { font-size: 14px; color: #b0b0b0; margin-bottom: 12px; }
+        strong { color: #fff; font-weight: 600; }
+        /* Cards */
+        .pilar-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .pilar-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--cyan);
+            border-radius: 8px 0 0 8px;
+        }
+        .pilar-name {
+            font-family: var(--mono);
+            font-size: 22px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .pilar-tagline {
+            font-family: var(--mono);
+            font-size: 14px;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+        .pilar-body p { font-size: 14px; color: #b0b0b0; line-height: 1.7; }
+        .pilar-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+        .pilar-section h3 { margin-bottom: 8px; }
+        .evidence-item {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 6px;
+            padding-left: 14px;
+            position: relative;
+        }
+        .evidence-item::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-family: var(--mono);
+            font-size: 10px;
+        }
+        .ref-tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--cyan);
+            background: var(--cyan-dim);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .benchmark-line {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        .status-badge {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+        .status-approved { background: rgba(0,243,255,0.1); color: var(--cyan); border: 1px solid rgba(0,243,255,0.3); }
+        .status-proposed { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid #333; }
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        th {
+            text-align: left;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #c0c0c0;
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        /* Relations */
+        .relation-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+        }
+        .relation-card strong { color: var(--cyan); }
+        .relation-card p { font-size: 13px; margin-bottom: 0; }
+        /* Naming box */
+        .naming-box {
+            background: var(--cyan-dim);
+            border-left: 3px solid var(--cyan);
+            padding: 16px 20px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 32px;
+        }
+        .naming-box p { font-size: 13px; color: #ccc; margin-bottom: 4px; }
+        .naming-box strong { color: var(--cyan); }
+        /* Print */
+        @media print {
+            body { background: #fff; color: #222; padding: 20px; }
+            .pilar-card { border-color: #ddd; background: #fafafa; break-inside: avoid; }
+            .pilar-card::before { background: #333; }
+            .pilar-name, h2, strong { color: #111; }
+            .pilar-tagline, h3, .ref-tag { color: #555; }
+            p, .evidence-item, .benchmark-line, td { color: #444; }
+            th { color: #666; background: #f5f5f5; }
+            td, th { border-color: #ddd; }
+            .relation-card { background: #f9f9f9; border-color: #ddd; }
+            .naming-box { background: #f0f7ff; border-color: #999; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="doc-header">
+    <div class="doc-brand">TIMining <span>CORE</span></div>
+    <div class="doc-title">Pilares de Diseño</div>
+    <div class="doc-subtitle">4 principios fundamentales para la experiencia TIMining CORE</div>
+    <div class="doc-meta">Documento de trabajo | Fuentes: Estrategia Maestra v3.4, PD-Spec (54 fuentes), Workshop 01</div>
+</div>
+
+<div class="naming-box">
+    <h3>Criterio de Naming</h3>
+    <p><strong>2 palabras en inglés</strong> | Evocativo, no corporativo | Tensión implícita | Memorable y vendible</p>
+    <p>Patrón establecido por Quiet UI (el primero aprobado).</p>
+</div>
+
+<!-- PILAR 1 -->
+<div class="pilar-card">
+    <div class="pilar-name">Quiet UI</div>
+    <div class="pilar-tagline">Gestión por excepcion.</div>
+    <div class="pilar-body">
+        <p>La interfaz permanece en silencio mientras la operación está en equilibrio. El color, el sonido y la notificación son recursos escasos reservados para la anomalía. Un turno sin alertas es un turno exitoso — y la pantalla debe reflejarlo.</p>
+        <p>En la práctica, esto invierte la lógica de los dashboards actuales: en vez de mostrar todo y esperar que el operador encuentre lo relevante, el sistema filtra el 95% del ruido y solo escala lo que requiere intervención humana. El operador no monitorea — el sistema monitorea por él.</p>
+    </div>
+    <div class="pilar-section">
+        <h3>Evidencia</h3>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-07]</span> Gestión por Excepción — 8/54 fuentes. Operadores piden que el sistema filtre ruido y solo muestre lo que requiere atención.</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-03]</span> Sobrecarga Cognitiva — 11/54 fuentes. "Llenarlos de números sin sentido" es el dolor #1 del workshop.</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-15]</span> Experiencia Deficiente — 9/54 fuentes. Las interfaces actuales de Aware generan rechazo activo.</div>
+    </div>
+    <div class="pilar-section">
+        <h3>Benchmark</h3>
+        <div class="benchmark-line"><strong>CrowdStrike</strong> — Achromatic Design. Consola 95% gris/negro, color solo para amenazas activas.</div>
+        <div class="benchmark-line"><strong>Motive</strong> — Filtra 99% de alertas falsas con Edge AI.</div>
+    </div>
+    <span class="status-badge status-approved">APROBADO</span>
+</div>
+
+<!-- PILAR 2 -->
+<div class="pilar-card">
+    <div class="pilar-name">Clear Path</div>
+    <div class="pilar-tagline">Cada pantalla termina en una acción.</div>
+    <div class="pilar-body">
+        <p>Un gráfico que no prescribe una decisión es ruido visual. Clear Path transforma la plataforma de un "kiosco de datos" a un médico operacional: detecta el problema, analiza el contexto, y recomienda la acción — en ese orden. El patrón <strong>D→A→R</strong> (Detección → Análisis → Recomendación) estructura toda interacción del sistema.</p>
+        <p>"Path" porque el sistema no te deja perdido en un laberinto de datos — te muestra el camino desde el problema hasta la acción. En una operación minera donde cada minuto de indecisión cuesta tonelaje, el camino claro es el camino rentable.</p>
+    </div>
+    <div class="pilar-section">
+        <h3>Evidencia</h3>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-06]</span> Patrón D→A→R — <strong>25/54 fuentes</strong>, la mayor convergencia del proyecto.</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-05]</span> Valor = "mover piedras" — 10/54 fuentes. El software solo tiene valor si produce acción concreta.</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-02]</span> "Auto de Homero Simpson" — 9/54 fuentes. El riesgo de construir funcionalidad que nadie pidió.</div>
+    </div>
+    <div class="pilar-section">
+        <h3>Benchmark</h3>
+        <div class="benchmark-line"><strong>SentinelOne Purple AI</strong> — Triaje automático → recomendación a velocidad de máquina.</div>
+        <div class="benchmark-line"><strong>Vercel v0</strong> — Generative UI: intención → interfaz ejecutable.</div>
+        <div class="benchmark-line"><strong>Datadog Bits AI</strong> — Recomendaciones proactivas de corrección.</div>
+    </div>
+    <span class="status-badge status-proposed">PROPUESTO</span>
+</div>
+
+<!-- PILAR 3 -->
+<div class="pilar-card">
+    <div class="pilar-name">Time Sight</div>
+    <div class="pilar-tagline">Pasado, presente y futuro en una sola mirada.</div>
+    <div class="pilar-body">
+        <p>La operación minera no vive en el presente. Una falla de hoy tiene raíces en decisiones de ayer y consecuencias que impactan la semana que viene. Time Sight es la capacidad del sistema de navegar entre tres horizontes: reconstruir qué pasó (<strong>Hindsight</strong>), mostrar el estado real ahora (<strong>Insight</strong>), y proyectar qué va a pasar si no se actúa (<strong>Foresight</strong>).</p>
+        <p>"Sight" contiene literalmente los tres conceptos: hind<strong>sight</strong>, in<strong>sight</strong>, fore<strong>sight</strong>. La misma interfaz, tres profundidades temporales.</p>
+    </div>
+    <div class="pilar-section">
+        <h3>Evidencia</h3>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-08]</span> Necesidad de Foresight — 6/54 fuentes. Operadores quieren "abanico de escenarios posibles."</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-11]</span> "Qué pasó, por qué, qué hacer" — 7/54 fuentes. Causalidad como necesidad central.</div>
+    </div>
+    <div class="pilar-section">
+        <h3>Benchmark</h3>
+        <div class="benchmark-line"><strong>Tesla Fleet</strong> — Time Scrubbing: rebobinar incidentes para entender causalidad.</div>
+        <div class="benchmark-line"><strong>SentinelOne Storylines</strong> — Reconstrucción forense narrativa.</div>
+        <div class="benchmark-line"><strong>Chronosphere Lens</strong> — Retención temporal ajustable durante incidentes.</div>
+    </div>
+    <span class="status-badge status-proposed">PROPUESTO</span>
+</div>
+
+<!-- PILAR 4 -->
+<div class="pilar-card">
+    <div class="pilar-name">Omni Sense</div>
+    <div class="pilar-tagline">El sistema percibe, comprende y responde — por el canal correcto.</div>
+    <div class="pilar-body">
+        <p>La experiencia multimodal de TIMining CORE no es "tener una app en cada plataforma". Es un sistema con múltiples sentidos: <strong>ve</strong> a través de cámaras y sensores, <strong>escucha</strong> a través de la radio, <strong>habla</strong> a través de WhatsApp y alertas, y <strong>comprende</strong> el contexto para elegir cómo comunicarse contigo.</p>
+        <p>"Sense" tiene triple lectura: los sentidos del sistema, su capacidad de percibir contexto (sensing), y "hacer sentido" de la operación. Un briefing llega por WhatsApp porque estás caminando. Una alerta crítica va por radio porque estás en terreno. El canal no es accesorio — el canal ES la inteligencia.</p>
+    </div>
+    <div class="pilar-section">
+        <h3>Evidencia</h3>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-04]</span> Dashboard → Copiloto — 12/54 fuentes. "El sistema te busca a ti."</div>
+        <div class="evidence-item"><span class="ref-tag">[IG-SYNTH-19]</span> 4 Lentes Multimodal (Radio/WhatsApp/Mobile/IROC) — 7/54 fuentes.</div>
+    </div>
+    <div class="pilar-section">
+        <h3>Benchmark</h3>
+        <div class="benchmark-line"><strong>Motive</strong> — "Hey Motive" + cámaras + telemática: múltiples sentidos integrados.</div>
+        <div class="benchmark-line"><strong>Discord</strong> — Canales de voz siempre activos, Push-to-Talk.</div>
+        <div class="benchmark-line"><strong>Samsara</strong> — Connected Workflows: múltiples fuentes sensoriales en flujos automatizados.</div>
+    </div>
+    <span class="status-badge status-proposed">PROPUESTO</span>
+</div>
+
+<!-- RESUMEN -->
+<h2>Resumen</h2>
+<table>
+    <thead>
+        <tr><th>#</th><th>Pilar</th><th>Concepto Core</th><th>Evidencia Principal</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td><strong>Quiet UI</strong></td><td>Gestión por excepción — silencio como default</td><td>IG-SYNTH-07 (8/54), IG-SYNTH-03 (11/54)</td><td style="color:var(--cyan)">APROBADO</td></tr>
+        <tr><td>2</td><td><strong>Clear Path</strong></td><td>D→A→R — cada pantalla termina en acción</td><td>IG-SYNTH-06 (25/54), IG-SYNTH-05 (10/54)</td><td>PROPUESTO</td></tr>
+        <tr><td>3</td><td><strong>Time Sight</strong></td><td>Hindsight/Insight/Foresight</td><td>IG-SYNTH-08 (6/54), IG-SYNTH-11 (7/54)</td><td>PROPUESTO</td></tr>
+        <tr><td>4</td><td><strong>Omni Sense</strong></td><td>Multimodal agéntica — percibe y responde</td><td>IG-SYNTH-04 (12/54), IG-SYNTH-19 (7/54)</td><td>PROPUESTO</td></tr>
+    </tbody>
+</table>
+
+<!-- RELACIONES -->
+<h2>Relaciones entre Pilares</h2>
+<div class="relation-card">
+    <p><strong>Quiet UI + Clear Path</strong> — El silencio se rompe solo cuando hay un Clear Path. Sin acción, Quiet UI sería solo pantalla vacía.</p>
+</div>
+<div class="relation-card">
+    <p><strong>Clear Path + Time Sight</strong> — La recomendación se fundamenta en análisis temporal. "Mueve la flota" solo tiene sentido si el sistema muestra por qué y qué pasa si no lo haces.</p>
+</div>
+<div class="relation-card">
+    <p><strong>Time Sight + Omni Sense</strong> — El horizonte temporal determina el canal. Alerta inmediata → radio. Resumen de turno → WhatsApp. Proyección semanal → IROC.</p>
+</div>
+<div class="relation-card">
+    <p><strong>Omni Sense + Quiet UI</strong> — El canal correcto es parte del silencio. No mandar por WhatsApp lo que debería ir por radio ES gestión por excepción del canal.</p>
+</div>
+
+<!-- SISTEMA SENSORIAL -->
+<h2>Sistema Sensorial</h2>
+<table>
+    <thead>
+        <tr><th>Pilar</th><th>Sentido</th><th>Pregunta que responde</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>Quiet UI</strong></td><td>Oído — el silencio y el ruido</td><td>¿Necesito prestar atención?</td></tr>
+        <tr><td><strong>Clear Path</strong></td><td>Vista — claridad y dirección</td><td>¿Qué debo hacer?</td></tr>
+        <tr><td><strong>Time Sight</strong></td><td>Profundidad — perspectiva temporal</td><td>¿Por qué pasó y qué viene?</td></tr>
+        <tr><td><strong>Omni Sense</strong></td><td>Tacto — presencia y canal</td><td>¿Dónde y cómo me llega?</td></tr>
+    </tbody>
+</table>
+
+<!-- Theme Toggle -->
+<style>
+    [data-theme="light"] {
+        --bg: #f5f6f8; --card: #ffffff; --border: #dfe1e6;
+        --text: #1a1a2e; --muted: #5a5a70;
+        --cyan: #0070a0; --cyan-dim: rgba(0,112,160,0.06);
+    }
+    [data-theme="light"] body { background: var(--bg); color: var(--text); }
+    [data-theme="light"] h2, [data-theme="light"] h4, [data-theme="light"] strong,
+    [data-theme="light"] .doc-title, [data-theme="light"] .pilar-name { color: #111; }
+    [data-theme="light"] h3 { color: var(--cyan); }
+    [data-theme="light"] p, [data-theme="light"] .pilar-body p { color: #444; }
+    [data-theme="light"] td, [data-theme="light"] .evidence-item,
+    [data-theme="light"] .benchmark-line, [data-theme="light"] .naming-box p,
+    [data-theme="light"] .relation-card p { color: #555; }
+    [data-theme="light"] th { color: #666; background: rgba(0,0,0,0.03); }
+    [data-theme="light"] td, [data-theme="light"] th { border-color: var(--border); }
+    [data-theme="light"] .pilar-card::before { background: var(--cyan); }
+    [data-theme="light"] .naming-box { background: rgba(0,112,160,0.04); border-color: var(--cyan); }
+    [data-theme="light"] .status-approved { background: rgba(0,112,160,0.08); color: var(--cyan); border-color: rgba(0,112,160,0.2); }
+    [data-theme="light"] .status-proposed { background: rgba(0,0,0,0.03); color: #888; border-color: #ddd; }
+    [data-theme="light"] .relation-card { background: var(--card); border-color: var(--border); }
+    [data-theme="light"] .relation-card strong { color: var(--cyan); }
+    [data-theme="light"] .pilar-section { border-color: var(--border); }
+    [data-theme="light"] .evidence-item::before { color: var(--cyan); }
+    [data-theme="light"] .ref-tag { color: var(--cyan); background: var(--cyan-dim); }
+    [data-theme="light"] .doc-brand { color: var(--muted); }
+    [data-theme="light"] .doc-brand span { color: var(--cyan); }
+    [data-theme="light"] .doc-subtitle, [data-theme="light"] .doc-meta { color: var(--muted); }
+    [data-theme="light"] .pilar-tagline { color: var(--cyan); }
+    #theme-toggle {
+        position: fixed; top: 16px; right: 16px; z-index: 9999;
+        width: 36px; height: 36px; border-radius: 50%;
+        border: 1px solid var(--border); background: var(--card);
+        color: var(--muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; transition: all 0.3s ease; opacity: 0.7;
+    }
+    #theme-toggle:hover { opacity: 1; border-color: var(--cyan); color: var(--cyan); }
+    @media print { #theme-toggle { display: none; } }
+</style>
+<button id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro"><i class="fa-solid fa-sun"></i></button>
+<script>
+(function(){
+    var t=document.getElementById('theme-toggle'),i=t.querySelector('i'),s=localStorage.getItem('pd-theme');
+    if(s==='light'){document.documentElement.setAttribute('data-theme','light');i.className='fa-solid fa-moon';}
+    t.addEventListener('click',function(){
+        var c=document.documentElement.getAttribute('data-theme');
+        if(c==='light'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('pd-theme','dark');i.className='fa-solid fa-sun';}
+        else{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('pd-theme','light');i.className='fa-solid fa-moon';}
+    });
+})();
+</script>
+</body>
+</html>
