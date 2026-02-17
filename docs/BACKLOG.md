@@ -10,7 +10,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-30] Pipeline Flow Simplification — Unified /analyze with Interactive Decisions
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.5, 2026-02-16)
 **Priority:** P0 — CRITICAL (UX blocker)
 **Origin:** QA v3 testing (2026-02-16), consolidated from QA3-ARCH-01
 **Related:** BL-33 (phase dashboard), QA3-UX-01 (express mode)

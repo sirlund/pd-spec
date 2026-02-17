@@ -73,7 +73,6 @@ The folder name provides context that individual files inherit. The agent valida
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
-| Status | `/status` | Generate Work layer dashboard (HTML) — insights, conflicts, gaps, source issues. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
 
 ## Maturity Levels
@@ -119,7 +118,6 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   ├── status/SKILL.md       /status — work layer dashboard
 │   └── audit/SKILL.md        /audit — quality gate before /ship
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
@@ -185,7 +183,7 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 **Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
 - Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
 - Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
-- Direct insight injection (e.g., from `/status` Add Context flow)
+- Direct insight injection (e.g., from STATUS.html Add Context flow)
 - Batch operations (approve/reject multiple insights)
 
 If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.

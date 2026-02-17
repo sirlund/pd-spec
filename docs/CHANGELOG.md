@@ -1,5 +1,62 @@
 # Changelog
 
+## [4.5.0] — 2026-02-16
+
+### Highlights
+
+**`/analyze` now guides you through decisions interactively.** Instead of a free-text approval prompt, `/analyze` now uses native terminal menus (AskUserQuestion) to collect your decisions: approve insights as PENDING for later review, approve as VERIFIED for immediate use, or review one by one. No more guessing the right text response.
+
+**Dashboard auto-generated.** After writing insights and conflicts, `/analyze` automatically generates `03_Outputs/STATUS.html`. No more running a separate `/status` command — the dashboard is ready when analysis ends.
+
+**`/status` removed.** The skill is no longer needed. Dashboard generation is embedded in `/analyze`. The pipeline is now: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/synthesis` → `/ship`.
+
+### Changes (BL-30)
+
+- **AskUserQuestion in Phase 4.** Three structured options for synthesis approval: PENDING (review later in dashboard), VERIFIED (express mode, skip review), review one-by-one in terminal. Two options for ambiguity handling: defer to `/synthesis` or resolve now.
+- **Auto-generate STATUS.html.** After writing files, `/analyze` builds the dashboard JSON from analysis data already in memory and injects it into the template. No separate command needed.
+- **Compact Phase 6 output.** `/analyze` ends with a 2-line summary: `✓ Analysis complete: [stats]` + `✓ Dashboard: 03_Outputs/STATUS.html`. No verbose insight lists — those are in the dashboard.
+- **`/status` skill removed.** Directory deleted, references removed from CLAUDE.md, README, and folder structure.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/analyze/SKILL.md` — AskUserQuestion (Phase 3 step 19b), three write paths (Phase 4), auto-dashboard (Phase 5), compact output (Phase 6)
+- `CLAUDE.md` — Removed /status from skills table and folder structure
+- `README.md` — Updated pipeline description, I/O table, skills list, folder structure
+
+**BACKLOG impact:**
+- BL-30: ✅ IMPLEMENTED
+
+</details>
+
+---
+
+## [4.4.0] — 2026-02-16
+
+### Highlights
+
+**`/status` performance fix (partial).** Thinking overhead eliminated (~4min saved vs 10min baseline). I/O overhead remains (~6min for large projects).
+
+### Changes (BL-35)
+
+- Conflict label inference removed (generic labels, no synthesis overhead)
+- Evidence gap check simplified (objective convergence < 2, not subjective "weak")
+- Compact output added (summary stats only, not full HTML in chat)
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/status/SKILL.md` — Three targeted fixes
+
+**BACKLOG impact:**
+- BL-35: ✅ IMPLEMENTED (partial — thinking overhead eliminated, I/O overhead pending)
+
+</details>
+
+---
+
 ## [4.3.0] — 2026-02-16
 
 ### Highlights
