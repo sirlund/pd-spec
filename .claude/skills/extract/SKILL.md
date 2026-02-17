@@ -130,6 +130,8 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
 ### Phase 2: Read & Extract
 
+**Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
+
 **Extraction Methodology:**
 
 When processing a document, apply these criteria for claim extraction:
@@ -165,12 +167,11 @@ For each Light batch (batch size = 10 files):
   2. **Process batch directly** — For each of the 10 files in this batch:
      - Read and extract claims (step 12 logic below)
      - Accumulate extracted sections in memory
-     - Log progress: "Pass 1 — Batch X/N: Processed file Y/10 (filename)"
   3. **Write checkpoint after batch** — After all 10 files processed:
      - Append all 10 sections to EXTRACTIONS.md (single Edit operation)
      - Update SOURCE_MAP.md (10 rows via Edit tool)
      - Clean temp: `rm -rf 02_Work/_temp/*`
-     - Log: "✓ Pass 1 — Batch X/N complete: 10 files processed, Z claims extracted"
+     - Log: "✓ Batch X/Y: 10 files, Z claims"
   4. **Continue to next Light batch** — Repeat until all Light files complete
 
 **PASS 2: Heavy Files (pdf, DOCX/PPTX, files ≥ 5MB)**
@@ -188,7 +189,7 @@ For each Heavy file (one at a time):
      - Append section to EXTRACTIONS.md (Edit tool)
      - Update SOURCE_MAP.md (single row via Edit tool)
      - Clean temp: `rm -f 02_Work/_temp/*`
-     - Log: "✓ Pass 2 — File X/N complete: (filename), Z claims extracted"
+     - Log: "✓ [filename] → Z claims (X/N)"
   5. **Continue to next Heavy file** — Repeat until all Heavy files complete
 
 **Why per-file writes for Heavy files:**
@@ -326,12 +327,10 @@ Process all files in single pass (step 12 below)
    *Fallback:*
    - **Other formats** — If a file cannot be read or converted, check `_CONTEXT.md` for descriptions. If no `_CONTEXT.md` exists, report the file as unreadable and suggest the user export it to PDF, CSV, or markdown.
 
-   **Progress reporting** — Report progress to the user throughout extraction:
+   **Progress reporting** — Batch-level only, no per-file logs:
 
-   - **Before starting each subfolder:** Log "Processing `[folder-name]/` — 0% (0/N files)"
-   - **After each file:** Log "Processing `[folder-name]/` — X% (M/N files) — `filename`"
-   - **After completing each subfolder:** Log "Completed `[folder-name]/` — 100% (N/N files) — X claims extracted"
-   - **After all folders:** Log "Extraction complete: Y files processed, Z total claims extracted"
+   - **After each batch (Pass 1) or file (Pass 2):** Log compact one-liner as specified above
+   - **No narration between tool calls** — do not explain what you're about to do, just do it
 
 ### Phase 3: Write Extractions
 
@@ -388,16 +387,16 @@ Process all files in single pass (step 12 below)
    - Update SOURCE_MAP entries as 'error' for missing files with reason "not found in EXTRACTIONS.md"
 
 14. **Summarize to the user** (using disk-validated numbers):
-   - **Per-folder breakdown** — For EVERY folder discovered in Phase 1, report:
-     - Folder name
-     - Files processed (count and filenames)
-     - Files NOT processed (count, filenames, and reason for each — unsupported format, conversion error, etc.)
-     - Claims extracted (count)
-   - If a folder from Phase 1 discovery has zero entries in this report, that is a bug — report it.
-   - Source organization issues found (list each one).
-   - **Total:** Files processed, files not processed, total claims extracted.
-   - **Completeness check** — Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessed list. If any files are missing from both, report the gap.
-   - **Remind the user:** "Run `/analyze` to process extractions into insights."
+   **Compact format — totals only:**
+   ```
+   ✓ Extraction complete: N files · Z claims [· X skipped unchanged]
+   [If unprocessable:] ⚠ X unprocessable: filename (reason), filename (reason)
+   [If org issues:] ⚠ X organization issues found (details in EXTRACTIONS.md)
+   → Run /analyze to process claims into insights.
+   ```
+   - List unprocessable files individually (format, reason)
+   - Do NOT list all processed files — totals only
+   - **Completeness check** — Every file from Phase 1 must appear in either EXTRACTIONS.md or the unprocessable list. If any are missing from both, add them to the ⚠ line.
 
 ### Phase 4b: Update SOURCE_MAP
 

@@ -67,27 +67,25 @@ Ten Claude Code skills form the pipeline:
 ```
 /kickoff              →  Project setup — name, language (en/es), description
 /extract [folder]     →  Read sources, convert non-markdown files, write raw claims to EXTRACTIONS.md
-/analyze              →  Process extractions into insights, detect contradictions, generate research brief
+/analyze              →  Process extractions into insights, detect contradictions, auto-generate STATUS.html
 /synthesis            →  Resolve conflicts, update system map with design implications
 /ship [type]          →  Generate deliverables (9 output types — see below)
 /audit                →  Quality gate — evaluate Work layer readiness before /ship
 /visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
-/status               →  Generate interactive research dashboard (open in browser to review)
 /reset [scope]        →  Reset generated layers to template state (preserves sources)
 /seed [domain]        →  Generate synthetic sources for testing and onboarding
 ```
 
-The core pipeline is: `/extract` → `/analyze` → `/synthesis` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
+The core pipeline is: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/synthesis` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
 
 | Skill | Reads | Writes |
 |---|---|---|
 | `/extract` | `01_Sources/*` | `02_Work/EXTRACTIONS.md`, `02_Work/MEMORY.md` |
-| `/analyze` | `02_Work/EXTRACTIONS.md`, `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/RESEARCH_BRIEF.md`, `02_Work/MEMORY.md` |
+| `/analyze` | `02_Work/EXTRACTIONS.md`, `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/RESEARCH_BRIEF.md`, `03_Outputs/STATUS.html`, `02_Work/MEMORY.md` |
 | `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
 | `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
 | `/audit` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md` | `02_Work/MEMORY.md` (report in conversation) |
 | `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
-| `/status` | `02_Work/*`, `01_Sources/*` | `03_Outputs/STATUS.html` (data.json) |
 | `/reset` | `02_Work/*`, `03_Outputs/*` | `02_Work/*` (templates), `03_Outputs/*` (clean) |
 | `/seed` | — | `01_Sources/seed-*` (synthetic data) |
 
@@ -147,7 +145,6 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 │   ├── ship/SKILL.md             /ship — generate deliverables (9 output types)
 │   ├── audit/SKILL.md            /audit — quality gate before /ship
 │   ├── visualize/SKILL.md        /visualize — generate Mermaid diagrams
-│   ├── status/SKILL.md           /status — interactive research dashboard
 │   ├── reset/SKILL.md            /reset — reset generated layers
 │   └── seed/SKILL.md             /seed — generate synthetic sources
 ├── 01_Sources/                    Raw inputs (immutable, any format)

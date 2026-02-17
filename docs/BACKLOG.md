@@ -8,95 +8,165 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
-### [BL-30] Skill Name Collision — /status conflicts with Claude Code command
+### [BL-30] Pipeline Flow Simplification — Unified /analyze with Interactive Decisions
 
-**Status:** Proposed
-**Priority:** P2 — Medium (UX confusion)
-**Origin:** User testing (2026-02-16, parallel project)
+**Status:** ✅ IMPLEMENTED (v4.5, 2026-02-16)
+**Priority:** P0 — CRITICAL (UX blocker)
+**Origin:** QA v3 testing (2026-02-16), consolidated from QA3-ARCH-01
+**Related:** BL-33 (phase dashboard), QA3-UX-01 (express mode)
 
 **Problem:**
 
-PD-Spec skill `/status` conflicts with Claude Code's built-in `/status` command, causing confusion about which command is being invoked.
+Current pipeline has multiple friction points:
+1. **Skill name collision:** `/status` conflicts with Claude Code's built-in command
+2. **Missing output clarity:** `/analyze` doesn't have obvious deliverable (user must remember to run `/status` separately)
+3. **Unnecessary skill separation:** `/synthesis` as separate command when it's the logical next step after `/analyze`
+4. **Manual decision flow:** User approves in free-text, then must review in dashboard, generate prompt, copy/paste to run `/synthesis`
 
-**Evidence:**
-User report: "nuestro skill status se confunde con el comando /status de claude-code"
+**User feedback (validated 2026-02-16):**
 
-**Impact:**
-- User confusion: unclear which `/status` is being called
-- Possible invocation errors or unexpected behavior
-- Reduces discoverability of PD-Spec status skill
+> "analyze deberia tener un output, no entiendo que pasa ahi entre analyze, status y sintesis"
 
-**UX Evidence (2026-02-16, Triviapp project):**
+> "analizar sin sintetizar no sirve"
 
-User feedback during testing: *"analyze deberia tener un output, no entiendo que pasa ahi entre analyze, status y sintesis"*
+> "Nunca he hecho un partial approval en el terminal, los apruebo todos y luego los reviso en status.html, si uno no aplica lo rechazo y eso genera un prompt de synthesis"
 
-**Observed behavior (confusing):**
+**Current flow (6 steps, confusing):**
 ```
-/extract → EXTRACTIONS.md (output clear ✅)
-/analyze → presents draft → waits for approval → writes INSIGHTS_GRAPH.md (output unclear ❌)
-/status → STATUS.html (separate skill, must run manually)
-/synthesis → resolves conflicts
-```
-
-**Expected behavior (logical):**
-```
-/extract → EXTRACTIONS.md ✅
-/analyze → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html automatic ✅
-/synthesis → only for manual conflict resolution
+/extract → /analyze → /status → open browser → click approve/reject →
+           ↓                      generate prompt → copy → paste → /synthesis
+        asks for     manual       dashboard          indirect
+        approval     command      interaction        workflow
 ```
 
-**Core UX issue:** `/analyze` doesn't have an obvious "output" like `/extract` does. User must remember to run `/status` manually to see the dashboard, breaking the mental model of "skill → output file."
+**Proposed flow (2 steps, clear):**
+```
+/extract → /analyze
+           ↓
+        [AskUserQuestion interactive menu]
+           ↓
+        writes files + auto-generates STATUS.html
+           ↓
+        (optional) review in dashboard → reject specific insights →
+                   generate prompt → /synthesis for corrections
+```
 
-**Proposed solutions:**
+**Solution: AskUserQuestion as Decision Point**
 
-**Option A: Eliminate /status skill — auto-generate at end of /analyze** ⭐ RECOMMENDED
-- Remove `/status` as standalone skill
-- Add dashboard generation as final step of `/analyze` (after Phase 4 Report)
-- Pipeline becomes: `/extract` → `/analyze` (auto-generates STATUS.html) → `/synthesis`
-- Eliminates naming conflict entirely
-- Dashboard always up-to-date after analysis
-- Simplifies workflow (one less command to remember)
-- User still gets interactive dashboard, just automatically
+Use Claude Code's native terminal interactive menu instead of free-text approval:
 
-**Option B: Rename skill**
-- `/status` → `/dashboard` or `/research-status`
-- Update all references in skills, docs, outputs
-- Clear differentiation from Claude Code command
+**Phase 4 of /analyze (after synthesis consolidation):**
 
-**Option C: Namespace prefix**
-- `/status` → `/pd-status`
-- Follows convention for scoped commands
-- Backward compatible with alias
+```javascript
+AskUserQuestion({
+  questions: [
+    {
+      question: "¿Qué hacer con los 21 insights sintetizados?",
+      header: "Synthesis",
+      multiSelect: false,
+      options: [
+        {
+          label: "Aprobar todos como PENDING (Recommended)",
+          description: "Escribe los 21 como PENDING. Puedes revisar individualmente después en STATUS.html y generar prompt para rechazar los que no apliquen."
+        },
+        {
+          label: "Aprobar todos como VERIFIED",
+          description: "Escribe los 21 como VERIFIED directamente. Omite revisión individual en dashboard (modo express)."
+        },
+        {
+          label: "Revisar uno por uno ahora",
+          description: "Presentar cada insight para aprobación individual antes de escribir (lento, solo para proyectos pequeños)."
+        }
+      ]
+    },
+    {
+      question: "¿Cómo resolver las 6 ambigüedades detectadas?",
+      header: "Ambiguities",
+      multiSelect: false,
+      options: [
+        {
+          label: "Guardar para /synthesis (Recommended)",
+          description: "Marcar como PENDING, resolver después con contexto completo usando dashboard"
+        },
+        {
+          label: "Resolver ahora",
+          description: "Presentar cada ambigüedad con opciones para decisión inmediata"
+        }
+      ]
+    }
+  ]
+})
+```
 
-**Option D: Keep as-is, document clearly**
-- Add note in README: "Use `/status` for dashboard (PD-Spec skill)"
-- Claude Code's `/status` is for CLI status, different context
-- Rely on user learning curve
+**After user selection:**
 
-**Rationale for Option A (auto-generate):**
-- **Solves both problems**: Eliminates naming conflict AND fixes UX confusion about /analyze output
-- `/status` is never run in isolation — always after `/analyze`
-- Manual invocation adds extra step for no benefit
-- Auto-generation ensures dashboard is always current
-- **Establishes clear output pattern**: Every skill has an obvious output file
-  - `/extract` → EXTRACTIONS.md
-  - `/analyze` → INSIGHTS_GRAPH.md + CONFLICTS.md + STATUS.html
-  - `/synthesis` → updates INSIGHTS_GRAPH.md + SYSTEM_MAP.md
-- Aligns with pipeline flow: extract → analyze (with dashboard) → synthesis
-- Current behavior in v4.0+ pipeline already recommends `/analyze` → `/status` → `/synthesis` sequence
-- **Validated by user testing**: "analyze deberia tener un output" — users expect visible deliverable
+1. Write insights to INSIGHTS_GRAPH.md with chosen status (PENDING or VERIFIED)
+2. Write conflicts to CONFLICTS.md as PENDING or present for resolution
+3. **Auto-generate STATUS.html** (eliminates manual `/status` command)
+4. Log to MEMORY.md
+5. Display: "Dashboard generated: 03_Outputs/STATUS.html (21 insights, 6 conflicts)"
+
+**Advantages:**
+
+✅ **No sale de la terminal** — Tab/Arrow key navigation, instant feedback
+✅ **Ya existe en Claude Code** — cero implementación custom, built-in feature
+✅ **Opciones estructuradas** — elimina ambigüedad de respuestas libres
+✅ **Flow natural** — /analyze completa sin comandos adicionales
+✅ **Express mode included** — Option 2 ("Aprobar como VERIFIED") permite flujo rápido para proyectos pequeños
+✅ **Dashboard sigue útil** — para partial rejection después (user's validated workflow)
+✅ **Elimina naming conflict** — no más `/status` skill separado
+
+**Role of /synthesis after this change:**
+
+`/synthesis` **still exists** but only for edge cases:
+- Re-synthesis after adding new sources (incremental research)
+- Manual conflict resolution when deferred with "Guardar para /synthesis"
+- Corrections after dashboard review (user clicks reject on specific insights, generates prompt)
+- NOT part of normal happy path (most users choose "Aprobar como PENDING" or "VERIFIED" and skip it)
+
+**Three workflow paths:**
+
+**Path 1: Express (small projects, high confidence)**
+```
+/extract → /analyze → [AskUserQuestion: Aprobar como VERIFIED] → Done ✅
+No dashboard review needed, insights written as VERIFIED directly
+```
+
+**Path 2: Standard (most common, validated by user)**
+```
+/extract → /analyze → [AskUserQuestion: Aprobar como PENDING] →
+writes files + STATUS.html → (later) review dashboard →
+reject 2-3 insights → generate prompt → /synthesis for corrections
+```
+
+**Path 3: Careful review (complex projects, low confidence)**
+```
+/extract → /analyze → [AskUserQuestion: Revisar uno por uno] →
+presents each insight individually → user approves/rejects in terminal →
+writes files + STATUS.html → Done ✅
+```
 
 **User story:**
-> As a PD-Spec user, I expect the research dashboard to be automatically generated after analysis completes, without needing to invoke a separate command that conflicts with Claude Code.
+> As a PD-Spec user, I want /analyze to guide me through decisions interactively and generate the dashboard automatically, so I don't have to remember separate commands or switch between terminal and browser unnecessarily.
 
-**Acceptance criteria (Option A):**
-- ✅ `/analyze` final step: Generate STATUS.html automatically
-- ✅ Log: "Dashboard generated: 03_Outputs/STATUS.html (X insights, Y conflicts)"
-- ✅ No standalone `/status` skill exists
-- ✅ User can still manually regenerate if needed: `Regenerate STATUS.html from current Work layer state`
-- ✅ Pipeline flow: `/extract` → `/analyze` (auto-dashboard) → `/synthesis`
+**Acceptance criteria:**
+- [ ] `/analyze` Phase 4 uses AskUserQuestion instead of free-text prompt
+- [ ] 3 synthesis options: PENDING (review later), VERIFIED (skip review), Review now (one-by-one)
+- [ ] 2 conflict options: Defer to /synthesis, Resolve now
+- [ ] STATUS.html auto-generated after writing files (no manual `/status` command)
+- [ ] `/status` skill removed from skills directory
+- [ ] User can complete full pipeline without opening browser (if choosing VERIFIED)
+- [ ] Dashboard remains functional for partial rejection workflow (Path 2)
+- [ ] MEMORY.md logs user's AskUserQuestion selections for session resume
+- [ ] Pipeline flow updated in README: `/extract` → `/analyze` (interactive) → optional `/synthesis`
 
-**Implementation note:** Move status skill logic to Phase 5 of analyze skill, remove status/ skill directory.
+**Implementation notes:**
+
+1. Add AskUserQuestion call to `.claude/skills/analyze/SKILL.md` Phase 4
+2. Move status generation logic from `.claude/skills/status/SKILL.md` to analyze Phase 5
+3. Remove `.claude/skills/status/` directory
+4. Update CLAUDE.md skills table (remove /status entry)
+5. Update 03_Outputs/_templates/status.html note: "Auto-generated by /analyze"
 
 ---
 
@@ -210,12 +280,451 @@ Express mode bridges the gap between batching and full RAG implementation.
 
 ---
 
-### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
+### [BL-32] Auto Express Mode — Smart Project Size Detection
 
 **Status:** Proposed
+**Priority:** P1 — High (UX improvement)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-01
+**Related:** BL-31 (Express Mode manual), BL-18 (Synthesis layer), BL-34 (Compact Output)
+
+**Problem:**
+
+Pipeline feels slow even on small projects (11 files, 220 claims → "muy lento incluso en este contexto de mini proyecto"). Synthesis layer (BL-18) adds value for large projects (>500 claims) but creates overhead for small projects.
+
+**Evidence from QA v3:**
+- Triviapp project: 11 files, 220 claims → synthesis creates 47 insights (ratio 21%)
+- User perception: "lento" — disproportionate processing time for project complexity
+- Option E test: 54 files, 1,238 claims → 33min duration (synthesis not tested yet)
+
+**Proposal: Auto-detect project size and adjust processing depth**
+
+**Detection logic:**
+```
+IF project < 30 files OR < 500 claims:
+  → Express mode (default)
+  → Atomic insights only (no clustering, no synthesis)
+  → Log: "⚡ Express mode: 11 files, 220 claims. Use /analyze --full for deeper synthesis."
+
+IF project > 50 files OR > 1000 claims:
+  → Full mode (synthesis activated)
+  → Log: "🔍 Large project: 65 files, 1,200 claims. Running full synthesis..."
+
+IF 30-50 files OR 500-1000 claims:
+  → Express mode + suggest full
+  → Log: "⚡ Express mode: 40 files, 800 claims. Consider /analyze --full for complex projects."
+```
+
+**Express mode behavior:**
+- ✅ Atomic insights (one per claim cluster)
+- ✅ Conflict detection (still works)
+- ✅ Fast dashboard generation
+- ❌ No synthesis layer (clustering, narratives)
+- ❌ No convergence weighting
+- ❌ No strategic consolidation
+
+**Full mode (`/analyze --full`):**
+- ✅ Synthesis layer active
+- ✅ Strategic insights (7-25 consolidated from atomics)
+- ✅ Convergence weighting, narratives, evidence trails
+- ✅ Ambiguity detection (6 types)
+
+**User story:**
+> As a researcher with a small project (11 files, 200 claims), I expect fast iteration with atomic insights in <2min, not waiting for synthesis overhead that adds little value at this scale.
+
+**Acceptance criteria:**
+- ✅ Auto-detect project size in /analyze Phase 1
+- ✅ Express mode: skip Phase 4 (Synthesis), output atomic insights only
+- ✅ Clear log explaining mode and how to activate full
+- ✅ --full flag overrides auto-detection
+- ✅ Small projects complete /analyze in <2min (vs 5-10min with synthesis)
+
+**Benefits:**
+- Fast iteration for majority of use cases (80% of projects are <500 claims)
+- User controls depth via --full when needed
+- Clear logic: project size determines mode
+- Backward compatible (--full preserves current behavior)
+
+---
+
+### [BL-33] Phase-Based Progress Dashboard — Visual Pipeline Tracking
+
+**Status:** Proposed
+**Priority:** P1 — High (UX improvement)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-02
+**Related:** BL-30 (auto-generate STATUS.html in /analyze), BL-32 (Express Mode)
+
+**Problem:**
+
+No visual progress tracking across pipeline phases. Current flow requires multiple roundtrips:
+1. /analyze presents synthesis report → user approves → writes INSIGHTS_GRAPH.md
+2. /status (manual invocation) → generates dashboard
+3. /synthesis presents conflict resolutions → user decides → writes SYSTEM_MAP.md
+4. /ship presents structure → user approves → writes deliverable
+
+User can't see "where we are" at all times. Dashboard (/status) is separate skill, must invoke manually.
+
+**Evidence from QA v3:**
+- Triviapp session: multiple propose-approve cycles, no incremental progress view
+- User feedback: "analyze deberia tener un output" — expects visible deliverable per phase
+- BL-30 addresses part of this (auto-generate STATUS.html in /analyze) but doesn't show phase progress
+
+**Proposal: Phase-Based Dashboard in STATUS.html**
+
+**Auto-generated dashboard shows progress per phase:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 📊 TIMining Research Dashboard                          │
+├─────────────────────────────────────────────────────────┤
+│ Phase 1: Sources Loaded                                 │
+│ ✅ 54 files, 1,238 claims extracted                     │
+│ [Ver EXTRACTIONS.md] [Add more sources]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 2: Atomic Insights                                │
+│ ✅ 35 insights created (12 PENDING approval)            │
+│ [Approve/Reject inline] [View insights]                 │
+├─────────────────────────────────────────────────────────┤
+│ Phase 3: Synthesis                                      │
+│ ⏭️ SKIPPED (Express mode active)                        │
+│ [Run /analyze --full for synthesis layer]              │
+├─────────────────────────────────────────────────────────┤
+│ Phase 4: Conflicts                                      │
+│ ⚠️ 3 conflicts detected (3 PENDING resolution)          │
+│ [Resolve conflicts inline] [View conflicts]             │
+├─────────────────────────────────────────────────────────┤
+│ Phase 5: System Map                                     │
+│ ⏳ PENDING (run /synthesis after resolving conflicts)   │
+│ [Start synthesis] [Skip to /ship]                       │
+├─────────────────────────────────────────────────────────┤
+│ Phase 6: Deliverables                                   │
+│ 📄 PRD.html available                                   │
+│ [View PRD] [Generate more outputs]                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Key features:**
+- ✅ Visual progress tracker (✅ completed, ⏳ pending, ⏭️ skipped)
+- ✅ Inline actions (approve/reject, resolve conflicts)
+- ✅ User sees "where we are" at all times
+- ✅ Dashboard auto-updates after each skill
+- ✅ User interacts from dashboard, not chat (reduces roundtrips)
+
+**Implementation:**
+- /analyze generates STATUS.html with Phase 1-4 populated
+- /synthesis updates STATUS.html with Phase 5 populated
+- /ship updates STATUS.html with Phase 6 populated
+- Dashboard is living document, not one-time snapshot
+
+**User story:**
+> As a researcher running the PD-Spec pipeline, I expect to see visual progress across phases in a single dashboard, so I can understand pipeline state and make informed decisions without multiple /status invocations.
+
+**Acceptance criteria:**
+- ✅ STATUS.html shows 6 phases with clear status indicators
+- ✅ Auto-updates after /analyze, /synthesis, /ship
+- ✅ Inline actions for approvals (no chat roundtrips)
+- ✅ Express mode shows "SKIPPED" for Phase 3 (Synthesis)
+- ✅ User can navigate between phases visually
+
+---
+
+### [BL-34] Compact Skill Output — Preserve Context Longer
+
+**Status:** ✅ IMPLEMENTED (v4.6, 2026-02-17)
+**Priority:** P0 — CRITICAL (performance blocker)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-03
+**Implemented:** 2026-02-17
+**Related:** BL-29 (Option E), QA3-PERF-01
+
+**Problem:**
+
+Verbose skill output consumes context rapidly, forcing compactions and slowing execution.
+
+**Evidence from QA v3:**
+
+**Option E test (TIMining, 54 files):**
+- 51/54 files processed → 2 context compactions (22min elapsed)
+- 54/54 files complete → 33m 54s total (vs <2min target, 16x slower)
+- User feedback: "es un gloton de tokens" 😂
+
+**Current verbose output:**
+```
+✓ Pass 2 — File 7/16 complete: TIMining_s strategic position...pdf, 27 claims extracted
+Now updating SOURCE_MAP.md and proceeding to heavy file 8/16.
+Update(~/Dev/repos/pd-spec-test/02_Work/SOURCE_MAP.md)
+  Added 1 line
+  [shows exact line added with full path and metadata]
+Now processing heavy file 8/16: Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx
+Bash(cd "/Users/nlundin/Dev/repos/pd-spec-test/01_Sources/Antecedentes/Ppt & videos evento Google" && md5 -q "[Evento Google] FINAL SCRIPT - V4.docx" && textutil -convert txt ...)
+  Done
+Read 1 file (ctrl+o to expand)
+Update(~/Dev/repos/pd-spec-test/02_Work/EXTRACTIONS.md)
+  Added 32 lines
+  [shows all 32 lines of extracted claims verbatim]
+```
+
+**Proposed compact output:**
+```
+Pass 2: 7/16 ✓ (27 claims)
+Pass 2: 8/16 ✓ (24 claims)
+Pass 2: 9/16 ✓ (19 claims)
+```
+
+**Principles for compact output:**
+- Progress indicators: concise (emoji + summary)
+- Details: defer to output files (INSIGHTS_GRAPH.md, CONFLICTS.md)
+- Proposals: structured, minimal (not essay-style)
+- Logging: essential only (skip intermediate steps)
+
+**Benefits:**
+- ✅ 90% reduction in output tokens
+- ✅ Longer context preservation (fewer compactions)
+- ✅ Faster execution (less output generation overhead)
+- ✅ User reads dashboard, not chat logs
+
+**User story:**
+> As a researcher using PD-Spec, I expect skills to execute efficiently without flooding chat with verbose logs, so I can complete projects without context compactions and work faster.
+
+**Acceptance criteria:**
+- ✅ Skill output ≤50% of current verbosity (target: 90% reduction)
+- ✅ Context compaction frequency reduced by 30%+
+- ✅ User can complete small project (11 files) without compaction
+- ✅ Option E test: 54 files in <15min (vs 33min baseline)
+- ✅ Large project (100+ files) completes with max 1 compaction
+
+**Implementation:**
+- Update all skills (extract, analyze, synthesis, ship) to use compact output format
+- Move detailed logs to files (MEMORY.md gets full log, user sees concise progress)
+- Dashboard shows progress, not chat
+
+**Implementation Results (2026-02-17):**
+- `/extract` skill: 4 changes — (1) removed per-file log inside Pass 1 batches, (2) simplified batch-complete log to one-liner, (3) shortened Pass 2 heavy-file log format, (4) replaced verbose per-folder final report with compact totals-only summary + unprocessable list
+- Added "Silent execution rule" to Phase 2: no narration between tool calls
+- `/analyze` skill: already had compact Phase 6 output — no changes needed
+- `/synthesis`, `/ship`: no per-file loops, not targets for this fix
+
+---
+
+### [BL-35] /status Performance Fix — Eliminate Synthesis Overhead
+
+**Status:** ✅ IMPLEMENTED (v4.4, 2026-02-16)
+**Priority:** P0 — CRITICAL (blocks BL-30)
+**Origin:** QA v3 testing (2026-02-16), QA3-UX-04
+**Related:** BL-30 (auto-generate status), BL-34 (compact output)
+**Implemented:** 2026-02-16 (evening session)
+
+**Problem:**
+
+/status takes 6-10 minutes on ALL projects due to hidden synthesis overhead. Makes dashboard regeneration prohibitive and blocks BL-30 (auto-generate STATUS.html at end of /analyze).
+
+**Evidence from QA v3:**
+
+**Benchmark results:**
+
+| Project | Sources | Insights | Duration | Target | Delta |
+|---|---|---|---|---|---|
+| Small | 3 | ~12 | 6m 50s | <10s | 40x slower |
+| Large (TIMining) | 61 | 22 | 10m 2s | <60s | 10x slower |
+
+**Overhead structure:**
+- Fixed: ~6-7min (dominates, 67% of total)
+- Variable: ~3min (scales with project size)
+
+**Root causes (identified via SKILL.md analysis):**
+
+1. **Conflict label inference (line 146):** 🚨 MAIN CULPRIT
+   ```markdown
+   "For each PENDING conflict, provide specific flag_label (who to involve and topic)
+   and research_label (what to research) derived from the conflict data."
+   ```
+   - Requires agent to INFER resolution context for each conflict
+   - Evidence: `thought for 258s` (4min 18s) observed in TIMining
+   - This is SYNTHESIS work, not data formatting
+   - Estimated: ~40-50s per conflict
+
+2. **Evidence gap subjective evaluation (line 47):**
+   ```markdown
+   "insights with weak or single-source backing"
+   ```
+   - "Weak" requires subjective analysis of each insight
+   - Should be objective: read convergence field, no thinking
+   - Estimated overhead: ~1min
+
+3. **Verbose output (Update + Write tools):**
+   - Update tool: expands 494 lines of JSON
+   - Write tool: expands 1571 lines of HTML (if used)
+   - Forces context compaction at 5m 30s
+
+**Impact:**
+
+- 🚨 **BL-30 BLOCKED:** Cannot auto-generate STATUS.html if adds 10min to /analyze
+  - Current /analyze: 7m 35s
+  - With auto-status: 7m 35s + 10m = **17m 35s total** (UNACCEPTABLE)
+- ❌ User workflow broken: "quick iteration" becomes 20+ min cycles
+- ❌ Dashboard regeneration feels expensive, users avoid it
+- ❌ Forces context compaction (small projects hit limit)
+
+**Proposed fixes:**
+
+**Fix 1: Eliminate conflict label inference (saves ~4-5min)** 🎯 HIGH IMPACT
+
+**Current (line 146):**
+```markdown
+provide specific flag_label and research_label derived from the conflict data
+```
+
+**Fixed:**
+```markdown
+Use generic labels (no inference, no thinking required):
+
+For PENDING conflicts:
+- flag_label: "Flag for stakeholder discussion"
+- research_label: "Needs more research"
+
+OR read labels directly from CONFLICTS.md if already present.
+NO derivation, NO synthesis, NO thinking.
+```
+
+**Fix 2: Simplify evidence gap detection (saves ~1min)**
+
+**Current (line 47):**
+```markdown
+insights with weak or single-source backing
+```
+
+**Fixed:**
+```markdown
+Read convergence field from each insight in INSIGHTS_GRAPH.md.
+If convergence < 2: add to gaps list.
+NO subjective "weak" evaluation — pure data extraction.
+```
+
+**Fix 3: Compact output (prevents compaction, saves token generation)**
+
+**Add after Phase 3:**
+```markdown
+IMPORTANT: After Write, DO NOT show file contents.
+
+Output only:
+✓ Dashboard: 03_Outputs/STATUS.html
+  Summary: {insights_total} insights ({verified} VERIFIED, {pending} PENDING),
+           {conflicts_total} conflicts, {gaps_total} evidence gaps
+  Open: file://{absolute_path}
+
+NO HTML source, NO JSON expansion.
+```
+
+**User story:**
+> As a PD-Spec user, I expect /status to generate the dashboard in seconds (not minutes), so I can iterate quickly and regenerate the dashboard after every /analyze without hesitation.
+
+**Acceptance criteria:**
+- [ ] Execution time: <10s for small projects (<10 sources) — down from 7min
+- [ ] Execution time: <30s for medium projects (10-50 sources)
+- [ ] Execution time: <60s for large projects (50+ sources) — down from 10min
+- [ ] /status output ≤100 lines (not 1571 lines HTML + 494 lines JSON)
+- [ ] No "thought for X seconds" delays (no inference, no synthesis)
+- [ ] Small projects complete without triggering compaction
+- [ ] BL-30 unblocked: /analyze + auto-status = <8min total (not 17min)
+
+**Expected improvement:** 10min → <10s (60x faster)
+
+**Implementation Summary (2026-02-16):**
+
+Modified `.claude/skills/status/SKILL.md` with three fixes:
+
+**✅ Fix 1: Eliminated conflict label inference** (line 146)
+- **Before:** "provide specific flag_label and research_label derived from the conflict data"
+- **After:** Generic labels (no inference): "Flag for stakeholder review", "Validate with additional research"
+- **Impact:** Eliminates ~4-5min thinking overhead per conflict
+
+**✅ Fix 2: Simplified evidence gap detection** (line 47)
+- **Before:** "insights with weak or single-source backing" (subjective evaluation)
+- **After:** "Read Convergence field. If convergence < 2 sources, add to gaps list" (objective)
+- **Impact:** Eliminates ~1min subjective analysis
+
+**✅ Fix 3: Compact output** (Phase 4)
+- **Before:** Shows full HTML/JSON (1571 + 494 lines)
+- **After:** Shows only summary: `✓ Dashboard: STATUS.html [stats]`
+- **Impact:** Prevents context compaction, conserves tokens
+
+**Testing results (2026-02-16):**
+
+| Test | Expected | Actual | Pass? |
+|---|---|---|---|
+| TIMining (61 sources) | <60s | **6m 34s** | ❌ |
+| Thinking overhead | 0s | ~0s | ✅ |
+| Dashboard functional | Yes | Yes | ✅ |
+| Compact output | Summary only | Summary only | ✅ |
+
+**Analysis:** Thinking overhead eliminated (4m 18s saved vs baseline 10m 2s) but I/O overhead remains (~6.5min reading + processing + writing ~2000 lines). BL-35 is a partial success — 37% faster but not 10x faster. Further optimization needed (lazy loading, partial reads).
+
+**Testing plan (remaining):**
+1. Test on small project (3 sources): verify <10s execution
+2. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+
+**Original implementation steps:**
+1. Edit `.claude/skills/status/SKILL.md`:
+   - Line 146: Replace inference instruction with generic labels
+   - Line 47: Replace subjective evaluation with convergence < 2 check
+   - After Phase 3: Add compact output instruction
+2. Test on TIMining (61 sources): verify <60s execution
+3. Test on small project (3 sources): verify <10s execution
+4. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+
+---
+
+### [BL-36] Dashboard Conflict States — Intermediate Status (Flagged/Research)
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v3 BL-35 testing (2026-02-16), QA3-UX-06
+**Related:** BL-35 (/status perf fix), QA3-ARCH-01
+
+**Problem:**
+
+When user runs `/synthesis` and marks conflicts as "Flag for discussion" or "Needs more research", those conflicts remain `PENDING` in CONFLICTS.md. On next dashboard open, the radio buttons are blank — there's no indication that a decision was already made.
+
+**Current behavior:**
+- CF-03 flagged for stakeholder → still shows as PENDING, radio blank
+- CF-05 sent for research → still shows as PENDING, radio blank
+- User must re-make decisions every time
+
+**Desired behavior:**
+- CF-03 flagged → shows badge "Flagged" + radio pre-selected
+- CF-05 research → shows badge "Research" + radio pre-selected
+
+**Proposed fix:**
+
+Extend CONFLICTS.md status syntax:
+```markdown
+Status: PENDING — Flagged (who to involve, e.g. CTO + Producto)
+Status: PENDING — Research needed (what to research)
+```
+
+Dashboard parses this metadata and:
+1. Shows intermediate badge (Flagged in amber, Research in blue)
+2. Pre-selects corresponding radio button
+3. Preserves user notes if provided
+
+**/synthesis update required:** When user flags CF-XX, `/synthesis` writes intermediate status to CONFLICTS.md.
+
+**User story:**
+> As a researcher who flagged CF-03 for CTO discussion, I expect the dashboard to show "Flagged" on that conflict next time I open it, so I don't lose track of what's in flight.
+
+**Acceptance criteria:**
+- [ ] CONFLICTS.md supports: `Status: PENDING — Flagged (...)` and `Status: PENDING — Research needed (...)`
+- [ ] Dashboard parses intermediate states and shows badges
+- [ ] Radio buttons pre-select based on metadata
+- [ ] /synthesis writes intermediate status when flagging/sending to research
+
+---
+
+### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
+
+**Status:** ✅ IMPLEMENTED (v4.3.1, Option E)
 **Priority:** P0 — CRITICAL (blocking production use)
 **Origin:** QA v3 (2026-02-16, Opus 4.6 test on TIMining 61 files)
 **Related:** BL-26 (auto-batching), QA3-BUG-02, QA3-PERF-01
+**Implemented:** 2026-02-16 (commit 8639af7, Option E)
 
 **Problem:**
 
@@ -426,6 +935,40 @@ If SOURCE_MAP.md exists AND contains 'processed' entries:
 
 - None (self-contained fix in extract skill)
 - Complements BL-28 (incremental /analyze) — after extraction works, analysis is already incremental
+
+---
+
+**Implementation Results (Option E, 2026-02-16):**
+
+✅ **Test:** TIMining project, 61 source files (54 processable + 7 videos unsupported)
+✅ **Result:** 54/54 files processed (100%)
+✅ **Duration:** 33m 54s
+✅ **Claims extracted:** 1,238 claims
+✅ **Context compactions:** 2-3 (all recovered successfully)
+✅ **Validation:** 54 EXTRACTIONS.md sections match 54 SOURCE_MAP.md entries
+
+**What worked:**
+- Two-pass strategy: 38 light files (Pass 1) + 16 heavy files (Pass 2)
+- Per-file writes for heavy files (batch size 1)
+- Direct processing (NO Task agents)
+- Recovery from compactions via SOURCE_MAP.md
+- All file types working (PDF, DOCX, PPTX, HEIC, images)
+
+**What needs optimization:**
+- Duration 33min (vs <5min target in AC7) — caused by verbose output
+- Related to QA3-UX-03 (Compact Output) — needs 90% reduction in verbosity
+- See BL-34 for optimization plan
+
+**Commits:**
+- `8639af7` — Option E implementation (eliminate Task agents, per-file writes)
+- `4314189` — Pre-create 02_Work/_temp/ directory
+- `332c4e8` — QA v3 findings documentation
+
+**Lessons learned:**
+- Task agents NOT suitable for extraction (context accumulation, permission issues)
+- Per-file writes critical for heavy files (prevents context overflow)
+- Batch size 1 for heavy files is safest (predictable, recoverable)
+- Verbose output is bottleneck (see BL-34 for fix)
 
 ---
 
