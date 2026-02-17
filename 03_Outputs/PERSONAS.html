@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personas</title>
+  <style>
+/* PD-Spec Base CSS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: #F0F2F5;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #000;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+.page {
+  background-color: #fff;
+  width: 21cm;
+  min-height: 29.7cm;
+  padding: 2.54cm;
+  margin: 0 auto 20px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; color: #202124; }
+h1 { font-size: 26pt; font-weight: 700; margin: 0 0 12px; padding-bottom: 6px; }
+
+p, li, td, th, blockquote { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 12pt; }
+
+.doc-meta {
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: #444;
+  margin-bottom: 24pt;
+}
+.doc-meta strong { color: #111; }
+.doc-meta details { margin-top: 8px; }
+.doc-meta summary { cursor: pointer; font-size: 0.8rem; color: #666; }
+.doc-meta ul { padding-left: 18pt; margin: 6px 0 0; }
+.doc-meta li { font-size: 0.8rem; color: #555; margin-bottom: 4px; }
+
+.insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+.ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+.ref-link:hover { color: #111; border-bottom-color: #111; }
+
+/* === Persona Grid === */
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.persona-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 24px;
+  background: #fff;
+  break-inside: avoid;
+}
+
+.persona-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.persona-id {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.persona-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #202124;
+  margin: 4px 0 2px;
+}
+
+.persona-role {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.persona-quote {
+  background: #f8f9fa;
+  border-left: 3px solid #00cea5;
+  padding: 10px 14px;
+  margin: 12px 0 16px;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #444;
+}
+.persona-quote .insight-ref {
+  font-style: normal;
+  display: block;
+  margin-top: 6px;
+}
+
+.persona-section {
+  margin-bottom: 14px;
+}
+
+.persona-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.persona-item {
+  font-size: 0.88rem;
+  color: #333;
+  padding: 3px 0;
+  line-height: 1.4;
+}
+.persona-item::before {
+  content: "\2022 ";
+  color: #aaa;
+}
+
+.persona-item .ref-link {
+  font-size: 0.8em;
+}
+
+.persona-item.is-gap {
+  color: #856404;
+}
+.persona-item.is-gap::before {
+  content: "\26A0 ";
+}
+
+@media print {
+  body { background: none; padding: 0; display: block; }
+  .page {
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    padding: 0;
+    border: none;
+  }
+  .persona-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .persona-card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div class="page" id="content">
+    <!-- Rendered by JS from embedded JSON -->
+  </div>
+
+  <script id="pd-data" type="application/json">
+{
+  "meta": {
+    "type": "persona",
+    "version": "v1.0",
+    "generated": "2026-02-16",
+    "language": "es",
+    "project": "TIMining",
+    "snapshot": {
+      "insights_total": 23,
+      "insights_verified": 20,
+      "conflicts_pending": 4,
+      "outputs_count": 2
+    },
+    "changelog": [
+      {"version": "v1.0", "date": "2026-02-16", "description": "Version inicial con 4 personas derivadas de 20 insights verificados. Basadas en descripciones de stakeholders (sin investigacion directa con usuarios)."}
+    ]
+  },
+  "title": "Personas de Usuario \u2014 TIMining CORE",
+  "personas": [
+    {
+      "id": "P-01",
+      "name": "Rodrigo Espinoza",
+      "role": "Despachador \u2014 Centro Integrado de Operaciones",
+      "quote": {
+        "text": "Si hay 50 camiones bien, no me los muestres. Mostrame los 5 que generan problema.",
+        "ref": "IG-SYNTH-07"
+      },
+      "goals": [
+        {"text": "Detectar anomalias operacionales en tiempo real antes de que escalen", "ref": "IG-SYNTH-06"},
+        {"text": "Ver solo las excepciones: camiones fuera de ruta, palas fuera de plan, cuellos de botella activos", "ref": "IG-SYNTH-07"},
+        {"text": "Tener certeza de que la operacion cumple el plan geometrico del turno", "ref": "IG-SYNTH-12"}
+      ],
+      "frustrations": [
+        {"text": "Pantallas saturadas de informacion donde todo parece igual de importante", "ref": "IG-SYNTH-07"},
+        {"text": "Tiempos de actualizacion confusos: GPS casi real-time, mapas de calor cada 3h, topografia cada 15min \u2014 no sabe cual dato es fresco", "ref": "IG-SYNTH-03"},
+        {"text": "La interfaz actual muestra capas que se encienden y apagan sin diferenciacion por lo que necesita su rol", "ref": "IG-SYNTH-09"}
+      ],
+      "context": [
+        {"text": "Sala de despacho con multiples pantallas, atencion constante durante todo el turno", "ref": "IG-SYNTH-09"},
+        {"text": "Trabaja con datos de multiples OEMs (Komatsu, Cat, Hexagon) integrados por TIMining", "ref": "IG-SYNTH-05"},
+        {"text": "Usa Aware como herramienta principal de monitoreo en tiempo real", "ref": "IG-SYNTH-01"}
+      ],
+      "behaviors": [
+        {"text": "Monitorea constantemente el gemelo digital buscando desvios del plan", "ref": "IG-SYNTH-01"},
+        {"text": "Reacciona a alertas pero no puede distinguir facilmente las criticas del ruido", "ref": "IG-SYNTH-07"},
+        {"text": "Complementa Aware con WhatsApp para coordinar respuestas a incidentes", "ref": "IG-SYNTH-15"}
+      ]
+    },
+    {
+      "id": "P-02",
+      "name": "Sofia Contreras",
+      "role": "Jefa de Turno \u2014 Operaciones Mina",
+      "quote": {
+        "text": "Llegamos, capacitamos, se entusiasman, pero luego no le entienden, adios.",
+        "ref": "IG-SYNTH-03"
+      },
+      "goals": [
+        {"text": "Llegar al turno con contexto completo de lo que paso antes, sin depender de preguntar al turno saliente", "ref": "IG-SYNTH-15"},
+        {"text": "Recibir alertas tacticas en terreno sin tener que estar frente a una pantalla", "ref": "IG-SYNTH-09"},
+        {"text": "Verificar cumplimiento de procedimientos de seguridad y tronaduras en tiempo real", "ref": "IG-SYNTH-18"},
+        {"text": "Saber si esta cumpliendo el plan del turno sin necesitar expertise tecnico", "ref": "IG-SYNTH-08"}
+      ],
+      "frustrations": [
+        {"text": "\"Efecto Gaviota\": el turno entrante no sabe que paso, que quedo pendiente ni donde estan los problemas", "ref": "IG-SYNTH-15"},
+        {"text": "Las metricas estan a 24 horas cuando los mineros evaluan por turno \u2014 se perdio un cliente por esto", "ref": "IG-SYNTH-03"},
+        {"text": "Capacitaciones largas que no se retienen porque trabaja en mina y constantemente reagenda", "ref": "IG-SYNTH-11"},
+        {"text": "Alertas de seguridad geotecnica llegan por WhatsApp informal, no por un sistema confiable", "ref": "IG-SYNTH-18"}
+      ],
+      "context": [
+        {"text": "En terreno la mayor parte del turno, sin acceso constante a pantallas", "ref": "IG-SYNTH-09"},
+        {"text": "Responsabilidad legal sobre seguridad y cumplimiento de procedimientos", "ref": "IG-SYNTH-18"},
+        {"text": "Depende de canales informales (WhatsApp, radio) para coordinacion operacional", "ref": "IG-SYNTH-15"},
+        {"text": "Trabaja en condiciones de alta presion con sol brillante y ruido ambiental", "ref": "IG-SYNTH-09"}
+      ],
+      "behaviors": [
+        {"text": "Comienza el turno preguntando al saliente que paso \u2014 informacion incompleta y subjetiva", "ref": "IG-SYNTH-15"},
+        {"text": "Abandona herramientas que no entiende despues de la capacitacion inicial", "ref": "IG-SYNTH-11"},
+        {"text": "Usa el celular para recibir alertas criticas porque no esta en la sala de despacho", "ref": "IG-SYNTH-09"}
+      ]
+    },
+    {
+      "id": "P-03",
+      "name": "Marcelo Fuentes",
+      "role": "Gerente de Mina",
+      "quote": {
+        "text": "El valor no esta en el software sino en la paz mental: saber que estoy tomando la decision correcta.",
+        "ref": "IG-SYNTH-16"
+      },
+      "goals": [
+        {"text": "Certeza en 5 segundos de que la operacion esta en control \u2014 \"paz mental\"", "ref": "IG-SYNTH-16"},
+        {"text": "Ver adherencia al plan como metrica central, no toneladas movidas", "ref": "IG-SYNTH-12"},
+        {"text": "Recibir recomendaciones proactivas de un copiloto que anticipe problemas", "ref": "IG-SYNTH-04"},
+        {"text": "Justificar la inversion de USD 450k con valor medible y demostrable", "ref": "IG-SYNTH-16"}
+      ],
+      "frustrations": [
+        {"text": "Mas datos no significa mas claridad \u2014 las pantallas actuales generan mas preguntas que respuestas", "ref": "IG-SYNTH-16"},
+        {"text": "Descubre los millones perdidos semanas despues, cuando ya es imposible recuperarlos", "ref": "IG-SYNTH-01"},
+        {"text": "La herramienta es reactiva: muestra el problema pero no sugiere que hacer", "ref": "IG-SYNTH-04"},
+        {"text": "Solo 30% de uso real en Orchestra \u2014 la inversion en herramientas avanzadas no se traduce en adopcion", "ref": "IG-SYNTH-11"}
+      ],
+      "context": [
+        {"text": "Entre reuniones constantemente, necesita informacion que llega a el en el celular", "ref": "IG-SYNTH-09"},
+        {"text": "Responsable de los resultados operacionales y financieros de la faena", "ref": "IG-SYNTH-12"},
+        {"text": "Toma decisiones con impacto de millones de dolares basado en informacion parcial", "ref": "IG-SYNTH-01"},
+        {"text": "Ciclo de adopcion de 2 anos + 6 meses de instalacion \u2014 necesita ver valor rapido", "ref": "IG-SYNTH-14"}
+      ],
+      "behaviors": [
+        {"text": "Revisa el celular entre reuniones buscando resumen ejecutivo del estado de la mina", "ref": "IG-SYNTH-09"},
+        {"text": "Pide reportes a su equipo porque la plataforma no le da la vision global que necesita", "ref": "IG-SYNTH-04"},
+        {"text": "Evalua la herramienta por la traccion interna que genera en sus equipos de operaciones", "ref": "IG-SYNTH-17"}
+      ]
+    },
+    {
+      "id": "P-04",
+      "name": "Catalina Araya",
+      "role": "Planificadora de Mina \u2014 Corto y Mediano Plazo",
+      "quote": {
+        "text": "Ya no se necesitan expertos en SQL \u2014 cualquier supervisor deberia poder preguntar en lenguaje natural.",
+        "ref": "IG-SYNTH-08"
+      },
+      "goals": [
+        {"text": "Acceder a analitica avanzada y simulacion sin depender de expertise tecnico", "ref": "IG-SYNTH-08"},
+        {"text": "Evaluar multiples escenarios de planificacion con impacto cuantificado", "ref": "IG-SYNTH-04"},
+        {"text": "Que la herramienta sugiera optimizaciones basadas en datos reales, no solo reporte", "ref": "IG-SYNTH-06"},
+        {"text": "Conciliar plan vs realidad con datos frescos, no con reportes de ayer", "ref": "IG-SYNTH-01"}
+      ],
+      "frustrations": [
+        {"text": "Orchestra requiere trucos y workarounds para escenarios modernos (camiones autonomos, multiples rutas)", "ref": "IG-SYNTH-02"},
+        {"text": "Solo 30% de los usuarios usa las funciones avanzadas \u2014 la curva de aprendizaje es demasiado alta", "ref": "IG-SYNTH-11"},
+        {"text": "La nomenclatura y los conceptos requieren un experto para entender la interfaz", "ref": "IG-SYNTH-11"},
+        {"text": "Para conectar Orchestra con sistemas web hay que bajar bases de datos y hacer cruces manuales", "ref": "IG-SYNTH-13"}
+      ],
+      "context": [
+        {"text": "Oficina, con tiempo dedicado para analisis en profundidad", "ref": "IG-SYNTH-09"},
+        {"text": "Trabaja con software de planificacion externo (Maptek, Deswik) ademas de TIMining", "ref": "IG-SYNTH-05"},
+        {"text": "Necesita que los datos de multiples fuentes conversen sin intervencion manual", "ref": "IG-SYNTH-13"},
+        {"text": "El ciclo de planificacion incluye horizontes de semanas, meses y anos", "ref": "IG-SYNTH-12"}
+      ],
+      "behaviors": [
+        {"text": "Descarga datos de multiples sistemas y los cruza manualmente en Excel", "ref": "IG-SYNTH-13"},
+        {"text": "Usa Orchestra para simulaciones pero evita funciones avanzadas por complejidad", "ref": "IG-SYNTH-11"},
+        {"text": "Compara plan geometrico contra topografia para medir adherencia, pero el proceso es lento y manual", "ref": "IG-SYNTH-12"},
+        {"text": "Depende de features customizados por cliente que luego no se mantienen bien", "ref": "IG-SYNTH-02"}
+      ]
+    }
+  ]
+}
+  </script>
+
+  <script>
+/* PD-Spec Base JS */
+(function() {
+  'use strict';
+
+  function loadData() {
+    var el = document.getElementById('pd-data');
+    if (!el) { console.error('PD-Spec: No <script id="pd-data"> found.'); return null; }
+    try { return JSON.parse(el.textContent); }
+    catch(e) { console.error('PD-Spec: Invalid JSON in pd-data.', e); return null; }
+  }
+
+  function convertRefs(container, targetBlank) {
+    var target = targetBlank ? ' target="_blank"' : '';
+    var selectors = '.ref-link-target, td, p, li, .callout, .implication, .open-question, .module-card, .gap-marker, .persona-quote, .persona-item, .insight-ref';
+    container.querySelectorAll(selectors).forEach(function(el) {
+      el.innerHTML = el.innerHTML.replace(
+        /\[(IG-(?:SYNTH-)?\w+|CF-\d+)\]/g,
+        '<a href="STATUS.html#$1" class="ref-link"' + target + '>[$1]</a>'
+      );
+    });
+  }
+
+  function renderDocMeta(meta, container) {
+    if (!meta) return;
+    var snap = meta.snapshot || {};
+    var html = '<div class="doc-meta">';
+    html += '<strong>' + esc(meta.version || 'v1.0') + '</strong>';
+    html += ' \u00b7 Generated ' + esc(meta.generated || '\u2014');
+    html += ' \u00b7 PD-Spec snapshot: ' + (snap.insights_total || 0) + ' insights';
+    html += ' (' + (snap.insights_verified || 0) + ' verified)';
+    html += ', ' + (snap.conflicts_pending || 0) + ' conflicts';
+    if (meta.changelog && meta.changelog.length > 0) {
+      html += '<details><summary>Document changelog</summary><ul>';
+      meta.changelog.forEach(function(entry) {
+        html += '<li><strong>' + esc(entry.version) + '</strong> (' + esc(entry.date) + '): ' + esc(entry.description) + '</li>';
+      });
+      html += '</ul></details>';
+    }
+    html += '</div>';
+    container.insertAdjacentHTML('afterbegin', html);
+  }
+
+  function esc(str) {
+    if (typeof str !== 'string') return '';
+    var el = document.createElement('span');
+    el.textContent = str;
+    return el.innerHTML;
+  }
+
+  window.PDSpec = {
+    loadData: loadData,
+    renderDocMeta: renderDocMeta,
+    convertRefs: convertRefs,
+    esc: esc
+  };
+})();
+  </script>
+  <script>
+  (function() {
+    var data = PDSpec.loadData();
+    if (!data) return;
+
+    document.title = data.title || 'Personas';
+    if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
+
+    var content = document.getElementById('content');
+    var esc = PDSpec.esc;
+
+    // Title
+    var h1 = document.createElement('h1');
+    h1.textContent = data.title || 'User Personas';
+    content.appendChild(h1);
+
+    // Doc meta
+    PDSpec.renderDocMeta(data.meta, content);
+
+    // Persona grid
+    var grid = document.createElement('div');
+    grid.className = 'persona-grid';
+
+    (data.personas || []).forEach(function(p) {
+      var card = document.createElement('div');
+      card.className = 'persona-card';
+      card.id = p.id || '';
+
+      var html = '';
+
+      // Header
+      html += '<div class="persona-header">';
+      html += '<div class="persona-id">' + esc(p.id || '') + '</div>';
+      html += '<div class="persona-name">' + esc(p.name) + '</div>';
+      html += '<div class="persona-role">' + esc(p.role) + '</div>';
+      html += '</div>';
+
+      // Quote
+      if (p.quote) {
+        html += '<div class="persona-quote">';
+        html += '&ldquo;' + esc(p.quote.text) + '&rdquo;';
+        if (p.quote.ref) html += '<span class="insight-ref">[' + p.quote.ref + ']</span>';
+        html += '</div>';
+      }
+
+      // Sections
+      var sections = [
+        { key: 'goals', label: 'Objetivos' },
+        { key: 'frustrations', label: 'Frustraciones' },
+        { key: 'context', label: 'Contexto' },
+        { key: 'behaviors', label: 'Comportamientos' }
+      ];
+
+      sections.forEach(function(sec) {
+        var items = p[sec.key];
+        if (!items || !items.length) return;
+        html += '<div class="persona-section">';
+        html += '<div class="persona-section-title">' + esc(sec.label) + '</div>';
+        items.forEach(function(item) {
+          var isGap = item.text && item.text.indexOf('[GAP]') !== -1;
+          html += '<div class="persona-item' + (isGap ? ' is-gap' : '') + '">';
+          html += esc(item.text);
+          if (item.ref) html += ' <span class="insight-ref">[' + item.ref + ']</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      card.innerHTML = html;
+      grid.appendChild(card);
+    });
+
+    content.appendChild(grid);
+
+    // Convert refs to links
+    PDSpec.convertRefs(content, false);
+  })();
+  </script>
+</body>
+</html>

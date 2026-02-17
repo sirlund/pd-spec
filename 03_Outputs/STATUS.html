@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -696,416 +696,540 @@
 
   <div class="toast" id="toast">Copied!</div>
 
-  <script id="pd-data" type="application/json">{
+  <script id="pd-data" type="application/json">
+{
   "meta": {
     "type": "status",
     "generated": "2026-02-16",
     "language": "es",
-    "project": "TIMining",
-    "last_session": "2026-02-16T02:15"
+    "last_session": "2026-02-16T22:15"
   },
-  "title": "TIMining — Dashboard",
+  "title": "TIMining — Dashboard de Investigación",
   "cards": [
-    {
-      "count": 161,
-      "label": "Insights",
-      "breakdown": "115 verificados, 46 pendientes",
-      "style": "ok"
-    },
-    {
-      "count": 6,
-      "label": "Conflictos",
-      "breakdown": "2 flagged, 4 resueltos",
-      "style": "warn"
-    },
-    {
-      "count": 6,
-      "label": "Fuentes",
-      "style": "ok"
-    },
-    {
-      "count": 3,
-      "label": "Gaps de Evidencia",
-      "style": "warn"
-    }
+    {"count": 23, "label": "Insights", "breakdown": "20 verificados, 1 fusionado, 2 invalidados", "style": "ok"},
+    {"count": 11, "label": "Conflictos", "breakdown": "4 pendientes, 7 resueltos", "style": "warn"},
+    {"count": 8, "label": "Carpetas fuente", "breakdown": "61 archivos, 54 procesados", "style": "ok"},
+    {"count": 7, "label": "Brechas de evidencia", "breakdown": "3 claim-level, 4 source-diversity", "style": "warn"}
   ],
   "insights": [
     {
-      "id": "IG-116",
-      "status": "PENDING",
-      "category": "user-need",
+      "id": "IG-SYNTH-01",
+      "status": "VERIFIED",
+      "category": "technical",
       "temporal": "current",
-      "claim": "Los usuarios necesitan que la plataforma sea \"plug and play\" sin generar problemas adicionales de TI, contratos o adherencia técnica.",
-      "source": "Workshop 1/retro.txt",
-      "quote": "No quiere más problemas (TI, contrato, adherencia) quiere que nuestra solución sea plug and play",
-      "convergence": "1/18"
+      "claim": "\"Geometry Gap\" — Brecha geométrica entre plan y realidad. TIMining infiere topografía en tiempo real con GPS cada 15 min, sin drones.",
+      "source": "15/54 fuentes (entrevistas, design brief, pitch deck, vision docs)",
+      "quote": "La Geometría es el Negocio — el plan no es una hoja de cálculo financiera; es un volumen geométrico — CTO Carlo"
     },
     {
-      "id": "IG-117",
-      "status": "PENDING",
+      "id": "IG-SYNTH-02",
+      "status": "VERIFIED",
       "category": "user-need",
       "temporal": "current",
-      "claim": "Los usuarios están sobrecargados con dashboards que muestran los mismos KPIs repetidos y prefieren información única y procesable.",
-      "source": "Workshop 1/retro.txt",
-      "quote": "MOSTRAR LOS MISMOS KPIS QUE TODOS LOS DASHBOARDS [...] MÁS PANTALLAS [...] MUCHA DATA SIN SENTIDO",
-      "convergence": "2/18"
+      "claim": "\"Auto de Homero Simpson\" — Cada cliente pide features, se implementan sin validar uso real, y el producto no funciona bien para nadie. Riesgo existencial.",
+      "source": "8/54 fuentes (entrevistas operaciones, workshop, stakeholders)",
+      "quote": "No tenemos que implementar solo porque el cliente lo dijo; debemos entender para qué lo va a usar — Erika (Operaciones)"
     },
     {
-      "id": "IG-118",
-      "status": "PENDING",
+      "id": "IG-SYNTH-03",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "current",
+      "claim": "Confusión Temporal — Los tiempos del dato (GPS real-time, mapas 3h, indicadores 30min, topografía 15min) generan abandono por incomprensión.",
+      "source": "4/54 fuentes (entrevistas operaciones)",
+      "quote": "Se perdió un cliente por métricas de extracción a 24 horas — los mineros miran por turno"
+    },
+    {
+      "id": "IG-SYNTH-04",
+      "status": "VERIFIED",
       "category": "user-need",
       "temporal": "aspirational",
-      "claim": "Los usuarios necesitan un sistema proactivo que venga a ellos con soluciones, no que requiera buscar activamente la información.",
-      "source": "Workshop 1/retro.txt",
-      "quote": "Buscar la solución → que la solución venga a él [...] Un sistema más Proactivo",
-      "convergence": "2/18"
+      "claim": "Del Dashboard al Copiloto — Transición de pantallas con gráficos a sistema proactivo que anticipa problemas y sugiere soluciones (concepto 'Skynet').",
+      "source": "12/54 fuentes (workshop, design brief, vision docs, stakeholders)",
+      "quote": "Concepto 'Skynet': cada X minutos analiza situación, corre N simulaciones, envía sugerencias — Workshop"
     },
     {
-      "id": "IG-119",
-      "status": "PENDING",
+      "id": "IG-SYNTH-05",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "current",
+      "claim": "\"Efecto Suiza\" — Integrador neutral en industria de super suites con lock-in. OEMs integran con TIMining cuando no integran entre sí.",
+      "source": "10/54 fuentes (COO, CEO, strategic narratives)",
+      "quote": "'Efecto Suiza': OEMs y vendors integran rutinariamente con TIMining incluso cuando no integran entre sí — CEO"
+    },
+    {
+      "id": "IG-SYNTH-06",
+      "status": "VERIFIED",
       "category": "user-need",
       "temporal": "aspirational",
-      "claim": "Los usuarios necesitan que el sistema recomiende acciones (sistema recomendador), no solo alertas — customización con recomendaciones automáticas ante problemas recurrentes.",
-      "source": "Workshop 1/retro.txt",
-      "quote": "Un sistema Recomendador y que tome ACCIÓN en temas recurrentes [...] Customización. Necesita recomendaciones no solo alertas. Respuestas Automáticas a sus problemas y sugerencias.",
-      "convergence": "1/18"
+      "claim": "Patrón Detección → Análisis → Recomendación validado en 20 láminas de workshop con estructura idéntica. Esqueleto UX de CORE.",
+      "source": "25/54 fuentes (workshop laminas, casos de uso, sello)",
+      "quote": "Patrón transversal: Las 20 láminas siguen estructura Detección → Análisis → Recomendación — Casos de Uso docx"
     },
     {
-      "id": "IG-120",
-      "status": "PENDING",
+      "id": "IG-SYNTH-07",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "aspirational",
+      "claim": "Gestión por Excepción — Solo mostrar lo que importa. Si hay 50 camiones bien, no mostrarlos; mostrar los 5 que generan problema.",
+      "source": "8/54 fuentes (workshop, retro, design brief, vision docs)",
+      "quote": "STOP: MUCHA DATA SIN SENTIDO, MÁS PANTALLAS, DESBORDAR DE INFORMACIÓN — Retro Workshop"
+    },
+    {
+      "id": "IG-SYNTH-08",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "aspirational",
+      "claim": "Democratización del Dato — De expertos SQL a lenguaje natural para todos. TIM Agent + Google Gemini. Meta: 100+ usuarios activos por sitio.",
+      "source": "9/54 fuentes (CTO, design brief, vision docs, Google script)",
+      "quote": "Ya no se necesitan expertos en SQL — cualquier supervisor puede preguntar en lenguaje natural — CTO"
+    },
+    {
+      "id": "IG-SYNTH-09",
+      "status": "VERIFIED",
       "category": "user-need",
       "temporal": "current",
-      "claim": "Los usuarios necesitan capacitación adaptada a su perfil de usuario, idealmente in-app, evitando capacitaciones largas y genéricas.",
-      "source": "Workshop 1/retro.txt",
-      "quote": "CAPACITACIÓN RESPECTO AL PERFIL DE USUARIO (OJALÁ IN-APP) [...] Capacitaciones muy largas [NO necesita]",
-      "convergence": "1/18"
+      "claim": "4-5 perfiles de usuario diferenciados con necesidades radicalmente distintas. Hoy Aware presenta la misma interfaz para todos.",
+      "source": "12/54 fuentes (COO, operaciones, workshop, vision docs)",
+      "quote": "Aware como interfaz de capas: misma interfaz para todos, no hay diferenciación por perfil — Operaciones"
     },
     {
-      "id": "IG-143",
-      "status": "PENDING",
+      "id": "IG-SYNTH-10",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "aspirational",
+      "claim": "De herramientas fragmentadas (7 productos) a plataforma CORE unificada. Meta: relanzamiento que justifique USD 450k vs USD 300k actuales.",
+      "source": "9/54 fuentes (CEO, CTO, strategic narratives, design brief)",
+      "quote": "De vender un 'nice 3D viewer' a plataforma robusta end-to-end — CEO"
+    },
+    {
+      "id": "IG-SYNTH-11",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "current",
+      "claim": "Curva de aprendizaje y barrera de adopción — Orchestra con 30% de uso real. Usuarios no tienen tiempo: 'trabajan en mina, constantemente reagendan.'",
+      "source": "6/54 fuentes (PM Orchestra, operaciones, workshop retro)",
+      "quote": "Problema: 30% uso de usuarios — PM Orchestra"
+    },
+    {
+      "id": "IG-SYNTH-12",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "current",
+      "claim": "Adherencia al plan como métrica central — +9-19% adherencia espacial, USD 10M+ ahorros en 3 minas. 5% mejora = USD 15B valor industria.",
+      "source": "10/54 fuentes (pitch deck, PPT corporativa, CEO, workshop)",
+      "quote": "A 5% increase in plan compliance can add $15B in value to the industry annually — Pitch deck"
+    },
+    {
+      "id": "IG-SYNTH-13",
+      "status": "VERIFIED",
+      "category": "technical",
+      "temporal": "current",
+      "claim": "Stack tecnológico fragmentado — C++, Unity, Go, Python, web sin autenticación unificada. Estado 'plug and play' no se cumple.",
+      "source": "3/54 fuentes (COO entrevistas — fragilidad: solo tipo stakeholder)",
+      "quote": "Stack fragmentado: C++, Unity, Go, Python, web; no hay autenticación unificada — COO"
+    },
+    {
+      "id": "IG-SYNTH-14",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "current",
+      "claim": "Dependencia de venta consultiva — 30-36h por caso, ciclo de venta 2 años + 6 meses instalación. Limita escalabilidad SaaS.",
+      "source": "3/54 fuentes (operaciones, stakeholders)",
+      "quote": "Fuerte venta consultiva y postventa: 'en el fondo son las manos del cerebro ustedes' — Reunión 27-01"
+    },
+    {
+      "id": "IG-SYNTH-15",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "current",
+      "claim": "\"Efecto Gaviota\" — Transiciones de turno generan caídas de producción por pérdida de contexto. Visión: briefings automáticos multimedia.",
+      "source": "5/54 fuentes (workshop, pitch deck, CEO, vision docs)",
+      "quote": "The Seagull Effect: Automated Briefings — Voice Note, Video Reel, KPI Summary — Pitch deck"
+    },
+    {
+      "id": "IG-SYNTH-16",
+      "status": "VERIFIED",
+      "category": "user-need",
+      "temporal": "aspirational",
+      "claim": "\"Paz Mental\" como propuesta de valor — El valor no está en el software sino en la certeza de tomar la decisión correcta. Concepto iPhone-like.",
+      "source": "5/54 fuentes (workshop, Sello, design brief, field note fusionada)",
+      "quote": "Mantra operativo: valor no reside en el software sino en la 'Paz Mental' del operador — Sello"
+    },
+    {
+      "id": "IG-SYNTH-16b",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "aspirational",
+      "claim": "Oportunidad de repricing — Aware USD 300k/año genera USD 6M+ en valor capturado. Desconexión precio-valor. Target CORE: USD 450k.",
+      "source": "6/54 fuentes (design brief, CEO, CTO, workshop)",
+      "quote": "USD 10M+ en ahorros en 3 minas; USD 6M capturados ene-may 2025 en una sola faena — CEO"
+    },
+    {
+      "id": "IG-SYNTH-17",
+      "status": "VERIFIED",
+      "category": "business",
+      "temporal": "current",
+      "claim": "Adopción bottom-up ('operational pull') — Se embebe en rutinas de cambio de turno, genera stickiness. 100+ usuarios activos por sitio.",
+      "source": "5/54 fuentes (CEO, strategic narratives, design brief)",
+      "quote": "Adopción tipo Leapfrog: de 'corporate push' a 'operational pull' — CEO"
+    },
+    {
+      "id": "IG-SYNTH-18",
+      "status": "VERIFIED",
+      "category": "constraint",
+      "temporal": "current",
+      "claim": "Seguridad y gestión geotécnica integrada — 3 de 20 casos de uso dedicados a seguridad. Integración ARIS deseable pero compleja.",
+      "source": "8/54 fuentes (workshop, operaciones, PPT corporativa, vision docs)",
+      "quote": "ARIS integra 30+ tipos de instrumentos; sería genial integrar en Aware pero no sé cómo — Operaciones"
+    },
+    {
+      "id": "IG-SYNTH-19",
+      "status": "VERIFIED",
       "category": "technical",
       "temporal": "aspirational",
-      "claim": "La plataforma CORE 2026 define 4 modos operacionales: REALITY (Digital Twin real-time), TACTICAL (Simulación escenarios), AGENT (IA Copiloto conversacional), BRIEFING (Handover automático turno).",
-      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
-      "quote": "Los 4 modos operacionales cubren desde monitoreo hasta decisión: REALITY muestra el twin, TACTICAL simula, AGENT conversa, BRIEFING entrega contexto de turno.",
-      "convergence": "1/21"
+      "claim": "Interfaz Multimodal — 4 Lentes (Reality 3D, Tactical 2D, TIM Agent, Briefing) gobernadas por 'Command Ribbon'. Voz, chat, visual, push.",
+      "source": "7/54 fuentes (design brief, Sello, vision docs, pitch deck)",
+      "quote": "4 Lenses: Reality (3D), Tactical (2D Flow), TIM Agent (Conversational), Briefing (Feed) — Design Brief"
     },
     {
-      "id": "IG-144",
-      "status": "PENDING",
+      "id": "IG-SYNTH-20",
+      "status": "INVALIDATED",
+      "category": "constraint",
+      "temporal": "current",
+      "claim": "Concentración de expertise en Carlo (CTO) — Gap entre producto y storytelling. Baja convergencia (2/54). Rechazado: no accionable.",
+      "source": "2/54 fuentes (Ana Gerente Comunicaciones, Field Notes)",
+      "quote": "Expertise técnico muy concentrado en Carlo — Ana (Gerente Comunicaciones)"
+    },
+    {
+      "id": "IG-SYNTH-21",
+      "status": "INVALIDATED",
+      "category": "business",
+      "temporal": "aspirational",
+      "claim": "Visión 2040 — IROC maduro, minas autónomas, interacción 100% lenguaje natural. Rechazado: visión demasiado lejana, no accionable para CORE.",
+      "source": "5/54 fuentes (CEO, design brief, vision docs, market position)",
+      "quote": "Visión 2040: IROC maduro, corporaciones gestionan múltiples minas desde hubs urbanos — CEO"
+    },
+    {
+      "id": "IG-01",
+      "status": "MERGED",
       "category": "user-need",
       "temporal": "current",
-      "claim": "El problema del \"Efecto Gaviota\" en cambios de turno causa pérdida de contexto y caídas de producción durante handovers.",
-      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
-      "quote": "Los supervisores llegan al turno sin preparación, dependiendo de WhatsApp informal. Se pierde contexto crítico.",
-      "convergence": "1/21"
-    },
-    {
-      "id": "IG-152",
-      "status": "PENDING",
-      "category": "business",
-      "temporal": "current",
-      "claim": "TIMining tiene validación global en 50+ minas en 8 países, con 7 minas corriendo el modelo Digital Twin completo en tiempo real. Portfolio incluye CODELCO, BHP, Glencore, Anglo American, Teck, Lundin Mining.",
-      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
-      "quote": "50+ minas, 8 países, clientes tier-1. 27 minas Sudamérica + BHP WAIO.",
-      "convergence": "1/21"
-    },
-    {
-      "id": "IG-154",
-      "status": "PENDING",
-      "category": "business",
-      "temporal": "current",
-      "claim": "Adherencia al Plan mejora de 60% → 95% mediante corrección en tiempo real, transformando incertidumbre operativa en resultados predecibles.",
-      "source": "Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf",
-      "quote": "Adherencia 60% → 95% es la métrica de impacto clave. Incertidumbre → Predecibilidad.",
-      "convergence": "1/21"
+      "claim": "Concepto 'iPhone-like' — Justificación de ticket premium USD 450k. Fusionado con IG-SYNTH-16 (Paz Mental).",
+      "source": "field-note (Workshop 1/_FIELD_NOTES.md)",
+      "quote": "Frase acuñada por stakeholder para justificar vender la suite a 450k USD — algo sofisticado y fácil de usar"
     }
   ],
   "conflicts": [
     {
       "id": "CF-01",
-      "status": "FLAGGED",
-      "title": "Aware puede funcionar independiente vs Aware necesita Orchestra",
-      "refs": "IG-02, IG-34",
-      "tension": "Centinela compró 5 licencias de Orchestra y dejaron Aware diciendo que \"no es gemelo\". Sin embargo, la evidencia muestra que Aware sin Orchestra no puede justificar su valor al no poder cuantificar impacto.",
-      "sides": [
-        {
-          "position": "Aware y Orchestra deben venderse juntos — Aware no puede cuantificar impacto solo",
-          "refs": ["IG-02", "IG-34"]
-        },
-        {
-          "position": "Aware se vendía históricamente standalone antes",
-          "refs": ["IG-34"]
-        }
-      ],
-      "flag_label": "Sales + Product: definir bundles obligatorios",
-      "research_label": "Entrevistar clientes Aware-only para validar valor percibido"
+      "status": "RESOLVED",
+      "title": "Imprecisión — Cantidad de productos en portafolio",
+      "refs": "IG-SYNTH-10",
+      "tension": "Se mencionan '6 productos', '6-8 productos' y 7 nombrados en PPT corporativa.",
+      "resolution": "Son 7 productos organizados en 2 dominios: Operaciones y Planificación (Aware, Orchestra, Delta) + Geotecnia y Geología (ARIS, Tangram, SICT, DrillIT). Convergen hacia plataforma unificada CORE."
     },
     {
       "id": "CF-02",
-      "status": "FLAGGED",
-      "title": "Customización es valor vs Customización es riesgo",
-      "refs": "IG-22, IG-23, IG-36, IG-37, IG-08, IG-39, IG-131",
-      "tension": "Por un lado, cada faena requiere customización debido a distintos métodos de extracción y regulaciones. Por otro lado, genera complejidad técnica, riesgo de romper configuraciones y el \"auto de Homero Simpson\" donde se implementan funcionalidades que no se usan. Usuarios mismos piden \"dejar de hacer desarrollos específicos\".",
-      "sides": [
-        {
-          "position": "Customización permite capturar valor en faenas únicas",
-          "refs": ["IG-22", "IG-23"]
-        },
-        {
-          "position": "Customización genera complejidad, riesgo y features no usadas",
-          "refs": ["IG-36", "IG-37", "IG-08", "IG-39", "IG-131"]
-        }
-      ],
-      "flag_label": "CEO + CTO: definir límites configuración por tier",
-      "research_label": "Auditar features por uso real — cuáles se usan <10%"
+      "status": "RESOLVED",
+      "title": "Conflicto — Valor de la visualización 3D",
+      "refs": "IG-SYNTH-07 vs IG-SYNTH-19",
+      "tension": "En el mismo workshop: STOP '3D no agrega valor' y KEEP 'visualización mina completa'.",
+      "resolution": "El 3D sí agrega valor. El rechazo proviene de los gaps de UX en la visualización 3D actual de Aware. La solución no es eliminar el 3D sino rediseñar la jerarquía visual para distinguir lo crítico del ruido."
     },
     {
       "id": "CF-03",
-      "status": "RESOLVED",
-      "title": "Orchestra es difícil de usar vs Orchestra tiene buenos usuarios",
-      "refs": "IG-09, IG-11, IG-12",
-      "tension": "Orchestra requiere fuerte componente consultivo y usuarios expertos con trucos, pero usuarios de SIC logran alta autonomía.",
+      "status": "PENDING",
+      "title": "Perspectiva — Confianza UX del CTO vs realidad de uso",
+      "refs": "IG-SYNTH-03 vs IG-SYNTH-11",
+      "tension": "CTO confiado en que el diseño supera a la competencia minera. Evidencia: 30% uso Orchestra, abandono por confusión, pérdida de clientes por UX.",
       "sides": [
-        {
-          "position": "Orchestra es complejo y requiere consultoría",
-          "refs": ["IG-09", "IG-11"]
-        },
-        {
-          "position": "Usuarios SIC tienen alta autonomía",
-          "refs": ["IG-12"]
-        }
+        {"position": "CTO confía en calidad UX vs competencia minera", "refs": ["IG-SYNTH-03"]},
+        {"position": "30% uso, abandono, pérdida de clientes evidencian problemas UX", "refs": ["IG-SYNTH-11"]}
       ],
-      "resolution": "Orchestra probablemente será descontinuado/reemplazado por agente IA (Project TIM Phase 7 2026)."
+      "flag_label": "Flag for stakeholder review",
+      "research_label": "Validate with additional research"
     },
     {
       "id": "CF-04",
       "status": "RESOLVED",
-      "title": "TIMining tiene ventaja competitiva vs Amenaza de competidores grandes",
-      "refs": "IG-13, IG-14, IG-15, IG-46",
-      "tension": "TIMining está en océano azul con tecnología única de integración agnóstica. Sin embargo, competidores grandes también apuntan al mismo océano.",
-      "sides": [
-        {
-          "position": "TIMining tiene diferenciadores únicos",
-          "refs": ["IG-13", "IG-14", "IG-15"]
-        },
-        {
-          "position": "Competidores grandes apuntan al mismo mercado",
-          "refs": ["IG-46"]
-        }
-      ],
-      "resolution": "Amenaza externa, no conflicto interno. Motivo para acelerar innovación."
+      "title": "Contradicción — Foco en minería subterránea",
+      "refs": "IG-SYNTH-10",
+      "tension": "COO dice 'subterránea no es foco' vs roadmap incluye 'expansión subterránea 2026'.",
+      "resolution": "No es conflicto sino secuencia temporal. CEO confirmó: subterránea es el próximo paso, pero hay suficientes problemas con tajo abierto. Prioridad: tajo abierto primero."
     },
     {
       "id": "CF-05",
-      "status": "RESOLVED",
-      "title": "Interfaces son mejores que la industria vs Interfaces tienen problemas de adopción",
-      "refs": "IG-03, IG-06, IG-07",
-      "tension": "Interfaces de TIMining están en el top comparadas con industria minera, pero hay problemas de adopción (usuarios abandonan por tiempos confusos, métricas incomprensibles, interfaces antiguas pero leales).",
+      "status": "PENDING",
+      "title": "Definición ambigua — Customización vs configuración",
+      "refs": "IG-SYNTH-02 vs IG-SYNTH-10",
+      "tension": "COO usa 'customización' para: (1) configurar parámetros sin código y (2) desarrollar features con código. Sin framework formal, el 'Auto de Homero Simpson' persiste.",
       "sides": [
-        {
-          "position": "Interfaces son top de la industria minera",
-          "refs": []
-        },
-        {
-          "position": "Interfaces tienen problemas de usabilidad real",
-          "refs": ["IG-03", "IG-06", "IG-07"]
-        }
+        {"position": "UX base igual, reglas y umbrales cambian por faena (configuración)", "refs": ["IG-SYNTH-10"]},
+        {"position": "Todo 2025 en customización = desarrollo de features por cliente", "refs": ["IG-SYNTH-02"]}
       ],
-      "resolution": "Software de minería tiene pésima UI/UX. La vara está baja — no debe ser consuelo. Con poco esfuerzo se puede mejorar mucho."
+      "flag_label": "Flag for stakeholder review",
+      "research_label": "Validate with additional research"
     },
     {
       "id": "CF-06",
       "status": "RESOLVED",
-      "title": "Valor en números nuevos vs Necesidad de validar números existentes",
-      "refs": "IG-50",
-      "tension": "Valor de TIMining está en números que cliente no tiene, no en replicar existentes. Pero cuesta que le crean cuando están acostumbrados a sus propios números.",
+      "title": "Definición ambigua — Relación CORE vs Aware",
+      "refs": "IG-SYNTH-10 vs IG-SYNTH-01",
+      "tension": "CORE debe diferenciarse de Aware, pero capacidades se superponen casi completamente.",
+      "resolution": "CORE es una nueva plataforma. Eventualmente Aware y Orchestra serán absorbidos por CORE y su experiencia multimodal inteligente. No es renombramiento ni wrapper: es reemplazo gradual con IA como capa transversal."
+    },
+    {
+      "id": "CF-07",
+      "status": "PENDING",
+      "title": "Research Gap — Sin investigación directa con usuarios finales",
+      "refs": "IG-SYNTH-03, IG-SYNTH-09, IG-SYNTH-11",
+      "tension": "Todas las perspectivas de usuario provienen de stakeholders internos. Sin entrevistas con mineros, despachadores, ni tests de usabilidad. Prioridad: CRÍTICA.",
       "sides": [
-        {
-          "position": "Mostrar números nuevos que no ven",
-          "refs": ["IG-50"]
-        },
-        {
-          "position": "Validar contra números existentes para credibilidad",
-          "refs": []
-        }
+        {"position": "Necesidades de usuario son suposiciones de stakeholders", "refs": ["IG-SYNTH-09"]},
+        {"position": "Sin evidencia directa de usuarios finales", "refs": ["IG-SYNTH-03"]}
       ],
-      "resolution": "Estrategia de \"valor nuevo\" sobre \"validación de lo existente\". Mostrar lo que no ven, no gastar tiempo igualando."
+      "flag_label": "Flag for stakeholder review",
+      "research_label": "Validate with additional research"
+    },
+    {
+      "id": "CF-08",
+      "status": "PENDING",
+      "title": "Research Gap — Sin datos financieros detallados",
+      "refs": "IG-SYNTH-16b, IG-SYNTH-14",
+      "tension": "Cifras sueltas (USD 10M, USD 5M ARR, USD 450k target) sin breakdown de revenue, márgenes, unit economics. Prioridad: ALTA.",
+      "sides": [
+        {"position": "Pricing basado en cifras anecdóticas", "refs": ["IG-SYNTH-16b"]},
+        {"position": "Sin unit economics ni CAC/LTV", "refs": ["IG-SYNTH-14"]}
+      ],
+      "flag_label": "Flag for stakeholder review",
+      "research_label": "Validate with additional research"
+    },
+    {
+      "id": "CF-09",
+      "status": "RESOLVED",
+      "title": "Research Gap — Sin benchmark competitivo formal",
+      "refs": "IG-SYNTH-05, IG-SYNTH-01",
+      "tension": "Claims de unicidad son autorreferenciales. Sin análisis externo de competidores.",
+      "resolution": "Se está trabajando en benchmark UX inspiracional. El conocimiento competitivo existe informalmente. Queda pendiente documentar análisis formal vs Hexagon, Maptek, Deswik, Wenco, Palantir AIP."
+    },
+    {
+      "id": "CF-10",
+      "status": "RESOLVED",
+      "title": "Research Gap — Sin datos de accesibilidad",
+      "refs": "IG-SYNTH-19, IG-SYNTH-09",
+      "tension": "Design brief menciona 'alto contraste para sol' pero sin auditoría WCAG ni datos de terreno.",
+      "resolution": "Poco probable hacer observaciones en terreno, pero se puede aplicar guía WCAG a los pilares de CORE. Incluir requisitos de accesibilidad como parte de especificaciones de diseño de cada módulo."
+    },
+    {
+      "id": "CF-11",
+      "status": "RESOLVED",
+      "title": "Research Gap — Sin perspectiva de ingeniería",
+      "refs": "IG-SYNTH-13, IG-SYNTH-10",
+      "tension": "Stack fragmentado descrito pero sin input del equipo de desarrollo sobre viabilidad de migración a CORE.",
+      "resolution": "Consultoría no técnica — no interviene en arquitectura. Documentado como riesgo. Preguntas clave para ingeniería: ¿pasos bloqueantes? ¿estado de APIs? ¿modelos de datos unificados? ¿backend headless?"
     }
   ],
   "sources": [
     {
-      "folder": "Antecedentes",
-      "files": 13,
-      "types": ["docx", "pptx", "pdf", "webm", "mp4"],
-      "extraction_status": "Extracted (4 DOCX, 1 PPTX, 2 PDF unprocessable, 7 videos unsupported)"
+      "folder": "entrevistas operaciones/",
+      "files": 5,
+      "types": ["md"],
+      "extraction_status": "Extraído (128 claims)"
     },
     {
-      "folder": "Propuesta ruta",
-      "files": 1,
-      "types": ["pptx"],
-      "extraction_status": "Extracted"
-    },
-    {
-      "folder": "Visión Futuro _CORE_",
-      "files": 4,
-      "types": ["docx", "pdf"],
-      "extraction_status": "Extracted (3 PDFs, 1 DOCX partial)"
-    },
-    {
-      "folder": "Workshop 1",
-      "files": 32,
-      "types": ["docx", "md", "png", "heic"],
-      "extraction_status": "Extracted (4 DOCX, 2 MD, 26 images)"
-    },
-    {
-      "folder": "entrevistas iniciales stakeholders",
+      "folder": "entrevistas iniciales stakeholders/",
       "files": 4,
       "types": ["png"],
-      "extraction_status": "Extracted (3 images, 1 skipped)"
+      "extraction_status": "Extraído (71 claims)"
     },
     {
-      "folder": "entrevistas operaciones",
-      "files": 4,
-      "types": ["md", "png"],
-      "extraction_status": "Extracted (2 MD, 1 image, 1 unprocessable)"
+      "folder": "Workshop 1/",
+      "files": 33,
+      "types": ["md", "docx", "png", "heic"],
+      "extraction_status": "Extraído (757 claims)"
+    },
+    {
+      "folder": "Antecedentes/",
+      "files": 7,
+      "types": ["docx", "pdf", "pptx", "webm"],
+      "extraction_status": "5 extraídos (216 claims), 1 video"
+    },
+    {
+      "folder": "Antecedentes/Ppt & videos evento Google/",
+      "files": 7,
+      "types": ["mp4", "docx"],
+      "extraction_status": "1 extraído (24 claims), 6 videos"
+    },
+    {
+      "folder": "Propuesta ruta/",
+      "files": 2,
+      "types": ["pptx", "md"],
+      "extraction_status": "Extraído (19 claims)"
+    },
+    {
+      "folder": "Visión Futuro _CORE_/",
+      "files": 5,
+      "types": ["docx", "pdf", "md"],
+      "extraction_status": "Extraído (139 claims)"
+    },
+    {
+      "folder": "(raíz 01_Sources/)",
+      "files": 3,
+      "types": ["pptx"],
+      "extraction_status": "Extraído (68 claims)"
     }
   ],
   "source_diversity": [
-    {
-      "type": "User research",
-      "present": true
-    },
-    {
-      "type": "Business data",
-      "present": true
-    },
-    {
-      "type": "Technical docs",
-      "present": true
-    },
-    {
-      "type": "Competitive analysis",
-      "present": false
-    },
-    {
-      "type": "Accessibility data",
-      "present": false
-    },
-    {
-      "type": "Brand / design",
-      "present": false
-    }
+    {"type": "Entrevistas", "present": true},
+    {"type": "Workshops", "present": true},
+    {"type": "Documentación estratégica", "present": true},
+    {"type": "Benchmarks externos", "present": false},
+    {"type": "Analytics / datos cuantitativos", "present": false},
+    {"type": "Encuestas / surveys", "present": false}
   ],
   "source_issues": [
     {
-      "description": "2 PDFs no procesables (Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, TIMining_s strategic position_Sept 25.pdf)",
-      "action": "Convertir PDFs a formato extraíble o procesar manualmente"
-    },
-    {
-      "description": "7 videos no soportados (.mp4, .webm)",
-      "action": "Transcribir videos o extraer screenshots clave manualmente"
+      "description": "7 archivos de video (6 MP4 + 1 WEBM) sin procesar — formato no legible por el agente",
+      "action": "Exportar transcripciones de audio o proveer resúmenes en _CONTEXT.md"
     }
   ],
   "evidence_gaps": [
     {
       "type": "source-diversity",
-      "description": "No hay análisis competitivo directo — se mencionan competidores pero sin benchmarks detallados",
-      "suggestion": "Analizar qué ofrecen competidores en centros remotos, facilidad de uso, acceso libre"
+      "description": "Sin investigación directa con usuarios finales [CF-07] — Perspectivas de usuario son de stakeholders internos. Prioridad CRÍTICA.",
+      "suggestion": "6-8 entrevistas en contexto con usuarios finales en mina + test de usabilidad con prototipos CORE"
     },
     {
       "type": "source-diversity",
-      "description": "No hay datos de accesibilidad — sin auditorías WCAG ni datos demográficos de usuarios",
-      "suggestion": "Auditoría de accesibilidad y demografía de usuarios (edad, contexto uso, capacidades)"
+      "description": "Sin datos financieros detallados [CF-08] — Pricing basado en cifras anecdóticas, sin unit economics ni CAC/LTV.",
+      "suggestion": "Solicitar financial model o entrevista con CFO/Finance"
+    },
+    {
+      "type": "source-diversity",
+      "description": "Sin benchmark competitivo formal — Claims de diferenciación son autorreferenciales. Benchmark informal en progreso [CF-09 resuelto].",
+      "suggestion": "Documentar benchmark funcional vs Hexagon, Maptek, Deswik, Wenco, Palantir AIP"
+    },
+    {
+      "type": "source-diversity",
+      "description": "Sin datos de accesibilidad ni analytics cuantitativos de uso — 3/6 tipos de fuente presentes.",
+      "suggestion": "Complementar con al menos 1-2 tipos faltantes para mayor robustez"
     },
     {
       "type": "claim-level",
-      "description": "90.1% de insights son single-source (145/161) — base amplia pero poco profunda",
-      "suggestion": "Priorizar validación cruzada de insights de alta convergencia y críticos para producto"
+      "description": "IG-SYNTH-13 (Stack fragmentado) — Solo 3 fuentes, todas entrevistas stakeholder (COO). Sin documentación técnica que corrobore.",
+      "suggestion": "Solicitar documentación técnica o auditoría de arquitectura del equipo de desarrollo"
+    },
+    {
+      "type": "claim-level",
+      "description": "IG-SYNTH-14 (Dependencia venta consultiva) — Solo 3 fuentes del equipo de operaciones. Sin perspectiva de ventas o finanzas.",
+      "suggestion": "Entrevista con equipo de ventas o director comercial"
+    },
+    {
+      "type": "claim-level",
+      "description": "IG-SYNTH-03 (Confusión Temporal) — Solo 4 fuentes de entrevistas operaciones. Sin observación directa de usuarios.",
+      "suggestion": "Validar con observación directa de usuarios interactuando con tiempos de actualización"
     }
   ],
   "system_map": {
-    "vision": "TIMining es el sistema nervioso central de la mina — integrador neutro (\"Efecto Suiza\") que ayuda a cumplir el plan minero mediante datos real-time, IA y sensores virtuales. El valor está en los números que el cliente no tiene, no en replicar los que ya tiene.",
+    "vision": "TIMining CORE es la plataforma unificada que cierra la \"Geometry Gap\" entre el plan minero y la realidad operacional, transformando datos en tiempo real en inteligencia accionable mediante el patrón Detección→Análisis→Recomendación, personalizada por perfil de usuario, y diseñada para dar \"Paz Mental\" en entornos operacionales críticos.",
     "modules": [
       {
-        "name": "Monitoreo Operacional Real-Time (Aware → CORE)",
+        "name": "Geometry Engine",
         "status": "Ready",
-        "refs": "IG-05, IG-06, IG-07, IG-19, IG-24, IG-25, IG-42, IG-83",
+        "refs": "IG-SYNTH-01, IG-SYNTH-12",
         "implications": [
-          {
-            "text": "Timing de datos debe ser transparente: cada capa con su frecuencia visible",
-            "ref": "IG-05"
-          },
-          {
-            "text": "Capacitación progresiva in-app, no sesiones largas iniciales",
-            "ref": "IG-06"
-          },
-          {
-            "text": "Métricas por turno, no por día (24h no tiene sentido para mineros)",
-            "ref": "IG-07"
-          },
-          {
-            "text": "\"Desplanificadómetro\" como métrica central: desvío acumulado real-time desde t0",
-            "ref": "IG-83"
-          }
+          {"text": "Topografía en tiempo real cada 15 min como dato fundacional de toda la plataforma", "ref": "IG-SYNTH-01"},
+          {"text": "Adherencia espacial como métrica principal, no toneladas movidas", "ref": "IG-SYNTH-12"},
+          {"text": "Conciliación plan vs realidad visible en tiempo real para todos los perfiles", "ref": "IG-SYNTH-12"}
         ],
         "blocker": null
       },
       {
-        "name": "Planificación y Simulación (Orchestra → AI-driven)",
-        "status": "Blocked",
-        "refs": "IG-09, IG-11, IG-26, IG-84, IG-104, IG-10",
+        "name": "Copiloto Inteligente (TIM Agent)",
+        "status": "Ready",
+        "refs": "IG-SYNTH-04, IG-SYNTH-06, IG-SYNTH-08",
         "implications": [
-          {
-            "text": "Simplificar simulador: solo 30% usa funciones avanzadas",
-            "ref": "IG-104"
-          },
-          {
-            "text": "IA corre simulaciones automáticas con motor Orchestra (Phase 7 2026)",
-            "ref": "IG-84"
-          }
+          {"text": "Toda funcionalidad sigue el patrón Detección → Análisis → Recomendación", "ref": "IG-SYNTH-06"},
+          {"text": "Sistema proactivo que anticipa problemas y sugiere soluciones rankeadas", "ref": "IG-SYNTH-04"},
+          {"text": "Lenguaje natural (Gemini) como interfaz primaria de consulta", "ref": "IG-SYNTH-08"}
         ],
-        "blocker": "Pendiente definición path de simplificación"
+        "blocker": null
       },
       {
-        "name": "Copiloto IA (Project TIM)",
-        "status": "Ready",
-        "refs": "IG-67 to IG-75, IG-78, IG-47, IG-82, IG-98, IG-76, IG-77",
+        "name": "Experiencia Multimodal (4 Lentes)",
+        "status": "Blocked",
+        "refs": "IG-SYNTH-19, IG-SYNTH-09, IG-SYNTH-07, IG-SYNTH-16",
         "implications": [
-          {
-            "text": "Proactivo no reactivo: alertas push antes de que el problema ocurra",
-            "ref": "IG-47"
-          },
-          {
-            "text": "Multicanal: WhatsApp, chat, radio mina — donde esté el usuario",
-            "ref": "IG-72, IG-77"
-          },
-          {
-            "text": "Path gradual hacia autonomía \"Skynet\": sugerencias → recomendaciones → órdenes",
-            "ref": "IG-78"
-          }
+          {"text": "4 lentes: Reality (3D), Tactical (2D), Agent (conversacional), Briefing (feed)", "ref": "IG-SYNTH-19"},
+          {"text": "Diferenciación por perfil: Despachador, Jefe de Turno, Gerente de Mina, Planificador", "ref": "IG-SYNTH-09"},
+          {"text": "Gestión por excepción: solo mostrar anomalías, no estado normal", "ref": "IG-SYNTH-07"}
+        ],
+        "blocker": "Requiere definición detallada de cada lente por perfil de usuario. 3D valioso pero UX actual saturada necesita rediseño de jerarquía visual [CF-02]."
+      },
+      {
+        "name": "Briefing de Turno",
+        "status": "Ready",
+        "refs": "IG-SYNTH-15, IG-SYNTH-17",
+        "implications": [
+          {"text": "Briefings automáticos multimedia 15 min antes del turno", "ref": "IG-SYNTH-15"},
+          {"text": "Embeber en rutina estándar de cambio de turno para generar stickiness", "ref": "IG-SYNTH-17"},
+          {"text": "Eliminar 'Efecto Gaviota': turno entrante con contexto completo sin preguntar", "ref": "IG-SYNTH-15"}
+        ],
+        "blocker": null
+      },
+      {
+        "name": "Seguridad y Geotecnia",
+        "status": "Ready",
+        "refs": "IG-SYNTH-18",
+        "implications": [
+          {"text": "Alertas de seguridad geotécnica como funcionalidad crítica (3 de 20 casos de uso)", "ref": "IG-SYNTH-18"},
+          {"text": "Integración ARIS aspiracional pero compleja: evaluar viabilidad sin complejizar interfaz", "ref": "IG-SYNTH-18"}
+        ],
+        "blocker": null
+      },
+      {
+        "name": "Plataforma de Integración (Efecto Suiza)",
+        "status": "Blocked",
+        "refs": "IG-SYNTH-05, IG-SYNTH-13",
+        "implications": [
+          {"text": "Integración agnóstica con cualquier OEM y software de planificación", "ref": "IG-SYNTH-05"},
+          {"text": "Autenticación unificada como prerrequisito de la plataforma", "ref": "IG-SYNTH-13"}
+        ],
+        "blocker": "Stack fragmentado sin autenticación unificada [IG-SYNTH-13]. Riesgo técnico documentado en CF-11 — preguntas abiertas para equipo de ingeniería."
+      },
+      {
+        "name": "Onboarding Progresivo",
+        "status": "Ready",
+        "refs": "IG-SYNTH-11, IG-SYNTH-02",
+        "implications": [
+          {"text": "Capacitación in-app contextual por perfil, no manuales genéricos", "ref": "IG-SYNTH-11"},
+          {"text": "Complejidad progresiva: interfaz intuitiva sin certificación previa", "ref": "IG-SYNTH-11"},
+          {"text": "'Zero Homer': cada feature debe justificar su existencia con evidencia de uso", "ref": "IG-SYNTH-02"}
         ],
         "blocker": null
       }
     ],
     "principles": [
-      "Mostrar lo invisible, no replicar lo conocido",
-      "Proactivo sobre reactivo",
-      "Simplicidad > features (Homer's Car Detector)",
-      "Diagnosticar, no solo reportar",
-      "La experiencia incluye el deploy",
-      "Multimodal por defecto"
+      "\"Paz Mental\" — Cada interacción debe reducir la carga cognitiva. El valor es la certeza. [IG-SYNTH-16, IG-SYNTH-07]",
+      "\"Quiet UI\" — Solo mostrar lo que importa. Gestión por excepción. Alertas legibles en <5 segundos. [IG-SYNTH-07, IG-SYNTH-06]",
+      "\"Zero Homer\" — No implementar features sin validar uso real. Sin [IG-XX] = no se construye. [IG-SYNTH-02]",
+      "\"D→A→R\" — Toda funcionalidad sigue Detección → Análisis → Recomendación. Sin excepciones. [IG-SYNTH-06]",
+      "\"Inteligencia Democrática\" — Cualquier perfil accede a insights sin expertise técnico. [IG-SYNTH-08, IG-SYNTH-09]",
+      "\"Efecto Suiza\" — Integración neutral con cualquier OEM o software. Nunca tomar partido. [IG-SYNTH-05]",
+      "\"Operational Pull\" — Diseñar para adopción bottom-up embebida en rutinas operacionales. [IG-SYNTH-17]"
     ],
     "open_questions": [
-      "¿Bundles Aware/Orchestra obligatorios o opcionales? — CF-01 flagged → Sales + Product",
-      "¿Límites de customización por tier de cliente? — CF-02 flagged → CEO + CTO",
-      "¿Estrategia para audiencia CFO? TIMining no habla con ellos actualmente — IG-49",
-      "¿Plan para desconcentrar conocimiento crítico de Carlo? — IG-110",
-      "¿Realinear pricing de \"licencia\" a \"valor empresarial\"? — IG-94",
-      "¿Timeline migración stack fragmentado hacia plataforma unificada? — IG-16"
+      "¿Framework formal para distinguir configuración (sin código) vs customización (con código)? — [CF-05]",
+      "¿Unit economics del modelo SaaS actual? CAC, LTV, márgenes, breakdown de revenue — [CF-08]",
+      "¿Benchmark UX formal vs competencia minera (Hexagon, Maptek, Deswik, Wenco)? — [CF-03]",
+      "¿Validación directa con usuarios finales en mina? Entrevistas y tests de usabilidad — [CF-07]",
+      "¿Bloqueantes técnicos para migración a CORE? APIs, modelos de datos, backend headless — [CF-11]",
+      "¿Estándares WCAG aplicables a cada pilar de CORE? — [CF-10]"
     ]
   }
-}</script>
+}
+  </script>
 
   <script>
   (function() {
