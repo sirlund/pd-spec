@@ -42,51 +42,6 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 ---
 
-### [BL-31] Extract Express Mode — Skip Heavy Files for Fast Iteration
-
-**Status:** Proposed
-**Priority:** P1 — High (scaling strategy)
-**Origin:** QA v3 testing (2026-02-16)
-**Related:** BL-29 (batching), BL-22 (RAG scaling)
-
-**Problem:** Heavy files (PDF, DOCX, PPTX, >5MB) cause disproportionate overhead — 20% of files consume 80% of extraction time. Blocks fast iteration.
-
-**Proposed:** Three modes for `/extract`:
-
-```bash
-/extract              # Express: process only light files, mark heavy as pending
-/extract --full       # Full: process all files including heavy
-/extract --heavy      # Process only pending heavy files
-```
-
-- Light: .md, .txt, .png, .jpg < 1MB
-- Heavy: .pdf, .docx, .pptx, any file ≥ 5MB
-- Heavy files marked `pending-heavy` in SOURCE_MAP.md
-
-**User story:**
-> As a PD-Spec user with 100 source files (80 md/images + 20 PDFs), I want to extract insights from light files in 2-3min and defer heavy PDFs until later.
-
----
-
-### [BL-32] Auto Express Mode — Smart Project Size Detection
-
-**Status:** Proposed
-**Priority:** P1 — High (UX improvement)
-**Origin:** QA v3 testing (2026-02-16)
-**Related:** BL-31 (Express Mode), BL-18 (Synthesis layer)
-
-**Problem:** Pipeline feels slow even on small projects (11 files, 220 claims). Synthesis layer adds value for large projects (>500 claims) but creates overhead for small ones.
-
-**Proposed:** Auto-detect project size, skip synthesis for small projects:
-- < 30 files OR < 500 claims → Express (atomic insights only)
-- 30-50 files OR 500-1000 claims → Express + suggest `--full`
-- \> 50 files OR > 1000 claims → Full mode (synthesis activated)
-
-**User story:**
-> As a researcher with a small project, I expect fast iteration with atomic insights in <2min, not waiting for synthesis overhead.
-
----
-
 ### [BL-33] Dashboard Enhancements — UX Fixes from QA v3
 
 **Status:** Proposed
@@ -106,66 +61,34 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 ---
 
-### [BL-36] Dashboard Conflict States — Intermediate Status (Flagged/Research)
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** QA v3 BL-35 testing (2026-02-16), QA3-UX-06
-
-**Problem:** When user flags a conflict for discussion or marks it for research via `/synthesis`, it stays as `PENDING` in CONFLICTS.md. Dashboard shows blank radio buttons — no indication a decision was made.
-
-**Proposed fix:** Extend CONFLICTS.md status syntax:
-```markdown
-Status: PENDING — Flagged (CTO + Producto)
-Status: PENDING — Research needed (validate pricing model)
-```
-
-Dashboard parses metadata → shows badge (Flagged in amber, Research in blue) + pre-selects radio.
-
-**User story:**
-> As a researcher who flagged CF-03 for CTO discussion, I expect the dashboard to remember that decision.
-
-**Acceptance criteria:**
-- [ ] CONFLICTS.md supports intermediate status syntax
-- [ ] Dashboard parses and displays badges
-- [ ] Radio buttons pre-select based on metadata
-- [ ] /synthesis writes intermediate status when flagging
-
----
-
-### [BL-37] AI-Generated Source Validation — Detect Hallucinated Claims
-
-**Status:** Proposed
-**Priority:** P1 — High (data integrity)
-**Origin:** TIMining entregables session (2026-02-17), via IDEAS.md idea flow
-**Related:** Mandate #1 (No Hallucination), BL-23 (no editorial decisions)
-
-**Problem:** When AI-generated content (Gemini, ChatGPT outputs) enters `01_Sources/`, `/extract` treats it as ground truth. Fabricated benchmarks, fictional metrics, and unsourced case studies become claims indistinguishable from real data.
-
-**Evidence:** TIMining — 3 Gemini slides removed during manual review (fabricated benchmarks, fictional metrics).
-
-**Proposed fix:**
-1. New `source_type: ai-generated` in `_CONTEXT.md`
-2. `/extract` flags claims with `[AI-SOURCE]` tag
-3. `/analyze` treats AI-sourced claims as lowest authority (`voice: ai`, `authority: hypothesis`)
-4. AI-only insights cannot reach VERIFIED without non-AI corroboration
-
-**User story:**
-> As a researcher using Gemini outputs as starting points, I expect PD-Spec to flag AI-generated claims separately so fabricated data doesn't silently become verified insights.
-
-**Acceptance criteria:**
-- [ ] `_CONTEXT.md` supports `source_type: ai-generated`
-- [ ] `/extract` tags claims from AI sources with `[AI-SOURCE]`
-- [ ] `/analyze` weights AI-sourced claims as lowest authority
-- [ ] AI-only insights cannot reach VERIFIED without non-AI corroboration
-- [ ] Dashboard shows AI-source warning badge on affected insights
-
----
-
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-35 — v4.3 to v4.6</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-37 — v4.3 to v4.8</strong> (click to expand)</summary>
+
+### [BL-31] Extract Express Mode — v4.8
+
+**Implemented:** 2026-02-18. Three modes: express (default, light files only), --heavy (deferred files), --full (all files). Light/heavy classification by extension and size. Deferred files tracked as `pending-heavy` in SOURCE_MAP.md. Mode-aware report format.
+
+---
+
+### [BL-32] Auto Express Mode for /analyze — v4.8
+
+**Implemented:** 2026-02-18. Auto-detect project size: <30 files or <500 claims skips Phase 3 synthesis, creates atomic insights directly. Medium projects (30-50 files) also skip but suggest --full. --full forces full synthesis. Simplified AskUserQuestion in express mode.
+
+---
+
+### [BL-36] Conflict Intermediate States — v4.8
+
+**Implemented:** 2026-02-18. /synthesis writes `PENDING — Flagged (context)` or `PENDING — Research (context)` to CONFLICTS.md. Schema and dashboard support intermediate_status/intermediate_note fields. Dashboard shows amber "Flagged" / blue "Research" badges with pre-selected radio buttons.
+
+---
+
+### [BL-37] AI-Generated Source Validation — v4.8
+
+**Implemented:** 2026-02-18. `source_type: ai-generated` in _CONTEXT_TEMPLATE.md. /extract tags claims `[AI-SOURCE]`. /analyze assigns `voice: ai`, `authority: hypothesis`. AI-only insights cannot reach VERIFIED without non-AI corroboration. Added to convergence weighting table (lowest priority).
+
+---
 
 ### [BL-18] Observation → Insight Synthesis Layer (ARCH-03) — v4.3
 
@@ -358,4 +281,4 @@ Dashboard parses metadata → shows badge (Flagged in amber, Research in blue) +
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md` and `QA_V3_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-18
+Last updated: 2026-02-18 (v4.8.0)

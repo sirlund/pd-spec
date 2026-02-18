@@ -1,5 +1,45 @@
 # Changelog
 
+## [4.8.0] — 2026-02-18
+
+### Highlights
+
+**AI-generated content no longer sneaks in as ground truth.** Sources produced by Gemini, ChatGPT, or other AI tools can now be tagged `source_type: ai-generated` in `_CONTEXT.md`. Extraction marks every claim with `[AI-SOURCE]`, analysis forces `voice: ai` + `authority: hypothesis`, and the insight can never reach VERIFIED without corroboration from a real source. No more fabricated benchmarks quietly becoming verified insights.
+
+**Conflicts remember your decisions.** When you flag a conflict for stakeholder discussion or mark it for research during `/synthesis`, the dashboard now shows that decision — amber "Flagged" badge or blue "Research" badge, with the radio button pre-selected. No more returning to a blank dashboard wondering what you decided last session.
+
+**Extraction is fast by default.** `/extract` now runs in express mode: it processes light files (markdown, text, images) immediately and defers heavy files (PDF, DOCX, PPTX) as `pending-heavy`. Run `/extract --heavy` when you're ready for the slow stuff, or `/extract --full` for the old behavior. On a project with 80 light + 20 heavy files, express mode finishes in minutes instead of waiting for every PDF.
+
+**Small projects skip synthesis overhead.** `/analyze` auto-detects project size. Under 30 files or 500 claims? It creates atomic insights directly, skipping the thematic clustering and narrative synthesis that only adds value at scale. Use `/analyze --full` when you want the deep analysis regardless.
+
+### Changes
+
+- **BL-37 — AI source validation.** New `source_type` field in `_CONTEXT_TEMPLATE.md`. `/extract` tags `[AI-SOURCE]` claims. `/analyze` assigns lowest authority. Verification gate requires non-AI corroboration.
+- **BL-36 — Conflict intermediate states.** `/synthesis` writes `PENDING — Flagged (context)` or `PENDING — Research (context)`. Dashboard parses and displays badges. Schema extended with `intermediate_status` and `intermediate_note`.
+- **BL-31 — Express extraction.** Three modes: express (default), `--heavy`, `--full`. Light/heavy classification by extension + file size. `pending-heavy` status in SOURCE_MAP.md.
+- **BL-32 — Auto express analysis.** Size thresholds: <30 files/<500 claims skips synthesis. `--full` overrides. Simplified approval flow in express mode.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Added `source_type` field with `ai-generated` option and documentation
+- `.claude/skills/extract/SKILL.md` — AI-generated detection in Phase 1, AI tagging in Phase 2, express mode (Phase 0b + step 5 filtering), mode-aware report format, `pending-heavy` status
+- `.claude/skills/analyze/SKILL.md` — `voice: ai` + authority restriction, convergence weighting, Phase 1b express detection, Phase 3 skip condition, intermediate state parsing for dashboard
+- `.claude/skills/synthesis/SKILL.md` — Intermediate state handling (Flagged/Research) in Phase 2
+- `03_Outputs/_schemas/status.schema.json` — `intermediate_status` and `intermediate_note` properties
+- `03_Outputs/_templates/status.html` — Badge rendering, radio pre-selection, intermediate note display
+
+**BACKLOG impact:**
+- BL-37: IMPLEMENTED
+- BL-36: IMPLEMENTED
+- BL-31: IMPLEMENTED
+- BL-32: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.7.0] — 2026-02-17
 
 ### Highlights
