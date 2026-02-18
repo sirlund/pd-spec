@@ -9,3 +9,33 @@
 **Context:** Testing with 61 files, 27 workshop photos skipped.
 **Proposed:** Add mandatory no-skip rule to extract/SKILL.md.
 -->
+
+### [IDEA] — Workbench mode para trabajo fuera del pipeline
+
+**Context:** La sesión de entregables operó 100% sin /ship, creando HTMLs custom directamente desde el Work layer. El pipeline formal no tiene modo para generar artefactos ad-hoc que igualmente queden logueados.
+**Proposed:** Modo ligero que permita trabajo libre sobre 02_Work/ y loguee a MEMORY sin requerir skills formales.
+**Ref:** `project/timining-entregables` — `02_Work/_temp/SESSION_LOG_2026-02-16.md`
+
+### [IDEA] — Upgrade de template de presentación
+
+**Context:** El HTML manual de la sesión (dark mode, JetBrains Mono, fichas 2x2 con sidebar, timeline D→A→R, light/dark toggle con localStorage, logos Clearbit con fallback) es visualmente superior al template estándar Reveal.js de /ship presentation.
+**Proposed:** Incorporar patrones visuales probados al template `presentation.html`.
+**Ref:** `project/timining-entregables` — `03_Outputs/presentacion_v3.8_original.html`
+
+### [IDEA] — Checklist de validación para fuentes AI-generated
+
+**Context:** Se eliminaron 3 slides Gemini con datos inventados (benchmarks fabricados, métricas ficticias, casos sin trazabilidad). Cuando fuentes AI-generated entran a 01_Sources/, /extract no tiene reglas para detectar hallucinations.
+**Proposed:** Reglas adicionales en /extract o /analyze para validar claims de fuentes marcadas como AI-generated.
+**Ref:** `project/timining-entregables` — SESSION_LOG, sección "Review final"
+
+### [IDEA] — Benchmark UX organizado por pilares del proyecto
+
+**Context:** 25 referentes de 15 industrias organizados por pilares del proyecto (no por industria). 3 "champions" por pilar con "qué robar" + conexión a fichas. Patrón superior al template actual de /ship benchmark-ux.
+**Proposed:** Opción de organización por pilares/ejes del proyecto en benchmark-ux template.
+**Ref:** `project/timining-entregables` — `03_Outputs/BENCHMARK.html`
+
+### [IDEA] — Síntesis de casos de uso en fichas por flujo
+
+**Context:** 20 láminas de workshop consolidadas en 6 fichas sintetizadas por flujo de experiencia compartido (no por evento individual). 18/20 cobertura, 0 inventados. Patrón de reducción N→M con trazabilidad.
+**Proposed:** Documentar como patrón o skill para consolidar escenarios en fichas sintetizadas.
+**Ref:** `project/timining-entregables` — `02_Work/CASOS_DE_USO.md`
