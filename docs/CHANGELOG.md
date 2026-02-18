@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.7.0] — 2026-02-17
+
+### Highlights
+
+**Engine development now has rules.** SemVer versioning, commit conventions, a release checklist, and a clear path for ideas discovered in projects to flow back to the engine — all documented in CLAUDE.md. No more ad-hoc version bumps or BACKLOG edits in project branches.
+
+**Merge strategy protects project files.** `.gitattributes` with `merge=ours` ensures that merging engine updates from `main` into a project branch never overwrites `PROJECT.md`, sources, work files, or generated outputs. Engine files flow forward; project files stay put.
+
+**Ideas flow without git merges.** Projects capture bugs and ideas in `02_Work/IDEAS.md` (a new template file). The agent on `main` reads them cross-worktree via filesystem — no branch merging needed. Ideas get formalized as BACKLOG items on main, then implemented and merged back as engine updates.
+
+### Changes
+
+- **Engine Development Workflow section in CLAUDE.md.** Four subsections: Versioning (SemVer rules), Commit Convention (`type: BL-## — description`), Release Checklist (BACKLOG + CHANGELOG + version bump in one docs commit), Idea Flow (project → IDEAS.md → main → BACKLOG).
+- **Workspace & Worktrees section expanded.** Engine-files-are-read-only rule, merge instructions with `git config merge.ours.driver true` setup, directory naming convention (`pd-spec/`, `pds--{name}/`).
+- **`02_Work/IDEAS.md` template.** Empty template with format guide. Protected by `merge=ours` — main's empty template won't overwrite a project's captured ideas.
+- **`.gitattributes` added.** Merge strategy file protecting `PROJECT.md`, `01_Sources/**`, `02_Work/**`, and `03_Outputs/*.html`.
+- **`/kickoff` writes full PROJECT.md.** Now includes `engine_version` and the "Current State" section, not just project settings.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — New "Engine Development Workflow" section, expanded "Workspace & Worktrees", updated Sources of Truth table and Folder Structure
+- `02_Work/IDEAS.md` — New template file
+- `.gitattributes` — New merge strategy file
+- `PROJECT.md` — Fixed `engine_version` (was prematurely v4.7.0, reset to v4.6.0, now bumped to v4.7.0 with this release)
+- `.claude/skills/kickoff/SKILL.md` — Full PROJECT.md template output
+
+</details>
+
+---
+
 ## [4.6.0] — 2026-02-17
 
 ### Highlights
