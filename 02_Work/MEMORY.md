@@ -92,3 +92,14 @@
   - Commit `0ed74ee` pushed to `working/entregables-timining`
 - **Result:** 3 HTML reports + 1 presentation con toggle. Source traceability research completada.
 - **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 5 outputs (PRD, PERSONAS, PILARES, CASOS_DE_USO, BENCHMARK)
+
+## [2026-02-18T16:00] Presentación v4 — reescritura narrativa de 8 casos
+- **Request:** Reescribir contextos y DAR de los 8 casos de uso en presentacion_v4.html con patrón narrativo consistente
+- **Actions:**
+  - **Contextos (8/8):** Reescritos como storytelling del dolor universal de una mina sin TIMining. Cada contexto cierra con frase bold cyan que cristaliza la necesidad ("No necesita X — necesita Y"). CORE no se menciona en contextos.
+  - **DAR (24 descripciones):** Reescritos como relato narrativo donde CORE resuelve. Cada etapa nombra el pilar (Quiet UI, Time Sight, Omni Sense, Clear Path). Sin repetir contexto (hora, lugar). Sin mencionar colores de UI.
+  - **Caso #8 contexto especial:** Reescrito desde la perspectiva del CFO en reunión de directorio — "la respuesta en su bolsillo, en su idioma." Foco en el gap estructural (operación no habla lenguaje financiero), no en el proceso manual de hoy.
+  - **CASOS_DE_USO.md:** Actualizado con mismos contextos y DAR narrativos. Formato unificado (▸ Detección · Pilar — texto) en las 8 fichas.
+  - Insights ancla utilizados: IG-SYNTH-01 (Geometry Gap), IG-SYNTH-04 (Copiloto), IG-SYNTH-07 (Quiet UI), IG-SYNTH-12 (Adherencia), IG-SYNTH-15 (Efecto Gaviota), IG-SYNTH-16 (Paz Mental)
+- **Result:** 25 edits en presentacion_v4.html + 8 edits en CASOS_DE_USO.md. Patrón narrativo consistente en los 8 casos.
+- **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 5 outputs

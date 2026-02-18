@@ -147,16 +147,16 @@ Análisis que compara rendimiento real vs planificado. Horizonte temporal más l
 **Pilar dominante:** Quiet UI
 
 **Contexto:**
-Turno de noche, sala de control IROC o terreno. Un equipo crítico (pala de carguío, cargador) cae sin planificación. Tiempo de indisponibilidad incierto. Cada minuto sin producir es tonelaje perdido. Cables aéreos y zonas de seguridad complican el movimiento de otros equipos.
+El radio corta el silencio de la sala IROC a las 2:47 AM: "Pala 07 abajo." No es mantención programada — es una caída imprevista. Tres camiones ya circulan hacia un punto de carga muerto. El despachador salta entre el dashboard de despacho, el mapa GPS, la planilla de mantención y el radio — ninguno le dice cuánto durará ni qué alternativa tiene. Cables aéreos restringen la zona. La meta del turno se aleja con cada minuto sin producción.
+**No necesita más dashboards — necesita una respuesta.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | Alerta automática multicanal (celular + voz + pantalla IROC). La pantalla acromática se ilumina solo con la anomalía. | Quiet UI |
-| **Análisis** | Impacto en tonelaje del turno. Comparativa con fallas históricas similares. Evaluación de riesgos: cables aéreos, zonas restringidas, equipos disponibles. | Time Sight |
-| **Recomendación** | 3 opciones rankeadas por impacto: (1) detener flota, (2) cambiar puntos de vaciado, (3) enviar cargador. Ruta segura sugerida. Pérdida estimada por opción. | Clear Path |
-| **Post-acción** | Coordinación con mantención vía plataforma. Comunicación a equipos afectados por canal correcto (radio a terreno, chat a oficina). | Omni Sense |
+**▸ Detección** · Quiet UI — La pantalla acromática de la sala IROC se ilumina — solo por la anomalía. Antes de que el despachador levante el radio, la alerta ya está en su celular y en la pantalla principal. El silencio se rompe únicamente cuando algo se rompe.
+
+**▸ Análisis** · Time Sight — Impacto estimado en el tonelaje del turno. Topografía actualizada hace 8 minutos confirma restricciones por cables aéreos. Comparativa con fallas históricas similares — la última vez, la opción 2 ahorró 40 minutos. El despachador no tuvo que cruzar nada.
+
+**▸ Recomendación** · Clear Path — Tres opciones rankeadas por impacto en tonelaje y costo por hora. Un tap. Los tres camiones ya se redirigen. El despachador no interpretó datos — eligió entre alternativas calculadas. Paz mental: la decisión ya fue evaluada antes de que él la tomara.
 
 **Referentes por Etapa:**
 
@@ -178,16 +178,16 @@ Turno de noche, sala de control IROC o terreno. Un equipo crítico (pala de carg
 **Pilar dominante:** Omni Sense
 
 **Contexto:**
-Zona de riesgo geotécnico activada — una pala opera en sector inestable. O bien: tronadura planificada donde loros deben estar posicionados correctamente. La seguridad es innegociable y tiene responsabilidad legal directa. El sistema debe cruzar múltiples fuentes sensoriales (radares, prismas, GPS, radio) para dar certeza.
+10:15 AM. La Pala 07 opera a 200 metros de una zona clasificada como inestable por el radar geotécnico. En 40 minutos hay tronadura programada y dos loros no están en posición. El supervisor de monitoreo salta entre ARIS, el sistema GPS, la planilla de tronadura y el radio — cada uno con un pedazo de la verdad, ninguno con la imagen completa. La responsabilidad legal es directa: si algo sale mal, la firma es suya.
+**No necesita cuatro pantallas — necesita una certeza.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | Monitoreo geotécnico integrado (ARIS) cruza con GPS de equipos en zona de riesgo. Tronadura: horario + malla cruzada con posición de loros. | Omni Sense |
-| **Análisis** | Simulación de escenarios de indisponibilidad de zonas. Impacto en plan semanal/mensual. Zonas de restricción actualizadas en tiempo real. | Time Sight |
-| **Recomendación** | Definir zonas de restricción. Redefinir despacho evitando sector. Set de alternativas con impacto medido. Confirmar despeje correcto. | Clear Path |
-| **Post-acción** | Monitoreo continuo de variables críticas. Alertas solo si la situación cambia. | Quiet UI |
+**▸ Detección** · Omni Sense — Cruce automático: radar geotécnico + posición GPS de equipos + estado de loros de tronadura. Un solo mapa con la zona de restricción actualizada, los equipos afectados y su distancia al riesgo. El supervisor no consultó cuatro sistemas — recibió una sola imagen completa.
+
+**▸ Análisis** · Time Sight — Simulación de escenarios: si la pala sigue operando, cuál es la ventana de riesgo. Si la tronadura se ejecuta, qué equipos deben evacuarse y en qué orden. Zonas de restricción proyectadas en tiempo real sobre el mapa.
+
+**▸ Recomendación** · Clear Path — Maniobra de evacuación recomendada con impacto operacional medido. Una firma respaldada por fusión de sensores — certeza legal, no intuición. Si la situación cambia, re-alerta. Si no — silencio.
 
 **Referentes por Etapa:**
 
@@ -209,16 +209,16 @@ Zona de riesgo geotécnico activada — una pala opera en sector inestable. O bi
 **Pilar dominante:** Time Sight
 
 **Contexto:**
-Turno diurno, operación aparentemente normal. El sistema detecta que en 45 minutos habrá un problema: el chancador se bloquea, los patios no están listos, las velocidades caen. Todavía hay tiempo para actuar. El desafío no es reaccionar sino anticipar. Múltiples áreas afectadas aguas abajo.
+Mediodía, turno diurno. La operación parece normal — los números del turno van bien. Pero la velocidad de alimentación al chancador cae lento, constante. Nadie lo nota porque cada área mira su propio dashboard: el jefe de chancado ve su flujo, el planificador ve su plan semanal, el jefe de operaciones ve sus equipos. Cuando el bloqueo ocurra en 45 minutos, las tres áreas se van a enterar por radio — tarde, descoordinadas y sin opciones.
+**No necesita más reportes por área — necesita coordinación antes del problema.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | Alerta predictiva: "en 45 min se bloquea el chancador." Integración con PI System. Alertas automáticas en zonas de baja velocidad. | Time Sight |
-| **Análisis** | Impacto aguas abajo en tonelaje y dinero. Causa raíz: ¿vía (mantenimiento)? ¿equipo (mecánico)? ¿operador (capacitación)? Disponibilidad de recursos reasignables. | Time Sight |
-| **Recomendación** | Redistribuir flujo, stockear, o saturar controladamente. Reasignar equipos de servicio. KPI crítico del momento priorizado. Alertar áreas afectadas. | Clear Path |
-| **Post-acción** | Notificación a áreas impactadas aguas abajo por canal correcto. | Omni Sense |
+**▸ Detección** · Time Sight — Detección predictiva: el patrón de desaceleración se forma antes de que el bloqueo exista. La alerta no espera a que el problema ocurra — se activa cuando la tendencia se confirma. Proyección: bloqueo en 45 minutos.
+
+**▸ Análisis** · Omni Sense — Notificación simultánea a tres áreas — cada una por su canal preferido, con el dato que necesita para su rol. El jefe de chancado ve opciones de stockeo. El planificador ve impacto en el plan semanal. El jefe de operaciones ve reasignación de equipos.
+
+**▸ Recomendación** · Clear Path — Redistribución de flujo recomendada con equipos reasignables identificados. Tres áreas coordinadas antes de que el problema exista — sin radio, sin silos, sin improvisación.
 
 **Referentes por Etapa:**
 
@@ -240,16 +240,16 @@ Turno diurno, operación aparentemente normal. El sistema detecta que en 45 minu
 **Pilar dominante:** Omni Sense
 
 **Contexto:**
-Reunión de coordinación en 15 minutos. El usuario está saturado de correos, reuniones previas, radio. No tiene tiempo para prepararse. Necesita contexto instantáneo: ¿cómo vamos contra el plan? ¿qué problemas hay? ¿qué hago primero? El sistema debe buscar al usuario, no al revés.
+7:45 AM. Sofía camina hacia la sala de coordinación — casco, radio, cero tiempo. Reunión en 15 minutos. No ha podido prepararse: correos sin leer, tres reuniones previas, el radio que no para. ¿Cómo cerró el turno noche? ¿La tronadura? ¿Cuántos camiones parados? La información existe — dispersa entre el dashboard de despacho, el reporte de mantención y los correos del jefe de turno anterior. Sofía va a llegar a improvisar, como cada mañana.
+**No necesita otro dashboard que abrir — necesita que el contexto la encuentre a ella.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | 15 min antes de la reunión, mensaje por WhatsApp con resumen vs plan. Canal correcto: WhatsApp porque el usuario está caminando al turno. | Omni Sense |
-| **Análisis** | Priorización objetiva de incidentes. Causa raíz de brechas. Problemas específicos con métricas: tronadura -20%, 5 camiones estacionados, 2 riesgos de seguridad. | Time Sight |
-| **Recomendación** | Texto listo para indicaciones de reunión. Visualización 2D con call outs focales. Plan de acción para mitigar impactos. | Clear Path |
-| **Post-acción** | Mensajes proactivos post-reunión: "tus indicaciones van ok" o "atención: desvío en ejecución." Seguimiento automatizado. | Omni Sense |
+**▸ Detección** · Omni Sense — El briefing llega al WhatsApp de Sofía — el canal correcto para alguien caminando al turno. Resumen contra plan: turno noche al 87%, tronadura -20%, 5 camiones parados, 2 alertas de seguridad. El sistema la busca a ella, no al revés.
+
+**▸ Análisis** · Time Sight — Priorización objetiva: lo más importante primero, medido por impacto en el plan. Causa raíz de cada brecha identificada. Sofía llega a la reunión con contexto completo — en 30 segundos, no en 30 minutos.
+
+**▸ Recomendación** · Clear Path — Post-reunión: "Tus indicaciones van OK" o "Atención: desvío detectado en ejecución." Seguimiento automático sin que Sofía tenga que pedirlo.
 
 **Referentes por Etapa:**
 
@@ -271,16 +271,16 @@ Reunión de coordinación en 15 minutos. El usuario está saturado de correos, r
 **Pilar dominante:** Omni Sense
 
 **Contexto:**
-En terreno o sala de control. Radio saturada con múltiples solicitudes simultáneas. Duda operacional urgente: "¿estoy cumpliendo la norma de berma de Sernageomin?" No hay tiempo de revisar documentos. Las manos están ocupadas. La interfaz principal es la voz y la cámara del celular.
+El jefe de turno frena la camioneta junto a una berma. Algo no se ve bien — la altura parece insuficiente. La normativa de Sernageomin está en un PDF en la oficina, a 20 minutos de camino. La radio suena con tres solicitudes simultáneas: un camión pide autorización, mantención pregunta por un equipo, seguridad reporta un incidente menor. Las manos están en el volante y la radio. No hay cómo consultar, priorizar ni responder en paralelo.
+**No necesita un manual — necesita una respuesta directa, manos libres.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | Consulta directa por voz o foto. Radio: el sistema escucha, transcribe e identifica solicitudes. Canal: el que el usuario tenga disponible. | Omni Sense |
-| **Análisis** | Cruce con normativa: prevención de riesgos, Sernageomin, procedimientos de faena. Priorización automática de solicitudes de radio por urgencia. | Omni Sense |
-| **Recomendación** | "Estás cumpliendo" o "Regulariza así: [pasos concretos]." Lista priorizada de solicitudes pendientes de radio con contexto. | Clear Path |
-| **Post-acción** | Silencio una vez resuelto. No re-alertar. | Quiet UI |
+**▸ Detección** · Omni Sense — Consulta directa: foto de la berma + pregunta por voz. El sistema recibe por el canal que el usuario tenga disponible — voz, imagen, texto. La radio se transcribe automáticamente, las solicitudes se identifican y se ponen en cola.
+
+**▸ Análisis** · Omni Sense — Cruce instantáneo con normativa vigente: Sernageomin, prevención de riesgos, procedimientos de faena. Las tres solicitudes de radio priorizadas por urgencia, cada una con contexto suficiente para decidir.
+
+**▸ Recomendación** · Clear Path — "Cumple" o "Regulariza así: [pasos concretos]." Cola de solicitudes ordenada. Problema resuelto — silencio. Sin re-alertar, sin seguimiento innecesario. Manos libres de principio a fin.
 
 **Referentes por Etapa:**
 
@@ -302,16 +302,16 @@ En terreno o sala de control. Radio saturada con múltiples solicitudes simultá
 **Pilar dominante:** Time Sight
 
 **Contexto:**
-Horizonte temporal más largo: fin de turno, fin de semana, cierre mensual. Los números parecen bien pero algo no cuadra. Se cumple mineral y lastre pero la recuperación de planta es mala. Los camiones autónomos se pararon más de lo esperado. El material no era lo previsto. Se necesita entender la cadena causal completa.
+Lunes, cierre semanal. El Gerente de Mina revisa los números: mineral cumplido, lastre cumplido. Pero la recuperación de planta está 6% bajo meta. Algo no cuadra. Los autónomos se detuvieron 14 veces durante el fin de semana — ¿por qué? La respuesta está repartida entre el sistema de posicionamiento, el log de antenas, el reporte de alimentación a planta y el historial de mantención. Cuatro sistemas, cuatro equipos, cuatro versiones parciales de la verdad.
+**No necesita más datos — necesita la cadena causal completa en una sola vista.**
 
 **Flujo D→A→R:**
 
-| Etapa | Acción CORE | Pilar |
-|---|---|---|
-| **Detección** | Alerta de brecha plan vs realidad. Hindsight: ¿qué pasó durante el fin de semana? ¿por qué cayó la recuperación si el mineral se cumplió? | Time Sight |
-| **Análisis** | Raíz del desvío: categorización real de mineral vs reportada. Análisis de posición/velocidad de autónomos. Detección de anomalías. Comparativa con períodos anteriores. | Time Sight |
-| **Recomendación** | Ajustes dinámicos de flota. Reposicionamiento de antenas. Simulación de alternativas para suplir o mitigar. Tracking real del mineral al chancado. | Clear Path |
-| **Post-acción** | Proyección: si no se corrige, ¿cuál es el impacto en el plan semanal/mensual? Foresight como herramienta de urgencia. | Time Sight |
+**▸ Detección** · Time Sight — Alerta de brecha continua — no espera al cierre mensual. El gap entre plan y realidad se detecta mientras ocurre, con la pregunta ya respondida antes de que alguien la haga.
+
+**▸ Análisis** · Time Sight — Time Scrubbing: rebobinar hasta el momento exacto del primer desvío. Cadena causal completa: antena descalibrada → posicionamiento incorrecto de autónomos → alimentación errática a planta → recuperación baja. Todo en una vista, no en cuatro sistemas.
+
+**▸ Recomendación** · Clear Path — Ajustes recomendados con impacto cuantificado por intervención. De "qué pasó" a "por qué pasó" — y cuánto cuesta no corregirlo esta semana.
 
 **Referentes por Etapa:**
 
@@ -332,17 +332,17 @@ Horizonte temporal más largo: fin de turno, fin de semana, cierre mensual. Los 
 **Pilar dominante:** Time Sight
 **Origen:** No proviene de láminas del workshop. Síntesis de evidencia en [IG-SYNTH-12], motor Orchestra, y reunión Camila 17 feb.
 
-**La Historia:**
+**Contexto:**
+Lunes 8 AM, oficina de planificación. El plan decía 100 mil toneladas; la realidad fue 78 mil. No es novedad — el plan es conservador a propósito: los bonos se pagan por cumplimiento, no por optimización. Nadie sabe si era posible producir más, ni cuánto. ¿El gap fue por equipos mal asignados? ¿Por frentes subóptimos? ¿Por turnos de perforación insuficientes? La respuesta requeriría simular 15 escenarios alternativos — un ejercicio que nadie tiene tiempo ni herramientas para hacer.
+**No necesita saber cuánto faltó — necesita saber cuánto más era posible.**
 
-Lunes 8 AM, oficina de planificación. El Gerente de Minas abre el cierre de la semana pasada. El plan decía 100 mil toneladas; la realidad fue 78 mil. No es novedad — siempre hay un gap. Pero el plan era conservador a propósito: los bonos se pagan por cumplimiento, no por optimización. Nadie tiene incentivo para superar el plan, y nadie tiene las herramientas para saber si era posible.
+**Flujo D→A→R:**
 
-**▸ Detección** — CORE detecta la brecha plan vs realidad en tiempo real. No es un reporte de fin de turno: es un flujo vivo. Patrones históricos: "este desvío ya lo vimos 3 veces en los últimos 6 meses." Datos que la mina tiene pero no cruza — mantenciones, clima, turnos anteriores. [Pilar: Time Sight]
+**▸ Detección** · Time Sight — No solo la brecha — el potencial no capturado. El sistema revela algo que antes era invisible: el máximo alcanzable. No es un reporte de fin de turno — es un flujo vivo que muestra lo que se está dejando en la mesa.
 
-**▸ Análisis** — Simulación what-if con motor Orchestra. "Si pones una pala más en estos turnos, +5% sobre el plan." ¿El desvío es puntual o estructural? CORE distingue entre un evento aislado y un patrón que se repite. [Pilar: Time Sight]
+**▸ Análisis** · Time Sight — Simulación con Orchestra: 15 escenarios alternativos evaluados. ¿Desvío puntual o estructural? ¿Qué variables tienen mayor palanca? Patrones históricos: "este desvío ya lo vimos 3 veces en los últimos 6 meses."
 
-**▸ Recomendación** — Delta visualizado en 3 bandas: mínimo (si no actúas), esperado (plan), máximo (si optimizas). Acciones concretas rankeadas por impacto en tonelaje y costo. El cambio de paradigma: pasar de cumplir el plan a optimizarlo. Como Waze — no solo te dice la ruta, te dice cuándo hay una mejor. [Pilar: Clear Path]
-
-El usuario no interpreta — elige. Y por primera vez tiene incentivo y herramientas para superar el plan.
+**▸ Recomendación** · Clear Path — Las 3 mejores intervenciones rankeadas por impacto: mover Pala 05 al frente norte (+5%), reasignar 2 camiones de Fase Sur (+3%), extender turno de perforación en zona 4 (+2%). Delta: USD 1.2M recuperables esta semana. Como Waze: no solo la ruta — cuándo hay una mejor.
 
 **Referentes por Etapa:**
 
@@ -366,19 +366,17 @@ El usuario no interpreta — elige. Y por primera vez tiene incentivo y herramie
 **Origen:** Workshop 01 (identificado como gap), Design Brief (Executive App). Sin lámina dedicada.
 **Nota de evidencia:** CFO es "usuario invisible" según workshop. No hay entrevistas directas. Caso basado en hipótesis validada por equipo interno + Design Brief.
 
-**La Historia:**
+**Contexto:**
+Reunión de directorio en curso. Alguien pregunta: "¿cómo va la operación minera?" El CFO no puede responder sin llamar a alguien, esperar un consolidado manual, o abrir un software que no entiende. Los datos existen — tonelaje, turnos, disponibilidad, alertas — pero están atrapados en sistemas diseñados para ingenieros, en un idioma que no es el suyo. La mina puede estar generando millones en valor capturado o destruyéndolo — y la persona que reporta al directorio es la última en enterarse.
+**No necesita acceso a sistemas de operaciones — necesita la respuesta en su bolsillo, en su idioma.**
 
-Viernes 3 PM, reunión de directorio. El CFO necesita responder una pregunta simple: ¿cómo vamos? La respuesta hoy es un PDF que armó Erika manualmente usando Orchestra — le tomó medio día. El CFO no usa TIMining, nunca lo ha abierto. No es su herramienta.
+**Flujo D→A→R:**
 
-Pero en el workshop surgió una observación clave: "el dinero no se pierde al final del año, se pierde en cada turno mal gestionado." Si CORE puede mostrar en tiempo real cuánto valor se captura o se pierde por turno, el CFO deja de necesitar el PDF. Y TIMining deja de ser "software de operaciones" para convertirse en "software de negocio."
+**▸ Detección** · Quiet UI + Omni Sense — Notificación en el teléfono del CFO — un resumen ejecutivo que cabe en una pantalla. Cuatro KPIs traducidos a dinero: adherencia, producción, seguridad, valor capturado. Un solo indicador destacado pide atención. El resto — silencio.
 
-**▸ Detección** — Reporte automático pre-reunión. Semáforo de KPIs: adherencia al plan, producción por turno, alertas de seguridad, valor capturado. Sin PDF manual. El sistema busca al CFO, no al revés. [Pilar: Clear Path]
+**▸ Análisis** · Time Sight — Un tap en el indicador destacado. Drill-down financiero: qué turno fue el peor, por qué, cuánto costó. Comparativa con trimestres anteriores. Proyección de cierre si no se corrige. Legible desde el teléfono, en medio de la reunión.
 
-**▸ Análisis** — Drill-down: ¿qué turno fue el peor? ¿por qué? Causa raíz financiera, no operativa. Comparativa con períodos anteriores. El CFO piensa en dinero, no en tonelaje — CORE traduce. [Pilar: Time Sight]
-
-**▸ Recomendación** — Acciones para cerrar brechas con impacto económico cuantificado. Proyección de cierre mes/trimestre. "Si mantienes este ritmo, cierras en -12%. Si implementas X, cierras en +3%." [Pilar: Clear Path]
-
-Hoy Aware se vende a USD 300K/año. CORE apunta a USD 450K. Pero si en una sola faena capturaron USD 6M en 5 meses, el precio ya se justifica. El problema es que nadie se lo está mostrando al CFO en su lenguaje.
+**▸ Recomendación** · Clear Path — "Ritmo actual cierra -12%. Con intervención, cierra +3%. Delta: USD 1.8M." El CFO responde la pregunta del directorio sin haberse levantado de la mesa. El software no le pidió que aprendiera minería — aprendió a hablar finanzas.
 
 **Referentes por Etapa:**
 
