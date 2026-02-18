@@ -284,6 +284,7 @@ Ideas and bugs discovered during project work stay in the project branch — nev
 - Formalize validated ideas as BL items in `docs/BACKLOG.md`
 - Mark every idea in the project's IDEAS.md with its result:
   - `→ BL-##` (formalized), `→ BL-## (absorbed)` (added as evidence to existing), or `PARKED` (waiting for second use case)
+- **Cross-project pattern detection:** scan all project worktrees (`Glob ~/Dev/repos/pds--*/02_Work/IDEAS.md`) for similar PARKED ideas. If the same idea appears in 2+ projects → passes the "second use case" test → promote to BL.
 
 No git merge needed for idea flow — just filesystem reads across worktrees.
 
