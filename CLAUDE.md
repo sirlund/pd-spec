@@ -97,6 +97,9 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
+| `02_Work/_temp/SESSION_CHECKPOINT.md` | Freemode session state (compaction recovery) | Yes (ephemeral, auto-managed) |
+| `02_Work/_assets/_INTAKE.md` | Asset intake log | Yes (via freemode protocol) |
+| `03_Outputs/_custom/*` | Non-pipeline deliverables | Yes (via freemode protocol) |
 | `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
 | `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
 | `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
@@ -132,6 +135,9 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
 │   ├── IDEAS.md               Ideas & bugs from project work (→ BACKLOG on main)
 │   ├── MEMORY.md              Session log & state tracker
+│   ├── _temp/                 Ephemeral workspace (checkpoints, indexes, conversions)
+│   ├── _assets/               External materials intake (not knowledge sources)
+│   │   └── _INTAKE.md         Asset log (filename, origin, date, purpose)
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
 │   ├── _templates/            Static HTML templates (Template+JSON architecture)
@@ -158,6 +164,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   │   └── status.schema.json Status dashboard data schema
 │   ├── PRD.html               Product Requirements Document (template + embedded JSON)
 │   ├── PERSONAS.html          User persona cards (template + embedded JSON)
+│   ├── _custom/               Non-pipeline deliverables (freemode outputs)
 │   └── _README.md            Layer rules for users
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
@@ -308,6 +315,31 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 - Batch operations (approve/reject multiple insights)
 
 If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
+
+## Freemode Protocol
+
+Work outside the standard pipeline (custom deliverables, iterative HTML, ad-hoc analysis) follows these rules to preserve efficiency and traceability.
+
+### Work-First Routing
+
+Before reading raw sources, the agent checks `02_Work/` for existing knowledge:
+- Reference insights by `[IG-XX]` rather than re-reading the source files that produced them.
+- When the user's request maps to a pipeline output type, suggest `/ship [type]` before building from scratch.
+- For requests that genuinely require non-pipeline work, proceed with freemode but log actions in `02_Work/MEMORY.md`.
+
+### Session Checkpoint
+
+For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (50 lines max) that survives context compaction:
+- **What:** Project context, session goals, key decisions made, files modified, pending work.
+- **When:** Write after every significant milestone (draft approved, section completed, direction change). Re-read immediately after context compaction.
+- **Lifecycle:** Ephemeral — deleted or overwritten at the start of each new freemode session.
+
+### Cost Awareness
+
+- **Write immediately** — don't accumulate large outputs in conversation; write to file as soon as a section is ready.
+- **Warn before large reads** — if a source file exceeds 20KB, warn the user and suggest targeted reads (offset/limit) or reference existing extractions.
+- **Asset intake** — external materials (logos, brand guides, competitor screenshots) that are not knowledge sources go in `02_Work/_assets/`, logged in `_INTAKE.md`. The `/extract` skill ignores `_assets/` (it only scans `01_Sources/`).
+- **Custom outputs** — non-pipeline deliverables go in `03_Outputs/_custom/`. The agent proposes a file organization before the first write. `/reset --output` does NOT delete `_custom/`.
 
 ## Documentation Guidelines
 

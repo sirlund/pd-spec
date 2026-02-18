@@ -32,3 +32,11 @@ Other generators:
 3. Run `/ship [type]` to generate documents, or `/visualize` to generate diagrams.
 
 If you edit an output directly, your changes will be overwritten on the next run.
+
+## Custom Outputs (_custom/)
+
+Non-pipeline deliverables produced during freemode sessions (custom presentations, iterative HTML, ad-hoc analysis) live in `_custom/`.
+
+- The agent proposes a file organization before the first write to `_custom/`.
+- `/reset --output` does **NOT** delete `_custom/` — these outputs are preserved across resets.
+- To clear custom outputs, delete them manually or run `/reset` with explicit confirmation.

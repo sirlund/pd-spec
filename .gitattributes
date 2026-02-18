@@ -14,3 +14,6 @@ PROJECT.md merge=ours
 # Generated outputs (derived from Work layer — project-specific)
 # Templates and schemas are engine files and SHOULD merge from main.
 03_Outputs/*.html merge=ours
+
+# Custom freemode outputs (preserved across engine merges)
+03_Outputs/_custom/** merge=ours
