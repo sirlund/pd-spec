@@ -1408,6 +1408,67 @@
         .mt-auto { margin-top: auto; }
         .icon-sm { font-size: 10px; }
 
+        /* Pilar Title — large prominent name */
+        .pilar-title {
+            font-size: 22px !important;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .pilar-title i {
+            font-size: 20px;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        /* Pilar Rules — compact operational rules list */
+        .pilar-rules {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .pilar-rules li {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.5;
+            padding-left: 12px;
+            position: relative;
+        }
+        .pilar-rules li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #555;
+            font-size: 10px;
+        }
+        .pilar-rules code {
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--accent-cyan);
+            background: rgba(0,243,255,0.06);
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        /* DAR Badge — reusable D→A→R visual token */
+        .dar-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+            vertical-align: baseline;
+        }
+        .dar-d { color: var(--color-d); }
+        .dar-a { color: var(--color-a); }
+        .dar-r { color: var(--color-r); }
+        .dar-arrow { color: #555; font-weight: 400; font-size: 0.85em; }
+
     </style>
 </head>
 <body>
@@ -1418,7 +1479,7 @@
     <section class="slide active" id="slide-1">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
-            <div class="slide-number">01 / 24</div>
+            <div class="slide-number">01 / 25</div>
         </div>
         <div class="content-grid">
             <div class="cover-content">
@@ -1436,7 +1497,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visión Estratégica</h2>
-            <div class="slide-number">02 / 24</div>
+            <div class="slide-number">02 / 25</div>
         </div>
         <div class="content-grid">
             <div class="card col-4">
@@ -1447,7 +1508,7 @@
             <div class="card col-4">
                 <h3><i class="fa-solid fa-arrow-right-arrow-left"></i> El Salto de Modelo</h3>
                 <p>Evolución de un "Kiosco de Datos" (autoservicio de gráficos) a un <strong>Médico Operacional</strong>.</p>
-                <p>TIMining CORE diagnostica problemas reales y prescribe acciones proactivas, aunque el usuario pida otra cosa o no sepa que tiene un problema.</p>
+                <p>Un patrón único en los 8 casos: <span class="dar-badge"><span class="dar-d">D</span><span class="dar-arrow">→</span><span class="dar-a">A</span><span class="dar-arrow">→</span><span class="dar-r">R</span></span> — <strong>Detecta</strong> el problema, <strong>Analiza</strong> el impacto, <strong>Recomienda</strong> la acción. No hay dato sin diagnóstico, no hay diagnóstico sin prescripción.</p>
             </div>
             <div class="card col-4">
                 <h3><i class="fa-solid fa-gem"></i> Valor Percibido</h3>
@@ -1467,14 +1528,19 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Pilares de Diseño</h2>
-            <div class="slide-number">03 / 24</div>
+            <div class="slide-number">03 / 25</div>
         </div>
         <div class="content-grid content-grid--top">
             <!-- P1: Quiet UI -->
             <div class="card col-6">
-                <h3><i class="fa-solid fa-volume-xmark"></i> 1. Quiet UI</h3>
+                <h3 class="pilar-title"><i class="fa-solid fa-volume-xmark"></i> 1. Quiet UI</h3>
                 <h4 style="font-size: 16px; margin-bottom: 12px;">Gestión por excepción.</h4>
                 <p>Silencio como estado default. Color, sonido y notificación son recursos escasos — reservados para la anomalía. El sistema filtra el 95% del ruido.</p>
+                <ul class="pilar-rules">
+                    <li><code>95% acromático</code> — color solo para anomalías</li>
+                    <li><code>Sin alerta = todo bien</code> — el silencio es la mejor señal</li>
+                    <li><code>0 notificaciones sin acción requerida</code></li>
+                </ul>
                 <div class="rec-box">
                     <span class="rec-title">¿NECESITO PRESTAR ATENCIÓN?</span>
                     El operador no monitorea. El sistema monitorea por él.
@@ -1482,9 +1548,14 @@
             </div>
             <!-- P2: Clear Path -->
             <div class="card col-6">
-                <h3><i class="fa-solid fa-route"></i> 2. Clear Path</h3>
+                <h3 class="pilar-title"><i class="fa-solid fa-route"></i> 2. Clear Path</h3>
                 <h4 style="font-size: 16px; margin-bottom: 12px;">Cada pantalla termina en una acción.</h4>
-                <p>Patrón D→A→R: Detecta el problema, analiza el contexto, recomienda la acción. No hay gráfico sin recomendación, no hay alerta sin siguiente paso.</p>
+                <p>Patrón <span class="dar-badge"><span class="dar-d">D</span><span class="dar-arrow">→</span><span class="dar-a">A</span><span class="dar-arrow">→</span><span class="dar-r">R</span></span>: Detecta el problema, analiza el contexto, recomienda la acción. No hay gráfico sin recomendación, no hay alerta sin siguiente paso.</p>
+                <ul class="pilar-rules">
+                    <li><code>Máx. 3 opciones</code> por recomendación</li>
+                    <li><code>Cada pantalla termina en acción</code> — no hay dato sin prescripción</li>
+                    <li><code>Impacto cuantificado</code> en tonelaje o USD, no solo color</li>
+                </ul>
                 <div class="rec-box">
                     <span class="rec-title">¿QUÉ DEBO HACER?</span>
                     De "kiosco de datos" a médico operacional que prescribe.
@@ -1492,9 +1563,14 @@
             </div>
             <!-- P3: Time Sight -->
             <div class="card col-6">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> 3. Time Sight</h3>
+                <h3 class="pilar-title"><i class="fa-solid fa-clock-rotate-left"></i> 3. Time Sight</h3>
                 <h4 style="font-size: 16px; margin-bottom: 12px;">Pasado, presente y futuro en una mirada.</h4>
                 <p><strong>Hindsight:</strong> ¿Por qué cayó la pala? <strong>Insight:</strong> ¿Cómo vamos contra plan? <strong>Foresight:</strong> ¿Se bloquea el chancador en 45 min?</p>
+                <ul class="pilar-rules">
+                    <li><code>Timestamp visible</code> — el usuario siempre sabe la edad del dato</li>
+                    <li><code>3 capas: pasado / presente / proyectado</code> en la misma vista</li>
+                    <li><code>Delays explícitos</code> — si son 15 min, se muestran</li>
+                </ul>
                 <div class="rec-box">
                     <span class="rec-title">¿POR QUÉ PASÓ Y QUÉ VIENE?</span>
                     Una interfaz, tres profundidades temporales.
@@ -1502,9 +1578,14 @@
             </div>
             <!-- P4: Omni Sense -->
             <div class="card col-6">
-                <h3><i class="fa-solid fa-tower-broadcast"></i> 4. Omni Sense</h3>
+                <h3 class="pilar-title"><i class="fa-solid fa-tower-broadcast"></i> 4. Omni Sense</h3>
                 <h4 style="font-size: 16px; margin-bottom: 12px;">El sistema te alcanza. No vas a buscarlo.</h4>
                 <p>WhatsApp porque vas caminando al turno. Radio porque estás en terreno. IROC porque estás en la sala de control. El canal ES la inteligencia.</p>
+                <ul class="pilar-rules">
+                    <li><code>Canal = contexto</code> — IROC, móvil, radio según ubicación/rol</li>
+                    <li><code>Misma inteligencia, distinto formato</code></li>
+                    <li><code>El sistema inicia</code> — no espera que el usuario lo busque</li>
+                </ul>
                 <div class="rec-box">
                     <span class="rec-title">¿DÓNDE Y CÓMO ME LLEGA?</span>
                     Múltiples sentidos: ve, escucha, habla — elige cómo alcanzarte.
@@ -1518,7 +1599,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Benchmark de Diseño por Pilar</h2>
-            <div class="slide-number">04 / 24</div>
+            <div class="slide-number">04 / 25</div>
         </div>
         <div class="content-grid content-grid--top">
             <!-- Quiet UI -->
@@ -1572,7 +1653,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Arquitectura de Dominios Operativos</h2>
-            <div class="slide-number">05 / 24</div>
+            <div class="slide-number">05 / 25</div>
         </div>
         <div class="content-grid">
             <div class="card col-12" style="margin-bottom: 10px; border:none; background:transparent; padding: 0;">
@@ -1638,7 +1719,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #1: Caída de Equipo Crítico</h2>
-            <div class="slide-number">06 / 24</div>
+            <div class="slide-number">06 / 25</div>
         </div>
 
         <div class="case-dominio">Dominio A: Respuesta a Crisis</div>
@@ -1748,7 +1829,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #1 — Visualización: Caída de Equipo Crítico</h2>
-            <div class="slide-number">07 / 24</div>
+            <div class="slide-number">07 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
@@ -1832,7 +1913,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #2: Riesgo Espacial y Seguridad</h2>
-            <div class="slide-number">08 / 24</div>
+            <div class="slide-number">08 / 25</div>
         </div>
         <div class="case-dominio">Dominio A · C: Respuesta a Crisis · Asistencia Inteligente</div>
 
@@ -1922,7 +2003,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #2 — Visualización: Riesgo Espacial y Seguridad</h2>
-            <div class="slide-number">09 / 24</div>
+            <div class="slide-number">09 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, D active -->
@@ -2006,7 +2087,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #3: Anticipación de Cuello de Botella</h2>
-            <div class="slide-number">10 / 24</div>
+            <div class="slide-number">10 / 25</div>
         </div>
         <div class="case-dominio">Dominio B: Anticipación Operativa</div>
 
@@ -2097,7 +2178,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #3 — Visualización: Anticipación de Cuello de Botella</h2>
-            <div class="slide-number">11 / 24</div>
+            <div class="slide-number">11 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, A active -->
@@ -2181,7 +2262,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #4: Briefing Inteligente</h2>
-            <div class="slide-number">12 / 24</div>
+            <div class="slide-number">12 / 25</div>
         </div>
         <div class="case-dominio">Dominio C: Asistencia Inteligente</div>
 
@@ -2269,7 +2350,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #4 — Visualización: Briefing Inteligente</h2>
-            <div class="slide-number">13 / 24</div>
+            <div class="slide-number">13 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, D active -->
@@ -2353,7 +2434,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #5: Copiloto en Terreno</h2>
-            <div class="slide-number">14 / 24</div>
+            <div class="slide-number">14 / 25</div>
         </div>
         <div class="case-dominio">Dominio C: Asistencia Inteligente</div>
 
@@ -2441,7 +2522,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #5 — Visualización: Copiloto en Terreno</h2>
-            <div class="slide-number">15 / 24</div>
+            <div class="slide-number">15 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
@@ -2525,7 +2606,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #6: Análisis Plan vs Realidad</h2>
-            <div class="slide-number">16 / 24</div>
+            <div class="slide-number">16 / 25</div>
         </div>
 
         <div class="case-dominio">Dominio D: Alineación Estratégica</div>
@@ -2616,7 +2697,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #6 — Visualización: Plan vs Realidad</h2>
-            <div class="slide-number">17 / 24</div>
+            <div class="slide-number">17 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
@@ -2695,12 +2776,43 @@
         </div>
     </section>
 
-    <!-- SLIDE 18: FICHA 7 — Optimización del Plan Minero -->
+    <!-- SLIDE 18: TRANSICIÓN — De Cumplir a Optimizar -->
     <section class="slide" id="slide-18">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
+            <h2 class="slide-title" style="opacity: 0;">—</h2>
+            <div class="slide-number">18 / 25</div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 60px;">
+            <div style="display: flex; gap: 60px; align-items: stretch; max-width: 960px; width: 100%;">
+                <!-- Left: Cases 1–6 -->
+                <div style="flex: 1; text-align: right; padding-right: 50px; border-right: 1px solid #333; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-family: var(--font-mono); font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;">Casos 1 – 6</div>
+                    <h3 style="font-size: 28px; font-family: var(--font-mono); font-weight: 600; color: white; margin-bottom: 20px;">Cumplir el Plan</h3>
+                    <p style="font-size: 14px; line-height: 1.8; color: #999;">
+                        <span class="dar-badge"><span class="dar-d">D</span><span class="dar-arrow">→</span><span class="dar-a">A</span><span class="dar-arrow">→</span><span class="dar-r">R</span></span> aplicado a incidentes de turno, anticipación operativa y asistencia en terreno.
+                    </p>
+                    <p style="font-size: 13px; line-height: 1.7; color: #666; margin-top: 14px;">La base. Sin esto, no hay plataforma.</p>
+                </div>
+                <!-- Right: Cases 7–8 -->
+                <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-family: var(--font-mono); font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;">Casos 7 – 8</div>
+                    <h3 style="font-size: 28px; font-family: var(--font-mono); font-weight: 600; color: var(--accent-cyan); margin-bottom: 20px;">Optimizar el Plan</h3>
+                    <p style="font-size: 14px; line-height: 1.8; color: #999;">
+                        <span class="dar-badge"><span class="dar-d">D</span><span class="dar-arrow">→</span><span class="dar-a">A</span><span class="dar-arrow">→</span><span class="dar-r">R</span></span> aplicado a decisiones estratégicas que trascienden el turno.
+                    </p>
+                    <p style="font-size: 13px; line-height: 1.7; color: #666; margin-top: 14px;">El mundo donde CORE ya existe, funciona, y la pregunta es: ¿qué más puedo hacer con esto?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 19: FICHA 7 — Optimización del Plan Minero -->
+    <section class="slide" id="slide-19">
+        <div class="header">
+            <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #7: Optimización del Plan Minero</h2>
-            <div class="slide-number">18 / 24</div>
+            <div class="slide-number">19 / 25</div>
         </div>
 
         <div class="case-dominio">Dominio D: Alineación Estratégica</div>
@@ -2781,12 +2893,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 19: VISUALIZACIÓN — Optimización del Plan (3 Bandas) -->
-    <section class="slide" id="slide-19">
+    <!-- SLIDE 20: VISUALIZACIÓN — Optimización del Plan (3 Bandas) -->
+    <section class="slide" id="slide-20">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #7 — Visualización: Optimización del Plan</h2>
-            <div class="slide-number">19 / 24</div>
+            <div class="slide-number">20 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
@@ -2865,12 +2977,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 20: FICHA 8 — Reportería Ejecutiva -->
-    <section class="slide" id="slide-20">
+    <!-- SLIDE 21: FICHA 8 — Reportería Ejecutiva -->
+    <section class="slide" id="slide-21">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #8: Reportería Ejecutiva</h2>
-            <div class="slide-number">20 / 24</div>
+            <div class="slide-number">21 / 25</div>
         </div>
 
         <div class="case-dominio">Dominio D: Alineación Estratégica</div>
@@ -2952,12 +3064,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 21: VISUALIZACIÓN — Reportería Ejecutiva (Dashboard CFO) -->
-    <section class="slide" id="slide-21">
+    <!-- SLIDE 22: VISUALIZACIÓN — Reportería Ejecutiva (Dashboard CFO) -->
+    <section class="slide" id="slide-22">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #8 — Visualización: Reportería Ejecutiva</h2>
-            <div class="slide-number">21 / 24</div>
+            <div class="slide-number">22 / 25</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
             <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
@@ -3036,12 +3148,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 22: VISIÓN — Concepto Skynet (L20) -->
-    <section class="slide" id="slide-22">
+    <!-- SLIDE 23: VISIÓN — Concepto Skynet (L20) -->
+    <section class="slide" id="slide-23">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visión: Optimización Global Autónoma</h2>
-            <div class="slide-number">22 / 24</div>
+            <div class="slide-number">23 / 25</div>
         </div>
         <div class="content-grid" style="align-content: center;">
             <div class="col-12" style="text-align: center; margin-bottom: 5px;">
@@ -3076,12 +3188,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 23: KEEP STOP START (RETRO - 3 COLUMNS) -->
-    <section class="slide" id="slide-23">
+    <!-- SLIDE 24: KEEP STOP START (RETRO - 3 COLUMNS) -->
+    <section class="slide" id="slide-24">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Guía Estratégica (Retro)</h2>
-            <div class="slide-number">23 / 24</div>
+            <div class="slide-number">24 / 25</div>
         </div>
         <div class="content-grid">
             <div class="kss-col stop">
@@ -3133,12 +3245,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 24: ROADMAP -->
-    <section class="slide" id="slide-24">
+    <!-- SLIDE 25: ROADMAP -->
+    <section class="slide" id="slide-25">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Hoja de Ruta — Plan Idemax (10 semanas)</h2>
-            <div class="slide-number">24 / 24</div>
+            <div class="slide-number">25 / 25</div>
         </div>
         <div class="content-grid content-grid--top">
             <!-- Progress bar -->
