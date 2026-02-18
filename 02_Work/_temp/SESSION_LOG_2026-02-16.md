@@ -466,3 +466,38 @@ Notas: Tablet (no monitor) refuerza Omni Sense — reporte llegó al dispositivo
 - **viz-07-optimizacion.png:** Laptop en mesa de reuniones, "ORCHESTRA SIMULATION", mapa fases 60/40 Norte/Sur, curva +8%, USD 4.2M. Pizarrón "MINE PHASE" al fondo. Consistente con narrativa reunión mensual.
 - **viz-08-reporteria.png:** Tablet en manos CFO, 4 KPIs (Adherencia 92%, Producción 145kt, Seguridad 0, Yield $1.2M), semáforos, barra proyección con intervención. Boardroom al fondo.
 - **Estado:** 8/8 mockups integrados. Sin observaciones críticas.
+
+### Procesamiento transcript reunión Camila — 12 items extraídos
+- Transcript completo (líneas 146+) procesado para identificar mejoras a la presentación discutidas pero no traspasadas.
+- **12 items identificados**, priorizados en 3 niveles (alta/media/baja).
+- Items de prioridad alta implementados (ver abajo). Item 4 (referentes por etapa DAR) confirmado OK. Items 7-12 diferidos a post-jueves.
+
+### Mejoras aplicadas a la presentación — 3 commits
+
+#### Commit `3328ec2` — DAR visual + transición + reglas pilares
+1. **Slide 02 (Visión):** DAR badge visual (`D→A→R` coloreado rojo/naranja/cyan) en card "El Salto de Modelo". Texto reescrito: "Un patrón único en los 8 casos: D→A→R — Detecta, Analiza, Recomienda."
+2. **Slide 18 (NUEVO):** Transición "De Cumplir a Optimizar". Layout 2 columnas con línea divisoria. Izquierda: "Casos 1–6 / Cumplir el Plan" (blanco). Derecha: "Casos 7–8 / Optimizar el Plan" (cyan). Usa dar-badge. Pausa narrativa antes de casos aspiracionales.
+3. **Slide 03 (Pilares):** 3 reglas operativas concretas por pilar con `code` cyan:
+   - Quiet UI: 95% acromático, sin alerta = todo bien, 0 notificaciones sin acción
+   - Clear Path: máx. 3 opciones, cada pantalla termina en acción, impacto cuantificado
+   - Time Sight: timestamp visible, 3 capas temporal, delays explícitos
+   - Omni Sense: canal = contexto, misma inteligencia distinto formato, sistema inicia
+4. **Títulos pilares large:** `.pilar-title` a 22px (antes ~13px).
+5. **CSS reutilizable:** `.dar-badge` (D→A→R token), `.pilar-rules` (lista reglas), `.pilar-title`
+6. **Renumeración:** 24 → 25 slides.
+
+#### Commit `7eaa004` — Visión Skynet + Dominio D multi-pilar
+7. **Slide 23 (Visión Skynet):** 2 cards nuevos:
+   - "Urgente vs Importante" — ejemplo Pedro/Juan (arreglar camino vs redirigir = 30% más). CORE prioriza lo importante de cara al plan.
+   - "Hub de Decisiones" — decisiones dentro del software, cada acción logueada, sistema aprende (opción D del experto → opción A del siguiente turno).
+8. **Slide 05 (Dominios):** Dominio D actualizado de "Time Sight" a "Multi-pilar" + descripción ampliada.
+
+### Estructura final (25 slides):
+01 Cover | 02 Visión (+ DAR) | 03 Pilares (+ reglas) | 04 Benchmark
+05 Dominios (D multi-pilar)
+06 Ficha 1 | 07 VIZ 1 | 08 Ficha 2 | 09 VIZ 2
+10 Ficha 3 | 11 VIZ 3 | 12 Ficha 4 | 13 VIZ 4
+14 Ficha 5 | 15 VIZ 5 | 16 Ficha 6 | 17 VIZ 6
+18 TRANSICIÓN (De Cumplir a Optimizar) ← NUEVO
+19 Ficha 7 | 20 VIZ 7 | 21 Ficha 8 | 22 VIZ 8
+23 Skynet (+ urgente/importante + hub) | 24 Retro | 25 Roadmap
