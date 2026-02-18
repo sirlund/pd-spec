@@ -367,3 +367,102 @@ Photorealistic close-up of a smartphone held in a gloved hand (mining safety glo
 ### Commit & Push — DONE
 - `0ed74ee` — docs: add HTML reports (pilares, casos de uso, benchmark) + light/dark toggle
 - Pushed to `working/entregables-timining`
+
+## Session 3 — 2026-02-18 (cont.)
+
+### Auditoría fichas vs visualizaciones — DONE
+- Revisadas las 8 fichas + 8 slides de visualización post-reescritura narrativa (commit `02a7bc9`).
+- **5/8 alineados:** Casos #1, #2, #4, #6, #7 — narrativa ficha ↔ sidebar viz coherentes, pilares coinciden.
+- **3/8 con desalineación detectada:**
+
+#### Caso #3 — Anticipación de Cuello de Botella
+- **Problema:** La reescritura narrativa desplazó E2 Análisis de "impacto aguas abajo" (Time Sight) a "notificación multicanal" (Omni Sense), pero el pilar asignado seguía siendo Time Sight y el referente (Tesla Fleet) no calzaba.
+- **Decisión usuario:** Mantener E2 como impacto/análisis (Time Sight).
+- **Fix:** Narrativa E2 reescrita a "Impacto aguas abajo calculado antes del bloqueo: tonelaje perdido por hora, costo acumulado, áreas afectadas en cascada."
+- **Inconsistencia extra:** CASOS_DE_USO.md decía "Omni Sense" como pilar de E2 (distinto al "Time Sight" de la presentación). Corregido a Time Sight + narrativa alineada.
+
+#### Caso #8 — Reportería Ejecutiva
+- **Problema:** Viz sidebar decía "Time Sight + Clear Path" pero el momento destacado es D (Detección) que la ficha asigna a Omni Sense. El sidebar no mencionaba Omni Sense.
+- **Fix:** Pilares en sidebar corregidos a "Omni Sense + Time Sight". Descripción ajustada.
+
+#### Caso #5 — Copiloto en Terreno (menor, no corregido)
+- E2 Análisis etiquetado como Omni Sense pero describe cruce analítico con normativa (más Clear Path). El sidebar de la viz ya dice "Omni Sense + Clear Path" — más preciso que la ficha. Pendiente de decisión.
+
+### Patrón observado
+- En casos de Dominio C (Asistencia Inteligente), la narrativa E2 tiende a describir *cómo llega* la info (Omni Sense) pero el análisis real es *qué procesamiento hace* (Time Sight/Clear Path). Tensión recurrente entre canal y contenido en etapa de análisis.
+
+### Commit — DONE
+- `d33cca4` — fix: alinear pilares y narrativas en casos #3 y #8
+- 3 edits: presentacion_v4.html (ficha #3 E2 + viz #8 sidebar) + CASOS_DE_USO.md (ficha #3 E2)
+
+### Estructura final (24 slides — sin cambio):
+01 Cover | 02 Visión | 03 Pilares | 04 Benchmark
+05 Dominios
+06 Ficha 1 | 07 VIZ 1 IROC | 08 Ficha 2 | 09 VIZ 2 Riesgo
+10 Ficha 3 | 11 VIZ 3 Anticipación | 12 Ficha 4 | 13 VIZ 4 WhatsApp
+14 Ficha 5 | 15 VIZ 5 Copiloto | 16 Ficha 6 | 17 VIZ 6 Plan vs Real
+18 Ficha 7 | 19 VIZ 7 Optimización | 20 Ficha 8 | 21 VIZ 8 Reportería
+22 Skynet | 23 Retro | 24 Roadmap
+
+### Prompts mockups — 8/8 listos
+
+Tabla de variación:
+
+| Ficha | Etapa | Contexto visual | Dispositivo | Archivo |
+|-------|-------|----------------|-------------|---------|
+| 1 | R | Sala IROC, 3 operadores | Pantalla mural | viz-01-iroc.png |
+| 2 | D | Estación monitoreo, sensores | Monitor curvo | viz-02-riesgo-geo.png |
+| 3 | A | Oficina planificación, mañana | Monitor escritorio | viz-03-anticipacion.png |
+| 4 | D | Terreno, golden hour | Móvil en mano | viz-04-briefing.png |
+| 5 | A | Camioneta minera, polvo | Móvil en dashboard | viz-05-copiloto.png |
+| 6 | A | Sala reunión ejecutiva | Pantalla mural | viz-06-plan-vs-real.png |
+| 7 | R | Oficina planificación, mañana | Monitor escritorio | viz-07-optimizacion.png |
+| 8 | D | Boardroom, directorio | Tablet en manos | viz-08-reporteria.png |
+
+#### Prompt 1 — Sala IROC (Caso #1: Caída de Equipo Crítico — R)
+```
+Photorealistic interior of a mining Integrated Remote Operations Center (IROC). Dark room, 3 operators seated at curved console desks viewed from behind/side angle. Main wall-mounted large display (80") shows a mine pit topographic map on the left with a pulsing cyan marker labeled "SHOVEL DOWN EX-1102" and a restricted zone in red, and on the right panel "3 OPTIONS: SHOVEL EX-1102 RECOVERY" with three ranked action cards — option 1 highlighted in cyan border, options 2 and 3 in dark gray. Bottom status bar reads "FLEET: 42 ACTIVE | ALERTS: 1 CRITICAL | SHIFT TIME: 05:14:22". Secondary monitors at each workstation show fleet dashboards and KPI graphs. Ambient lighting comes only from screens — soft cyan glow on operators' faces and desk surfaces. Color palette: near-black backgrounds, cyan (#00FFCC) accents, dark gray cards, white text. Atmosphere of focused calm — quiet urgency, not panic. No decorative elements. Clean, minimal, CrowdStrike-meets-NASA aesthetic. The room conveys: the system already analyzed the situation and is recommending what to do next. Cinematic composition, shallow depth of field on the nearest operator, 16:9 aspect ratio.
+```
+Notas: Operadores de espaldas (evita caras). "Focused calm" refuerza Quiet UI. Shallow DOF disimula detalles débiles del generador.
+
+#### Prompt 2 — Riesgo Geotécnico (Caso #2: Riesgo Espacial y Seguridad — D)
+```
+Photorealistic mining operations monitoring station. Close-up of a large curved monitor showing a 2D mine pit map with topographic contour lines. A red pulsing restricted zone is highlighted with label "ZONA RESTRINGIDA — RIESGO GEOTÉCNICO" and a shovel icon inside the zone with warning indicator. Multiple sensor overlays visible: radar sweep lines (subtle green), GPS dots for equipment positions (cyan dots for safe, yellow for near-zone, red for inside restricted zone), and prisma monitoring points as small triangles. A second smaller monitor to the side shows real-time ARIS geotechnical data graphs (displacement curves). The main screen has an alert banner at top: "ALERTA: PALA EX-205 EN ZONA DE RIESGO — CONFIRMAR EVACUACIÓN". Operator's hand on mouse visible in foreground, headset cord visible. Dark room, screens as primary light source. Color palette: dark backgrounds, red for danger zones, cyan for safe equipment, yellow for warnings. The mood is: focused vigilance, the system detected the risk before the human noticed. Cinematic, 16:9 aspect ratio.
+```
+
+#### Prompt 3 — Timeline Predictivo (Caso #3: Anticipación de Cuello de Botella — A)
+```
+Photorealistic over-the-shoulder view of a mining operations planner sitting at a desk, looking at a wide monitor. The screen shows a predictive timeline interface: horizontal time axis spanning the current shift (6 AM to 6 PM), with a vertical "NOW" marker and a projected event 45 minutes ahead highlighted in amber — "BLOQUEO CHANCADOR — 45 MIN". Below the timeline, a flow diagram shows tonnage throughput declining toward the blockage point, with a red projected dip. Side panel shows cascading impact: "Impacto aguas abajo: Stockpile +2h, Planta -15% turno, KPI tonelaje en riesgo". The interface is clean, dark mode, with amber/yellow for predictions and cyan for current data. Office environment visible in background blur — mining operations planning room with whiteboards and printed schedules on walls. Natural morning light from a window mixing with screen glow. The mood is: calm anticipation, there's still time to act. Cinematic, shallow depth of field on screen, 16:9 aspect ratio.
+```
+
+#### Prompt 4 — WhatsApp Briefing (Caso #4: Briefing Inteligente — D)
+```
+Photorealistic close-up of a smartphone held in a gloved hand (mining safety gloves, dusty). The phone screen shows a WhatsApp dark mode conversation. Chat header shows "TIM" with a small green dot (online) and a subtle bot icon. The most recent messages from TIM show: a compact card with shift KPIs (tonnage, fleet status, pending alerts in cyan numbers), a small 2D mine map thumbnail with colored dots representing fleet positions, and a text message "Turno noche cerró al 87% de meta. 2 alertas pendientes. ¿Revisamos antes del briefing?". Below: three WhatsApp quick-reply buttons in a row: "Ver detalle", "Agendar briefing", "Todo OK". The phone is slightly tilted. Background out of focus: early morning mining pit landscape at dawn, golden hour light on the horizon contrasting with the cool phone screen glow on the glove. A hard hat edge visible at the bottom corner of frame. The mood is: calm start of shift, the system already prepared everything. No other people visible. Cinematic, shallow depth of field focused on the phone screen, 16:9 aspect ratio.
+```
+
+#### Prompt 5 — Copiloto en Terreno (Caso #5: Copiloto en Terreno — A)
+```
+Photorealistic view from inside a mining pickup truck cab. A smartphone mounted on the dashboard shows a voice assistant interface: waveform visualization at top indicating active listening, and below it a response card: "BERMA CUMPLE ESTÁNDAR SERNAGEOMIN — Altura: 1.8m (mín. 1.5m). Ancho: 2.1m (mín. 1.8m). ✓ CONFORME". A small photo thumbnail shows the berma the user just photographed. Below the response, a subtle list: "Radio pendiente: 3 solicitudes priorizadas" with colored priority dots. Through the truck windshield, a dusty mining haul road is visible with a large dump truck ahead. The driver's hands are on the steering wheel wearing work gloves, dashboard instruments partially visible. Afternoon light, dust particles in the air. Color palette: warm dusty exterior vs cool dark phone UI with cyan accents. The mood is: hands-free assistance, the system confirms compliance without stopping work. Cinematic, shallow depth of field focused on phone screen, 16:9 aspect ratio.
+```
+
+#### Prompt 6 — Plan vs Realidad (Caso #6: Análisis Plan vs Realidad — A)
+```
+Photorealistic mining executive's office or meeting room. A large wall-mounted screen shows a split-view dashboard: left side "PLAN" with projected tonnage curves in cyan, right side "REALIDAD" with actual data in white — a visible gap between the two lines highlighted in red. Below the comparison, a "Time Scrubbing" bar shows the past week timeline with selectable segments. A detail panel shows autonomous truck positions plotted on a mine map with red markers where trucks stopped unexpectedly, labeled "ANOMALÍAS DETECTADAS: 12 PARADAS NO PROGRAMADAS". Bottom section: "CAUSA RAÍZ: Interferencia antena Sector Norte — correlación 87%". Two people visible from behind: a mine manager in a polo shirt and a planner with a laptop open, both looking at the screen. Conference table with coffee cups, printed reports. Morning light through blinds. Professional but operational atmosphere — not corporate, mining. Cinematic, 16:9 aspect ratio.
+```
+
+#### Prompt 7 — Optimización del Plan (Caso #7: Optimización del Plan Minero — R) [v3 — sala de reunión + laptop]
+```
+Photorealistic view of an open laptop on a conference table during a monthly planning meeting. The laptop screen displays a dark-mode dashboard titled "ORCHESTRA SIMULATION" in small monospace text at the top right. The main visualization is a mine pit map viewed from above with two clearly labeled phase zones: "FASE NORTE" highlighted in green (60% label) and "FASE SUR" in amber (40% label), showing the recommended effort redistribution. To the right of the map, a 4-week timeline (Semana 5–8) shows two projection lines: a white dashed line "ACTUAL TRAJECTORY" trending flat, and a cyan solid line "OPTIMIZED" curving upward — the gap between them shaded in cyan, labeled "+8%". Below the timeline, a recommendation bar with a cyan left border reads: "CONFIGURACIÓN RECOMENDADA: 60% Fase Norte / 40% Fase Sur — Semanas 5-8. Valor: USD 4.2M/mes". The laptop sits slightly angled on a dark conference table. Background out of focus: a meeting room with 2-3 people visible from behind or in silhouette, a whiteboard with mine phase diagrams, printed maps pinned to the wall, morning light through blinds. A coffee cup and printed reports beside the laptop. Color palette: near-black laptop screen, green for recommended phase, amber for reduced phase, cyan for projections. The mood is: strategic decision — the team is about to change the plan, not patch a shift. Cinematic, shallow depth of field focused on laptop screen, 16:9 aspect ratio.
+```
+Notas: Laptop en sala de reunión (no monitor de escritorio) ancla la decisión en contexto estratégico/colectivo. Personas en silhouette evitan caras AI. Mapa de fases refuerza decisión sistémica. 4 semanas marca horizonte estratégico. Diferencia visual clara vs Ficha 3 (oficina individual) y Ficha 6 (pantalla mural).
+
+#### Prompt 8 — Reportería Ejecutiva (Caso #8: Reportería Ejecutiva — D)
+```
+Photorealistic view of a CFO's hands holding a tablet (iPad dark mode) at a conference table. The screen shows an executive dashboard titled "EXECUTIVE DASHBOARD" with subtitle "Viernes 3 PM · AUTO-GENERATED" in small monospace. Four KPI cards in a row, each with a luminous semaphore dot: "Adherencia Plan 92%" (green dot), "Producción Turno 145kt" (amber dot, slightly pulsing), "Seguridad 0 incidentes" (green dot), "Valor Capturado $1.2M" (cyan dot). Below the KPI row, the amber card is expanded into a drill-down section with label "DRILL-DOWN" in amber and text: "Turno noche: -18% vs plan. Causa: 14 paradas autónomos Sector Norte. Costo: USD 340k". At the bottom, a projection bar with cyan left border: "Ritmo actual cierra -12%. Con intervención: +3%. Delta: USD 1.8M". The tablet is held at a slight angle over a dark conference table. Background out of focus: a boardroom with glass walls, blurred silhouettes of 3-4 people seated, presentation screen glowing at the far end. The CFO wears a dress shirt cuff visible at wrist — no face, no full body. Professional executive atmosphere, not operational. Color palette: near-black UI, 95% achromatic, color only in semaphore dots and data highlights. The mood is: the answer is already in his hands, in his language. Cinematic, shallow depth of field on tablet screen, 16:9 aspect ratio.
+```
+Notas: Tablet (no monitor) refuerza Omni Sense — reporte llegó al dispositivo del CFO. Boardroom difuminado da contexto ejecutivo sin generar caras. "AUTO-GENERATED" = Erika ya no arma PDFs. Solo manos + puño de camisa = ejecutivo sin riesgo de cara AI.
+
+### Mockups generados — 8/8 COMPLETOS
+- **viz-07-optimizacion.png:** Laptop en mesa de reuniones, "ORCHESTRA SIMULATION", mapa fases 60/40 Norte/Sur, curva +8%, USD 4.2M. Pizarrón "MINE PHASE" al fondo. Consistente con narrativa reunión mensual.
+- **viz-08-reporteria.png:** Tablet en manos CFO, 4 KPIs (Adherencia 92%, Producción 145kt, Seguridad 0, Yield $1.2M), semáforos, barra proyección con intervención. Boardroom al fondo.
+- **Estado:** 8/8 mockups integrados. Sin observaciones críticas.

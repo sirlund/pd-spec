@@ -333,16 +333,16 @@ Lunes, cierre semanal. El Gerente de Mina revisa los números: mineral cumplido,
 **Origen:** No proviene de láminas del workshop. Síntesis de evidencia en [IG-SYNTH-12], motor Orchestra, y reunión Camila 17 feb.
 
 **Contexto:**
-Lunes 8 AM, oficina de planificación. El plan decía 100 mil toneladas; la realidad fue 78 mil. No es novedad — el plan es conservador a propósito: los bonos se pagan por cumplimiento, no por optimización. Nadie sabe si era posible producir más, ni cuánto. ¿El gap fue por equipos mal asignados? ¿Por frentes subóptimos? ¿Por turnos de perforación insuficientes? La respuesta requeriría simular 15 escenarios alternativos — un ejercicio que nadie tiene tiempo ni herramientas para hacer.
-**No necesita saber cuánto faltó — necesita saber cuánto más era posible.**
+Reunión mensual de planificación. Fase Sur lleva 3 semanas rindiendo bajo plan — no por incidentes, sino porque la roca es más dura de lo que el modelo geológico proyectaba. Cada turno manda la misma flota a las mismas fases en las mismas proporciones. Nadie cuestiona la asignación porque "el plan dice así." Pero el plan se hizo hace 3 meses con proyecciones que la realidad ya invalidó. El gap no es de un turno — es estructural. Y se repite, turno tras turno, semana tras semana, porque la configuración global nunca se revisa.
+**No necesita corregir un turno — necesita reconfigurar el plan.**
 
 **Flujo D→A→R:**
 
-**▸ Detección** · Time Sight — No solo la brecha — el potencial no capturado. El sistema revela algo que antes era invisible: el máximo alcanzable. No es un reporte de fin de turno — es un flujo vivo que muestra lo que se está dejando en la mesa.
+**▸ Detección** · Time Sight — Patrón estructural detectado: Fase Sur rindió bajo plan en 18 de los últimos 21 turnos. No son incidentes aislados — es una tendencia sistémica. Divergencia cuantificada: dureza de roca 15% sobre la proyección del modelo geológico. El plan ya no refleja la realidad del terreno.
 
-**▸ Análisis** · Time Sight — Simulación con Orchestra: 15 escenarios alternativos evaluados. ¿Desvío puntual o estructural? ¿Qué variables tienen mayor palanca? Patrones históricos: "este desvío ya lo vimos 3 veces en los últimos 6 meses."
+**▸ Análisis** · Time Sight — Orchestra simula configuraciones alternativas de secuenciación de fases para las próximas 4 semanas. No "qué hacer hoy" sino "qué patrón adoptar": redistribuir esfuerzo 60/40 hacia Fase Norte, ajustar secuencia de tronadura, reasignar perforación. Cada configuración evaluada contra datos geológicos actualizados — no contra el plan de hace 3 meses.
 
-**▸ Recomendación** · Clear Path — Las 3 mejores intervenciones rankeadas por impacto: mover Pala 05 al frente norte (+5%), reasignar 2 camiones de Fase Sur (+3%), extender turno de perforación en zona 4 (+2%). Delta: USD 1.2M recuperables esta semana. Como Waze: no solo la ruta — cuándo hay una mejor.
+**▸ Recomendación** · Clear Path — Configuración recomendada: concentrar 60% del esfuerzo de extracción en Fase Norte por las semanas 5 a 8. Recuperación proyectada: +8% vs trayectoria actual. Impacto: USD 4.2M en valor recuperado en el mes. El plan se actualiza — no es un parche de turno, sino una nueva línea base que todos los turnos heredan.
 
 **Referentes por Etapa:**
 
