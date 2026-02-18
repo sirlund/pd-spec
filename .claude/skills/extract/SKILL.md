@@ -43,6 +43,7 @@ EVERY file discovered in Phase 1 MUST be:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
+   - **AI-generated detection** — Check `_CONTEXT.md` for `Source Type: ai-generated`. If found, mark the entire folder as AI-generated. All files in this folder will be tagged during extraction (see Phase 2 AI tagging rule).
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -151,6 +152,14 @@ When processing a document, apply these criteria for claim extraction:
 4. **Target density:** ~3-5 claims/page (text documents), ~1-2/slide (presentations), ~1-3/photo (workshop images with visible text)
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
+
+**AI-Generated Source Tagging:**
+
+When processing a file from a folder marked as `ai-generated` (detected in Phase 1, step 2):
+- **Section header:** Add warning tag: `## [folder/file.md] ⚠️ AI-GENERATED`
+- **Each claim:** Append `[AI-SOURCE]` suffix to the claim text
+- **Log:** `⚠️ AI-generated source — claims tagged for verification`
+- Also check individual markdown files for `source_type: ai-generated` in their frontmatter metadata. Apply the same tagging if found, even if the folder's `_CONTEXT.md` doesn't flag it.
 
 **Batch Processing Logic (MANDATORY for >40 files):**
 
