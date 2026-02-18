@@ -918,17 +918,23 @@
           if (cf.resolution) html += '<div class="conflict-resolution">' + esc(cf.resolution) + '</div>';
           html += '</div>';
         } else {
+          var isFlagged = cf.intermediate_status === 'flagged';
+          var isResearch = cf.intermediate_status === 'research';
           html += '<div class="conflict-card" data-conflict="' + id + '" data-cfstatus="PENDING">';
           html += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
-          html += '<span class="badge badge-pending">Pending</span></div>';
+          html += '<span class="badge badge-pending">Pending</span>';
+          if (isFlagged) html += ' <span class="badge badge-flagged">Flagged</span>';
+          if (isResearch) html += ' <span class="badge badge-research">Research</span>';
+          html += '</div>';
+          if (cf.intermediate_note) html += '<div style="font-size:0.8rem;color:#666;margin-bottom:0.375rem;font-style:italic;">' + esc(cf.intermediate_note) + '</div>';
           if (cf.refs) html += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
           if (cf.tension) html += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
           html += '<div class="conflict-options">';
           var flagLabel = cf.flag_label || 'Flag for discussion';
-          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '" onchange="onConflictChange(this)">';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '"' + (isFlagged ? ' checked' : '') + ' onchange="onConflictChange(this)">';
           html += '<label for="' + cfKey + 'a"><span class="option-label">Flag for discussion</span> — ' + esc(flagLabel) + '</label></div>';
           var researchLabel = cf.research_label || 'Needs more research';
-          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '" onchange="onConflictChange(this)">';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '"' + (isResearch ? ' checked' : '') + ' onchange="onConflictChange(this)">';
           html += '<label for="' + cfKey + 'b"><span class="option-label">Needs more research</span> — ' + esc(researchLabel) + '</label></div>';
           html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'c" value="I have context" onchange="onConflictChange(this)">';
           html += '<label for="' + cfKey + 'c"><span class="option-label">I have context</span> — add notes below</label></div>';

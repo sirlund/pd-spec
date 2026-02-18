@@ -452,7 +452,7 @@ After writing files, generate STATUS.html automatically so the user can review i
    ```
 
    - **insights:** All `[IG-XX]` entries from INSIGHTS_GRAPH.md (just written). Fields: id, status, category, temporal, claim, source, quote.
-   - **conflicts:** All `[CF-XX]` entries from CONFLICTS.md (just written). Fields: id, status, title, refs, tension, sides, flag_label ("Flag for stakeholder review"), research_label ("Validate with additional research"). Use generic labels — no inference.
+   - **conflicts:** All `[CF-XX]` entries from CONFLICTS.md (just written). Fields: id, status, title, refs, tension, sides, flag_label ("Flag for stakeholder review"), research_label ("Validate with additional research"). Use generic labels — no inference. **Intermediate states:** When parsing CONFLICTS.md, detect `Status: PENDING — Flagged (context)` or `Status: PENDING — Research (context)` syntax. If found, emit `intermediate_status: "flagged"` or `"research"` and `intermediate_note: "context"` fields in the conflict JSON. These render as distinct badges in the dashboard.
    - **sources:** Glob `01_Sources/` to list folders with file counts and types.
    - **source_diversity:** Check which types are present: Interviews, Benchmarks, Analytics, Workshops, Surveys.
    - **evidence_gaps:** Insights with Convergence < 2 sources → add as claim-level gap. Missing source types → add as source-diversity gap.

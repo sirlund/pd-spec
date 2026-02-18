@@ -78,6 +78,8 @@
             "description": "Sides of the conflict with their insight refs"
           },
           "resolution": { "type": "string", "description": "Only for RESOLVED conflicts" },
+          "intermediate_status": { "type": "string", "enum": ["flagged", "research"], "description": "Intermediate state set via /synthesis (Flagged for discussion or Research needed)" },
+          "intermediate_note": { "type": "string", "description": "Context for intermediate state (who to discuss with, what to research)" },
           "flag_label": { "type": "string", "description": "Context for 'Flag for discussion' option" },
           "research_label": { "type": "string", "description": "Context for 'Needs more research' option" }
         }
