@@ -61,68 +61,6 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 ---
 
-### [BL-38] Freemode Protocol — Token-Efficient Custom Deliverables
-
-**Status:** Proposed
-**Priority:** P0
-**Origin:** TIMining entregables session (2026-02-16/18) — 3 days freemode, 65% weekly token budget, user as manual router/memory manager
-
-**Problem:** Working outside the pipeline (custom presentations, synthesized deliverables, iterative HTML) has no agent protocol. The agent doesn't orient itself to PD-Spec structures, reads `01_Sources/` instead of `02_Work/`, doesn't maintain session state across compaction, and accumulates context until the window fills.
-
-**Evidence:**
-- Agent read raw sources to answer a question already in INSIGHTS_GRAPH.md (user redirected manually)
-- Session log (39KB) invented by user as compaction workaround — agent didn't maintain it proactively
-- Auditoría fichas vs vizs only happened because user explicitly requested cross-reference
-- 100KB+ monolithic HTML required full reads for single-slide edits
-- Context window filled repeatedly, requiring multiple conversation restarts
-- Post-compaction with session log: agent recovered context and operated efficiently (positive evidence)
-- Agent planned tasks from session log → fast execution (planning before doing = key pattern)
-
-**User stories:**
-1. > As a PD-Spec user working in freemode, I want the agent to orient itself to the project's Work layer automatically, so I don't have to manually route it to the right files.
-2. > As a PD-Spec user in a long session, I want the agent to maintain compact session state, so work survives context compaction without re-reading everything.
-3. > As a PD-Spec user importing external content, I want a file-based intake convention, so I never have to paste large content into chat.
-4. > As a PD-Spec user, I want the agent to detect costly operations and suggest optimized alternatives, so I don't burn tokens unnecessarily.
-
-**Acceptance criteria:**
-
-**AC-1: CLAUDE.md — Freemode Protocol section** (~25 lines)
-- Work-first routing: `02_Work/` before `01_Sources/` for any data question
-- Reference by `IG-XX`/`CF-XX` IDs, never re-derive from sources
-- Write to file immediately — don't accumulate HTML/MD in context
-- Detect when request maps to existing `/ship` type → suggest pipeline path
-- Cost awareness: warn before reading files >20KB, propose targeted reads (offset/limit)
-- Post-compaction: re-read checkpoint before continuing
-
-**AC-2: Session checkpoint** (`02_Work/_temp/`)
-- Agent creates `SESSION_CHECKPOINT.md` at freemode session start
-- ~50 lines max: project state summary + session decisions + files modified + pending work
-- Updated after each significant action (not after every micro-edit)
-- Re-legible post-compaction — agent re-reads to recover orientation
-- Ephemeral by design — lives in `_temp/`, not committed to MEMORY.md
-
-**AC-3: Asset intake** (`02_Work/_assets/`)
-- External materials (AI-generated HTML, mockups, drafts, code) saved to `_assets/` before agent interaction
-- Agent never accepts pasted content >1KB in chat — redirects to file-based intake
-- `_INTAKE.md` log: filename, origin (gemini/chatgpt/manual), date, purpose
-- `/extract` skips `_assets/` (not knowledge sources)
-- Subfolder organization by origin or type (flexible)
-
-**AC-4: Custom outputs convention** (`03_Outputs/_custom/`)
-- Non-pipeline deliverables have a dedicated folder
-- Agent proposes file organization before first write
-- Filterable back to main branch outputs when approved
-
-**AC-5: Structural index for large files**
-- When working with files >50 lines, agent creates/maintains index in `_temp/`
-- Maps sections → line ranges (e.g., `Slide 7: lines 340-395`)
-- Uses offset/limit reads instead of full file reads
-- Updates index after structural edits
-
-**Future consideration:** Bounded sub-agent delegation for independent write tasks. Blocked on validating protocol first — if BL-38 resolves token burn, sub-agents may be unnecessary.
-
----
-
 ### [BL-39] Artifact Normalization — Efficient Import of External Files
 
 **Status:** Proposed
@@ -149,7 +87,13 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-37 — v4.3 to v4.8</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-38 — v4.3 to v4.9</strong> (click to expand)</summary>
+
+### [BL-38] Freemode Protocol — v4.9
+
+**Implemented:** 2026-02-18. CLAUDE.md Freemode Protocol section (work-first routing, session checkpoint, cost awareness). `02_Work/_assets/` with `_INTAKE.md` for external materials. `03_Outputs/_custom/` for non-pipeline deliverables (preserved by /reset). `.gitattributes` merge protection for `_custom/`. Templates in `02_Work/_README.md`.
+
+---
 
 ### [BL-31] Extract Express Mode — v4.8
 
@@ -366,4 +310,4 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md` and `QA_V3_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-18 (v4.8.0)
+Last updated: 2026-02-18 (v4.9.0)

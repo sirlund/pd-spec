@@ -1,5 +1,42 @@
 # Changelog
 
+## [4.9.0] — 2026-02-18
+
+### Highlights
+
+**Working outside the pipeline no longer burns your token budget.** The new Freemode Protocol teaches the agent to check `02_Work/` before re-reading raw sources, maintain a compact session checkpoint that survives context compaction, and write to files immediately instead of accumulating output in conversation. Evidence: the TIMining entregables session consumed 65% of a weekly token budget over 3 days — most of it avoidable re-reads and lost state.
+
+**External materials have a home.** Logos, brand guides, AI-generated drafts, and competitor screenshots go in `02_Work/_assets/` with a simple intake log. `/extract` ignores them (they're not knowledge sources), but freemode work can reference them freely.
+
+**Custom deliverables survive resets.** Non-pipeline outputs (custom presentations, iterative HTML, ad-hoc analysis) live in `03_Outputs/_custom/`. This folder is preserved by `/reset --output` and protected by `.gitattributes` during engine merges.
+
+### Changes
+
+- **BL-38 — Freemode Protocol.** New CLAUDE.md section with three subsections: Work-First Routing (reference `[IG-XX]` before re-reading sources, suggest `/ship` when applicable), Session Checkpoint (`02_Work/_temp/SESSION_CHECKPOINT.md`, 50 lines max, re-read post-compaction), Cost Awareness (write immediately, warn >20KB reads, asset intake, custom outputs).
+- **`02_Work/_assets/`** — New directory for external materials with `_INTAKE.md` log template.
+- **`03_Outputs/_custom/`** — New directory for non-pipeline deliverables, excluded from `/reset --output`.
+- **`.gitattributes`** — Added `03_Outputs/_custom/** merge=ours` protection.
+- **`/reset` updated** — `_custom/` added to exception list alongside `_README.md` and `.gitkeep`.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — Freemode Protocol section (3 subsections), folder structure (3 new entries), sources of truth table (3 new rows)
+- `02_Work/_README.md` — Freemode directories docs, `_INTAKE.md` template, `SESSION_CHECKPOINT.md` template
+- `03_Outputs/_README.md` — `_custom/` documentation
+- `.gitattributes` — `_custom/**` merge protection
+- `.claude/skills/reset/SKILL.md` — `_custom/` in exception list
+- `02_Work/_assets/.gitkeep` — New placeholder
+- `03_Outputs/_custom/.gitkeep` — New placeholder
+
+**BACKLOG impact:**
+- BL-38: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.8.0] — 2026-02-18
 
 ### Highlights
