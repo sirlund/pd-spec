@@ -2,7 +2,7 @@
 name: analyze
 description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first. Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Edit, Write
+allowed-tools: Read, Grep, Glob, Edit, Write, AskUserQuestion
 argument-hint: "[--full]"
 ---
 
@@ -263,50 +263,52 @@ Identify missing validation:
 
 **19. Present Synthesis Report to User:**
 
-BEFORE writing to files, present synthesis findings for approval:
+BEFORE writing to files, present synthesis findings:
 
 ```markdown
-## 🔬 Synthesis Report — [Project Name] (YYYY-MM-DD)
+## Synthesis Report — [Project Name] (YYYY-MM-DD)
 
 **Atomic observations:** X claims from Y sources
 **Real insights:** Z strategic insights
 **Method:** Convergence (≥2 sources) + thematic clustering + narrative synthesis
 
----
-
-### ✅ High Confidence Strategic Insights (N)
+### High Confidence Strategic Insights (N)
 [List synthesized insights with format from step 15]
 
-### ⚠️ Medium Confidence Insights (N)
+### Medium Confidence Insights (N)
 [Insights with lower convergence or single-source critical claims]
 
-### 🔴 Ambiguities Detected (N)
+### Ambiguities Detected (N)
 [List from step 16 — imprecisions, conflicts, definition gaps]
 
-### 📋 Research Gaps (N)
+### Research Gaps (N)
 [List from step 18 — missing validations]
-
----
-
-**User Decision Required:**
-
-□ Approve Z synthesized insights?
-□ How to resolve N ambiguities? [Now / Defer to /synthesis / Schedule workshop / Add to backlog]
-□ Add N research gaps to backlog? [All / Select specific gaps / None]
-
-**Options:**
-- Approve synthesis → writes to INSIGHTS_GRAPH.md, marks atomic observations as MERGED
-- Request changes → specify which insights need revision
-- Skip synthesis → writes atomic observations as-is (no consolidation)
 ```
 
-**WAIT for user approval before proceeding to Phase 4.**
+**19b. Use AskUserQuestion for structured approval** (no free-text prompt):
 
-### Phase 4: Write (After Synthesis Approval)
+Invoke AskUserQuestion with 2 questions. Write question text and option labels in `output_language`. Substitute actual counts for N and M.
 
-**If user approved synthesis (Phase 3):**
+- **Question 1** (header: "Synthesis", multiSelect: false):
+  - Question text: "What to do with N synthesized insights?" (in output_language)
+  - Option A: "Approve all as PENDING" — recommended. Write N insights as PENDING for dashboard review.
+  - Option B: "Approve all as VERIFIED" — express. Write N insights as VERIFIED, skip individual review.
+  - Option C: "Review one by one" — present each insight for individual terminal approval (slow, for small projects only).
 
-20. **Write synthesized insights** — Add consolidated insights to `02_Work/INSIGHTS_GRAPH.md` using the synthesis format from step 15.
+- **Question 2** (header: "Ambiguities", multiSelect: false):
+  - Question text: "How to handle M ambiguities detected?" (in output_language)
+  - Option A: "Save for /synthesis" — recommended. Write as PENDING conflicts, resolve later with dashboard.
+  - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
+
+**Proceed to Phase 4 based on user selections.**
+
+### Phase 4: Write (Based on AskUserQuestion Responses)
+
+**Response to Synthesis Question:**
+
+**Path A — "Approve all as PENDING"** (most common):
+
+20. **Write synthesized insights as PENDING** — Add consolidated insights to `02_Work/INSIGHTS_GRAPH.md` using synthesis format from step 15 with `Status: PENDING`.
 
 21. **Mark atomic observations as MERGED** — For each atomic insight that was consolidated:
    ```markdown
@@ -317,7 +319,19 @@ BEFORE writing to files, present synthesis findings for approval:
    ```
    Keep atomic observations in file for traceability, but mark them as merged.
 
-**If user skipped synthesis (rare — keeps atomic observations as-is):**
+**Path B — "Approve all as VERIFIED"** (express mode):
+
+20b. **Write synthesized insights as VERIFIED** — Same as Path A but with `Status: VERIFIED`.
+
+21b. **Mark atomic observations as MERGED** — Same as step 21.
+
+**Path C — "Review one by one"** (small projects):
+
+20c. **Present each synthesized insight for individual approval** — Show one at a time, ask user to approve or reject. Write approved insights as PENDING, skip rejected ones. Repeat until all are reviewed.
+
+21c. **Mark merged atomic observations** — Same as step 21 for approved insights only.
+
+**If synthesis was skipped entirely (no synthesis candidates found, or project too small):**
 
 22. **Write atomic insights** — Add all new insights to `02_Work/INSIGHTS_GRAPH.md`. Each insight must include:
    - `[IG-XX]` ID (sequential, two-digit minimum: `IG-01`…`IG-99`, then `IG-100`+)
@@ -331,10 +345,9 @@ BEFORE writing to files, present synthesis findings for approval:
    - Status: `PENDING` (plain text, no formatting)
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
-23. **Write ambiguities to CONFLICTS.md** — For each ambiguity detected in Phase 3 step 16:
-    - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID
-    - Append as PENDING with type [AMB-XX] format from step 16
-    - Include options and recommended actions
+23. **Handle ambiguities** — Based on AskUserQuestion response to Question 2:
+    - **"Save for /synthesis":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
+    - **"Resolve now":** Present each ambiguity in terminal with its options (A/B/C from step 16). For each, ask user to choose. Write resolved ones to CONFLICTS.md with status RESOLVED + chosen option. Write unresolved ones as PENDING.
 
 24. **Log conflicts** — For each detected contradiction (from step 11 cross-reference):
     - Read `02_Work/CONFLICTS.md` to get the next available `[CF-XX]` ID.
@@ -403,24 +416,69 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 [list of gaps with suggestions]
 ```
 
-### Phase 5: Report
+### Phase 5: Auto-Generate Dashboard
 
-26. **Summarize to the user** what was written:
-    - **Mode:** INCREMENTAL (processed X new sections, skipped Y) OR FULL (processed all Z sections)
-    - **Synthesis results:**
-      - Atomic observations: N claims from M sources
-      - Synthesized insights: K strategic insights (breakdown by confidence: high/medium)
-      - Ambiguities detected: L (imprecisions, conflicts, definition gaps, single-source critical)
-      - Research gaps suggested: J validations needed
-    - Source organization issues found (list each one).
-    - **Deduplication** — how many candidate claims were deduplicated into existing insights (count + which IDs absorbed them).
-    - **Convergence updates** — how many existing insights had convergence incremented (count + which IDs).
-    - Insights added (count, ID range, and breakdown by category).
-    - Conflicts/ambiguities logged (count, ID range, with a 1-line summary of each tension).
-    - **Source diversity** — present the source matrix (type × present/missing with file counts), the diversity score (N/6), diversity dimension flags (temporal, perspective, methodology), and specific suggestions per missing type. List any fragile insights (single-source-type support) with what corroboration would strengthen them.
-    - Evidence gaps detected (with suggested validation methods).
-    - **Convergence summary:**
-      - How many insights have convergence >50% of sources (strong signals).
-      - How many insights are single-source (fragile — may need additional validation).
-      - Highlight the highest-convergence insights as strongest findings.
-    - **Remind the user:** "Review `02_Work/INSIGHTS_GRAPH.md` and `02_Work/CONFLICTS.md`. Edit or remove anything that doesn't look right. Then run `/status` to review insights and conflicts visually, make approval decisions, and generate the `/synthesis` prompt."
+After writing files, generate STATUS.html automatically so the user can review insights and conflicts without running a separate command.
+
+26. **Build JSON data** from the analysis results already in memory:
+
+   ```json
+   {
+     "meta": {
+       "type": "status",
+       "generated": "YYYY-MM-DD",
+       "language": "[output_language]",
+       "last_session": "YYYY-MM-DDTHH:MM"
+     },
+     "title": "[project_name] — Dashboard",
+     "cards": [
+       {"count": N, "label": "Insights", "breakdown": "V verified, P pending", "style": "ok|warn"},
+       {"count": C, "label": "Conflicts", "breakdown": "P pending, R resolved", "style": "ok|warn"},
+       {"count": S, "label": "Sources", "style": "ok"},
+       {"count": G, "label": "Evidence Gaps", "style": "ok|warn"}
+     ],
+     "insights": [...],
+     "conflicts": [...],
+     "sources": [...],
+     "source_diversity": [...],
+     "source_issues": [...],
+     "evidence_gaps": [...],
+     "system_map": {...}
+   }
+   ```
+
+   - **insights:** All `[IG-XX]` entries from INSIGHTS_GRAPH.md (just written). Fields: id, status, category, temporal, claim, source, quote.
+   - **conflicts:** All `[CF-XX]` entries from CONFLICTS.md (just written). Fields: id, status, title, refs, tension, sides, flag_label ("Flag for stakeholder review"), research_label ("Validate with additional research"). Use generic labels — no inference.
+   - **sources:** Glob `01_Sources/` to list folders with file counts and types.
+   - **source_diversity:** Check which types are present: Interviews, Benchmarks, Analytics, Workshops, Surveys.
+   - **evidence_gaps:** Insights with Convergence < 2 sources → add as claim-level gap. Missing source types → add as source-diversity gap.
+   - **system_map:** Read `02_Work/SYSTEM_MAP.md` if it exists; use empty object if not.
+   - **Card styles:** "warn" when pending conflicts or evidence gaps > 0, otherwise "ok".
+
+27. **Read template** — `03_Outputs/_templates/status.html`.
+
+28. **Inject JSON** — Replace the contents of `<script id="pd-data" type="application/json">` with the generated JSON.
+
+29. **Write** — `03_Outputs/STATUS.html`.
+
+30. **Self-check** — Re-read `03_Outputs/STATUS.html` and verify it contains `<script id="pd-data" type="application/json">` with valid JSON inside. If missing, retry the injection. **CRITICAL: Never write STATUS.html as monolithic inline HTML/CSS/JS. Always use the template.**
+
+### Phase 6: Report
+
+31. **Compact output** — After writing STATUS.html, output ONLY:
+   ```
+   ✓ Analysis complete: [N insights, C conflicts, G evidence gaps]
+   ✓ Dashboard: 03_Outputs/STATUS.html
+   Mode: [INCREMENTAL: processed X sections, skipped Y | FULL: processed all Z sections]
+   ```
+
+   Include brief notes only if something needs user attention:
+   - Source organization issues found (each one, 1 line)
+   - Fragile insights (count, not full list)
+   - Research gaps suggested (count)
+
+   Do NOT show:
+   - Full insight or conflict lists (those are in STATUS.html)
+   - Source matrix table (visible in dashboard)
+   - Verbose deduplication logs
+   - Reminder to run `/status` (dashboard already auto-generated)

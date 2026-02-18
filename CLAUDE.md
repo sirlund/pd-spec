@@ -73,7 +73,6 @@ The folder name provides context that individual files inherit. The agent valida
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
-| Status | `/status` | Generate Work layer dashboard (HTML) — insights, conflicts, gaps, source issues. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
 
 ## Maturity Levels
@@ -119,7 +118,6 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   ├── status/SKILL.md       /status — work layer dashboard
 │   └── audit/SKILL.md        /audit — quality gate before /ship
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
@@ -169,6 +167,34 @@ The folder name provides context that individual files inherit. The agent valida
 └── README.md                  Project overview
 ```
 
+## Workspace & Worktrees
+
+PD-Spec uses git worktrees to run multiple projects simultaneously from a single repository. All worktrees live under `~/Dev/repos/`.
+
+### Directory Naming Convention
+
+| Directory | Branch | Purpose |
+|---|---|---|
+| `pd-spec/` | `main` | Engine development (the main repo) |
+| `pd-spec--qa/` | `qa` | Quality assurance worktree |
+| `pds--{name}/` | `project/{name}` | Project worktrees (e.g. `pds--lcorp/` → `project/lcorp`) |
+
+### Creating a New Project Worktree
+
+```bash
+cd ~/Dev/repos/pd-spec
+git worktree add ../pds--{name} -b project/{name}
+```
+
+Then run `/kickoff` in the new worktree to set up `PROJECT.md`.
+
+### Rules
+
+- Never move or rename worktree directories — git tracks their absolute paths.
+- Each project worktree gets its own `PROJECT.md` (name, language, one-liner).
+- Engine files (`CLAUDE.md`, skills, templates, schemas) are shared across all worktrees via git.
+- To list all active worktrees: `git worktree list` from any worktree.
+
 ## Session Protocol
 
 At the start of every session (new conversation), the agent must:
@@ -185,7 +211,7 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 **Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
 - Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
 - Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
-- Direct insight injection (e.g., from `/status` Add Context flow)
+- Direct insight injection (e.g., from STATUS.html Add Context flow)
 - Batch operations (approve/reject multiple insights)
 
 If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
@@ -226,7 +252,7 @@ When a bug is discovered during formal QA:
 > Update this section as the project evolves.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-16
-- **Status:** v4.3.0 — Production-ready pipeline. /extract processes 100% of files (no skips), /analyze incremental + synthesis layer (161 observations → 18 strategic insights), ambiguity detection, research gap identification. Tested end-to-end on 61-file TIMining project.
+- **Last updated:** 2026-02-17
+- **Status:** v4.6.0 — /extract runs silently with compact batch-level output (BL-34). Full pipeline: /extract → /analyze (interactive + auto-dashboard) → /synthesis → /ship.
 - **Insights count:** 0
 - **Conflicts count:** 0

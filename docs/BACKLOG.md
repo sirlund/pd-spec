@@ -10,7 +10,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-30] Pipeline Flow Simplification — Unified /analyze with Interactive Decisions
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.5, 2026-02-16)
 **Priority:** P0 — CRITICAL (UX blocker)
 **Origin:** QA v3 testing (2026-02-16), consolidated from QA3-ARCH-01
 **Related:** BL-33 (phase dashboard), QA3-UX-01 (express mode)
@@ -429,9 +429,10 @@ User can't see "where we are" at all times. Dashboard (/status) is separate skil
 
 ### [BL-34] Compact Skill Output — Preserve Context Longer
 
-**Status:** Proposed
+**Status:** ✅ IMPLEMENTED (v4.6, 2026-02-17)
 **Priority:** P0 — CRITICAL (performance blocker)
 **Origin:** QA v3 testing (2026-02-16), QA3-UX-03
+**Implemented:** 2026-02-17
 **Related:** BL-29 (Option E), QA3-PERF-01
 
 **Problem:**
@@ -494,6 +495,12 @@ Pass 2: 9/16 ✓ (19 claims)
 - Update all skills (extract, analyze, synthesis, ship) to use compact output format
 - Move detailed logs to files (MEMORY.md gets full log, user sees concise progress)
 - Dashboard shows progress, not chat
+
+**Implementation Results (2026-02-17):**
+- `/extract` skill: 4 changes — (1) removed per-file log inside Pass 1 batches, (2) simplified batch-complete log to one-liner, (3) shortened Pass 2 heavy-file log format, (4) replaced verbose per-folder final report with compact totals-only summary + unprocessable list
+- Added "Silent execution rule" to Phase 2: no narration between tool calls
+- `/analyze` skill: already had compact Phase 6 output — no changes needed
+- `/synthesis`, `/ship`: no per-file loops, not targets for this fix
 
 ---
 
@@ -639,10 +646,20 @@ Modified `.claude/skills/status/SKILL.md` with three fixes:
 - **After:** Shows only summary: `✓ Dashboard: STATUS.html [stats]`
 - **Impact:** Prevents context compaction, conserves tokens
 
-**Testing plan:**
-1. Test on TIMining (61 sources): verify <60s execution
-2. Test on small project (3 sources): verify <10s execution
-3. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+**Testing results (2026-02-16):**
+
+| Test | Expected | Actual | Pass? |
+|---|---|---|---|
+| TIMining (61 sources) | <60s | **6m 34s** | ❌ |
+| Thinking overhead | 0s | ~0s | ✅ |
+| Dashboard functional | Yes | Yes | ✅ |
+| Compact output | Summary only | Summary only | ✅ |
+
+**Analysis:** Thinking overhead eliminated (4m 18s saved vs baseline 10m 2s) but I/O overhead remains (~6.5min reading + processing + writing ~2000 lines). BL-35 is a partial success — 37% faster but not 10x faster. Further optimization needed (lazy loading, partial reads).
+
+**Testing plan (remaining):**
+1. Test on small project (3 sources): verify <10s execution
+2. Verify BL-30 becomes viable: /analyze + auto-status <10min total
 
 **Original implementation steps:**
 1. Edit `.claude/skills/status/SKILL.md`:
@@ -652,6 +669,52 @@ Modified `.claude/skills/status/SKILL.md` with three fixes:
 2. Test on TIMining (61 sources): verify <60s execution
 3. Test on small project (3 sources): verify <10s execution
 4. Verify BL-30 becomes viable: /analyze + auto-status <10min total
+
+---
+
+### [BL-36] Dashboard Conflict States — Intermediate Status (Flagged/Research)
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v3 BL-35 testing (2026-02-16), QA3-UX-06
+**Related:** BL-35 (/status perf fix), QA3-ARCH-01
+
+**Problem:**
+
+When user runs `/synthesis` and marks conflicts as "Flag for discussion" or "Needs more research", those conflicts remain `PENDING` in CONFLICTS.md. On next dashboard open, the radio buttons are blank — there's no indication that a decision was already made.
+
+**Current behavior:**
+- CF-03 flagged for stakeholder → still shows as PENDING, radio blank
+- CF-05 sent for research → still shows as PENDING, radio blank
+- User must re-make decisions every time
+
+**Desired behavior:**
+- CF-03 flagged → shows badge "Flagged" + radio pre-selected
+- CF-05 research → shows badge "Research" + radio pre-selected
+
+**Proposed fix:**
+
+Extend CONFLICTS.md status syntax:
+```markdown
+Status: PENDING — Flagged (who to involve, e.g. CTO + Producto)
+Status: PENDING — Research needed (what to research)
+```
+
+Dashboard parses this metadata and:
+1. Shows intermediate badge (Flagged in amber, Research in blue)
+2. Pre-selects corresponding radio button
+3. Preserves user notes if provided
+
+**/synthesis update required:** When user flags CF-XX, `/synthesis` writes intermediate status to CONFLICTS.md.
+
+**User story:**
+> As a researcher who flagged CF-03 for CTO discussion, I expect the dashboard to show "Flagged" on that conflict next time I open it, so I don't lose track of what's in flight.
+
+**Acceptance criteria:**
+- [ ] CONFLICTS.md supports: `Status: PENDING — Flagged (...)` and `Status: PENDING — Research needed (...)`
+- [ ] Dashboard parses intermediate states and shows badges
+- [ ] Radio buttons pre-select based on metadata
+- [ ] /synthesis writes intermediate status when flagging/sending to research
 
 ---
 
