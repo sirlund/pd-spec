@@ -53,6 +53,25 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 7. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
 
+### Phase 1b: Express Mode Detection
+
+8. **Detect project size** — Count total source files (from EXTRACTIONS.md section headers) and total claims (from raw claim lines):
+
+   | Size | Threshold | Synthesis behavior |
+   |---|---|---|
+   | **Small** | < 30 files OR < 500 claims | Skip Phase 3 (synthesis) — create atomic insights directly |
+   | **Medium** | 30-50 files OR 500-1000 claims | Skip synthesis + suggest `--full` |
+   | **Large** | > 50 files OR > 1000 claims | Full synthesis (Phase 3 runs) |
+
+   - `--full` flag overrides: always run full synthesis regardless of project size
+   - Log: `⚡ Express: N files, M claims → atomic insights (no synthesis). Use /analyze --full for deeper analysis.` (small/medium) or `Full analysis: N files, M claims → synthesis enabled.` (large)
+
+**Express mode effects:**
+- **Phase 2:** Runs normally (dedup, new insights, cross-reference, gap detection)
+- **Phase 3 SKIPPED:** No thematic clustering, no convergence weighting, no narrative synthesis
+- **Phase 4:** Write atomic insights directly (step 22 path). Still detect and log conflicts.
+- **AskUserQuestion (Phase 4):** Simplified — only Question 1 with options A ("Approve all as PENDING") and B ("Approve all as VERIFIED"). No ambiguity handling question (ambiguities auto-saved for /synthesis).
+
 ### Phase 2: Analysis (Draft — Incremental-Aware)
 
 8. **Process filtered sections** — Work only with the sections from Phase 1 (incremental filtered list or full list, depending on mode).
@@ -155,6 +174,8 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    **e. Single-source fragility flags** — After insights are prepared (step 10), review them for source diversity at the insight level. Flag any insight whose supporting evidence comes from only one source type. These insights are more fragile — they lack cross-type corroboration. In the report (Phase 5), list fragile insights with a note like: `[IG-05] supported only by user research — would benefit from technical or business corroboration`.
 
 ### 🆕 Phase 3: SYNTHESIS (Observation → Insight Consolidation)
+
+**Skip condition:** If express mode is active (small/medium project, no `--full` flag), skip this entire phase. Jump to Phase 4, step 22 (write atomic insights directly). Ambiguities are auto-saved as PENDING conflicts.
 
 **Goal:** Consolidate atomic observations into strategic insights with narrative, detect ambiguities, suggest research gaps.
 
