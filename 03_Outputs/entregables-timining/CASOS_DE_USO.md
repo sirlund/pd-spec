@@ -160,7 +160,7 @@ El radio corta el silencio de la sala IROC a las 2:47 AM: "Pala 07 abajo." No es
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | CrowdStrike | Alerta acromática — color solo para amenazas activas |
 | **Análisis** | SentinelOne Storylines | Cadena causal completa del incidente |
@@ -191,7 +191,7 @@ El radio corta el silencio de la sala IROC a las 2:47 AM: "Pala 07 abajo." No es
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Anduril Lattice | Spatial intelligence — identifica interés automáticamente |
 | **Análisis** | Chronosphere | Zoom temporal para distinguir puntual vs tendencia |
@@ -222,7 +222,7 @@ Mediodía, turno diurno. La operación parece normal — los números del turno 
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Chronosphere | Alerta predictiva con contexto temporal |
 | **Análisis** | Tesla Fleet | Time scrubbing — rebobinar para entender causalidad |
@@ -253,7 +253,7 @@ Mediodía, turno diurno. La operación parece normal — los números del turno 
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Samsara | Push proactivo multicanal — el sistema busca al usuario |
 | **Análisis** | Motive | Dashboard holístico con cruce de fuentes |
@@ -284,7 +284,7 @@ El jefe de turno frena la camioneta junto a una berma. Algo no se ve bien — la
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Discord | Canales de voz siempre activos — input natural |
 | **Análisis** | Motive | Cruce multi-sensor para contexto completo |
@@ -315,7 +315,7 @@ Lunes, cierre semanal. El Gerente de Mina revisa los números: mineral cumplido,
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Tesla Fleet | Detección de brecha plan vs realidad |
 | **Análisis** | SentinelOne Storylines | Post-mortem con cadena causal completa |
@@ -346,7 +346,7 @@ Reunión mensual de planificación. Fase Sur lleva 3 semanas rindiendo bajo plan
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Chronosphere Lens | Patrones temporales, distingue puntual vs tendencia |
 | **Análisis** | SentinelOne Storylines | Cadena causal completa del desvío |
@@ -380,7 +380,7 @@ Reunión de directorio en curso. Alguien pregunta: "¿cómo va la operación min
 
 **Referentes por Etapa:**
 
-| Etapa | Referente | Qué robar |
+| Etapa | Referente | Cómo Aplica a CORE |
 |---|---|---|
 | **Detección** | Datadog Bits AI | Resumen automático de estado del sistema |
 | **Análisis** | SentinelOne Storylines | Navegación causal de incidentes |
