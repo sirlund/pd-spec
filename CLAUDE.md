@@ -167,6 +167,34 @@ The folder name provides context that individual files inherit. The agent valida
 └── README.md                  Project overview
 ```
 
+## Workspace & Worktrees
+
+PD-Spec uses git worktrees to run multiple projects simultaneously from a single repository. All worktrees live under `~/Dev/repos/`.
+
+### Directory Naming Convention
+
+| Directory | Branch | Purpose |
+|---|---|---|
+| `pd-spec/` | `main` | Engine development (the main repo) |
+| `pd-spec--qa/` | `qa` | Quality assurance worktree |
+| `pds--{name}/` | `project/{name}` | Project worktrees (e.g. `pds--lcorp/` → `project/lcorp`) |
+
+### Creating a New Project Worktree
+
+```bash
+cd ~/Dev/repos/pd-spec
+git worktree add ../pds--{name} -b project/{name}
+```
+
+Then run `/kickoff` in the new worktree to set up `PROJECT.md`.
+
+### Rules
+
+- Never move or rename worktree directories — git tracks their absolute paths.
+- Each project worktree gets its own `PROJECT.md` (name, language, one-liner).
+- Engine files (`CLAUDE.md`, skills, templates, schemas) are shared across all worktrees via git.
+- To list all active worktrees: `git worktree list` from any worktree.
+
 ## Session Protocol
 
 At the start of every session (new conversation), the agent must:
