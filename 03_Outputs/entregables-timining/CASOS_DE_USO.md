@@ -216,7 +216,7 @@ Mediodía, turno diurno. La operación parece normal — los números del turno 
 
 **▸ Detección** · Time Sight — Detección predictiva: el patrón de desaceleración se forma antes de que el bloqueo exista. La alerta no espera a que el problema ocurra — se activa cuando la tendencia se confirma. Proyección: bloqueo en 45 minutos.
 
-**▸ Análisis** · Omni Sense — Notificación simultánea a tres áreas — cada una por su canal preferido, con el dato que necesita para su rol. El jefe de chancado ve opciones de stockeo. El planificador ve impacto en el plan semanal. El jefe de operaciones ve reasignación de equipos.
+**▸ Análisis** · Time Sight — Impacto aguas abajo calculado antes del bloqueo: tonelaje perdido por hora, costo acumulado, áreas afectadas en cascada. El jefe de chancado ve el flujo declinando. El planificador ve la brecha contra el plan semanal. El jefe de operaciones ve qué equipos quedan sin destino. Todo en una vista — no en tres reportes separados.
 
 **▸ Recomendación** · Clear Path — Redistribución de flujo recomendada con equipos reasignables identificados. Tres áreas coordinadas antes de que el problema exista — sin radio, sin silos, sin improvisación.
 
