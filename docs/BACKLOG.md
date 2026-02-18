@@ -718,6 +718,45 @@ Dashboard parses this metadata and:
 
 ---
 
+### [BL-37] AI-Generated Source Validation — Detect Hallucinated Claims
+
+**Status:** Proposed
+**Priority:** P1 — High (data integrity)
+**Origin:** TIMining entregables session (2026-02-17), via IDEAS.md idea flow
+**Related:** Mandate #1 (No Hallucination), BL-23 (no editorial decisions)
+
+**Problem:**
+
+When AI-generated content (Gemini, ChatGPT outputs) enters `01_Sources/`, `/extract` treats it as ground truth. Fabricated benchmarks, fictional metrics, and unsourced case studies become claims in EXTRACTIONS.md indistinguishable from real data.
+
+**Evidence:**
+- TIMining: 3 Gemini slides removed during manual review — contained fabricated benchmarks, fictional metrics, and cases without traceability
+- Source: `pds--timining/02_Work/IDEAS.md`
+
+**Proposed fix:**
+
+1. New `source_type` field in `_CONTEXT.md`: `ai-generated` (alongside `interview`, `workshop`, `document`, etc.)
+2. When `/extract` processes a file with `source_type: ai-generated`:
+   - Flag all claims with `[AI-SOURCE]` tag
+   - Log warning: "⚠️ AI-generated source — claims require independent verification"
+   - In EXTRACTIONS.md, mark section header: `## [file.md] ⚠️ AI-GENERATED`
+3. `/analyze` treats `[AI-SOURCE]` claims as low-authority:
+   - Voice: `ai` (new type, lowest priority)
+   - Authority: `hypothesis` (never `fact` or `direct-quote`)
+   - Cannot achieve VERIFIED status without corroboration from non-AI source
+
+**User story:**
+> As a researcher using Gemini outputs as starting points, I expect PD-Spec to flag AI-generated claims separately so fabricated data doesn't silently become verified insights.
+
+**Acceptance criteria:**
+- [ ] `_CONTEXT.md` supports `source_type: ai-generated`
+- [ ] `/extract` tags claims from AI sources with `[AI-SOURCE]`
+- [ ] `/analyze` weights AI-sourced claims as lowest authority
+- [ ] AI-only insights cannot reach VERIFIED without non-AI corroboration
+- [ ] Dashboard shows AI-source warning badge on affected insights
+
+---
+
 ### [BL-29] /extract Context Overflow — Mandatory Batching for Large Projects (CRITICAL)
 
 **Status:** ✅ IMPLEMENTED (v4.3.1, Option E)
@@ -1943,6 +1982,13 @@ Per-folder + overall progress in conversation/MEMORY. Missing: dashboard integra
 Typography, micro-interactions, data viz, accessibility improvements for all templates.
 
 **Proposed in:** QA v2 (2026-02-15)
+
+**Evidence from TIMining entregables (2026-02-17):**
+- Dark mode + light/dark toggle with localStorage
+- JetBrains Mono font, fichas 2x2 with sidebar layout
+- Timeline D→A→R pattern
+- Clearbit logos with fallback
+- Source: `pds--timining/02_Work/IDEAS.md` → idea "Upgrade de template de presentación"
 
 ---
 

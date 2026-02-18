@@ -277,8 +277,13 @@ Ideas and bugs discovered during project work stay in the project branch — nev
 
 **On main (engine development):**
 - Read ideas cross-worktree: `Read ~/Dev/repos/pds--{name}/02_Work/IDEAS.md`
-- Formalize as BL items in `docs/BACKLOG.md`
-- Mark formalized ideas as `→ BL-##` in the project's IDEAS.md
+- **Validate each idea** (Homer's Car gate) before creating a BL item:
+  - Does it solve a real, evidenced problem? (not a preference from one project)
+  - Is it already covered by an existing BL? → absorb as evidence, don't duplicate
+  - Would a second project benefit? If unclear → **PARK** (stays in IDEAS.md)
+- Formalize validated ideas as BL items in `docs/BACKLOG.md`
+- Mark every idea in the project's IDEAS.md with its result:
+  - `→ BL-##` (formalized), `→ BL-## (absorbed)` (added as evidence to existing), or `PARKED` (waiting for second use case)
 
 No git merge needed for idea flow — just filesystem reads across worktrees.
 
