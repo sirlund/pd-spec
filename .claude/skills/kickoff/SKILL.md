@@ -64,6 +64,17 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - **one_liner:** [user's answer]
    - **team:** [user's answer or leave as placeholder]
    - **started:** [today's date in YYYY-MM-DD]
+   - **engine_version:** [read from current PROJECT.md or use latest]
+
+   ## Current State
+
+   > Updated automatically by skills after each execution.
+
+   - **Maturity:** Level 1 (Seed)
+   - **Last updated:** [today's date]
+   - **Status:** Fresh project. Add sources to `01_Sources/` and run `/extract`.
+   - **Insights count:** 0
+   - **Conflicts count:** 0
    ```
 
 8. **If PROJECT.md doesn't exist** — Use Write to create it with the template above.

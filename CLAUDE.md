@@ -73,7 +73,6 @@ The folder name provides context that individual files inherit. The agent valida
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
-| Status | `/status` | Generate Work layer dashboard (HTML) — insights, conflicts, gaps, source issues. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
 
 ## Maturity Levels
@@ -88,7 +87,7 @@ The folder name provides context that individual files inherit. The agent valida
 
 | File | Role | Editable? |
 |---|---|---|
-| `PROJECT.md` | Project settings (name, language, one-liner) | Yes (via `/kickoff` or manual) |
+| `PROJECT.md` | Project settings (name, language, one-liner) + current state | Yes (via `/kickoff` or manual) |
 | `01_Sources/*` | Raw inputs | No (read-only after capture) |
 | `02_Work/SOURCE_MAP.md` | Per-file extraction state (hash, status, timestamp) | Yes (via `/extract`, auto-maintained) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
@@ -96,6 +95,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
+| `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
 | `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
 | `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
 | `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
@@ -119,7 +119,6 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   ├── status/SKILL.md       /status — work layer dashboard
 │   └── audit/SKILL.md        /audit — quality gate before /ship
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
@@ -131,6 +130,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
 │   ├── SYSTEM_MAP.md          Product architecture decisions
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
+│   ├── IDEAS.md               Ideas & bugs from project work (→ BACKLOG on main)
 │   ├── MEMORY.md              Session log & state tracker
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
@@ -164,10 +164,123 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
 │   ├── FRAMEWORK.md           Full methodology documentation
 │   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
-├── PROJECT.md                 Project settings (name, language, one-liner)
+├── .gitattributes             Merge strategy (protects project files)
+├── PROJECT.md                 Project settings + current state
 ├── CLAUDE.md                  This file
 └── README.md                  Project overview
 ```
+
+## Workspace & Worktrees
+
+PD-Spec uses git worktrees to run multiple projects simultaneously from a single repository. All worktrees live under `~/Dev/repos/`.
+
+### Directory Naming Convention
+
+| Directory | Branch | Purpose |
+|---|---|---|
+| `pd-spec/` | `main` | Engine development (the main repo) |
+| `pd-spec--qa/` | `qa` | Quality assurance worktree |
+| `pds--{name}/` | `project/{name}` | Project worktrees (e.g. `pds--lcorp/` → `project/lcorp`) |
+
+### Creating a New Project Worktree
+
+```bash
+cd ~/Dev/repos/pd-spec
+git worktree add ../pds--{name} -b project/{name}
+```
+
+Then run `/kickoff` in the new worktree to set up `PROJECT.md`.
+
+### Rules
+
+- Never move or rename worktree directories — git tracks their absolute paths.
+- Each project worktree gets its own `PROJECT.md` (name, language, one-liner, current state).
+- Engine files (`CLAUDE.md`, skills, templates, schemas) are shared across all worktrees via git.
+- To list all active worktrees: `git worktree list` from any worktree.
+
+### Engine Files Are Read-Only in Project Branches
+
+**Never edit engine files in a project branch.** If a skill or template needs a fix, make the change in `main` and merge into the project. This prevents merge conflicts and ensures all projects run the same engine.
+
+Engine files (do NOT edit in project branches):
+- `CLAUDE.md`, `README.md`
+- `.claude/skills/*/SKILL.md`
+- `03_Outputs/_templates/*`, `03_Outputs/_schemas/*`
+- `docs/BACKLOG.md`, `docs/CHANGELOG.md`, `docs/FRAMEWORK.md`
+
+Project files (only exist in project branches):
+- `PROJECT.md` (settings + current state)
+- `01_Sources/*`, `02_Work/*`, `03_Outputs/*.html`
+
+### Merging Engine Updates into a Project
+
+```bash
+cd ~/Dev/repos/pds--{name}
+git merge main -m "engine update to vX.Y"
+```
+
+`.gitattributes` protects project-specific files (`PROJECT.md`, `01_Sources/`, `02_Work/`, generated outputs) using `merge=ours` — they keep the branch version automatically.
+
+**First-time setup** (once per clone, before first merge):
+
+```bash
+git config merge.ours.driver true
+```
+
+This registers the `ours` merge driver so `.gitattributes` rules work. Without it, git ignores the `merge=ours` directives.
+
+## Engine Development Workflow
+
+### Versioning
+
+PD-Spec follows SemVer (`MAJOR.MINOR.PATCH`):
+
+| Bump | When | Example |
+|---|---|---|
+| **MAJOR** | Architecture overhaul, breaking changes | v3→v4 |
+| **MINOR** | BL implementation, new feature | v4.6→v4.7 |
+| **PATCH** | Skill instruction tweak, typo, cosmetic fix | v4.6.0→v4.6.1 |
+
+Source of truth: `engine_version` in `PROJECT.md` (template on main) + `docs/CHANGELOG.md` headers. Bundle related BLs into one MINOR bump per session.
+
+### Commit Convention
+
+Format: `type: BL-## — description`
+
+| Type | Version bump? | Use for |
+|---|---|---|
+| `feat` | Yes (MINOR/MAJOR) | New feature, BL implementation |
+| `fix` | Yes (PATCH) | Bug fix |
+| `docs` | No | Documentation, release bookkeeping |
+| `chore` | No | Tooling, config, cleanup |
+
+All agent commits include `Co-Authored-By: Claude <model> <noreply@anthropic.com>` footer.
+
+### Release Checklist
+
+After `feat`/`fix` commits, wrap up the session with a single `docs` commit:
+
+1. `docs/BACKLOG.md` — mark BL item(s) as IMPLEMENTED with version and date
+2. `docs/CHANGELOG.md` — add version entry (highlights-first format, see Documentation Guidelines)
+3. `PROJECT.md` template — bump `engine_version`
+4. Commit all three together: `docs: release vX.Y.Z — [summary]`
+
+The `feat:`/`fix:` commits carry code changes; the `docs: release` commit carries the bookkeeping.
+
+### Idea Flow: Project → Main
+
+Ideas and bugs discovered during project work stay in the project branch — never edit engine files there.
+
+**In project branches:**
+- Capture ideas in `02_Work/IDEAS.md` (protected by `merge=ours`)
+- Format: `### [IDEA] or [BUG] — title` + context + proposed fix
+
+**On main (engine development):**
+- Read ideas cross-worktree: `Read ~/Dev/repos/pds--{name}/02_Work/IDEAS.md`
+- Formalize as BL items in `docs/BACKLOG.md`
+- Mark formalized ideas as `→ BL-##` in the project's IDEAS.md
+
+No git merge needed for idea flow — just filesystem reads across worktrees.
 
 ## Session Protocol
 
@@ -185,7 +298,7 @@ After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` w
 **Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
 - Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
 - Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
-- Direct insight injection (e.g., from `/status` Add Context flow)
+- Direct insight injection (e.g., from STATUS.html Add Context flow)
 - Batch operations (approve/reject multiple insights)
 
 If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
@@ -221,12 +334,6 @@ When a bug is discovered during formal QA:
 - **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
 - **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
 
-## Current State
+## Current State → PROJECT.md
 
-> Update this section as the project evolves.
-
-- **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-16
-- **Status:** v4.3.0 — Production-ready pipeline. /extract processes 100% of files (no skips), /analyze incremental + synthesis layer (161 observations → 18 strategic insights), ambiguity detection, research gap identification. Tested end-to-end on 61-file TIMining project.
-- **Insights count:** 0
-- **Conflicts count:** 0
+Project-specific state (maturity, insights count, conflicts count) lives in `PROJECT.md` under "Current State". This keeps CLAUDE.md as pure engine config — no merge conflicts when updating project branches from main.

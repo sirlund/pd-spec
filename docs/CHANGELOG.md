@@ -1,5 +1,120 @@
 # Changelog
 
+## [4.7.0] — 2026-02-17
+
+### Highlights
+
+**Engine development now has rules.** SemVer versioning, commit conventions, a release checklist, and a clear path for ideas discovered in projects to flow back to the engine — all documented in CLAUDE.md. No more ad-hoc version bumps or BACKLOG edits in project branches.
+
+**Merge strategy protects project files.** `.gitattributes` with `merge=ours` ensures that merging engine updates from `main` into a project branch never overwrites `PROJECT.md`, sources, work files, or generated outputs. Engine files flow forward; project files stay put.
+
+**Ideas flow without git merges.** Projects capture bugs and ideas in `02_Work/IDEAS.md` (a new template file). The agent on `main` reads them cross-worktree via filesystem — no branch merging needed. Ideas get formalized as BACKLOG items on main, then implemented and merged back as engine updates.
+
+### Changes
+
+- **Engine Development Workflow section in CLAUDE.md.** Four subsections: Versioning (SemVer rules), Commit Convention (`type: BL-## — description`), Release Checklist (BACKLOG + CHANGELOG + version bump in one docs commit), Idea Flow (project → IDEAS.md → main → BACKLOG).
+- **Workspace & Worktrees section expanded.** Engine-files-are-read-only rule, merge instructions with `git config merge.ours.driver true` setup, directory naming convention (`pd-spec/`, `pds--{name}/`).
+- **`02_Work/IDEAS.md` template.** Empty template with format guide. Protected by `merge=ours` — main's empty template won't overwrite a project's captured ideas.
+- **`.gitattributes` added.** Merge strategy file protecting `PROJECT.md`, `01_Sources/**`, `02_Work/**`, and `03_Outputs/*.html`.
+- **`/kickoff` writes full PROJECT.md.** Now includes `engine_version` and the "Current State" section, not just project settings.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — New "Engine Development Workflow" section, expanded "Workspace & Worktrees", updated Sources of Truth table and Folder Structure
+- `02_Work/IDEAS.md` — New template file
+- `.gitattributes` — New merge strategy file
+- `PROJECT.md` — Fixed `engine_version` (was prematurely v4.7.0, reset to v4.6.0, now bumped to v4.7.0 with this release)
+- `.claude/skills/kickoff/SKILL.md` — Full PROJECT.md template output
+
+</details>
+
+---
+
+## [4.6.0] — 2026-02-17
+
+### Highlights
+
+**`/extract` now runs silently.** Instead of narrating every file being processed, `/extract` outputs one compact line per batch during Pass 1 and one line per file during Pass 2 (heavy files). The final report shows totals only — no per-folder file listings. Less noise, same completeness guarantees.
+
+### Changes (BL-34)
+
+- **Removed per-file progress logs.** Pass 1 (light files) now logs only after completing each 10-file batch: `✓ Batch X/Y: 10 files, Z claims`. No per-file narration inside batches.
+- **Simplified Pass 2 log.** Heavy files log: `✓ [filename] → Z claims (X/N)` — concise format, same information.
+- **Compact final report.** End of extraction shows: `✓ Extraction complete: N files · Z claims` + only unprocessable files if any. No per-folder breakdowns.
+- **Silent execution rule.** New instruction in Phase 2: no narration between tool calls ("Now reading...", "Now updating..."). Execute silently, log only when a `Log:` directive specifies the message.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 2 batch log format, Phase 2 progress reporting rule, Phase 4 final report format, new silent execution rule
+
+**BACKLOG impact:**
+- BL-34: ✅ IMPLEMENTED
+
+</details>
+
+---
+
+## [4.5.0] — 2026-02-16
+
+### Highlights
+
+**`/analyze` now guides you through decisions interactively.** Instead of a free-text approval prompt, `/analyze` now uses native terminal menus (AskUserQuestion) to collect your decisions: approve insights as PENDING for later review, approve as VERIFIED for immediate use, or review one by one. No more guessing the right text response.
+
+**Dashboard auto-generated.** After writing insights and conflicts, `/analyze` automatically generates `03_Outputs/STATUS.html`. No more running a separate `/status` command — the dashboard is ready when analysis ends.
+
+**`/status` removed.** The skill is no longer needed. Dashboard generation is embedded in `/analyze`. The pipeline is now: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/synthesis` → `/ship`.
+
+### Changes (BL-30)
+
+- **AskUserQuestion in Phase 4.** Three structured options for synthesis approval: PENDING (review later in dashboard), VERIFIED (express mode, skip review), review one-by-one in terminal. Two options for ambiguity handling: defer to `/synthesis` or resolve now.
+- **Auto-generate STATUS.html.** After writing files, `/analyze` builds the dashboard JSON from analysis data already in memory and injects it into the template. No separate command needed.
+- **Compact Phase 6 output.** `/analyze` ends with a 2-line summary: `✓ Analysis complete: [stats]` + `✓ Dashboard: 03_Outputs/STATUS.html`. No verbose insight lists — those are in the dashboard.
+- **`/status` skill removed.** Directory deleted, references removed from CLAUDE.md, README, and folder structure.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/analyze/SKILL.md` — AskUserQuestion (Phase 3 step 19b), three write paths (Phase 4), auto-dashboard (Phase 5), compact output (Phase 6)
+- `CLAUDE.md` — Removed /status from skills table and folder structure
+- `README.md` — Updated pipeline description, I/O table, skills list, folder structure
+
+**BACKLOG impact:**
+- BL-30: ✅ IMPLEMENTED
+
+</details>
+
+---
+
+## [4.4.0] — 2026-02-16
+
+### Highlights
+
+**`/status` performance fix (partial).** Thinking overhead eliminated (~4min saved vs 10min baseline). I/O overhead remains (~6min for large projects).
+
+### Changes (BL-35)
+
+- Conflict label inference removed (generic labels, no synthesis overhead)
+- Evidence gap check simplified (objective convergence < 2, not subjective "weak")
+- Compact output added (summary stats only, not full HTML in chat)
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/status/SKILL.md` — Three targeted fixes
+
+**BACKLOG impact:**
+- BL-35: ✅ IMPLEMENTED (partial — thinking overhead eliminated, I/O overhead pending)
+
+</details>
+
+---
+
 ## [4.3.0] — 2026-02-16
 
 ### Highlights

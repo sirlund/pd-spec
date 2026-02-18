@@ -1,0 +1,16 @@
+# PD-Spec merge strategy
+# Project-specific files keep the branch version on merge from main.
+# Requires one-time setup: git config merge.ours.driver true
+
+# Project settings (name, language, state — never overwrite from main)
+PROJECT.md merge=ours
+
+# Source files (read-only research data — never touched by engine updates)
+01_Sources/** merge=ours
+
+# Work layer (agent-managed knowledge base — project-specific)
+02_Work/** merge=ours
+
+# Generated outputs (derived from Work layer — project-specific)
+# Templates and schemas are engine files and SHOULD merge from main.
+03_Outputs/*.html merge=ours

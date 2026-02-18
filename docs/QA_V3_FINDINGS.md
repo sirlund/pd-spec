@@ -1372,3 +1372,132 @@ HTML opened in browser (file:// protocol) cannot read local filesystem due to CO
 
 ---
 
+## 🧪 BL-35 Performance Testing (2026-02-16 Evening)
+
+**Test Environment:**
+- **Worktree:** pd-spec-perf (branch: perf-test-bl35)
+- **Data:** TIMining project (61 source files, 21 synthesized insights, 11 conflicts)
+- **Version:** v4.4.0 (commit 3ed8994 with BL-35 fixes)
+- **Baseline:** QA v3 small project = 6m 50s, TIMining = 10m 2s
+
+**BL-35 Changes Implemented:**
+1. ✅ **Fix 1:** Generic conflict labels (no inference) — line 146
+2. ✅ **Fix 2:** Convergence < 2 check (no subjective evaluation) — line 47
+3. ✅ **Fix 3:** Compact output (summary stats only) — Phase 4
+
+**Expected Results:**
+- Small projects (<10 sources): <10s (down from 6m 50s) = 40x faster
+- Large projects (50+ sources): <60s (down from 10m 2s) = 10x faster
+- No "thought for X seconds" delays (no inference, no synthesis)
+
+**Actual Results:**
+
+| Metric | Expected | Actual | Status |
+|---|---|---|---|
+| Execution time | <60s | **6m 34s** | ❌ 37% faster, not 10x |
+| Thinking overhead | 0s | ~0s observed | ✅ Eliminated |
+| Dashboard functional | Yes | ✅ Yes | ✅ Works correctly |
+| Compact output | Summary only | ✅ Summary only | ✅ Implemented |
+
+**Performance Analysis:**
+
+**What worked (eliminated thinking overhead):**
+- ✅ No "thought for 258s" delays (baseline had 4m 18s thinking)
+- ✅ Generic labels work correctly (no inference per conflict)
+- ✅ Convergence check is objective (no subjective "weak" evaluation)
+- ✅ Compact output shows summary stats only
+
+**What didn't work (I/O overhead remains):**
+- ❌ Still reads large files:
+  - INSIGHTS_GRAPH.md: 36KB, 493 lines
+  - CONFLICTS.md: 159 lines
+  - SYSTEM_MAP.md: 113 lines
+  - Template: 1371 lines HTML
+- ❌ Still writes full STATUS.html: 1371 lines
+- ❌ Token processing overhead remains massive
+
+**Time breakdown estimate:**
+- Thinking overhead eliminated: **~4min saved** ✅
+- I/O overhead remains: **~6.5min** (reading + processing + writing)
+
+**Improvement:** 10m 2s → 6m 34s = **3m 28s saved (37% faster)**
+
+**Why not 10x faster:**
+BL-35 eliminated SYNTHESIS overhead (thinking time) but didn't address I/O overhead (file reading, token processing, file writing). The model still processes ~2000 lines of text per execution.
+
+**Next steps to reach <60s target:**
+1. **Lazy loading:** Read only IDs + claims, not full narratives
+2. **Template caching:** Don't re-read template every time
+3. **Streaming writes:** Don't expand full HTML output
+4. **Partial reads:** Use offset/limit for large files
+
+**Conclusion:** BL-35 is a **partial success** — it eliminates cognitive/thinking overhead but doesn't address the fundamental I/O bottleneck. Dashboard works correctly but still takes 6.5min to generate.
+
+---
+
+### [QA3-UX-06] Dashboard Doesn't Reflect Previous Conflict Decisions
+
+**Severity:** Medium (UX friction)
+**Component:** /status dashboard
+**Related:** BL-35, QA3-ARCH-01
+
+**Observed behavior:**
+User ran `/synthesis` with these decisions:
+- CF-03, CF-07: Flag for stakeholder discussion
+- CF-05, CF-08: Needs more research
+- CF-01, 02, 04, 06, 09, 10, 11: Resolved with context
+
+Dashboard shows:
+- ✅ Resolved conflicts (CF-01, etc.) show as RESOLVED with green badge
+- ❌ Flagged/research conflicts (CF-03, 05, 07, 08) show as PENDING with blank radio buttons
+- ❌ No indication of which decision was made previously
+
+**Expected behavior:**
+Dashboard should reflect intermediate states:
+- CF-03: Badge "Flagged" + radio pre-selected "Flag for discussion"
+- CF-05: Badge "Research" + radio pre-selected "Needs more research"
+
+**Root cause:**
+CONFLICTS.md only has 2 states: `PENDING` or `RESOLVED`
+- Conflicts flagged for discussion remain `PENDING` until resolved
+- Conflicts sent to research remain `PENDING` until researched
+- Dashboard is stateless — doesn't remember previous decisions
+
+**Impact:**
+- User must re-make decisions every time they open dashboard
+- No visual indication of which conflicts are "in progress" (flagged/research)
+- Friction in workflow: decisions don't persist across sessions
+
+**Proposed fix (BL-36):**
+
+Add metadata to CONFLICTS.md for intermediate states:
+
+```markdown
+### [CF-03] Conflicto de perspectiva
+Status: PENDING — Flagged (CTO + Producto: benchmark UX externo)
+Type: AMB-03 (Perspective conflict)
+```
+
+Or:
+
+```markdown
+Status: PENDING — Research needed (Definir framework formal)
+```
+
+Then dashboard can:
+1. Parse status metadata
+2. Show badge: "Flagged" or "Research"
+3. Pre-select corresponding radio button
+4. User sees which conflicts are "in flight"
+
+**User story:**
+> As a researcher who flagged conflicts for stakeholder discussion, I expect the dashboard to show which conflicts are flagged vs needing research vs unprocessed, so I don't lose track of previous decisions.
+
+**Acceptance criteria:**
+- [ ] CONFLICTS.md supports intermediate states: `PENDING — Flagged` and `PENDING — Research`
+- [ ] Dashboard parses metadata and shows badges
+- [ ] Radio buttons pre-select based on metadata
+- [ ] Visual distinction: PENDING (gray) vs Flagged (amber) vs Research (blue)
+
+---
+
