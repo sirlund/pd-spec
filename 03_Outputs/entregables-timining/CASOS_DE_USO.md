@@ -1,7 +1,7 @@
 # Casos de Uso por Dominio — TIMining CORE
 
-> Documento de trabajo. Versión en desarrollo para revisión martes 18 feb.
-> Fuentes: 20 láminas Workshop 01 (Casos de Uso Workshop 01.docx), Estrategia Maestra v3.4, PD-Spec Insights Graph (54 fuentes).
+> Documento de trabajo. Versión actualizada 18 feb — 8 fichas maestras con referentes por etapa DAR.
+> Fuentes: 20 láminas Workshop 01, Estrategia Maestra v3.4, PD-Spec Insights Graph (54 fuentes), reunión Camila 17 feb.
 
 ---
 
@@ -89,8 +89,12 @@ Análisis que compara rendimiento real vs planificado. Horizonte temporal más l
 | Cierre Mensual y Recuperación | L1 | Gerente Minas | Se cumple mineral/lastre pero recuperación de planta es mala. | Categorización real de mineral en frentes. Tracking al chancado. Ajustes dinámicos de flota. |
 | Planificación de Recursos | L2 | Planificador Corto Plazo | No hay vehículos disponibles, material no era lo previsto, mantenimiento no programado. | Simula alternativas para suplir, mitigar o solucionar. Minimizar costo a corto/mediano plazo. |
 | Análisis Equipos Autónomos | L19 | Gerente Mina | Camiones autónomos se pararon mucho durante el fin de semana. | Análisis de período, anomalías, causa raíz. Reposicionamiento antenas, revisión caminos. |
+| Optimización del Plan Minero | — | Gerente Minas / Planificador CP | Plan conservador cumplido pero no optimizado. Incentivos desalineados. | Simulación what-if con Orchestra. 3 bandas: mínimo/esperado/máximo. Acciones rankeadas por impacto. |
+| Reportería Ejecutiva | — | CFO / Controller Financiero | Reportes manuales, CFO no usa TIMining. Dinero se pierde por turno. | Reporte automático pre-reunión. Semáforo KPIs. Drill-down causal financiero. Proyección cierre. |
 
 **Nota vs Gemini:** L2 estaba omitida. L19 estaba en Crisis — la movemos aquí porque es un análisis retrospectivo (post-mortem del fin de semana), no respuesta inmediata.
+
+**Nota fichas 7-8:** Originadas en síntesis de evidencia PD-Spec y reunión Camila 17 feb. No provienen de láminas del workshop.
 
 ---
 
@@ -129,9 +133,9 @@ Análisis que compara rendimiento real vs planificado. Horizonte temporal más l
 
 ---
 
-## Fichas Sintetizadas — 6 Casos Maestros
+## Fichas Sintetizadas — 8 Casos Maestros
 
-> Las 20 láminas del workshop se reducen a 6 fichas que eliminan repetición y revelan los flujos reales de la operación. Cada ficha agrupa láminas con el mismo patrón de experiencia, asigna un pilar dominante, y conecta con un referente del benchmark.
+> Las 20 láminas del workshop se reducen a 6 fichas base + 2 fichas nuevas (reunión Camila 17 feb) que eliminan repetición y revelan los flujos reales de la operación. Cada ficha agrupa láminas con el mismo patrón de experiencia, asigna un pilar dominante, y conecta con referentes por etapa DAR del benchmark.
 
 ---
 
@@ -154,7 +158,13 @@ Turno de noche, sala de control IROC o terreno. Un equipo crítico (pala de carg
 | **Recomendación** | 3 opciones rankeadas por impacto: (1) detener flota, (2) cambiar puntos de vaciado, (3) enviar cargador. Ruta segura sugerida. Pérdida estimada por opción. | Clear Path |
 | **Post-acción** | Coordinación con mantención vía plataforma. Comunicación a equipos afectados por canal correcto (radio a terreno, chat a oficina). | Omni Sense |
 
-**Referente:** **CrowdStrike** — Achromatic Design. Consola de ciberseguridad intencionalmente "aburrida" (95% gris/negro) donde el color es exclusivo para amenazas activas. El analista no busca el problema; el problema le llega. *Adaptación:* Pantalla IROC silenciosa que se "enciende" solo ante caída de equipo, con opciones rankeadas como alertas de seguridad.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | CrowdStrike | Alerta acromática — color solo para amenazas activas |
+| **Análisis** | SentinelOne Storylines | Cadena causal completa del incidente |
+| **Recomendación** | Vercel v0 | Opciones rankeadas con UX limpia |
 
 **Evidencia PD-Spec:** [IG-SYNTH-07] Gestión por Excepción (8/54 fuentes), [IG-SYNTH-06] Patrón D→A→R (25/54), [IG-SYNTH-16] Paz Mental (5/54)
 
@@ -179,7 +189,13 @@ Zona de riesgo geotécnico activada — una pala opera en sector inestable. O bi
 | **Recomendación** | Definir zonas de restricción. Redefinir despacho evitando sector. Set de alternativas con impacto medido. Confirmar despeje correcto. | Clear Path |
 | **Post-acción** | Monitoreo continuo de variables críticas. Alertas solo si la situación cambia. | Quiet UI |
 
-**Referente:** **Anduril Lattice OS** — Spatial Intelligence. El sistema de defensa no pide al operador mirar cámaras; identifica automáticamente el "interés" y lo proyecta en una UI de baja carga cromática. *Adaptación:* CORE cruza radares, prismas, GPS y radio sin que el operador tenga que consultar múltiples sistemas de monitoreo.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Anduril Lattice | Spatial intelligence — identifica interés automáticamente |
+| **Análisis** | Chronosphere | Zoom temporal para distinguir puntual vs tendencia |
+| **Recomendación** | SentinelOne Purple AI | Acción guiada por AI con contexto completo |
 
 **Evidencia PD-Spec:** [IG-SYNTH-18] Seguridad geotécnica integrada (8/54 fuentes), [IG-SYNTH-01] Geometry Gap (15/54), [IG-SYNTH-06] Patrón D→A→R (25/54)
 
@@ -204,7 +220,13 @@ Turno diurno, operación aparentemente normal. El sistema detecta que en 45 minu
 | **Recomendación** | Redistribuir flujo, stockear, o saturar controladamente. Reasignar equipos de servicio. KPI crítico del momento priorizado. Alertar áreas afectadas. | Clear Path |
 | **Post-acción** | Notificación a áreas impactadas aguas abajo por canal correcto. | Omni Sense |
 
-**Referente:** **Chronosphere** — Lens. Políticas de retención temporal ajustables durante incidentes activos: permite "zoom temporal" para distinguir si un patrón es puntual o tendencia. *Adaptación:* CORE permite ver si el bloqueo del chancador es un evento aislado o un patrón que se repite cada turno, informando si la solución debe ser táctica o estructural.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Chronosphere | Alerta predictiva con contexto temporal |
+| **Análisis** | Tesla Fleet | Time scrubbing — rebobinar para entender causalidad |
+| **Recomendación** | Datadog Bits AI | Recomendación contextual con impacto cuantificado |
 
 **Evidencia PD-Spec:** [IG-SYNTH-06] Patrón D→A→R (25/54 fuentes), [IG-SYNTH-12] Adherencia al plan (10/54), [IG-SYNTH-03] Confusión Temporal (4/54)
 
@@ -229,7 +251,13 @@ Reunión de coordinación en 15 minutos. El usuario está saturado de correos, r
 | **Recomendación** | Texto listo para indicaciones de reunión. Visualización 2D con call outs focales. Plan de acción para mitigar impactos. | Clear Path |
 | **Post-acción** | Mensajes proactivos post-reunión: "tus indicaciones van ok" o "atención: desvío en ejecución." Seguimiento automatizado. | Omni Sense |
 
-**Referente:** **Samsara** — Connected Workflows. Dashboard holístico que integra múltiples fuentes sensoriales (GPS, cámaras, telemática) en flujos automatizados, eliminando papeleo. *Adaptación:* CORE sintetiza datos de FMS, GPS, PI System y genera un briefing contextual que llega al usuario por el canal donde esté — sin necesidad de abrir el dashboard.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Samsara | Push proactivo multicanal — el sistema busca al usuario |
+| **Análisis** | Motive | Dashboard holístico con cruce de fuentes |
+| **Recomendación** | Vercel v0 | Texto listo para acción, UX limpia |
 
 **Evidencia PD-Spec:** [IG-SYNTH-04] Dashboard→Copiloto (12/54 fuentes), [IG-SYNTH-15] Efecto Gaviota (5/54), [IG-SYNTH-09] Perfiles diferenciados (12/54)
 
@@ -254,7 +282,13 @@ En terreno o sala de control. Radio saturada con múltiples solicitudes simultá
 | **Recomendación** | "Estás cumpliendo" o "Regulariza así: [pasos concretos]." Lista priorizada de solicitudes pendientes de radio con contexto. | Clear Path |
 | **Post-acción** | Silencio una vez resuelto. No re-alertar. | Quiet UI |
 
-**Referente:** **Discord** — Canales de voz siempre activos con Push-to-Talk. Manejo de múltiples canales de voz simultáneos donde el sistema organiza, prioriza y facilita la comunicación sin saturar. *Adaptación:* CORE transcribe, prioriza y organiza solicitudes de radio como "canales" temáticos, eliminando la saturación del despachador.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Discord | Canales de voz siempre activos — input natural |
+| **Análisis** | Motive | Cruce multi-sensor para contexto completo |
+| **Recomendación** | SentinelOne Purple AI | Respuesta directa guiada por AI |
 
 **Evidencia PD-Spec:** [IG-SYNTH-08] Democratización del dato (9/54 fuentes), [IG-SYNTH-19] 4 Lentes Multimodal (7/54), [IG-SYNTH-18] Seguridad integrada (8/54)
 
@@ -279,38 +313,113 @@ Horizonte temporal más largo: fin de turno, fin de semana, cierre mensual. Los 
 | **Recomendación** | Ajustes dinámicos de flota. Reposicionamiento de antenas. Simulación de alternativas para suplir o mitigar. Tracking real del mineral al chancado. | Clear Path |
 | **Post-acción** | Proyección: si no se corrige, ¿cuál es el impacto en el plan semanal/mensual? Foresight como herramienta de urgencia. | Time Sight |
 
-**Referente:** **Tesla Fleet** — Time Scrubbing. Interfaces de telemetría que permiten "rebobinar" incidentes para entender la causalidad física exacta: posición, velocidad, entorno, segundo a segundo. *Adaptación:* CORE permite navegar temporalmente una jornada de equipos autónomos, ver dónde se pararon, cruzar con caminos y antenas, y entender la causa raíz geográficamente.
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Tesla Fleet | Detección de brecha plan vs realidad |
+| **Análisis** | SentinelOne Storylines | Post-mortem con cadena causal completa |
+| **Recomendación** | Chronosphere | Proyección temporal de impacto futuro |
 
 **Evidencia PD-Spec:** [IG-SYNTH-12] Adherencia al plan (10/54 fuentes), [IG-SYNTH-01] Geometry Gap (15/54), [IG-SYNTH-05] Efecto Suiza — integrador neutral (10/54)
 
 ---
 
+### Ficha 7: Optimización del Plan Minero
+
+**Eje:** Alineación Estratégica (Dominio D)
+**Perfil compuesto:** Gerente Minas · Planificador Corto Plazo
+**Pilar dominante:** Time Sight
+**Origen:** No proviene de láminas del workshop. Síntesis de evidencia en [IG-SYNTH-12], motor Orchestra, y reunión Camila 17 feb.
+
+**La Historia:**
+
+Lunes 8 AM, oficina de planificación. El Gerente de Minas abre el cierre de la semana pasada. El plan decía 100 mil toneladas; la realidad fue 78 mil. No es novedad — siempre hay un gap. Pero el plan era conservador a propósito: los bonos se pagan por cumplimiento, no por optimización. Nadie tiene incentivo para superar el plan, y nadie tiene las herramientas para saber si era posible.
+
+**▸ Detección** — CORE detecta la brecha plan vs realidad en tiempo real. No es un reporte de fin de turno: es un flujo vivo. Patrones históricos: "este desvío ya lo vimos 3 veces en los últimos 6 meses." Datos que la mina tiene pero no cruza — mantenciones, clima, turnos anteriores. [Pilar: Time Sight]
+
+**▸ Análisis** — Simulación what-if con motor Orchestra. "Si pones una pala más en estos turnos, +5% sobre el plan." ¿El desvío es puntual o estructural? CORE distingue entre un evento aislado y un patrón que se repite. [Pilar: Time Sight]
+
+**▸ Recomendación** — Delta visualizado en 3 bandas: mínimo (si no actúas), esperado (plan), máximo (si optimizas). Acciones concretas rankeadas por impacto en tonelaje y costo. El cambio de paradigma: pasar de cumplir el plan a optimizarlo. Como Waze — no solo te dice la ruta, te dice cuándo hay una mejor. [Pilar: Clear Path]
+
+El usuario no interpreta — elige. Y por primera vez tiene incentivo y herramientas para superar el plan.
+
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Chronosphere Lens | Patrones temporales, distingue puntual vs tendencia |
+| **Análisis** | SentinelOne Storylines | Cadena causal completa del desvío |
+| **Recomendación** | Tesla Fleet | Proyección visual de escenarios futuros |
+
+**Evidencia PD-Spec:** [IG-SYNTH-12] Adherencia al plan (6/54), [IG-SYNTH-05] Efecto Suiza (10/54), [IG-SYNTH-06] Patrón D→A→R (25/54). Fuentes: COO meeting (incentivos), operaciones meeting (Orchestra/Delta2025), Design Brief (simulación).
+
+**Gap:** El "ganarle al plan" (ir más allá del cumplimiento) es extensión lógica pero no está documentado como objetivo explícito. Se construye con evidencia existente + input de reunión Camila.
+
+---
+
+### Ficha 8: Reportería Ejecutiva
+
+**Eje:** Alineación Estratégica (Dominio D)
+**Perfil compuesto:** CFO · Gerente Minas · Controller Financiero
+**Pilar dominante:** Time Sight + Clear Path
+**Origen:** Workshop 01 (identificado como gap), Design Brief (Executive App). Sin lámina dedicada.
+**Nota de evidencia:** CFO es "usuario invisible" según workshop. No hay entrevistas directas. Caso basado en hipótesis validada por equipo interno + Design Brief.
+
+**La Historia:**
+
+Viernes 3 PM, reunión de directorio. El CFO necesita responder una pregunta simple: ¿cómo vamos? La respuesta hoy es un PDF que armó Erika manualmente usando Orchestra — le tomó medio día. El CFO no usa TIMining, nunca lo ha abierto. No es su herramienta.
+
+Pero en el workshop surgió una observación clave: "el dinero no se pierde al final del año, se pierde en cada turno mal gestionado." Si CORE puede mostrar en tiempo real cuánto valor se captura o se pierde por turno, el CFO deja de necesitar el PDF. Y TIMining deja de ser "software de operaciones" para convertirse en "software de negocio."
+
+**▸ Detección** — Reporte automático pre-reunión. Semáforo de KPIs: adherencia al plan, producción por turno, alertas de seguridad, valor capturado. Sin PDF manual. El sistema busca al CFO, no al revés. [Pilar: Clear Path]
+
+**▸ Análisis** — Drill-down: ¿qué turno fue el peor? ¿por qué? Causa raíz financiera, no operativa. Comparativa con períodos anteriores. El CFO piensa en dinero, no en tonelaje — CORE traduce. [Pilar: Time Sight]
+
+**▸ Recomendación** — Acciones para cerrar brechas con impacto económico cuantificado. Proyección de cierre mes/trimestre. "Si mantienes este ritmo, cierras en -12%. Si implementas X, cierras en +3%." [Pilar: Clear Path]
+
+Hoy Aware se vende a USD 300K/año. CORE apunta a USD 450K. Pero si en una sola faena capturaron USD 6M en 5 meses, el precio ya se justifica. El problema es que nadie se lo está mostrando al CFO en su lenguaje.
+
+**Referentes por Etapa:**
+
+| Etapa | Referente | Qué robar |
+|---|---|---|
+| **Detección** | Datadog Bits AI | Resumen automático de estado del sistema |
+| **Análisis** | SentinelOne Storylines | Navegación causal de incidentes |
+| **Recomendación** | Compound Finance | Métricas financieras limpias, priorización visual |
+
+**Evidencia PD-Spec:** [IG-SYNTH-12] Adherencia al plan (6/54), [IG-SYNTH-16b] Repricing (6/54), [IG-SYNTH-15] Efecto Gaviota (5/54), [CF-08] Gap financiero. Fuentes: Workshop transcript ("CFO invisible"), Workshop análisis ("dinero por turno"), Design Brief (Executive App).
+
+---
+
 ## Resumen de síntesis
 
-| # | Ficha | Dominio | Pilar | Láminas | Referente |
+| # | Ficha | Dominio | Pilar | Láminas | Referentes D / A / R |
 |---|---|---|---|---|---|
-| 1 | Caída de Equipo Crítico | A. Crisis | Quiet UI | L8, L13, L14, L15 | CrowdStrike |
-| 2 | Riesgo Espacial y Seguridad | A+C. Crisis/Asistencia | Omni Sense | L6, L7, L12 | Anduril Lattice OS |
-| 3 | Anticipación de Cuello de Botella | B. Anticipación | Time Sight | L3, L5, L9, L16 | Chronosphere |
-| 4 | Briefing Inteligente | C. Asistencia | Omni Sense | L4, L18 | Samsara |
-| 5 | Copiloto en Terreno | C. Asistencia | Omni Sense | L10, L11 | Discord |
-| 6 | Análisis Plan vs Realidad | D. Estrategia | Time Sight | L1, L2, L19 | Tesla Fleet |
+| 1 | Caída de Equipo Crítico | A. Crisis | Quiet UI | L8, L13, L14, L15 | CrowdStrike / SentinelOne / Vercel v0 |
+| 2 | Riesgo Espacial y Seguridad | A+C. Crisis/Asistencia | Omni Sense | L6, L7, L12 | Anduril / Chronosphere / SentinelOne |
+| 3 | Anticipación de Cuello de Botella | B. Anticipación | Time Sight | L3, L5, L9, L16 | Chronosphere / Tesla Fleet / Datadog |
+| 4 | Briefing Inteligente | C. Asistencia | Omni Sense | L4, L18 | Samsara / Motive / Vercel v0 |
+| 5 | Copiloto en Terreno | C. Asistencia | Omni Sense | L10, L11 | Discord / Motive / SentinelOne |
+| 6 | Análisis Plan vs Realidad | D. Estrategia | Time Sight | L1, L2, L19 | Tesla Fleet / SentinelOne / Chronosphere |
+| 7 | Optimización del Plan Minero | D. Estrategia | Time Sight | — (síntesis) | Chronosphere / SentinelOne / Tesla Fleet |
+| 8 | Reportería Ejecutiva | D. Estrategia | Time Sight + Clear Path | — (síntesis) | Datadog / SentinelOne / Compound |
 
-**Cobertura:** 18/20 láminas sintetizadas en 6 fichas. Outliers: L17 (arquitectura técnica), L20 (visión "Skynet").
-**Reducción:** 20 casos → 6 fichas (70% de reducción sin perder información).
-**Patrón transversal:** Clear Path (D→A→R) estructura las 6 fichas. Los 4 pilares participan en cada ficha con distinto peso.
+**Cobertura:** 18/20 láminas sintetizadas en 6 fichas base + 2 fichas de síntesis. Outliers: L17 (arquitectura técnica), L20 (visión "Skynet").
+**Reducción:** 20 casos → 8 fichas (6 del workshop + 2 emergentes de evidencia cruzada).
+**Patrón transversal:** Clear Path (D→A→R) estructura las 8 fichas. Los 4 pilares participan en cada ficha con distinto peso.
 
 ---
 
 ## Comparativa vs Gemini (10 casos maestros)
 
-| Criterio | Gemini (10 casos) | PD-Spec (6 fichas) |
+| Criterio | Gemini (10 casos) | PD-Spec (8 fichas) |
 |---|---|---|
-| Cantidad | 10 casos genéricos | 6 fichas sintetizadas |
+| Cantidad | 10 casos genéricos | 8 fichas sintetizadas (6 workshop + 2 evidencia cruzada) |
 | Método de agrupación | Por situación genérica | Por flujo de experiencia compartido |
-| Cobertura | L2, L4 omitidas; L10 perdida | 18/20 láminas (solo L17, L20 outliers) |
-| Casos inventados | 3 (#8 Emergencia Climática, #9 Auditoría, #10 Simul. Estratégica) | 0 — todo traza a láminas reales |
-| Referentes | Algunos débiles (Monday.com, Waze, Uber Fleet) | Todos del benchmark verificado |
+| Cobertura | L2, L4 omitidas; L10 perdida | 18/20 láminas + 2 casos emergentes de síntesis |
+| Casos inventados | 3 (#8 Emergencia Climática, #9 Auditoría, #10 Simul. Estratégica) | 0 inventados — fichas 7-8 con evidencia cruzada explícita |
+| Referentes | Algunos débiles (Monday.com, Waze, Uber Fleet) | 3 referentes por etapa DAR del benchmark verificado |
 | Pilares | Nombres viejos de Gemini | Nombres aprobados (Quiet UI, Clear Path, Time Sight, Omni Sense) |
 | Evidencia | Sin referencias | Cada ficha con [IG-SYNTH-XX] y convergencia |
 | Repetición | Alta (crisis + imprevisto + falla = mismo flujo) | Mínima (agrupados por flujo, no por evento) |

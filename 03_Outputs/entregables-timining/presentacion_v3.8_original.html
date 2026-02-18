@@ -599,7 +599,7 @@
             margin-bottom: 15px;
         }
 
-        /* --- Ficha Layout (2x2 + sidebar) --- */
+        /* --- Ficha Layout (perfil+refs | historia) --- */
         .ficha-container {
             display: flex;
             gap: 0;
@@ -629,7 +629,7 @@
         .ficha-grid {
             display: grid;
             grid-template-columns: 2fr 3fr;
-            grid-template-rows: 1fr 1fr;
+            grid-template-rows: 1fr auto;
             gap: 1px;
             flex: 1;
             background: #1a2028;
@@ -644,9 +644,78 @@
             flex-direction: column;
         }
 
+        .ficha-cell.historia {
+            grid-row: 1 / -1;
+            overflow-y: auto;
+        }
+
+        .ficha-cell.historia::-webkit-scrollbar { width: 4px; }
+        .ficha-cell.historia::-webkit-scrollbar-track { background: transparent; }
+        .ficha-cell.historia::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
         .ficha-cell h3 {
             font-size: 15px;
             margin-bottom: 14px;
+        }
+
+        /* Historia narrative elements */
+        .historia-context {
+            font-size: 13.5px;
+            color: #b0b0b0;
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        .historia-dar {
+            margin-bottom: 12px;
+        }
+
+        .dar-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .dar-label-d { color: #ff4d4d; }
+        .dar-label-a { color: #ff9800; }
+        .dar-label-r { color: var(--accent-cyan); }
+
+        .historia-dar p {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .historia-cierre {
+            font-size: 13px;
+            color: #e0e0e0;
+            font-style: italic;
+            border-top: 1px solid #222;
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+
+        /* Referentes por etapa (compact in sidebar) */
+        .ref-etapa {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 8px;
+            background: #111;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .ref-etapa-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 14px;
         }
 
         .ficha-subtitle {
@@ -668,6 +737,351 @@
             color: #e0e0e0;
             font-weight: 500;
             font-size: 13px;
+        }
+
+        /* ==========================================
+           Wireframe Ficha Layout (v2)
+           ========================================== */
+        .wf-dominio {
+            background: rgba(0, 243, 255, 0.06);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 4px;
+            padding: 9px 20px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .wf-body {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 0;
+            flex: 1;
+            min-height: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .wf-left {
+            padding: 24px 26px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .wf-right {
+            padding: 24px 30px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .wf-divider {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 14px 0;
+        }
+
+        .wf-caso-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .wf-caso-titulo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .wf-agrupados {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .wf-agrupados span {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid #222;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-family: var(--font-mono);
+        }
+
+        .wf-section-label {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .wf-section-label i {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .wf-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .wf-perfil-item {
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+
+        .wf-perfil-item strong {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .wf-contexto {
+            font-size: 13.5px;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .wf-contexto strong {
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .wf-flujo-title {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .wf-flujo-title i {
+            margin-right: 6px;
+            font-size: 20px;
+        }
+
+        .wf-contexto-bajada {
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .wf-contexto-bajada .wf-ctx-label {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .wf-contexto-bajada .wf-ctx-label i {
+            margin-right: 5px;
+            font-size: 14px;
+        }
+
+        .wf-contexto-bajada p {
+            font-size: 13.5px;
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .wf-timeline {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Horizontal connecting line — gradient D→A→R */
+        .wf-timeline::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 7px;
+            right: 7px;
+            height: 2px;
+            background: linear-gradient(to right, #ff4d4d, #ff9800, var(--accent-cyan));
+            z-index: 0;
+        }
+
+        .wf-stage {
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .wf-stage:not(:last-child) {
+            border-right: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .wf-stage:not(:first-child) {
+            padding-left: 20px;
+        }
+
+        .wf-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 10px;
+        }
+
+        .wf-dot-d { background: #ff4d4d; }
+        .wf-dot-a { background: #ff9800; }
+        .wf-dot-r { background: var(--accent-cyan); }
+
+        .wf-stage-label {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+            margin-bottom: 14px;
+        }
+
+        .wf-stage-label-d { color: #ff4d4d; }
+        .wf-stage-label-a { color: #ff9800; }
+        .wf-stage-label-r { color: var(--accent-cyan); }
+
+        .wf-descripcion {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .wf-pilar {
+            font-size: 14px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .wf-pilar-name {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .wf-referente {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            padding: 12px 14px;
+        }
+
+        .wf-ref-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 3px;
+        }
+
+        .wf-ref-name a {
+            color: #e0e0e0;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .wf-ref-name a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .wf-ref-name a i {
+            font-size: 9px;
+            margin-left: 4px;
+            color: var(--accent-cyan);
+            opacity: 0.6;
+        }
+
+        .wf-ref-industry {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 5px;
+        }
+
+        .wf-ref-factorx {
+            font-size: 12.5px;
+            color: #aaa;
+            font-style: italic;
+            line-height: 1.45;
+            margin-bottom: 8px;
+        }
+
+        .wf-ref-robar-title {
+            font-size: 10.5px;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+
+        .wf-ref-robar-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .wf-ref-robar-list li {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.45;
+            padding-left: 14px;
+            position: relative;
+            margin-bottom: 3px;
+        }
+
+        .wf-ref-robar-list li strong {
+            color: #ccc;
+        }
+
+        .wf-ref-robar-list li::before {
+            content: '\f0e7';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            font-size: 9px;
+            color: var(--accent-cyan);
+            opacity: 0.5;
+        }
+
+        .wf-ref-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
 
         /* D→A→R Timeline */
@@ -844,7 +1258,7 @@
     <section class="slide active" id="slide-1">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
-            <div class="slide-number">01 / 20</div>
+            <div class="slide-number">01 / 24</div>
         </div>
         <div class="content-grid">
             <div class="cover-content">
@@ -862,7 +1276,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visión Estratégica</h2>
-            <div class="slide-number">02 / 20</div>
+            <div class="slide-number">02 / 24</div>
         </div>
         <div class="content-grid">
             <div class="card" style="grid-column: span 4">
@@ -893,7 +1307,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Pilares de Diseño</h2>
-            <div class="slide-number">03 / 20</div>
+            <div class="slide-number">03 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- P1: Quiet UI -->
@@ -944,7 +1358,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Benchmark de Diseño por Pilar</h2>
-            <div class="slide-number">04 / 20</div>
+            <div class="slide-number">04 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- Quiet UI -->
@@ -998,7 +1412,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Arquitectura de Dominios Operativos</h2>
-            <div class="slide-number">05 / 20</div>
+            <div class="slide-number">05 / 24</div>
         </div>
         <div class="content-grid">
             <div class="card" style="grid-column: span 12; margin-bottom: 10px; border:none; background:transparent; padding: 0;">
@@ -1052,8 +1466,8 @@
                     <p>"¿Cómo vamos contra plan?" Plan vs realidad → ajustes estructurales.</p>
                 </div>
                 <div>
-                    <strong style="font-size: 12px; display:block; margin-bottom:5px; color:#666;">3 LÁMINAS:</strong>
-                    <span style="font-size: 12px; color: var(--text-muted);">L1, L2, L19</span>
+                    <strong style="font-size: 12px; display:block; margin-bottom:5px; color:#666;">3 LÁMINAS + 2 SÍNTESIS:</strong>
+                    <span style="font-size: 12px; color: var(--text-muted);">L1, L2, L19 + Optimización Plan + Reportería CFO</span>
                 </div>
             </div>
         </div>
@@ -1064,71 +1478,105 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #1: Caída de Equipo Crítico</h2>
-            <div class="slide-number">06 / 20</div>
+            <div class="slide-number">06 / 24</div>
         </div>
-        <div class="ficha-subtitle">Casos que agrupa: L8 (Despachador) · L13 (Falla mecánica) · L14 (Pala turno noche) · L15 (Pala alimentación)</div>
-        <div class="ficha-container">
-            <div class="ficha-sidebar">Respuesta a Crisis</div>
-            <div class="ficha-grid">
-                <!-- Top-left: PERFIL -->
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-user" style="font-size: 10px;"></i> Perfil</h3>
-                    <div style="margin-bottom: 10px;">
+
+        <div class="wf-dominio">Dominio A: Respuesta a Crisis</div>
+
+        <div class="wf-body">
+            <div class="wf-left">
+                <div>
+                    <div class="wf-caso-label"><i class="fa-solid fa-hashtag" style="font-size: 10px; margin-right: 4px;"></i> Caso #1</div>
+                    <div class="wf-caso-titulo">Caída de Equipo Crítico</div>
+                </div>
+
+                <hr class="wf-divider">
+
+                <div>
+                    <div class="wf-section-label"><i class="fa-solid fa-user"></i> Perfil</div>
+                    <div class="wf-roles">
                         <span class="cluster-role">Despachador IROC</span>
                         <span class="cluster-role">Supervisor de Turno</span>
                         <span class="cluster-role">Jefe de Turno</span>
                     </div>
-                    <div class="perfil-item"><strong>Rol:</strong> Mantener continuidad operativa ante fallas no planificadas.</div>
-                    <div class="perfil-item"><strong>Necesidad:</strong> Información inmediata y opciones viables de respuesta.</div>
-                    <div class="perfil-item"><strong>Dolor:</strong> Incertidumbre en tiempos de reparación y presión por metas de tonelaje.</div>
+                    <div class="wf-perfil-item"><strong>Rol:</strong> Mantener continuidad operativa ante fallas no planificadas.</div>
+                    <div class="wf-perfil-item"><strong>Necesidad:</strong> Información inmediata y opciones viables de respuesta.</div>
+                    <div class="wf-perfil-item"><strong>Dolor:</strong> Incertidumbre en tiempos de reparación y presión por metas de tonelaje.</div>
                 </div>
-                <!-- Top-right: FLUJO -->
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (alerta)</div>
-                            <div class="dar-stage-desc">Alerta multicanal (celular + voz + IROC). La pantalla acromática se ilumina solo con la anomalía.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (impacto)</div>
-                            <div class="dar-stage-desc">Impacto en tonelaje del turno. Comparativa con fallas históricas. Riesgos: cables aéreos, zonas restringidas.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (opciones)</div>
-                            <div class="dar-stage-desc">3 opciones rankeadas: (1) detener flota, (2) cambiar vaciado, (3) enviar cargador. Pérdida estimada por opción.</div>
-                        </div>
-                    </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Gestión por Excepción — Datos convertidos en opciones rankeadas con impacto cuantificado
+
+                <hr class="wf-divider">
+
+                <div>
+                    <div class="wf-section-label"><i class="fa-solid fa-layer-group"></i> Casos Agrupados</div>
+                    <div class="wf-agrupados">
+                        <span>L8: Despachador</span>
+                        <span>L13: Falla mecánica</span>
+                        <span>L14: Pala turno noche</span>
+                        <span>L15: Pala alimentación</span>
                     </div>
                 </div>
-                <!-- Bottom-left: CONTEXTO -->
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Caída no planificada de pala de carguío o cargador durante operación.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> Sala IROC (control remoto) o terreno (camioneta).</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Turno de noche, visibilidad reducida. Decisión de "parar o seguir" sin certeza técnica. Cables aéreos y zonas de seguridad.</div>
+            </div>
+
+            <div class="wf-right">
+                <div class="wf-flujo-title"><i class="fa-solid fa-route"></i> Flujo de la Experiencia</div>
+                <div class="wf-contexto-bajada">
+                    <div class="wf-ctx-label"><i class="fa-solid fa-crosshairs"></i> Contexto: Detonante / Lugar / Situación</div>
+                    <p>El radio corta el silencio de la sala IROC a las 2:47 AM: "Pala 07 abajo." No es mantención programada — es una caída imprevista. Tres camiones ya circulan hacia un punto de carga muerto. El despachador salta entre el dashboard de despacho, el mapa GPS, la planilla de mantención y el radio — ninguno le dice cuánto durará ni qué alternativa tiene. Cables aéreos restringen la zona. La meta del turno se aleja con cada minuto sin producción.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita más dashboards — necesita una respuesta.</strong></p>
                 </div>
-                <!-- Bottom-right: REFERENTE -->
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/crowdstrike.com" alt="CrowdStrike" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://www.crowdstrike.com" target="_blank">CrowdStrike<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+
+                <div class="wf-timeline">
+                    <div class="wf-stage">
+                        <div class="wf-dot wf-dot-d"></div>
+                        <div class="wf-stage-label wf-stage-label-d"><i class="fa-solid fa-satellite-dish" style="font-size: 20px; margin-right: 5px;"></i> E1: Detección</div>
+                        <p class="wf-descripcion">La pantalla acromática se ilumina: alerta multicanal (celular + voz + pantalla IROC). El silencio se rompe solo por la anomalía.</p>
+                        <div class="wf-pilar"><i class="fa-solid fa-volume-xmark" style="font-size: 14px; margin-right: 5px; opacity: 0.6;"></i> Pilar: <span class="wf-pilar-name">Quiet UI</span></div>
+                        <div class="wf-referente">
+                            <div class="wf-ref-name"><a href="https://www.crowdstrike.com" target="_blank">CrowdStrike <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            <div class="wf-ref-industry">Ciberseguridad (SOC / Endpoint)</div>
+                            <div class="wf-ref-factorx">Achromatic Design — consola 95% grises, color solo para amenazas activas. Reduce fatiga visual en turnos de 12h.</div>
+                            <div class="wf-ref-robar-title">Qué robar</div>
+                            <ul class="wf-ref-robar-list">
+                                <li><strong>Paleta acromática:</strong> IROC en reposo gris/negro, cyan solo para anomalías</li>
+                                <li><strong>Jerarquía por saturación:</strong> más brillante = más urgente</li>
+                                <li><strong>Fatiga cero:</strong> consola silenciosa para turnos de 12h</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Plataforma de ciberseguridad con diseño "Achromatic".</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> Consola 95% gris/negro — color exclusivo para amenazas activas.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> Pantalla IROC silenciosa que se "enciende" solo ante caída de equipo, con opciones rankeadas como alertas de seguridad.</div>
+
+                    <div class="wf-stage">
+                        <div class="wf-dot wf-dot-a"></div>
+                        <div class="wf-stage-label wf-stage-label-a"><i class="fa-solid fa-magnifying-glass-chart" style="font-size: 20px; margin-right: 5px;"></i> E2: Análisis</div>
+                        <p class="wf-descripcion">Impacto en tonelaje del turno. Comparativa con fallas históricas similares. Evaluación de riesgos: cables aéreos, zonas restringidas, equipos disponibles.</p>
+                        <div class="wf-pilar"><i class="fa-solid fa-clock-rotate-left" style="font-size: 14px; margin-right: 5px; opacity: 0.6;"></i> Pilar: <span class="wf-pilar-name">Time Sight</span></div>
+                        <div class="wf-referente">
+                            <div class="wf-ref-name"><a href="https://www.sentinelone.com/platform/singularity-xdr/" target="_blank">SentinelOne Storylines <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            <div class="wf-ref-industry">Ciberseguridad (XDR)</div>
+                            <div class="wf-ref-factorx">Reconstrucción forense narrativa — cadena de eventos como historia: qué pasó, qué causó qué, cómo se propagó.</div>
+                            <div class="wf-ref-robar-title">Qué robar</div>
+                            <ul class="wf-ref-robar-list">
+                                <li><strong>Narrativa causal:</strong> contar la historia, no mostrar un log de eventos</li>
+                                <li><strong>Grafo de propagación:</strong> un fallo → múltiples impactos downstream</li>
+                                <li><strong>Causa raíz automática:</strong> el sistema propone causa antes de investigar</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="evidence-refs">
-                        <span>[IG-SYNTH-07] Gestión por Excepción (8/54)</span>
-                        <span>[IG-SYNTH-06] Patrón D→A→R (25/54)</span>
-                        <span>[IG-SYNTH-16] Paz Mental (5/54)</span>
+
+                    <div class="wf-stage">
+                        <div class="wf-dot wf-dot-r"></div>
+                        <div class="wf-stage-label wf-stage-label-r"><i class="fa-solid fa-route" style="font-size: 20px; margin-right: 5px;"></i> E3: Recomendación</div>
+                        <p class="wf-descripcion">3 opciones rankeadas por impacto: (1) detener flota, (2) cambiar puntos de vaciado, (3) enviar cargador. Pérdida estimada por opción.</p>
+                        <div class="wf-pilar"><i class="fa-solid fa-route" style="font-size: 14px; margin-right: 5px; opacity: 0.6;"></i> Pilar: <span class="wf-pilar-name">Clear Path</span></div>
+                        <div class="wf-referente">
+                            <div class="wf-ref-name"><a href="https://v0.dev" target="_blank">Vercel v0 <i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+                            <div class="wf-ref-industry">IA / Desarrollo</div>
+                            <div class="wf-ref-factorx">Generative UI — la intención se convierte en interfaz ejecutable, vista óptima por situación.</div>
+                            <div class="wf-ref-robar-title">Qué robar</div>
+                            <ul class="wf-ref-robar-list">
+                                <li><strong>Vistas de crisis generadas:</strong> vista específica para ESE evento, no dashboard genérico</li>
+                                <li><strong>Interfaz como respuesta:</strong> se adapta a lo que el operador necesita ahora</li>
+                                <li><strong>Acción directa:</strong> el operador no interpreta, elige</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1139,48 +1587,80 @@
     <section class="slide" id="slide-7">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
-            <h2 class="slide-title">Visualización: Caída de Equipo Crítico</h2>
-            <div class="slide-number">07 / 20</div>
+            <h2 class="slide-title">Caso #1 — Visualización: Caída de Equipo Crítico</h2>
+            <div class="slide-number">07 / 24</div>
         </div>
-        <div class="content-grid" style="align-content: start; padding-top: 10px;">
-            <!-- D→A→R Timeline bar -->
-            <div style="grid-column: span 12; display: flex; align-items: center; gap: 0; margin-bottom: 10px;">
-                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; border-radius: 6px 0 0 6px; text-align: center;">
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
-                        <i class="fa-solid fa-satellite-dish" style="font-size: 9px; margin-right: 4px;"></i> Detección
-                    </span>
+        <div class="content-grid" style="align-content: start; padding-top: 6px; overflow-y: auto;">
+            <!-- D→A→R Timeline — labels above, dots on line, dimmed inactive -->
+            <div style="grid-column: span 12; padding: 0 20px; margin-bottom: 0;">
+                <!-- Labels row -->
+                <div style="display: flex; margin-bottom: 8px;">
+                    <div style="flex: 1;">
+                        <span style="font-family: var(--font-mono); font-size: 16px; color: rgba(255,77,77,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+                            <i class="fa-solid fa-satellite-dish" style="font-size: 20px; margin-right: 5px;"></i> Detección
+                        </span>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <span style="font-family: var(--font-mono); font-size: 16px; color: rgba(255,152,0,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+                            <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 20px; margin-right: 5px;"></i> Análisis
+                        </span>
+                    </div>
+                    <div style="flex: 1; text-align: right;">
+                        <span style="font-family: var(--font-mono); font-size: 16px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+                            <i class="fa-solid fa-route" style="font-size: 20px; margin-right: 5px;"></i> Recomendación
+                        </span>
+                    </div>
                 </div>
-                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
-                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; text-align: center;">
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
-                        <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 9px; margin-right: 4px;"></i> Análisis
-                    </span>
-                </div>
-                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
-                <div style="flex: 1; padding: 8px 12px; background: #0a1a1a; border: 2px solid var(--accent-cyan); border-radius: 0 6px 6px 0; text-align: center; box-shadow: 0 0 12px rgba(0,243,255,0.15);">
-                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
-                        <i class="fa-solid fa-route" style="font-size: 9px; margin-right: 4px;"></i> Recomendación &#9664;
-                    </span>
+                <!-- Line + dots row -->
+                <div style="position: relative; height: 16px;">
+                    <div style="position: absolute; top: 7px; left: 0; right: 0; height: 2px; background: linear-gradient(to right, rgba(255,77,77,0.15), rgba(255,152,0,0.15), var(--accent-cyan));"></div>
+                    <div style="position: absolute; left: 0; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-color); border: 2px solid rgba(255,77,77,0.3);"></div>
+                    <div style="position: absolute; left: 50%; transform: translateX(-50%); top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-color); border: 2px solid rgba(255,152,0,0.3);"></div>
+                    <div style="position: absolute; right: 0; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 16px rgba(0,243,255,0.5);"></div>
                 </div>
             </div>
+
+            <!-- Bubble connector: top line + V-shape arrow -->
+            <div style="grid-column: span 12; height: 22px; position: relative; overflow: visible;">
+                <div style="position: absolute; bottom: 0; left: 0; right: 46px; height: 1px; background: #333;"></div>
+                <svg style="position: absolute; bottom: 0; right: 14px;" width="30" height="18" viewBox="0 0 30 18" fill="none" overflow="visible">
+                    <path d="M 0 18 L 15 3 L 30 18" stroke="#333" stroke-width="1.5" fill="var(--bg-color)"/>
+                </svg>
+                <div style="position: absolute; bottom: 0; right: 0; width: 14px; height: 1px; background: #333;"></div>
+            </div>
+
             <!-- Mockup IROC -->
-            <div style="grid-column: span 8; border-radius: 8px; overflow: hidden; min-height: 350px;">
+            <div style="grid-column: span 8; border-radius: 8px; overflow: hidden; min-height: 460px;">
                 <img src="iroc_mockup.png" alt="Sala IROC — Recomendación: 3 opciones rankeadas" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
             </div>
+
             <!-- Context sidebar -->
-            <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 12px;">
+            <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 14px;">
                 <div class="card" style="border-color: #1a1a1a;">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Momento: Recomendación</h3>
-                    <p>La pala ya cayó. El sistema ya detectó y analizó. Ahora muestra <strong>3 opciones rankeadas</strong> con impacto en tonelaje. El operador no interpreta — elige.</p>
+                    <h3 style="font-size: 16px;"><i class="fa-solid fa-route" style="font-size: 20px;"></i> Momento: Recomendación</h3>
+                    <p style="font-size: 14px; line-height: 1.6;">La pala ya cayó. El sistema ya detectó y analizó. Ahora muestra <strong>3 opciones rankeadas</strong> con impacto en tonelaje. El operador no interpreta — elige.</p>
                 </div>
                 <div class="card" style="border-color: #1a1a1a;">
-                    <h3><i class="fa-solid fa-volume-xmark" style="font-size: 10px;"></i> Quiet UI + Clear Path</h3>
-                    <p>Consola acromática (95% gris/negro). Color solo en la anomalía: la pala caída pulsa en cyan. Panel lateral con opciones listas.</p>
+                    <h3 style="font-size: 14px;"><i class="fa-solid fa-volume-xmark" style="font-size: 14px;"></i> Quiet UI · <i class="fa-solid fa-route" style="font-size: 14px; margin-left: 4px;"></i> Clear Path</h3>
+                    <p style="font-size: 14px; line-height: 1.6;">Consola acromática (95% gris/negro). Color solo en la anomalía: la pala caída pulsa en cyan. Panel lateral con opciones listas.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        CrowdStrike Achromatic — consola "aburrida" por diseño. SpaceX Dragon HMI — silencio clínico roto por una señal precisa.
+                    <div style="display: flex; flex-direction: column; gap: 7px;">
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">
+                            <i class="fa-solid fa-compass" style="font-size: 14px; margin-right: 4px;"></i> Referentes por Etapa
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/crowdstrike.com" style="width: 20px; height: 20px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 12px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> CrowdStrike — alerta acromática</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 20px; height: 20px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 12px; color: #ccc;"><strong style="color: #ff9800;">A</strong> SentinelOne — cadena causal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/vercel.com" style="width: 20px; height: 20px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 12px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Vercel v0 — opciones rankeadas</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1192,7 +1672,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #2: Riesgo Espacial y Seguridad</h2>
-            <div class="slide-number">08 / 20</div>
+            <div class="slide-number">08 / 24</div>
         </div>
         <div class="ficha-subtitle">Casos que agrupa: L6 (Alerta geotécnica) · L7 (Ajuste táctico zona riesgo) · L12 (Tronadura y despeje)</div>
         <div class="ficha-container">
@@ -1209,45 +1689,36 @@
                     <div class="perfil-item"><strong>Necesidad:</strong> Cruce automático de fuentes sensoriales. Certeza para decisión con impacto legal.</div>
                     <div class="perfil-item"><strong>Dolor:</strong> Responsabilidad legal directa. Múltiples sistemas sin integrar (ARIS, GPS, radio, prismas).</div>
                 </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (sensores)</div>
-                            <div class="dar-stage-desc">Monitoreo geotécnico (ARIS) cruza con GPS de equipos en zona de riesgo. Tronadura: malla cruzada con posición de loros.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (simulación)</div>
-                            <div class="dar-stage-desc">Simulación de escenarios de indisponibilidad. Impacto en plan semanal/mensual. Zonas de restricción en tiempo real.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (zonas)</div>
-                            <div class="dar-stage-desc">Definir restricciones, redefinir despacho. Alternativas con impacto medido. Confirmar despeje correcto.</div>
-                        </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Zona de riesgo geotécnico activada — una pala opera en sector inestable. O bien: tronadura planificada donde loros deben estar posicionados correctamente. Seguridad innegociable, responsabilidad legal directa.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>ARIS (radar geotécnico) cruza con GPS de equipos en zona de riesgo. Tronadura: malla cruzada con posición de loros. El sistema identifica el riesgo automáticamente.</p>
                     </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Inteligencia Espacial — Múltiples sensores cruzados automáticamente para decisiones de seguridad
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Simulación de escenarios de indisponibilidad de zonas. Impacto en plan semanal/mensual. Zonas de restricción actualizadas en tiempo real.</p>
                     </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>Definir zonas de restricción, redefinir despacho evitando sector. Set de alternativas con impacto medido. Confirmar despeje correcto.</p>
+                    </div>
+                    <p class="historia-cierre">Monitoreo continuo — alertas solo si la situación cambia.</p>
                 </div>
                 <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Zona de riesgo geotécnico activada o tronadura planificada.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> IROC (monitoreo remoto) + terreno (loros, equipos en zona).</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Pala operando en sector inestable. Seguridad innegociable. Sin integración de datos sensoriales.</div>
-                </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/anduril.com" alt="Anduril" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://www.anduril.com/lattice" target="_blank">Anduril Lattice OS<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Anduril Lattice — spatial intelligence</span>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Sistema de defensa con inteligencia espacial integrada.</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> Identifica automáticamente el "interés" y lo proyecta en UI de baja carga cromática.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> CORE cruza radares, prismas, GPS y radio sin que el operador consulte múltiples sistemas de monitoreo.</div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Chronosphere — zoom temporal</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">SentinelOne Purple AI — acción guiada</span>
                     </div>
                     <div class="evidence-refs">
                         <span>[IG-SYNTH-18] Seguridad geotécnica (8/54)</span>
@@ -1264,7 +1735,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visualización: Riesgo Espacial y Seguridad</h2>
-            <div class="slide-number">09 / 20</div>
+            <div class="slide-number">09 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- D→A→R Timeline bar — Detección highlighted -->
@@ -1298,9 +1769,20 @@
                     <p>Fusión multisenor: radar + GPS + prismas en un solo mapa. Zonas de restricción en tiempo real. Alerta automática sin consultar múltiples sistemas.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        Anduril Lattice OS — el sistema identifica el "interés" y lo proyecta automáticamente. CrowdStrike — color solo para amenazas.
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/anduril.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Anduril Lattice — spatial intelligence</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/chronosphere.io" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> Chronosphere — zoom temporal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> SentinelOne Purple AI — acción guiada</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1316,7 +1798,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #3: Anticipación de Cuello de Botella</h2>
-            <div class="slide-number">10 / 20</div>
+            <div class="slide-number">10 / 24</div>
         </div>
         <div class="ficha-subtitle">Casos que agrupa: L3 (Bloqueo chancador) · L5 (Patios sin perforar) · L9 (Velocidades) · L16 (Mantenciones)</div>
         <div class="ficha-container">
@@ -1333,45 +1815,36 @@
                     <div class="perfil-item"><strong>Necesidad:</strong> Visibilidad predictiva y capacidad de reasignación rápida de recursos.</div>
                     <div class="perfil-item"><strong>Dolor:</strong> Impacto aguas abajo invisible. Silos entre áreas impiden coordinación preventiva.</div>
                 </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (predictiva)</div>
-                            <div class="dar-stage-desc">"En 45 min se bloquea el chancador." Integración PI System. Alertas automáticas en zonas de baja velocidad.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (causa raíz)</div>
-                            <div class="dar-stage-desc">Impacto aguas abajo en tonelaje y $. Causa raíz: vía, equipo u operador. Recursos disponibles para reasignar.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (prevención)</div>
-                            <div class="dar-stage-desc">Redistribuir flujo, stockear o saturar controladamente. KPI crítico del momento priorizado.</div>
-                        </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Turno diurno, operación aparentemente normal. El sistema detecta que en 45 minutos habrá un problema: el chancador se bloquea, los patios no están listos, las velocidades caen. Todavía hay tiempo para actuar.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>"En 45 min se bloquea el chancador." Integración PI System. Alertas automáticas en zonas de baja velocidad. El desafío no es reaccionar sino anticipar.</p>
                     </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Anticipación Predictiva — 45 minutos de ventana para actuar antes del problema
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Impacto aguas abajo en tonelaje y dinero. Causa raíz: ¿vía (mantenimiento)? ¿equipo (mecánico)? ¿operador (capacitación)? Recursos reasignables.</p>
                     </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>Redistribuir flujo, stockear, o saturar controladamente. Reasignar equipos de servicio. KPI crítico del momento priorizado.</p>
+                    </div>
+                    <p class="historia-cierre">Múltiples áreas alertadas aguas abajo por canal correcto.</p>
                 </div>
                 <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Predicción de bloqueo, patios sin preparar, velocidades cayendo.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> IROC (monitoreo) o oficina de planificación.</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Operación aparentemente normal. Problema latente que afectará múltiples áreas aguas abajo si no se actúa ahora.</div>
-                </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/chronosphere.io" alt="Chronosphere" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://chronosphere.io" target="_blank">Chronosphere<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Chronosphere — alerta predictiva</span>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Plataforma de observabilidad con retención temporal ajustable.</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> "Zoom temporal" para distinguir si un patrón es puntual o tendencia durante incidentes activos.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> CORE distingue si el bloqueo del chancador es evento aislado o patrón recurrente — solución táctica vs. estructural.</div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Tesla Fleet — time scrubbing</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Datadog Bits AI — recomendación contextual</span>
                     </div>
                     <div class="evidence-refs">
                         <span>[IG-SYNTH-06] Patrón D→A→R (25/54)</span>
@@ -1388,7 +1861,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visualización: Anticipación de Cuello de Botella</h2>
-            <div class="slide-number">11 / 20</div>
+            <div class="slide-number">11 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- D→A→R Timeline bar — Análisis highlighted -->
@@ -1426,9 +1899,20 @@
                     <p>Timeline predictivo del turno con marcador "ahora" y proyección amber. Flujo de tonelaje declinando hacia el punto de bloqueo. Impacto cascada en planta y KPI.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        Chronosphere Lens — zoom temporal sobre incidentes activos. Datadog Bits AI — predicción de impacto en cascada.
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/chronosphere.io" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Chronosphere — alerta predictiva</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/tesla.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> Tesla Fleet — time scrubbing</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/datadoghq.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Datadog Bits AI — recomendación contextual</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1440,7 +1924,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #4: Briefing Inteligente</h2>
-            <div class="slide-number">12 / 20</div>
+            <div class="slide-number">12 / 24</div>
         </div>
         <div class="ficha-subtitle">Casos que agrupa: L4 (Reunión diaria CIO 8 AM) · L18 (Asistencia proactiva pre-reunión "Sofía")</div>
         <div class="ficha-container">
@@ -1456,45 +1940,36 @@
                     <div class="perfil-item"><strong>Necesidad:</strong> Contexto instantáneo sin preparación manual. El sistema la busca a ella.</div>
                     <div class="perfil-item"><strong>Dolor:</strong> Saturación de correos, reuniones y radio. "Pobreza de tiempo" crónica.</div>
                 </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (push)</div>
-                            <div class="dar-stage-desc">15 min antes: WhatsApp con resumen vs plan. Canal correcto — el usuario está caminando al turno.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (priorización)</div>
-                            <div class="dar-stage-desc">Priorización de incidentes, causa raíz de brechas. Métricas: tronadura -20%, 5 camiones parados, 2 riesgos.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (briefing)</div>
-                            <div class="dar-stage-desc">Texto listo para indicaciones. Visualización 2D con call outs. Plan de acción para mitigar.</div>
-                        </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Reunión de coordinación en 15 minutos. Sofía está saturada de correos, reuniones previas, radio. No tiene tiempo para prepararse. Necesita contexto instantáneo: ¿cómo vamos contra el plan? ¿qué problemas hay?</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>15 min antes: WhatsApp con resumen vs plan. Canal correcto — el usuario está caminando al turno. El sistema busca a Sofía, no al revés.</p>
                     </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Briefing Proactivo — El sistema busca al usuario, no al revés
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Priorización objetiva de incidentes, causa raíz de brechas. Métricas: tronadura -20%, 5 camiones parados, 2 riesgos de seguridad.</p>
                     </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>Texto listo para indicaciones de reunión. Visualización 2D con call outs focales. Plan de acción para mitigar impactos.</p>
+                    </div>
+                    <p class="historia-cierre">Post-reunión: "tus indicaciones van ok" o "atención: desvío en ejecución."</p>
                 </div>
                 <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Reunión de coordinación en 15 minutos. Sin tiempo para prepararse.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> Caminando al turno (móvil) o en oficina pre-reunión.</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Múltiples temas pendientes, correos sin leer, turno anterior con problemas. Necesita llegar preparada.</div>
-                </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/samsara.com" alt="Samsara" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://www.samsara.com" target="_blank">Samsara<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Samsara — push proactivo multicanal</span>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Plataforma IoT con dashboard holístico para flotas y operaciones.</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> Integra múltiples fuentes sensoriales (GPS, cámaras, telemática) en flujos automatizados.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> CORE sintetiza FMS, GPS, PI System y genera briefing contextual que llega por el canal donde esté el usuario.</div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Motive — dashboard holístico</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Vercel v0 — texto listo para acción</span>
                     </div>
                     <div class="evidence-refs">
                         <span>[IG-SYNTH-04] Dashboard→Copiloto (12/54)</span>
@@ -1511,7 +1986,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visualización: Briefing Inteligente</h2>
-            <div class="slide-number">13 / 20</div>
+            <div class="slide-number">13 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- D→A→R Timeline bar -->
@@ -1545,9 +2020,20 @@
                     <p>Briefing proactivo: tronadura -20%, 5 camiones parados, 2 riesgos. Priorización objetiva contra plan. Llega listo, no el raw data.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        Samsara Connected Workflows — el briefing llega automatizado. Discord PTT — canal de voz siempre activo.
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/samsara.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Samsara — push proactivo multicanal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/gomotive.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> Motive — dashboard holístico</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/vercel.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Vercel v0 — texto listo para acción</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1563,7 +2049,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #5: Copiloto en Terreno</h2>
-            <div class="slide-number">14 / 20</div>
+            <div class="slide-number">14 / 24</div>
         </div>
         <div class="ficha-subtitle">Casos que agrupa: L10 (Cumplimiento legal Sernageomin) · L11 (Saturación de radio y triage)</div>
         <div class="ficha-container">
@@ -1579,45 +2065,36 @@
                     <div class="perfil-item"><strong>Necesidad:</strong> Respuesta inmediata, manos libres. Voz y foto como interfaz primaria.</div>
                     <div class="perfil-item"><strong>Dolor:</strong> Radio saturada con múltiples solicitudes. Normas inaccesibles en terreno. Manos ocupadas.</div>
                 </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (consulta)</div>
-                            <div class="dar-stage-desc">Consulta directa por voz o foto. Radio: el sistema escucha, transcribe e identifica solicitudes.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (normativa)</div>
-                            <div class="dar-stage-desc">Cruce con normativa: Sernageomin, prevención de riesgos, procedimientos de faena. Priorización por urgencia.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (acción)</div>
-                            <div class="dar-stage-desc">"Estás cumpliendo" o "Regulariza así: [pasos]." Lista priorizada de solicitudes pendientes.</div>
-                        </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">En terreno, radio saturada con múltiples solicitudes simultáneas. Duda urgente: "¿estoy cumpliendo la norma de berma de Sernageomin?" No hay tiempo de revisar documentos. Las manos están ocupadas.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>Consulta directa por voz o foto. Radio: el sistema escucha, transcribe e identifica solicitudes. El canal es el que el usuario tenga disponible.</p>
                     </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Copiloto Contextual — Voz y foto como interfaz, normativa al alcance sin documentos
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Cruce con normativa: Sernageomin, prevención de riesgos, procedimientos de faena. Priorización automática de solicitudes por urgencia.</p>
                     </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>"Estás cumpliendo" o "Regulariza así: [pasos concretos]." Lista priorizada de solicitudes pendientes con contexto.</p>
+                    </div>
+                    <p class="historia-cierre">Silencio una vez resuelto. No re-alertar.</p>
                 </div>
                 <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Duda normativa urgente ("¿cumplo la berma?") o radio saturada con solicitudes simultáneas.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> Terreno (faena activa, camioneta, frente de trabajo).</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Manos ocupadas, sin acceso a documentos físicos. Múltiples solicitudes de radio compitiendo por atención.</div>
-                </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/discord.com" alt="Discord" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://discord.com" target="_blank">Discord<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Discord — canales de voz activos</span>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Plataforma de comunicación con canales de voz siempre activos.</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> Push-to-Talk y múltiples canales simultáneos donde el sistema organiza y prioriza sin saturar.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> CORE transcribe y organiza solicitudes de radio como "canales" temáticos, eliminando saturación del despachador.</div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Motive — cruce multi-sensor</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">SentinelOne Purple AI — respuesta directa</span>
                     </div>
                     <div class="evidence-refs">
                         <span>[IG-SYNTH-08] Democratización dato (9/54)</span>
@@ -1634,7 +2111,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visualización: Copiloto en Terreno</h2>
-            <div class="slide-number">15 / 20</div>
+            <div class="slide-number">15 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- D→A→R Timeline bar — Análisis highlighted -->
@@ -1668,9 +2145,20 @@
                     <p>Interfaz por voz y foto — manos libres en terreno. El sistema escucha la radio, transcribe y prioriza solicitudes. Normativa cruzada automáticamente.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        Discord Push-to-Talk — canales de voz siempre activos. Siri/Google Assistant — consulta contextual hands-free.
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/discord.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Discord — canales de voz activos</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/gomotive.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> Motive — cruce multi-sensor</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> SentinelOne Purple AI — respuesta directa</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1686,7 +2174,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Caso #6: Análisis Plan vs Realidad</h2>
-            <div class="slide-number">16 / 20</div>
+            <div class="slide-number">16 / 24</div>
         </div>
         <div class="ficha-subtitle">Casos que agrupa: L1 (Cierre mensual recuperación) · L2 (Planificación recursos) · L19 (Autónomos fin de semana)</div>
         <div class="ficha-container">
@@ -1703,45 +2191,36 @@
                     <div class="perfil-item"><strong>Necesidad:</strong> Cadena causal completa y comparativa temporal. De "qué pasó" a "por qué".</div>
                     <div class="perfil-item"><strong>Dolor:</strong> Números "bien" pero algo no cuadra. Causa raíz oculta entre múltiples fuentes.</div>
                 </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Flujo de la Experiencia</h3>
-                    <div class="dar-timeline">
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Detección (brecha)</div>
-                            <div class="dar-stage-desc">Alerta plan vs realidad. Hindsight: ¿qué pasó el fin de semana? ¿por qué cayó la recuperación?</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Análisis (causalidad)</div>
-                            <div class="dar-stage-desc">Categorización mineral real vs reportada. Posición de autónomos. Anomalías. Comparativa con períodos anteriores.</div>
-                        </div>
-                        <div class="dar-stage">
-                            <div class="dar-dot"></div>
-                            <div class="dar-stage-label">Recomendación (ajuste)</div>
-                            <div class="dar-stage-desc">Ajustes de flota, reposición antenas, simulación de alternativas. Tracking real mineral al chancado.</div>
-                        </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Horizonte más largo: fin de turno, fin de semana, cierre mensual. Los números parecen bien pero algo no cuadra — se cumple mineral y lastre pero la recuperación de planta es mala. Los autónomos se pararon más de lo esperado.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>Alerta de brecha plan vs realidad. Hindsight: ¿qué pasó durante el fin de semana? ¿por qué cayó la recuperación si el mineral se cumplió?</p>
                     </div>
-                    <div class="valor-bar">
-                        <strong>Valor:</strong> Análisis Causal — De "qué pasó" a "por qué" y "qué hacer" con proyección de impacto
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Categorización real de mineral vs reportada. Posición y velocidad de autónomos. Anomalías. Comparativa con períodos anteriores. La cadena causal completa.</p>
                     </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>Ajustes dinámicos de flota. Reposicionamiento de antenas. Simulación de alternativas. Tracking real del mineral al chancado.</p>
+                    </div>
+                    <p class="historia-cierre">Proyección: si no se corrige, ¿cuál es el impacto en el plan semanal/mensual?</p>
                 </div>
                 <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-crosshairs" style="font-size: 10px;"></i> Contexto</h3>
-                    <div class="contexto-item"><strong>Detonante:</strong> Brecha en cierre mensual, material distinto al previsto, autónomos parados más de lo esperado.</div>
-                    <div class="contexto-item"><strong>Dónde:</strong> Oficina de gerencia o sala de planificación.</div>
-                    <div class="contexto-item"><strong>Situación crítica:</strong> Horizonte largo (fin de semana, cierre mensual). Números aparentemente buenos pero recuperación de planta mala. Sin visibilidad de la cadena completa.</div>
-                </div>
-                <div class="ficha-cell">
-                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referente</h3>
-                    <div class="referente-header">
-                        <img class="referente-logo" src="https://logo.clearbit.com/tesla.com" alt="Tesla" onerror="this.style.display='none'">
-                        <a class="referente-link" href="https://www.tesla.com/fleet" target="_blank">Tesla Fleet<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Tesla Fleet — detección de brecha</span>
                     </div>
-                    <div class="referente-section">
-                        <div class="referente-detail"><strong>Qué es:</strong> Interfaz de telemetría para flotas con navegación temporal.</div>
-                        <div class="referente-detail"><strong>Qué hace:</strong> "Time Scrubbing" — rebobinar incidentes para entender causalidad física exacta, segundo a segundo.</div>
-                        <div class="referente-detail"><strong>Adaptación:</strong> CORE permite navegar temporalmente una jornada de autónomos, ver dónde se pararon y cruzar con caminos y antenas.</div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">SentinelOne — post-mortem causal</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Chronosphere — proyección temporal</span>
                     </div>
                     <div class="evidence-refs">
                         <span>[IG-SYNTH-12] Adherencia al plan (10/54)</span>
@@ -1758,7 +2237,7 @@
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visualización: Plan vs Realidad</h2>
-            <div class="slide-number">17 / 20</div>
+            <div class="slide-number">17 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- D→A→R Timeline bar — Análisis highlighted -->
@@ -1796,21 +2275,358 @@
                     <p>Time Scrubbing: rebobinar la semana segundo a segundo. Split Plan/Realidad con gap visual. Anomalías geolocalizadas en mapa. Causa raíz con correlación.</p>
                 </div>
                 <div style="margin-top: auto;">
-                    <div class="rec-box">
-                        <span class="rec-title">REFERENTE VISUAL</span>
-                        Tesla Fleet Time Scrubbing — telemetría navegable temporalmente. Chronosphere Lens — zoom temporal sobre anomalías.
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/tesla.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Tesla Fleet — detección de brecha</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> SentinelOne — post-mortem causal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/chronosphere.io" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Chronosphere — proyección temporal</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 15: VISIÓN — Concepto Skynet (L20) -->
+    <!-- SLIDE 18: FICHA 7 — Optimización del Plan Minero -->
     <section class="slide" id="slide-18">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
+            <h2 class="slide-title">Caso #7: Optimización del Plan Minero</h2>
+            <div class="slide-number">18 / 24</div>
+        </div>
+        <div class="ficha-subtitle">Origen: Síntesis de evidencia [IG-SYNTH-12], motor Orchestra, reunión Camila 17 feb. No proviene de láminas del workshop.</div>
+        <div class="ficha-container">
+            <div class="ficha-sidebar">Alineación Estratégica</div>
+            <div class="ficha-grid">
+                <div class="ficha-cell">
+                    <h3><i class="fa-solid fa-user" style="font-size: 10px;"></i> Perfil</h3>
+                    <div style="margin-bottom: 10px;">
+                        <span class="cluster-role">Gerente Minas</span>
+                        <span class="cluster-role">Planificador CP</span>
+                    </div>
+                    <div class="perfil-item"><strong>Rol:</strong> Cumplir y superar el plan minero optimizando recursos en tiempo real.</div>
+                    <div class="perfil-item"><strong>Necesidad:</strong> Visibilidad de potencial no capturado. Herramientas para "ganarle al plan."</div>
+                    <div class="perfil-item"><strong>Dolor:</strong> Plan conservador por diseño. Incentivos desalineados (bonos por cumplimiento, no por optimización).</div>
+                </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Lunes 8 AM, oficina de planificación. El Gerente de Minas abre el cierre de la semana pasada. El plan decía 100 mil toneladas; la realidad fue 78 mil. No es novedad. Pero el plan era conservador a propósito: los bonos se pagan por cumplimiento, no por optimización. Nadie tiene incentivo para superar el plan, y nadie tiene las herramientas para saber si era posible.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>Brecha plan vs realidad en tiempo real. No es un reporte de fin de turno: es un flujo vivo. Patrones históricos: "este desvío ya lo vimos 3 veces en los últimos 6 meses."</p>
+                    </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Simulación what-if con motor Orchestra. "Si pones una pala más en estos turnos, +5% sobre el plan." ¿El desvío es puntual o estructural?</p>
+                    </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>Delta visualizado en 3 bandas: mínimo (si no actúas), esperado (plan), máximo (si optimizas). Acciones rankeadas por impacto en tonelaje y costo.</p>
+                    </div>
+                    <p class="historia-cierre">Como Waze: no solo te dice la ruta, te dice cuándo hay una mejor. El usuario no interpreta — elige.</p>
+                </div>
+                <div class="ficha-cell">
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Chronosphere Lens — patrones temporales</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">SentinelOne — cadena causal del desvío</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Tesla Fleet — escenarios futuros</span>
+                    </div>
+                    <div class="evidence-refs">
+                        <span>[IG-SYNTH-12] Adherencia al plan (6/54)</span>
+                        <span>[IG-SYNTH-05] Efecto Suiza (10/54)</span>
+                        <span>[IG-SYNTH-06] Patrón D→A→R (25/54)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 19: VISUALIZACIÓN — Optimización del Plan (3 Bandas) -->
+    <section class="slide" id="slide-19">
+        <div class="header">
+            <div class="brand">TIMining <span>CORE</span></div>
+            <h2 class="slide-title">Visualización: Optimización del Plan</h2>
+            <div class="slide-number">19 / 24</div>
+        </div>
+        <div class="content-grid" style="align-content: start; padding-top: 10px;">
+            <!-- D→A→R Timeline bar — Recomendación highlighted -->
+            <div style="grid-column: span 12; display: flex; align-items: center; gap: 0; margin-bottom: 10px;">
+                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; border-radius: 6px 0 0 6px; text-align: center;">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
+                        <i class="fa-solid fa-satellite-dish" style="font-size: 9px; margin-right: 4px;"></i> Detección
+                    </span>
+                </div>
+                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
+                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; text-align: center;">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
+                        <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 9px; margin-right: 4px;"></i> Análisis
+                    </span>
+                </div>
+                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
+                <div style="flex: 1; padding: 8px 12px; background: #0a1a1a; border: 2px solid var(--accent-cyan); border-radius: 0 6px 6px 0; text-align: center; box-shadow: 0 0 12px rgba(0,243,255,0.15);">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                        <i class="fa-solid fa-route" style="font-size: 9px; margin-right: 4px;"></i> Recomendación &#9664;
+                    </span>
+                </div>
+            </div>
+            <!-- CSS Mockup: 3 bandas -->
+            <div style="grid-column: span 8; border-radius: 8px; overflow: hidden; min-height: 350px; background: #0d0d0d; border: 1px solid #222; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div>
+                        <span style="font-family: var(--font-mono); font-size: 14px; color: #fff; font-weight: 600;">Plan Semanal — Tonelaje</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-left: 10px;">Semana 7 · Feb 2026</span>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan);">ORCHESTRA SIMULATION</span>
+                </div>
+                <!-- Chart area -->
+                <div style="flex: 1; position: relative; border: 1px solid #1a1a1a; border-radius: 6px; padding: 20px; background: #080808; min-height: 200px;">
+                    <!-- Y axis labels -->
+                    <div style="position: absolute; left: 8px; top: 15px; font-family: var(--font-mono); font-size: 10px; color: #4CAF50;">120kt <span style="color: #333;">— máximo</span></div>
+                    <div style="position: absolute; left: 8px; top: 45%; font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan);">100kt <span style="color: #333;">— plan</span></div>
+                    <div style="position: absolute; left: 8px; bottom: 30px; font-family: var(--font-mono); font-size: 10px; color: #ff4d4d;">78kt <span style="color: #333;">— actual</span></div>
+                    <!-- Band visualization -->
+                    <div style="position: absolute; left: 70px; right: 20px; top: 20px; bottom: 20px; display: flex; flex-direction: column;">
+                        <div style="flex: 1; background: rgba(76, 175, 80, 0.08); border-top: 2px dashed #4CAF50; border-radius: 4px 4px 0 0;"></div>
+                        <div style="flex: 1; background: rgba(0, 243, 255, 0.06); border-top: 2px solid var(--accent-cyan);"></div>
+                        <div style="flex: 1.5; background: rgba(255, 77, 77, 0.06); border-top: 2px solid #ff4d4d; border-radius: 0 0 4px 4px; position: relative;">
+                            <div style="position: absolute; bottom: 10px; right: 10px; font-family: var(--font-mono); font-size: 10px; color: #ff4d4d;">▼ -22% vs plan</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Legend -->
+                <div style="display: flex; gap: 20px; font-family: var(--font-mono); font-size: 10px;">
+                    <span><span style="color: #4CAF50;">■</span> Máximo (si optimizas)</span>
+                    <span><span style="color: var(--accent-cyan);">■</span> Plan (esperado)</span>
+                    <span><span style="color: #ff4d4d;">■</span> Mínimo (si no actúas)</span>
+                </div>
+                <!-- Recommendation bar -->
+                <div style="background: var(--accent-dim); border-left: 2px solid var(--accent-cyan); padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 12px; color: #ccc;">
+                    <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px; font-weight: 600;">▸ RECOMENDACIÓN:</span> Mover pala EX-205 a frente norte turnos L-M (+5% tonelaje). Reasignar 2 camiones de Fase Sur (+3%). Proyección: 97kt (vs 78kt actual).
+                </div>
+            </div>
+            <!-- Context sidebar -->
+            <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 12px;">
+                <div class="card" style="border-color: #1a1a1a;">
+                    <h3><i class="fa-solid fa-route" style="font-size: 10px;"></i> Momento: Recomendación</h3>
+                    <p>El sistema ya detectó la brecha y simuló escenarios con Orchestra. Ahora muestra <strong>3 bandas</strong> — mínimo, plan, máximo — con acciones concretas rankeadas por impacto.</p>
+                </div>
+                <div class="card" style="border-color: #1a1a1a;">
+                    <h3><i class="fa-solid fa-clock-rotate-left" style="font-size: 10px;"></i> Time Sight + Clear Path</h3>
+                    <p>Simulación what-if: "si pones una pala más, +5%." El cambio de paradigma: de cumplir el plan a optimizarlo. Como Waze — cuándo hay una ruta mejor.</p>
+                </div>
+                <div style="margin-top: auto;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/chronosphere.io" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Chronosphere — patrones temporales</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> SentinelOne — cadena causal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/tesla.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Tesla Fleet — escenarios futuros</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 20: FICHA 8 — Reportería Ejecutiva -->
+    <section class="slide" id="slide-20">
+        <div class="header">
+            <div class="brand">TIMining <span>CORE</span></div>
+            <h2 class="slide-title">Caso #8: Reportería Ejecutiva</h2>
+            <div class="slide-number">20 / 24</div>
+        </div>
+        <div class="ficha-subtitle">Origen: Workshop 01 (gap identificado), Design Brief (Executive App). CFO es "usuario invisible" — caso aspiracional.</div>
+        <div class="ficha-container">
+            <div class="ficha-sidebar">Alineación Estratégica</div>
+            <div class="ficha-grid">
+                <div class="ficha-cell">
+                    <h3><i class="fa-solid fa-user" style="font-size: 10px;"></i> Perfil</h3>
+                    <div style="margin-bottom: 10px;">
+                        <span class="cluster-role">CFO</span>
+                        <span class="cluster-role">Gerente Minas</span>
+                        <span class="cluster-role">Controller</span>
+                    </div>
+                    <div class="perfil-item"><strong>Rol:</strong> Reportar rendimiento financiero a directorio. Traducir operaciones a lenguaje de negocio.</div>
+                    <div class="perfil-item"><strong>Necesidad:</strong> Reporte ejecutivo automático sin armar PDFs. Impacto en dinero, no en tonelaje.</div>
+                    <div class="perfil-item"><strong>Dolor:</strong> Erika arma reportes manuales (medio día). CFO no usa TIMining. "Software de operaciones" no habla su idioma.</div>
+                </div>
+                <div class="ficha-cell historia">
+                    <h3><i class="fa-solid fa-book-open" style="font-size: 10px;"></i> La Historia</h3>
+                    <p class="historia-context">Viernes 3 PM, reunión de directorio. El CFO necesita responder una pregunta simple: ¿cómo vamos? La respuesta hoy es un PDF que armó Erika manualmente usando Orchestra — le tomó medio día. El CFO no usa TIMining, nunca lo ha abierto. No es su herramienta.</p>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-d">▸ Detección</span>
+                        <p>Reporte automático pre-reunión. Semáforo de KPIs: adherencia al plan, producción por turno, alertas de seguridad, valor capturado. Sin PDF manual.</p>
+                    </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-a">▸ Análisis</span>
+                        <p>Drill-down: ¿qué turno fue el peor? ¿por qué? Causa raíz financiera, no operativa. Comparativa con períodos anteriores. El CFO piensa en dinero — CORE traduce.</p>
+                    </div>
+                    <div class="historia-dar">
+                        <span class="dar-label dar-label-r">▸ Recomendación</span>
+                        <p>"Si mantienes este ritmo, cierras en -12%. Si implementas X, cierras en +3%." Acciones con impacto económico cuantificado.</p>
+                    </div>
+                    <p class="historia-cierre">USD 6M capturados en 5 meses vs USD 300K precio/año. El problema: nadie se lo muestra al CFO en su lenguaje.</p>
+                </div>
+                <div class="ficha-cell">
+                    <h3><i class="fa-solid fa-compass" style="font-size: 10px;"></i> Referentes por Etapa</h3>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff4d4d;">
+                        <span class="ref-etapa-label" style="color: #ff4d4d;">D</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Datadog Bits AI — auto-resumen</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid #ff9800;">
+                        <span class="ref-etapa-label" style="color: #ff9800;">A</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">SentinelOne — navegación causal</span>
+                    </div>
+                    <div class="ref-etapa" style="border-left: 2px solid var(--accent-cyan);">
+                        <span class="ref-etapa-label" style="color: var(--accent-cyan);">R</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;">Compound — métricas financieras</span>
+                    </div>
+                    <div class="evidence-refs">
+                        <span>[IG-SYNTH-12] Adherencia al plan (6/54)</span>
+                        <span>[IG-SYNTH-16b] Repricing (6/54)</span>
+                        <span>[IG-SYNTH-15] Efecto Gaviota (5/54)</span>
+                        <span>[CF-08] Gap financiero</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 21: VISUALIZACIÓN — Reportería Ejecutiva (Dashboard CFO) -->
+    <section class="slide" id="slide-21">
+        <div class="header">
+            <div class="brand">TIMining <span>CORE</span></div>
+            <h2 class="slide-title">Visualización: Reportería Ejecutiva</h2>
+            <div class="slide-number">21 / 24</div>
+        </div>
+        <div class="content-grid" style="align-content: start; padding-top: 10px;">
+            <!-- D→A→R Timeline bar — Detección highlighted -->
+            <div style="grid-column: span 12; display: flex; align-items: center; gap: 0; margin-bottom: 10px;">
+                <div style="flex: 1; padding: 8px 12px; background: #0a1a1a; border: 2px solid var(--accent-cyan); border-radius: 6px 0 0 6px; text-align: center; box-shadow: 0 0 12px rgba(0,243,255,0.15);">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+                        <i class="fa-solid fa-satellite-dish" style="font-size: 9px; margin-right: 4px;"></i> Detección &#9664;
+                    </span>
+                </div>
+                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
+                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; text-align: center;">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
+                        <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 9px; margin-right: 4px;"></i> Análisis
+                    </span>
+                </div>
+                <div style="flex: 0 0 20px; text-align: center; color: #333; font-size: 10px;">&#9654;</div>
+                <div style="flex: 1; padding: 8px 12px; background: #111; border: 1px solid #222; border-radius: 0 6px 6px 0; text-align: center;">
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px;">
+                        <i class="fa-solid fa-route" style="font-size: 9px; margin-right: 4px;"></i> Recomendación
+                    </span>
+                </div>
+            </div>
+            <!-- CSS Mockup: Executive Dashboard -->
+            <div style="grid-column: span 8; border-radius: 8px; overflow: hidden; min-height: 350px; background: #0d0d0d; border: 1px solid #222; padding: 24px; display: flex; flex-direction: column; gap: 14px;">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div>
+                        <span style="font-family: var(--font-mono); font-size: 14px; color: #fff; font-weight: 600;">Executive Dashboard</span>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-left: 10px;">Viernes 3 PM · Pre-directorio</span>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan);">AUTO-GENERATED</span>
+                </div>
+                <!-- Semáforo KPIs -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                    <div style="background: #080808; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px; text-align: center;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 6px;">Adherencia Plan</div>
+                        <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: #4CAF50;">92%</div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #4CAF50; margin: 6px auto 0; box-shadow: 0 0 8px rgba(76,175,80,0.5);"></div>
+                    </div>
+                    <div style="background: #080808; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px; text-align: center;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 6px;">Producción Turno</div>
+                        <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: #ff9800;">145kt</div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #ff9800; margin: 6px auto 0; box-shadow: 0 0 8px rgba(255,152,0,0.5);"></div>
+                    </div>
+                    <div style="background: #080808; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px; text-align: center;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 6px;">Seguridad</div>
+                        <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: #4CAF50;">0</div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #4CAF50; margin: 6px auto 0; box-shadow: 0 0 8px rgba(76,175,80,0.5);"></div>
+                    </div>
+                    <div style="background: #080808; border: 1px solid #1a1a1a; border-radius: 6px; padding: 14px; text-align: center;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 6px;">Valor Capturado</div>
+                        <div style="font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--accent-cyan);">$1.2M</div>
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); margin: 6px auto 0; box-shadow: 0 0 8px rgba(0,243,255,0.5);"></div>
+                    </div>
+                </div>
+                <!-- Drill-down hint -->
+                <div style="background: #080808; border: 1px solid #1a1a1a; border-radius: 6px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-family: var(--font-mono); font-size: 11px; color: #ff9800;">▼ DRILL-DOWN:</span>
+                        <span style="font-size: 12px; color: #999; margin-left: 8px;">Turno C (mié noche) fue el peor — causa raíz: 3 camiones en mantención no programada.</span>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 10px; color: #444;">click →</span>
+                </div>
+                <!-- Projection -->
+                <div style="background: var(--accent-dim); border-left: 2px solid var(--accent-cyan); padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 12px; color: #ccc;">
+                    <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px; font-weight: 600;">▸ PROYECCIÓN CIERRE MES:</span> Ritmo actual → -12%. Con intervención recomendada → +3%. Delta: USD 1.8M.
+                </div>
+            </div>
+            <!-- Context sidebar -->
+            <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 12px;">
+                <div class="card" style="border-color: #1a1a1a;">
+                    <h3><i class="fa-solid fa-satellite-dish" style="font-size: 10px;"></i> Momento: Detección</h3>
+                    <p>Viernes 3 PM, pre-directorio. El reporte llega <strong>automático</strong> al CFO — semáforo de KPIs, sin PDF manual. El sistema busca al CFO, no al revés.</p>
+                </div>
+                <div class="card" style="border-color: #1a1a1a;">
+                    <h3><i class="fa-solid fa-clock-rotate-left" style="font-size: 10px;"></i> Time Sight + Clear Path</h3>
+                    <p>Traducción automática: de tonelaje a dinero. "El dinero no se pierde al final del año — se pierde en cada turno mal gestionado." Drill-down financiero, no operativo.</p>
+                </div>
+                <div style="margin-top: auto;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Referentes por Etapa</div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff4d4d;">
+                            <img src="https://logo.clearbit.com/datadoghq.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff4d4d;">D</strong> Datadog Bits AI — auto-resumen</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid #ff9800;">
+                            <img src="https://logo.clearbit.com/sentinelone.com" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: #ff9800;">A</strong> SentinelOne — navegación causal</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: #111; border-radius: 4px; border-left: 2px solid var(--accent-cyan);">
+                            <img src="https://logo.clearbit.com/compound.finance" style="width: 18px; height: 18px; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span style="font-family: var(--font-mono); font-size: 11px; color: #ccc;"><strong style="color: var(--accent-cyan);">R</strong> Compound — métricas financieras</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 22: VISIÓN — Concepto Skynet (L20) -->
+    <section class="slide" id="slide-22">
+        <div class="header">
+            <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Visión: Optimización Global Autónoma</h2>
-            <div class="slide-number">18 / 20</div>
+            <div class="slide-number">22 / 24</div>
         </div>
         <div class="content-grid" style="align-content: center;">
             <div style="grid-column: span 12; text-align: center; margin-bottom: 5px;">
@@ -1818,7 +2634,7 @@
             </div>
             <div style="grid-column: span 12; text-align: center; margin-bottom: 10px;">
                 <p style="font-size: 20px; color: #fff; font-weight: 400; letter-spacing: -0.3px; max-width: 700px; margin: 0 auto; line-height: 1.5;">
-                    Los 6 casos anteriores son el camino.<br>
+                    Los 8 casos anteriores son el camino.<br>
                     <span style="color: var(--accent-cyan);">Esto es el destino.</span>
                 </p>
             </div>
@@ -1845,12 +2661,12 @@
         </div>
     </section>
 
-    <!-- SLIDE 16: KEEP STOP START (RETRO - 3 COLUMNS) -->
-    <section class="slide" id="slide-19">
+    <!-- SLIDE 23: KEEP STOP START (RETRO - 3 COLUMNS) -->
+    <section class="slide" id="slide-23">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Guía Estratégica (Retro)</h2>
-            <div class="slide-number">19 / 20</div>
+            <div class="slide-number">23 / 24</div>
         </div>
         <div class="content-grid">
             <div class="kss-col stop">
@@ -1902,12 +2718,12 @@
         </div>
     </section>
 
-    <!-- SLIDE: ROADMAP -->
-    <section class="slide" id="slide-20">
+    <!-- SLIDE 24: ROADMAP -->
+    <section class="slide" id="slide-24">
         <div class="header">
             <div class="brand">TIMining <span>CORE</span></div>
             <h2 class="slide-title">Hoja de Ruta — Plan Idemax (10 semanas)</h2>
-            <div class="slide-number">20 / 20</div>
+            <div class="slide-number">24 / 24</div>
         </div>
         <div class="content-grid" style="align-content: start; padding-top: 10px;">
             <!-- Progress bar -->
@@ -1940,7 +2756,7 @@
             <div class="card" style="grid-column: span 3; border-color: #ff9800;">
                 <h3 style="font-size: 11px; color: #ff9800;"><i class="fa-solid fa-exclamation-triangle" style="font-size: 9px;"></i> Etapa 2 — Experiencia</h3>
                 <h4 style="font-size: 14px;">Casos de Uso & Usuarios</h4>
-                <p style="font-size: 12px;">Workshop con 20 escenarios de estrés. 6 fichas sintetizadas con flujos D→A→R y referentes.</p>
+                <p style="font-size: 12px;">Workshop con 20 escenarios de estrés. 8 fichas sintetizadas con flujos D→A→R y referentes por etapa.</p>
                 <p style="font-size: 11px; color: #ff9800; margin-top: 4px;">Gap: entrevistas con usuarios finales en terreno pendientes.</p>
                 <div style="margin-top: auto; padding-top: 8px; border-top: 1px solid #222;">
                     <span style="font-family: var(--font-mono); font-size: 10px; color: #ff9800;">PARCIAL — GAP IDENTIFICADO</span>
