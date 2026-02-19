@@ -522,6 +522,350 @@ tr:hover td {
     opacity: 0.4;
 }
 
+/* RECAP WORKSHOP SLIDE (Slide 02) */
+
+/* KEEP block — top, prominent */
+.recap-keep-block {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.recap-keep-header {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #fff;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recap-keep-header i {
+    margin-right: 6px;
+    color: var(--accent-cyan);
+}
+
+.recap-keep-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+}
+
+.recap-keep-item {
+    padding: 8px 16px;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recap-keep-item:nth-child(3),
+.recap-keep-item:nth-child(6) {
+    border-right: none;
+}
+
+.recap-keep-item:nth-child(n+4) {
+    border-bottom: none;
+}
+
+.recap-keep-item strong {
+    display: block;
+    font-size: 13px;
+    color: #e0e0e0;
+    margin-bottom: 2px;
+}
+
+.recap-keep-item span {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* STOP/START columns */
+.recap-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.recap-col-title {
+    font-size: 16px;
+    padding: 10px 16px;
+    margin: 0;
+    color: #fff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recap-section {
+    padding: 10px 16px 8px;
+}
+
+.recap-stop {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recap-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    color: var(--text-muted);
+}
+
+.recap-stop .recap-section-label {
+    color: #ff6b6b;
+}
+
+.recap-start .recap-section-label {
+    color: #4caf50;
+}
+
+.recap-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recap-section li {
+    font-size: 13px;
+    color: #bbb;
+    line-height: 1.55;
+    padding: 1.5px 0;
+    padding-left: 12px;
+    position: relative;
+}
+
+.recap-section li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    opacity: 0.3;
+}
+
+/* TRANSITION SLIDE — 3-col progression (slide 25) */
+.transition-col {
+    flex: 1;
+    text-align: center;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid #222;
+}
+
+.transition-col:last-child {
+    border-right: none;
+}
+
+.transition-col--mid {
+    /* center column — neutral */
+}
+
+.transition-col--horizon {
+    background: rgba(0, 243, 255, 0.02);
+    border-right: none;
+}
+
+.transition-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+}
+
+.transition-title {
+    font-size: 24px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: white;
+    margin-bottom: 18px;
+}
+
+.transition-title--horizon {
+    color: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transition-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #999;
+}
+
+.transition-sub {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #666;
+    margin-top: 14px;
+}
+
+/* Light mode */
+[data-theme="light"] .transition-col {
+    border-color: #ddd !important;
+}
+
+[data-theme="light"] .transition-col--horizon {
+    background: rgba(0, 119, 182, 0.03) !important;
+}
+
+[data-theme="light"] .transition-title {
+    color: #1a1a2e !important;
+}
+
+[data-theme="light"] .transition-title--horizon {
+    color: var(--accent-cyan) !important;
+}
+
+[data-theme="light"] .transition-desc {
+    color: #555 !important;
+}
+
+[data-theme="light"] .transition-desc strong {
+    color: #333 !important;
+}
+
+[data-theme="light"] .transition-sub {
+    color: #888 !important;
+}
+
+/* HORIZON SLIDE — Cerebro Autónomo (slide 30) */
+.horizon-card {
+    position: relative;
+}
+
+.horizon-step-number {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: rgba(0, 243, 255, 0.08);
+    line-height: 1;
+}
+
+.horizon-detail {
+    font-size: 12px;
+    color: #666;
+    margin-top: auto;
+    padding-top: 8px;
+    font-style: italic;
+}
+
+/* Evolution ladder */
+.horizon-ladder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 10px;
+    padding: 14px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.horizon-ladder-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+}
+
+.horizon-ladder-marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.horizon-ladder--done .horizon-ladder-marker {
+    background: #555;
+    box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.2);
+}
+
+.horizon-ladder--next .horizon-ladder-marker {
+    background: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.15);
+}
+
+.horizon-ladder--future .horizon-ladder-marker {
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.4), 0 0 0 3px rgba(0, 243, 255, 0.2);
+}
+
+.horizon-ladder-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #666;
+    white-space: nowrap;
+}
+
+.horizon-ladder-text {
+    font-size: 13px;
+    color: #999;
+    line-height: 1.4;
+}
+
+.horizon-ladder-text strong {
+    color: #ccc;
+}
+
+.horizon-ladder-connector {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(to right, #333, var(--accent-cyan));
+    flex-shrink: 0;
+}
+
+/* Light mode */
+[data-theme="light"] .horizon-step-number {
+    color: rgba(0, 119, 182, 0.07) !important;
+}
+
+[data-theme="light"] .horizon-detail {
+    color: #888 !important;
+}
+
+[data-theme="light"] .horizon-ladder {
+    background: rgba(0, 0, 0, 0.02) !important;
+    border-color: #ddd !important;
+}
+
+[data-theme="light"] .horizon-ladder--done .horizon-ladder-marker {
+    background: #bbb !important;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .horizon-ladder--next .horizon-ladder-marker {
+    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.15) !important;
+}
+
+[data-theme="light"] .horizon-ladder--future .horizon-ladder-marker {
+    box-shadow: 0 0 6px rgba(0, 119, 182, 0.3), 0 0 0 3px rgba(0, 119, 182, 0.15) !important;
+}
+
+[data-theme="light"] .horizon-ladder-text {
+    color: #555 !important;
+}
+
+[data-theme="light"] .horizon-ladder-text strong {
+    color: #333 !important;
+}
+
+[data-theme="light"] .horizon-ladder-connector {
+    background: linear-gradient(to right, #ccc, var(--accent-cyan)) !important;
+}
+
 /* ANALYSIS CARDS (Slides 11 & 12) */
 .analysis-card {
     grid-column: span 4;
@@ -2406,6 +2750,58 @@ h1 {
 /* Ref etapa rows */
 [data-theme="light"] .ref-row {
     background: #eef0f4 !important;
+}
+
+/* Recap workshop - light mode */
+[data-theme="light"] .recap-section li {
+    color: #555 !important;
+}
+
+[data-theme="light"] .recap-stop li {
+    color: #666 !important;
+}
+
+[data-theme="light"] .recap-start li {
+    color: #444 !important;
+}
+
+[data-theme="light"] .recap-keep-block {
+    border-color: #ddd !important;
+}
+
+[data-theme="light"] .recap-keep-header {
+    background: rgba(0, 0, 0, 0.03) !important;
+    color: #333 !important;
+    border-bottom-color: #ddd !important;
+}
+
+[data-theme="light"] .recap-keep-header i {
+    color: var(--accent-cyan) !important;
+}
+
+[data-theme="light"] .recap-keep-item {
+    border-color: #eee !important;
+}
+
+[data-theme="light"] .recap-keep-item strong {
+    color: #333 !important;
+}
+
+[data-theme="light"] .recap-keep-item span {
+    color: #666 !important;
+}
+
+[data-theme="light"] .recap-col-title {
+    color: #333 !important;
+    border-bottom-color: #ddd !important;
+}
+
+[data-theme="light"] .recap-stop .recap-section-label {
+    color: #d63031 !important;
+}
+
+[data-theme="light"] .recap-start .recap-section-label {
+    color: #2e7d32 !important;
 }
 
 /* Analysis cards */
