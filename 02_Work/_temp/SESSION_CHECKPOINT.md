@@ -1,21 +1,20 @@
-# Session Checkpoint — 2026-02-19 ~01:00
+# Session Checkpoint — 2026-02-19 ~14:00
 
 ## Contexto
-Sesión nocturna de mejoras a la presentación TIMining CORE (ahora 33 slides). Workshop 19 feb.
+Sesión pre-workshop: guión de presentación, branding Idemax, footer, export PDF.
 Branch: `project/timining-entregables`. Deploy: https://presentacion-tau-three.vercel.app
 
 ## Commits esta sesión
-1. `e57ed39` — slide 06 relaciones entre pilares, 12 imágenes benchmark, quitar border-left bench-cards
-2. `26e1cd6` — assets originales benchmark (img/refs), notas sesión alineación Camila
+1. `7e40bbf` — footer bar con logo Idemax, slide cierre, header compacto, guión presentación
 
-## Estado actual de slides (33 total)
+## Estado actual de slides (34 total)
 ```
 01 Cover
 02 Workshop: Entendimiento Común (recap K/S/S clusterizado por Ale)
 03 Insights Clave (6 cards)
 04 Visión Estratégica (Mantra, Salto de Modelo, Valor Percibido)
 05 Pilares de Diseño (4 cards compactas col-3)
-06 Cómo se Conectan los Pilares (relaciones 2x2 + tabla sistema sensorial) ← NUEVO
+06 Cómo se Conectan los Pilares (relaciones 2x2 + tabla sistema sensorial)
 07 Benchmark portadilla
 08-11 Benchmark x pilar (Quiet UI, Clear Path, Time Sight, Omni Sense)
 12 Benchmark tabla resumen
@@ -26,33 +25,28 @@ Branch: `project/timining-entregables`. Deploy: https://presentacion-tau-three.v
 31 Horizonte de Evolución
 32 Mapa de Definiciones
 33 Roadmap
+34 Cierre Idemax (fondo #f93545, logo blanco) ← NUEVO
 ```
 
 ## Cambios clave realizados
-- **Slide 06 (NUEVO)**: relaciones entre pilares (4 rec-boxes 2x2) + tabla sistema sensorial (pilar/sentido/pregunta). Contenido reutilizado de PILARES.html
-- **12 imágenes benchmark**: convertidas a PNG en `img/bench/` desde originales en `img/refs/` (crowdstrike, spacex, motive x2, sentinelone x2, vercel-v0, datadog-bits, tesla-fleet, chronosphere, discord, samsara)
-- **bench-card CSS**: removido `border-left: 3px solid cyan` y `border-radius: 0 6px 6px 0` → `border-radius: 6px` uniforme (dark + light mode)
-- **Renumerado**: slides 6→7..32→33, total 32→33
+- **Footer bar**: barra fija 52px al fondo con theme toggle (izq), logo Idemax (centro), nav prev/next (der). Reemplaza controles flotantes anteriores.
+- **Logo Idemax**: `logo_idemax.png` en footer, color nativo sin opacity.
+- **Slide 34 (cierre)**: fondo `#f93545`, logo blanco via `filter: brightness(0) invert(1)`, footer oculto via JS.
+- **Header compacto**: `.slide-title` reducido de 30px a 13px, inline con brand y slide-number. Padding reducido.
+- **Slide count**: 33→34 en todos los contadores.
+- **Print/PDF**: footer muestra solo logo (controles ocultos via `@media print`), último slide sin footer.
+- **Guión presentación**: `GUION_PRESENTACION.md` + `.html` (light mode) con script por slide, 4 bloques temáticos, tips para Carlos/Philippe.
 
-## Discusión sobre "Cómo Aplica a CORE"
-Se evaluó veracidad de los bullets de "Cómo Aplica" en benchmark cards. Tres niveles:
-- **Nivel 1 (verificado)**: alertas geotécnicas WhatsApp, TIM Agent queries, predicción chancador, topografía 15min
-- **Nivel 2 (proyección lógica)**: briefing de turno, narrativa causal, plan vs realidad
-- **Nivel 3 (aspiracional)**: Generative UI, filtrado 99%, PTT transcripción, slider temporal DVR
-- Camila consciente del gap (sesión 18 feb): "varios referentes extraídos de conocimiento general de la IA"
-- **Decisión**: no se modificaron los bullets por ahora. El contexto de taller de visión lo permite.
-
-## Discusión sobre orden de slides (recap)
-Camila propuso: KSS raw 3-col → Ale clusterizada → Insights → Visión.
-El KSS raw está comentado en HTML. Se evaluó descomentar pero **se dejó como está** — el orden actual funciona.
+## PDF Export pipeline
+- **Decktape**: `npx decktape generic --key ArrowRight --size 1440x1024 --pause 1000 --media print`
+- **Light mode**: temporalmente `data-theme="light"` en `<html>` tag, revertir después
+- **Compresión**: Ghostscript `/ebook` rompe gradientes CSS (background-clip:text). `/printer` y `/prepress` también. Mejor resultado: **iLovePDF** online (preserva gradientes, buen ratio compresión).
+- **Tamaños**: Raw ~68MB, GS/ebook 2.7MB (roto), GS/printer 6.2MB (roto), iLovePDF ~óptimo.
 
 ## Archivos modificados
-- `03_Outputs/_custom/presentacion/index.html` (nuevo slide + renumerado)
-- `03_Outputs/_custom/presentacion/styles.css` (bench-card border-left removido)
-- `03_Outputs/_custom/presentacion/img/bench/` (12 PNGs nuevos)
-- `03_Outputs/_custom/presentacion/img/refs/` (16 assets originales)
-
-## Pendiente / próximos pasos
-- Workshop 19 feb 10:00-11:30
-- Posible ajuste de bullets "Cómo Aplica" post-workshop si Carlos/Phillip lo cuestionan
-- Posible slide PILARES.html adicional (tabla resumen + sistema sensorial ya incluido en slide 06)
+- `03_Outputs/_custom/presentacion/index.html` (footer, slide 34, contadores)
+- `03_Outputs/_custom/presentacion/styles.css` (footer bar, header compacto, idemax logo, print styles)
+- `03_Outputs/_custom/presentacion/app.js` (ocultar footer en slide idemax)
+- `03_Outputs/_custom/presentacion/logo_idemax.png` (nuevo)
+- `02_Work/_temp/GUION_PRESENTACION.md` (nuevo)
+- `02_Work/_temp/GUION_PRESENTACION.html` (nuevo, light mode)
