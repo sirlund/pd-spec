@@ -1,5 +1,82 @@
 # Changelog
 
+## [4.9.0] — 2026-02-18
+
+### Highlights
+
+**Working outside the pipeline no longer burns your token budget.** The new Freemode Protocol teaches the agent to check `02_Work/` before re-reading raw sources, maintain a compact session checkpoint that survives context compaction, and write to files immediately instead of accumulating output in conversation. Evidence: the TIMining entregables session consumed 65% of a weekly token budget over 3 days — most of it avoidable re-reads and lost state.
+
+**External materials have a home.** Logos, brand guides, AI-generated drafts, and competitor screenshots go in `02_Work/_assets/` with a simple intake log. `/extract` ignores them (they're not knowledge sources), but freemode work can reference them freely.
+
+**Custom deliverables survive resets.** Non-pipeline outputs (custom presentations, iterative HTML, ad-hoc analysis) live in `03_Outputs/_custom/`. This folder is preserved by `/reset --output` and protected by `.gitattributes` during engine merges.
+
+### Changes
+
+- **BL-38 — Freemode Protocol.** New CLAUDE.md section with three subsections: Work-First Routing (reference `[IG-XX]` before re-reading sources, suggest `/ship` when applicable), Session Checkpoint (`02_Work/_temp/SESSION_CHECKPOINT.md`, 50 lines max, re-read post-compaction), Cost Awareness (write immediately, warn >20KB reads, asset intake, custom outputs).
+- **`02_Work/_assets/`** — New directory for external materials with `_INTAKE.md` log template.
+- **`03_Outputs/_custom/`** — New directory for non-pipeline deliverables, excluded from `/reset --output`.
+- **`.gitattributes`** — Added `03_Outputs/_custom/** merge=ours` protection.
+- **`/reset` updated** — `_custom/` added to exception list alongside `_README.md` and `.gitkeep`.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — Freemode Protocol section (3 subsections), folder structure (3 new entries), sources of truth table (3 new rows)
+- `02_Work/_README.md` — Freemode directories docs, `_INTAKE.md` template, `SESSION_CHECKPOINT.md` template
+- `03_Outputs/_README.md` — `_custom/` documentation
+- `.gitattributes` — `_custom/**` merge protection
+- `.claude/skills/reset/SKILL.md` — `_custom/` in exception list
+- `02_Work/_assets/.gitkeep` — New placeholder
+- `03_Outputs/_custom/.gitkeep` — New placeholder
+
+**BACKLOG impact:**
+- BL-38: IMPLEMENTED
+
+</details>
+
+---
+
+## [4.8.0] — 2026-02-18
+
+### Highlights
+
+**AI-generated content no longer sneaks in as ground truth.** Sources produced by Gemini, ChatGPT, or other AI tools can now be tagged `source_type: ai-generated` in `_CONTEXT.md`. Extraction marks every claim with `[AI-SOURCE]`, analysis forces `voice: ai` + `authority: hypothesis`, and the insight can never reach VERIFIED without corroboration from a real source. No more fabricated benchmarks quietly becoming verified insights.
+
+**Conflicts remember your decisions.** When you flag a conflict for stakeholder discussion or mark it for research during `/synthesis`, the dashboard now shows that decision — amber "Flagged" badge or blue "Research" badge, with the radio button pre-selected. No more returning to a blank dashboard wondering what you decided last session.
+
+**Extraction is fast by default.** `/extract` now runs in express mode: it processes light files (markdown, text, images) immediately and defers heavy files (PDF, DOCX, PPTX) as `pending-heavy`. Run `/extract --heavy` when you're ready for the slow stuff, or `/extract --full` for the old behavior. On a project with 80 light + 20 heavy files, express mode finishes in minutes instead of waiting for every PDF.
+
+**Small projects skip synthesis overhead.** `/analyze` auto-detects project size. Under 30 files or 500 claims? It creates atomic insights directly, skipping the thematic clustering and narrative synthesis that only adds value at scale. Use `/analyze --full` when you want the deep analysis regardless.
+
+### Changes
+
+- **BL-37 — AI source validation.** New `source_type` field in `_CONTEXT_TEMPLATE.md`. `/extract` tags `[AI-SOURCE]` claims. `/analyze` assigns lowest authority. Verification gate requires non-AI corroboration.
+- **BL-36 — Conflict intermediate states.** `/synthesis` writes `PENDING — Flagged (context)` or `PENDING — Research (context)`. Dashboard parses and displays badges. Schema extended with `intermediate_status` and `intermediate_note`.
+- **BL-31 — Express extraction.** Three modes: express (default), `--heavy`, `--full`. Light/heavy classification by extension + file size. `pending-heavy` status in SOURCE_MAP.md.
+- **BL-32 — Auto express analysis.** Size thresholds: <30 files/<500 claims skips synthesis. `--full` overrides. Simplified approval flow in express mode.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Added `source_type` field with `ai-generated` option and documentation
+- `.claude/skills/extract/SKILL.md` — AI-generated detection in Phase 1, AI tagging in Phase 2, express mode (Phase 0b + step 5 filtering), mode-aware report format, `pending-heavy` status
+- `.claude/skills/analyze/SKILL.md` — `voice: ai` + authority restriction, convergence weighting, Phase 1b express detection, Phase 3 skip condition, intermediate state parsing for dashboard
+- `.claude/skills/synthesis/SKILL.md` — Intermediate state handling (Flagged/Research) in Phase 2
+- `03_Outputs/_schemas/status.schema.json` — `intermediate_status` and `intermediate_note` properties
+- `03_Outputs/_templates/status.html` — Badge rendering, radio pre-selection, intermediate note display
+
+**BACKLOG impact:**
+- BL-37: IMPLEMENTED
+- BL-36: IMPLEMENTED
+- BL-31: IMPLEMENTED
+- BL-32: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.7.0] — 2026-02-17
 
 ### Highlights

@@ -36,7 +36,15 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
    - Show the relevant source references.
    - If the agent has a suggested resolution, present it with reasoning.
    - Present clear options (e.g., keep A, keep B, merge, invalidate both).
+   - Also offer intermediate options: "Flag for discussion" and "Needs more research".
    - **Wait for user decision before proceeding to the next conflict.**
+
+   **Intermediate state handling:**
+   When user selects "Flag for discussion" or "Needs more research":
+   - Ask for context (who to discuss with, what to research)
+   - Write to CONFLICTS.md: `Status: PENDING — Flagged (context)` or `Status: PENDING — Research (context)`
+   - The conflict remains PENDING (not RESOLVED) — the intermediate tag records the decision without closing the conflict
+   - These intermediate states are visible in the dashboard with distinct badges (amber "Flagged", blue "Research")
 
 ### Phase 3: Propose Updates (User Approval)
 

@@ -3,7 +3,7 @@ name: extract
 description: Read and extract raw claims from source files in 01_Sources/. Writes structured extractions to 02_Work/EXTRACTIONS.md for /analyze to process.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash
-argument-hint: "[folder-name] [--full]"
+argument-hint: "[folder-name] [--full | --express | --heavy]"
 ---
 
 # /extract — Source Reading & Claim Extraction
@@ -19,6 +19,22 @@ Reads all source files in `01_Sources/`, extracts raw claims and factual stateme
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/` files. If discrepancies are found, report them to the user before proceeding.
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all user-facing text in EXTRACTIONS.md in that language. System identifiers and structural labels stay in English.
+
+### Phase 0b: Mode Detection
+
+Detect extraction mode from flags:
+
+| Flag | Mode | Behavior |
+|---|---|---|
+| (none) or `--express` | **Express** | Process only light files, skip heavy files (mark as `pending-heavy` in SOURCE_MAP) |
+| `--full` | **Full** | Process all files (current behavior, uses two-pass for >40 files) |
+| `--heavy` | **Heavy-only** | Process only files with `pending-heavy` status in SOURCE_MAP |
+
+**Classification:**
+- **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
+- **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
+
+Express mode is the default — it enables fast iteration on text and image sources while deferring expensive PDF/Office processing. Use `--full` to process everything, or `--heavy` after an express pass to pick up deferred files.
 
 ## MANDATORY RULE: NO EDITORIAL DECISIONS
 
@@ -43,6 +59,7 @@ EVERY file discovered in Phase 1 MUST be:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
+   - **AI-generated detection** — Check `_CONTEXT.md` for `Source Type: ai-generated`. If found, mark the entire folder as AI-generated. All files in this folder will be tagged during extraction (see Phase 2 AI tagging rule).
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -56,13 +73,21 @@ EVERY file discovered in Phase 1 MUST be:
 4. **Report progress** — Log overall scope before starting:
    - "Starting extraction: X folders, Y total files"
 
-5. **Batch detection (MANDATORY for >40 files):**
-   - Count total files discovered in step 1
+5. **File classification & mode filtering:**
+
+   Classify all discovered files:
+   - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
+   - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
+
+   **Apply mode filter (from Phase 0b):**
+   - **Express mode:** Remove heavy files from processing queue. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process, {heavy_count} heavy files deferred (pending-heavy)`
+   - **Heavy-only mode:** Read SOURCE_MAP.md, select ONLY files with status `pending-heavy`. If no pending-heavy files found, report "No heavy files pending — run /extract first" and stop.
+   - **Full mode:** Process all files (no filtering).
+
+6. **Batch detection (MANDATORY for >40 files in processing queue):**
+   - Count files remaining in queue after mode filtering
    - **If count ≤ 40:** Process all files in single pass (standard mode)
    - **If count > 40:** ACTIVATE TWO-PASS BATCHING (mandatory)
-     - Classify files by estimated context cost:
-       - **Light files:** .md, .txt, .png, .jpg (non-converted) < 1MB
-       - **Heavy files:** .pdf, converted DOCX/PPTX, any file ≥ 5MB
      - Pass 1: Light files, batch size 10
      - Pass 2: Heavy files, batch size 1 (one at a time)
      - Total batches: ceil(light_count / 10) + heavy_count
@@ -76,9 +101,9 @@ EVERY file discovered in Phase 1 MUST be:
 
 **Purpose:** Only process new, modified, or failed files. Skip unchanged files to save time.
 
-6. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1.
+7. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1 (after mode filtering).
 
-7. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
+8. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
    - If missing → treat all files as NEW, proceed to Phase 2
    - If exists → parse the table to build a map of known files with their status and hash
 
@@ -97,21 +122,22 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ```
 5. Add corrupted files to RETRY queue
 
-8. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
+9. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
    ```bash
    md5 -q "path/to/file"
    ```
    - On macOS, `md5` is native (zero deps)
    - Store in memory: `{file_path: hash}`
 
-9. **Classify files** — Compare discovered files against SOURCE_MAP:
+10. **Classify files** — Compare discovered files against SOURCE_MAP:
    - **NEW** — file not in SOURCE_MAP → process
    - **UNCHANGED** — file in map, hash matches → skip (preserve existing claims in EXTRACTIONS.md)
    - **MODIFIED** — file in map, hash differs → reprocess (replace section in EXTRACTIONS.md)
    - **RETRY** — file in map with status=`error` → reprocess
+   - **PENDING-HEAVY** — file in map with status=`pending-heavy` → process only in Heavy-only or Full mode, skip in Express mode
    - **DELETED** — file in map but not discovered → remove section from EXTRACTIONS.md, mark as orphan
 
-10. **Report delta to user** — Before processing, show:
+11. **Report delta to user** — Before processing, show:
    ```
    Delta computation complete:
    - NEW: 3 files (will process)
@@ -124,7 +150,7 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ```
    Wait for user confirmation before proceeding.
 
-11. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2.
+12. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2. In Heavy-only mode, also include PENDING-HEAVY files.
 
 **REMOVED:** Large Project Strategy moved to mandatory batch detection (step 5)
 
@@ -151,6 +177,14 @@ When processing a document, apply these criteria for claim extraction:
 4. **Target density:** ~3-5 claims/page (text documents), ~1-2/slide (presentations), ~1-3/photo (workshop images with visible text)
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
+
+**AI-Generated Source Tagging:**
+
+When processing a file from a folder marked as `ai-generated` (detected in Phase 1, step 2):
+- **Section header:** Add warning tag: `## [folder/file.md] ⚠️ AI-GENERATED`
+- **Each claim:** Append `[AI-SOURCE]` suffix to the claim text
+- **Log:** `⚠️ AI-generated source — claims tagged for verification`
+- Also check individual markdown files for `source_type: ai-generated` in their frontmatter metadata. Apply the same tagging if found, even if the folder's `_CONTEXT.md` doesn't flag it.
 
 **Batch Processing Logic (MANDATORY for >40 files):**
 
@@ -387,8 +421,19 @@ Process all files in single pass (step 12 below)
    - Update SOURCE_MAP entries as 'error' for missing files with reason "not found in EXTRACTIONS.md"
 
 14. **Summarize to the user** (using disk-validated numbers):
-   **Compact format — totals only:**
+   **Compact format — mode-aware:**
    ```
+   # Express mode:
+   ✓ Express: N light files · Z claims · M heavy files pending
+   [If unprocessable:] ⚠ X unprocessable: filename (reason), filename (reason)
+   → Run /extract --heavy to process deferred files, or /analyze to continue with light files.
+
+   # Heavy-only mode:
+   ✓ Heavy pass: M files · Z claims
+   [If unprocessable:] ⚠ X unprocessable: filename (reason), filename (reason)
+   → Run /analyze to process claims into insights.
+
+   # Full mode (or when no heavy files exist):
    ✓ Extraction complete: N files · Z claims [· X skipped unchanged]
    [If unprocessable:] ⚠ X unprocessable: filename (reason), filename (reason)
    [If org issues:] ⚠ X organization issues found (details in EXTRACTIONS.md)
@@ -411,6 +456,7 @@ Process all files in single pass (step 12 below)
    - Set timestamp to current time (ISO format: YYYY-MM-DDTHH:MM)
    - Set status:
      - `processed` — file was successfully extracted
+     - `pending-heavy` — heavy file deferred during express mode (waiting for `--heavy` or `--full` pass)
      - `error` — file failed to process (note reason in a comment or separate column)
 
    **Table format:**

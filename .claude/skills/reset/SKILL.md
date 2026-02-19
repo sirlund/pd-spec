@@ -126,6 +126,7 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
 5. **Delete all generated files** in `03_Outputs/` except:
    - `_README.md` (structural)
    - `.gitkeep` (structural)
+   - `_custom/` (freemode outputs, preserved across resets)
 
 6. **Restore `03_Outputs/PRD.html`** to its template state — use `git checkout main -- 03_Outputs/PRD.html` if on a branch, or write the template HTML directly if on main.
 
