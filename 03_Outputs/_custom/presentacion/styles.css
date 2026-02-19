@@ -2025,8 +2025,7 @@ h1 {
 .bench-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid #1a2028;
-    border-left: 3px solid var(--accent-cyan);
-    border-radius: 0 6px 6px 0;
+    border-radius: 6px;
     padding: 14px 16px;
     display: flex;
     flex-direction: column;
@@ -2627,7 +2626,6 @@ h1 {
 [data-theme="light"] .bench-card {
     background: rgba(0, 119, 182, 0.02) !important;
     border-color: var(--border-color) !important;
-    border-left-color: var(--accent-cyan) !important;
 }
 
 [data-theme="light"] .bench-logo {
