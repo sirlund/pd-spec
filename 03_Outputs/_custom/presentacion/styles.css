@@ -397,6 +397,131 @@ tr:hover td {
     color: #ccc;
 }
 
+/* CONCENTRIC LAYERS (Slide 31 — Mapa de Definiciones) */
+.layer-ring {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    position: relative;
+}
+
+.layer-ring--outer {
+    background: rgba(0, 243, 255, 0.02);
+    border-color: rgba(0, 243, 255, 0.15);
+    max-width: 850px;
+    padding: 16px 24px 14px;
+}
+
+.layer-ring--mid {
+    background: rgba(0, 243, 255, 0.03);
+    border-color: rgba(0, 243, 255, 0.2);
+    max-width: 650px;
+    padding: 14px 20px 12px;
+}
+
+.layer-ring--core {
+    background: rgba(0, 243, 255, 0.06);
+    border-color: rgba(0, 243, 255, 0.3);
+    max-width: 450px;
+    padding: 12px 18px 10px;
+}
+
+.layer-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.layer-items {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.6;
+}
+
+.layer-sep {
+    margin: 0 4px;
+    opacity: 0.4;
+}
+
+.layer-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--accent-cyan);
+    margin: 2px 3px;
+    white-space: nowrap;
+}
+
+.layer-pill i {
+    font-size: 10px;
+    margin-right: 4px;
+    opacity: 0.7;
+}
+
+/* DAR Pipeline Bar */
+.dar-pipeline-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.dar-pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid;
+}
+
+.dar-pipeline-d {
+    border-color: rgba(255, 77, 77, 0.4);
+    background: rgba(255, 77, 77, 0.08);
+}
+
+.dar-pipeline-a {
+    border-color: rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.08);
+}
+
+.dar-pipeline-r {
+    border-color: rgba(0, 243, 255, 0.4);
+    background: rgba(0, 243, 255, 0.08);
+}
+
+.dar-pipeline-letter {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.dar-pipeline-d .dar-pipeline-letter { color: #ff4d4d; }
+.dar-pipeline-a .dar-pipeline-letter { color: #ff9800; }
+.dar-pipeline-r .dar-pipeline-letter { color: var(--accent-cyan); }
+
+.dar-pipeline-name {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.dar-pipeline-arrow {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
 /* ANALYSIS CARDS (Slides 11 & 12) */
 .analysis-card {
     grid-column: span 4;
@@ -2304,6 +2429,49 @@ h1 {
     background: rgba(0, 0, 0, 0.02) !important;
     border-color: var(--border-color) !important;
 }
+
+/* Concentric layers - light mode */
+[data-theme="light"] .layer-ring--outer {
+    background: rgba(0, 119, 182, 0.03) !important;
+    border-color: rgba(0, 119, 182, 0.15) !important;
+}
+
+[data-theme="light"] .layer-ring--mid {
+    background: rgba(0, 119, 182, 0.05) !important;
+    border-color: rgba(0, 119, 182, 0.2) !important;
+}
+
+[data-theme="light"] .layer-ring--core {
+    background: rgba(0, 119, 182, 0.08) !important;
+    border-color: rgba(0, 119, 182, 0.3) !important;
+}
+
+[data-theme="light"] .layer-items {
+    color: #555 !important;
+}
+
+[data-theme="light"] .layer-pill {
+    border-color: rgba(0, 119, 182, 0.25) !important;
+    color: var(--accent-cyan) !important;
+}
+
+[data-theme="light"] .dar-pipeline-d {
+    border-color: rgba(214, 48, 49, 0.3) !important;
+    background: rgba(214, 48, 49, 0.06) !important;
+}
+
+[data-theme="light"] .dar-pipeline-a {
+    border-color: rgba(230, 126, 34, 0.3) !important;
+    background: rgba(230, 126, 34, 0.06) !important;
+}
+
+[data-theme="light"] .dar-pipeline-r {
+    border-color: rgba(0, 119, 182, 0.3) !important;
+    background: rgba(0, 119, 182, 0.06) !important;
+}
+
+[data-theme="light"] .dar-pipeline-d .dar-pipeline-letter { color: var(--color-d) !important; }
+[data-theme="light"] .dar-pipeline-a .dar-pipeline-letter { color: var(--color-a) !important; }
 
 /* Case body */
 [data-theme="light"] .case-body {
