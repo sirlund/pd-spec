@@ -61,33 +61,16 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 ---
 
-### [BL-39] Artifact Normalization — Efficient Import of External Files
-
-**Status:** Proposed
-**Priority:** P1
-**Depends on:** BL-38 (asset intake convention)
-**Origin:** TIMining entregables — Gemini-generated monolithic HTML (100KB+), 23 edits needed to change a single slide counter
-
-**Problem:** External tools generate monolithic files — single HTML with inline CSS/JS and all content. These are extremely expensive for agent iteration: full reads for small edits, no structural separation, O(n) changes for O(1) operations (e.g., renumbering slides).
-
-**User story:**
-> As a PD-Spec user importing an external artifact, I want PD-Spec to normalize it into a token-efficient structure that preserves the same visual output but enables targeted editing.
-
-**Acceptance criteria:**
-1. Agent detects monolithic imports (>30KB, single file with multiple sections) in `_assets/`
-2. Proposes normalization: split into section files + shared CSS/JS + index loader
-3. Maintains visual/functional parity (same output in browser)
-4. Individual section files are 2-5KB (one slide, one chapter)
-5. Dynamic counters/navigation via JS (no hardcoded `N / Total` in each section)
-
-**Scope:** Protocol/technique in CLAUDE.md freemode section, not a new skill command.
-
----
-
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-38 — v4.3 to v4.9</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-39 — v4.3 to v4.10</strong> (click to expand)</summary>
+
+### [BL-39] Artifact Normalization — v4.10
+
+**Implemented:** 2026-02-18. Normalization protocol in CLAUDE.md Freemode section. Agent detects monolithic imports >30KB in `_assets/`, proposes split (section files + shared CSS/JS + index loader), maintains visual parity, targets 2-5KB per section. Dynamic counters via JS. `_temp/STRUCTURE_INDEX.md` maps sections → files → line ranges for offset/limit reads.
+
+---
 
 ### [BL-38] Freemode Protocol — v4.9
 
@@ -310,4 +293,4 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md` and `QA_V3_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-18 (v4.9.0)
+Last updated: 2026-02-18 (v4.10.0)

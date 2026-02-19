@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.10.0] — 2026-02-18
+
+### Highlights
+
+**Monolithic imports no longer eat your token budget.** When you drop a 100KB Gemini-generated HTML file into `_assets/`, PD-Spec now detects it and proposes splitting it into 2-5KB section files with shared CSS/JS and an index loader. Edit one slide without reading 23 others. Renumber all slides by changing one JS variable instead of touching every file.
+
+### Changes
+
+- **BL-39 — Artifact Normalization.** New subsection in CLAUDE.md Freemode Protocol. Detection threshold: >30KB with multiple sections. Agent proposes split plan before executing. Dynamic counters via JS (no hardcoded `Slide N / Total`). Visual parity required — normalized output must render identically to the original.
+- **Structural index** — `02_Work/_temp/STRUCTURE_INDEX.md` maps sections → files → line ranges, enabling precise offset/limit reads for targeted edits.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — New "Artifact Normalization" subsection in Freemode Protocol (7 rules)
+- `02_Work/_README.md` — `STRUCTURE_INDEX.md` template and documentation
+
+**BACKLOG impact:**
+- BL-39: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.9.0] — 2026-02-18
 
 ### Highlights
