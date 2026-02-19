@@ -61,3 +61,19 @@ Manual edits to this folder will be detected and flagged by the agent at the sta
 ## Pending
 <!-- What remains to be done -->
 ```
+
+### STRUCTURE_INDEX.md template
+
+Created by the agent when normalizing a monolithic artifact (see Artifact Normalization in CLAUDE.md). Maps sections to files and line ranges for targeted offset/limit reads.
+
+```markdown
+# Structure Index — [artifact name]
+
+> Auto-maintained by agent. Do not edit manually.
+
+| Section | File | Lines | Size |
+|---|---|---|---|
+| Cover | sections/00-cover.html | 1-45 | 1.2KB |
+| Slide 1 — Title | sections/01-intro.html | 1-38 | 0.9KB |
+| Slide 2 — Problem | sections/02-problem.html | 1-52 | 1.4KB |
+```

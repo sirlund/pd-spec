@@ -341,6 +341,18 @@ For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPO
 - **Asset intake** — external materials (logos, brand guides, competitor screenshots) that are not knowledge sources go in `02_Work/_assets/`, logged in `_INTAKE.md`. The `/extract` skill ignores `_assets/` (it only scans `01_Sources/`).
 - **Custom outputs** — non-pipeline deliverables go in `03_Outputs/_custom/`. The agent proposes a file organization before the first write. `/reset --output` does NOT delete `_custom/`.
 
+### Artifact Normalization
+
+External tools (Gemini, ChatGPT, Figma exports) often produce monolithic files — single HTML with inline CSS/JS and all content. These are expensive for agent iteration: full reads for small edits, O(n) changes for O(1) operations (e.g., renumbering 23 slides to change a counter).
+
+- **Detection** — when the user places a file >30KB with multiple sections in `02_Work/_assets/`, the agent flags it as a normalization candidate during intake.
+- **Propose before splitting** — the agent presents a split plan (section files + shared CSS/JS + index loader) for user approval before modifying anything.
+- **Target granularity** — individual section files should be 2-5KB (one slide, one chapter, one card). Enough for a single targeted read/edit.
+- **Dynamic counters** — navigation and counters (e.g., `Slide 3 / 23`) must use JS, not hardcoded values in each section file. Renumbering = change one variable, not edit every file.
+- **Visual parity** — the normalized output must render identically to the original in the browser. If it doesn't, the normalization failed.
+- **Structure** — index file goes in `03_Outputs/_custom/`, section files alongside it. The original stays in `_assets/` as reference.
+- **Structural index** — the agent creates and maintains `02_Work/_temp/STRUCTURE_INDEX.md` mapping sections → files → line ranges, enabling offset/limit reads for precise edits without loading the full artifact.
+
 ## Documentation Guidelines
 
 PD-Spec maintains multiple documentation files. Each has a specific purpose and audience:
