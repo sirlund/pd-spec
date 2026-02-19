@@ -4,9 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prevBtn');
     let currentSlide = 0;
 
+    const footer = document.querySelector('.pres-footer');
+
     function showSlide(index) {
         slides.forEach(slide => slide.classList.remove('active'));
         slides[index].classList.add('active');
+        footer.style.display = slides[index].classList.contains('slide-idemax') ? 'none' : '';
     }
 
     function nextSlide() {
