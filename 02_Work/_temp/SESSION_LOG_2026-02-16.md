@@ -501,3 +501,85 @@ Notas: Tablet (no monitor) refuerza Omni Sense — reporte llegó al dispositivo
 18 TRANSICIÓN (De Cumplir a Optimizar) ← NUEVO
 19 Ficha 7 | 20 VIZ 7 | 21 Ficha 8 | 22 VIZ 8
 23 Skynet (+ urgente/importante + hub) | 24 Retro | 25 Roadmap
+
+### Reescritura narrativa fichas 7 y 8 — DONE (commit `02a7bc9`)
+- Casos 7 y 8 reescritos con formato DAR narrativo completo (igual que casos 1-6).
+- 8 fichas con formato completo: contexto (dolor) + DAR (CORE).
+
+### Referentes formato completo (casos 7-8) + Light mode fix — commit `2ee6d48`
+- **Casos 7 y 8:** 6 referente blocks (3 por caso) actualizados con:
+  - Nombre como link externo con icono `fa-arrow-up-right-from-square`
+  - Industria badge
+  - Factor X descriptivo
+  - "Cómo Aplica a CORE" title + 3 bullets contextuales por etapa DAR
+- **Light mode fix comprehensivo:** ~30 overrides CSS para `[data-theme="light"]`:
+  - `.slide-title`, `.slide h3` — color `#1a1a2e`
+  - `.rec-box` — background claro, text `#444`
+  - Fichas: perfil, contexto, descripción, referente blocks, stage dividers
+  - Historia elements, pilar rules, DAR arrows
+  - Roadmap dark backgrounds
+  - Inline color overrides (`#ccc` → `#555`, `#e0e0e0` → `#333`)
+  - Attribute selectors: `[style*="color: #ccc"]`, `[style*="background: #333"]`
+
+### Rename "Qué robar" → "Cómo Aplica a CORE" — commit `f96d6a5`
+- Presentación: 24 ocurrencias (con tilde "Qué")
+- BENCHMARK.html: 25 ocurrencias (sin tilde "Que")
+- CASOS_DE_USO.md: 8 ocurrencias
+- Total: 57 reemplazos en 3 archivos
+
+### Benchmark expansion — 1 slide → 6 slides
+- **Slide 04 (Portadilla):** Intro + 4 summary cards (pilar, champions count, secundarios count)
+- **Slides 05-08:** 1 slide por pilar con 3 champion cards cada uno
+  - Cada card: logo (Clearbit), link, industria, UI placeholder, Factor X, 3 bullets "Cómo Aplica a CORE"
+  - "También:" footer con referentes secundarios
+- **Slide 09:** Tabla resumen (reemplazó referentes secundarios como cards)
+  - Tabla 1: Resumen por Pilar — champions, secundarios, total
+  - Tabla 2: Mapeo Fichas → Referentes — 8 casos con pilar + champion + patrón
+- **CSS nuevo:** `.bench-pilar-header`, `.bench-pilar-icon`, `.bench-card`, `.bench-card-header`, `.bench-logo`, `.bench-name`, `.bench-industry`, `.bench-factorx`, `.bench-aplicacion-title`, `.bench-steal`, `.bench-secondary-chip`, `.bench-ui-placeholder`, `.bench-summary-table`
+- **Renumeración:** 25 → 30 slides (5 slides insertados)
+
+### UI placeholders 3:2 + image paths
+- CSS: `aspect-ratio: 3/2` reemplaza `height: 64px`
+- 13 champion cards con `<img>` tags apuntando a `img/bench/{name}.png`
+- Fallback: `onerror="this.dataset.failed=true"` + CSS hiding
+- Directorio creado: `presentacion/img/bench/`
+- Filenames:
+  - Quiet UI: `crowdstrike.png`, `spacex.png`, `motive-quiet.png`
+  - Clear Path: `sentinelone-purple.png`, `vercel-v0.png`, `datadog-bits.png`
+  - Time Sight: `tesla-fleet.png`, `sentinelone-storylines.png`, `chronosphere.png`
+  - Omni Sense: `motive-omni.png`, `discord.png`, `samsara.png`
+
+### SpaceX champion + Compound demotion
+- SpaceX promovido a champion en Quiet UI (reemplaza Compound)
+- 3 champions: CrowdStrike, SpaceX, Motive (layout col-4)
+- Compound movido a:
+  - "También:" line en slide 05
+  - Primer chip en slide 09 Quiet UI secundarios
+- Portadilla actualizada: "3" champions / "+ 4 secundarios" para Quiet UI
+
+### Benchmark champions actualizados (presentación):
+- **Quiet UI:** CrowdStrike, SpaceX, Motive (← antes: CrowdStrike, Motive, Compound)
+- **Clear Path:** SentinelOne Purple AI, Vercel v0, Datadog (sin cambio)
+- **Time Sight:** Tesla Fleet, SentinelOne Storylines, Chronosphere (sin cambio)
+- **Omni Sense:** Motive, Discord, Samsara (sin cambio)
+
+### Light mode overrides para benchmark
+- `.bench-card`, `.bench-pilar-header`, `.bench-name`, `.bench-factorx`, `.bench-steal`, `.bench-secondary-chip`, `.bench-ui-placeholder`, `.bench-summary-table` — todos con `[data-theme="light"]` overrides
+
+### Commit `b30e397` — benchmark expandido completo
+- 6 slides benchmark, tabla resumen, UI placeholders 3:2, SpaceX champion
+
+### Vercel deployment
+- Presentación publicada en: https://presentacion-tau-three.vercel.app
+- Deploy desde `presentacion/` con `vercel --prod --yes`
+- `.vercel/` en `.gitignore`
+
+### Estructura final (30 slides):
+01 Cover | 02 Visión (+DAR) | 03 Pilares (+reglas)
+04 Bench Portadilla | 05 Bench Quiet UI | 06 Bench Clear Path | 07 Bench Time Sight | 08 Bench Omni Sense | 09 Bench Resumen
+10 Dominios
+11 Ficha 1 | 12 VIZ 1 | 13 Ficha 2 | 14 VIZ 2
+15 Ficha 3 | 16 VIZ 3 | 17 Ficha 4 | 18 VIZ 4
+19 Ficha 5 | 20 VIZ 5 | 21 Ficha 6 | 22 VIZ 6
+23 Transición | 24 Ficha 7 | 25 VIZ 7 | 26 Ficha 8 | 27 VIZ 8
+28 Skynet | 29 Retro | 30 Roadmap
