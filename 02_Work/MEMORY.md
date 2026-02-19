@@ -103,3 +103,20 @@
   - Insights ancla utilizados: IG-SYNTH-01 (Geometry Gap), IG-SYNTH-04 (Copiloto), IG-SYNTH-07 (Quiet UI), IG-SYNTH-12 (Adherencia), IG-SYNTH-15 (Efecto Gaviota), IG-SYNTH-16 (Paz Mental)
 - **Result:** 25 edits en presentacion_v4.html + 8 edits en CASOS_DE_USO.md. Patrón narrativo consistente en los 8 casos.
 - **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 5 outputs
+
+## [2026-02-18T21:30] Refactor presentación — CSS/JS externo + light mode fixes
+- **Request:** Optimizar estructura HTML, fix light mode, ajustes layout
+- **Actions:**
+  - **CSS/JS extraction:** Inline `<style>` (1,808 líneas) y `<script>` (2 bloques) extraídos a `styles.css` (2,226 líneas) y `app.js` (41 líneas). index.html baja de 5,616 a 3,372 líneas.
+  - **Light mode fixes:**
+    - Cover h1: gradient `#fff→#666` invisible en light bg → override a `#1a1a2e→#8a8a9e`
+    - h3 headings: removido override `color: #1a1a2e` que mataba accent color → h3 usa `var(--accent-cyan)` naturalmente
+    - Accent cyan: `#0070a0` → `#0088cc` (más vibrante). Agregado `--accent-cyan-bright: #00a3e0` para headings/icons
+    - Surface tokens light: `--surface-elevated`, `--surface-sunken`, `--surface-active` definidos para light mode
+    - DAR colors light: `--color-d: #d63031`, `--color-a: #e67e22` (menos saturados en blanco)
+  - **VIZ DAR timeline light mode:** Etapas inactivas cambiadas de `rgba(..., 0.3)` (opacidad) a colores desaturados sólidos (`#c49090` D, `#b89870` A, `#7faab8` R). Gradient lines: 3 variantes cubiertas (R/D/A activo). Chevron SVG `stroke="#333"` → `#ccc`. Active dot glow atenuado.
+  - **Layout:** `case-ctx-label` movido al mismo row que `case-flujo-title` (flex, space-between). Label simplificado a "Contexto" (11px, derecha). 8 fichas actualizadas.
+  - **case-descripcion:** igualado a `case-contexto-bajada p` (13.5px, `#b0b0b0` dark, `#555` light)
+  - **Deploy:** Vercel prod `c60564d` → https://presentacion-tau-three.vercel.app
+- **Result:** Presentación refactorizada (3 archivos), light mode funcional, deploy verificado
+- **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 5 outputs
