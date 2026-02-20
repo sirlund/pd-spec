@@ -82,6 +82,75 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
+### [BL-44] Source Authority Layer — Unified Weight System for Non-Primary Sources
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v4 session (2026-02-20). Evidence: IDEMAX internal sessions contain valuable product observations and ideas but shouldn't have equal weight to stakeholder research. Same need exists for AI-generated artifacts. Currently BL-37 handles `ai-generated` as a special Source Type — this refactors it into a proper authority axis.
+
+**Problem:** PD-Spec treats sources as either "primary" (full authority) or "ai-generated" (reduced). Real projects have a third tier: internal team sessions (consultant ideation, alignment meetings, delivery planning). These contain:
+- Product observations and ideas (valuable, but shouldn't override stakeholder voice)
+- Action items and agreements (operational, not insight material)
+- Deliverable decisions (context, not evidence)
+
+Currently `ai-generated` is overloaded as a Source Type value, but it's really an authority level — orthogonal to format. A Granola transcript of an IDEMAX session is `Source Type: transcript` (format) + `Authority: internal` (weight). A Gemini summary of that session is `Authority: ai-generated`. Both can coexist in the same folder.
+
+**Solution: Separate format from authority**
+
+Two orthogonal metadata fields:
+
+| Field | Controls | Values |
+|---|---|---|
+| **Source Type** (existing) | Preprocessing trigger | transcript, document, ocr, chat-log, ... |
+| **Authority** (new) | Weight in /analyze | primary (default), internal, ai-generated |
+
+**Authority tiers:**
+
+| Authority | Voice | Can reach VERIFIED? | Tag in claims | Use case |
+|---|---|---|---|---|
+| `primary` (default) | stakeholder, user, data | Yes | (none) | Stakeholder interviews, user research, quantitative data |
+| `internal` | consultant | Only with primary corroboration | `[INTERNAL]` | Team sessions, consultant analysis, internal ideation |
+| `ai-generated` | ai | Only with primary corroboration | `[AI-SOURCE]` | AI summaries, generated plans, synthetic analysis |
+
+A claim can carry both tags: AI summary of internal session → `[INTERNAL][AI-SOURCE]` → lowest authority wins.
+
+**Extraction changes for internal sources:**
+
+Internal sources produce two types of content with different routing:
+
+```markdown
+## [sesiones-idemax/session.md] [INTERNAL]
+
+### Raw Claims
+1. "El UX de Figma es superior para este caso" [INTERNAL]
+2. "Operadores usan tablets en campo, necesitamos responsivo" [INTERNAL]
+
+### Action Items
+- Niklas traspasa mockups a presentación principal
+- Workshop jueves 10-12 presencial
+- Validar presentación antes del workshop
+```
+
+- **Raw Claims** → enter /analyze pipeline with reduced authority
+- **Action Items** → stay in EXTRACTIONS.md as reference, do NOT enter /analyze
+
+**Folder independence:** Authority is per-file, not per-folder. A single folder can mix primary, internal, and ai-generated files. `_CONTEXT.md` can set a folder default that individual files override via frontmatter.
+
+**Refactors BL-37:** `ai-generated` moves from Source Type to Authority. Source Type `ai-generated` becomes deprecated (kept for backwards compat, mapped to `Authority: ai-generated` during extraction). The tagging and verification gate logic from BL-37 stays identical — just moved to the Authority axis.
+
+**Acceptance criteria:**
+- [ ] New `Authority` metadata field in `_SOURCE_TEMPLATE.md` and `_CONTEXT_TEMPLATE.md`
+- [ ] /extract detects Authority field, tags claims accordingly (`[INTERNAL]`, `[AI-SOURCE]`)
+- [ ] /extract separates Raw Claims from Action Items for internal sources
+- [ ] /analyze applies authority-based weight (primary > internal > ai-generated)
+- [ ] Verification gate: internal/ai insights cannot reach VERIFIED without primary corroboration
+- [ ] Same folder can have mixed authority levels
+- [ ] BL-37 `ai-generated` Source Type mapped to `Authority: ai-generated` (backwards compat)
+
+**User stories:**
+> As a consultant, I can put my internal ideation session in the same folder as the AI summary I generated from it, and PD-Spec handles both at reduced authority without contaminating stakeholder insights.
+> As a researcher, I see internal observations in the insights graph but clearly tagged — they inform my thinking without distorting the evidence base.
+
 ---
 
 ### [BL-42] Work Layer Viewer — Live MD Rendering with `/view` Skill
