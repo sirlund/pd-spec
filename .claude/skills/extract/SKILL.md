@@ -154,6 +154,96 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
 **REMOVED:** Large Project Strategy moved to mandatory batch detection (step 5)
 
+### Phase 1.5: Smart Source Preprocessing
+
+**Purpose:** Detect noisy sources (transcripts from STT tools like Granola, Otter, Fireflies) and normalize them before extraction. This improves claim quality by fixing speaker attribution, phonetic errors, and broken sentences using accumulated project context. v1 scope: transcript preprocessing only.
+
+**When to activate:** Phase 1.5 runs only if preprocessing candidates are detected. If no candidates are found, skip directly to Phase 2.
+
+13. **Detect preprocessing candidates** — Scan files in the processing queue for two signals:
+
+   **Metadata signal:** Check `_CONTEXT.md` or file frontmatter for `Source Type: transcript` (or `ocr`, `chat-log` — future v2). If found, the file is a candidate.
+
+   **Content heuristic:** For files without explicit metadata, scan the first 50 lines for STT patterns:
+   - Speaker labels with timestamps (`[00:12:34]`, `Speaker 1:`, `John:`)
+   - Repeated filler words (`um`, `uh`, `like`, `you know`) at high density
+   - Sentence fragments without punctuation or capitalization
+   - Phonetically plausible but contextually wrong words
+
+   If either signal matches, add the file to the preprocessing queue. If no candidates are found, log `ℹ️ No preprocessing candidates detected` and skip to Phase 2.
+
+14. **Gather project context** — Build a contextual glossary in working memory (no file written). Read:
+   - `PROJECT.md` — project name, domain, key terms
+   - Folder `_CONTEXT.md` files — participant names, session context, dates
+   - `02_Work/EXTRACTIONS.md` headers — previously extracted source metadata (participants, types)
+   - `02_Work/INSIGHTS_GRAPH.md` — domain-specific terms, proper nouns, acronyms already established
+
+   This context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
+
+15. **Normalize — Transcript Preprocessing (v1):**
+
+   For each transcript candidate, apply three normalization passes:
+
+   **Pass A — Speaker Detection (3-step):**
+   1. **Segment:** Identify speaker turn boundaries using timestamps, indentation, labels, or dialogue patterns.
+   2. **Identify:** Match speaker segments to known participants (from `_CONTEXT.md`, file metadata, or project context). Use contextual clues: role references ("as CFO I think..."), name mentions ("like Maria said..."), speaking style consistency.
+   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+
+   **Pass B — Phonetic Correction:**
+   - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
+   - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
+   - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
+   - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
+
+   **Pass C — Sentence Repair:**
+   - **Incomplete sentences:** Mark with `[incomplete]` if a thought is clearly cut off mid-sentence.
+   - **Crosstalk:** Mark overlapping speech with `[crosstalk]` and attempt to separate speakers.
+   - **Unintelligible:** Mark passages that can't be recovered with `[unintelligible]`.
+   - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
+   - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
+
+16. **Quality report & user approval (MANDATORY propose-before-execute):**
+
+   Present the preprocessing results for each candidate file:
+
+   ```
+   ## Preprocessing: [folder/filename.ext]
+
+   ### Speaker Table
+   | Speaker | Identified As | Confidence | Turns |
+   |---|---|---|---|
+   | Speaker 1 | María López (Project Lead) | high | 23 |
+   | Speaker 2 | [Speaker 2] | low | 8 |
+
+   ### Corrections (top 15)
+   | Original | Corrected | Context | Confidence |
+   |---|---|---|---|
+   | ciefo | CFO | "el ciefo dijo que..." | high |
+   | tim mining | TIMining | project name | high |
+   | usabilida | usabilidad | "la usabilida del sistema" | high |
+
+   ### Sentence Repairs
+   - 12 incomplete sentences marked [incomplete]
+   - 3 crosstalk passages marked [crosstalk]
+   - 2 unintelligible sections marked [unintelligible]
+   - 8 run-on sentences split
+
+   Total corrections: N
+   ```
+
+   **User options:**
+   - **Approve** — write normalized version and proceed
+   - **Review individually** — show full diff for the file, user can accept/reject individual corrections
+   - **Skip** — skip preprocessing for this file, extract from raw source
+
+   Wait for user response before proceeding.
+
+17. **Write normalized files** — For each approved file:
+   - Write normalized content to `02_Work/_temp/{filename}_normalized.md`
+   - Build redirect map in working memory: `{original_path → normalized_path}`
+   - The original file in `01_Sources/` is NEVER modified (read-only layer)
+   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections)`
+
 ### Phase 2: Read & Extract
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
@@ -237,6 +327,8 @@ For each Heavy file (one at a time):
 Process all files in single pass (step 12 below)
 
 12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
+
+   **Preprocessing redirect:** Before reading a source file, check if Phase 1.5 created a normalized version in `02_Work/_temp/{filename}_normalized.md`. If a redirect exists, read from the `_temp/` path instead of the original. The section header (`## [folder/file.ext]`) must still reference the original `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
 
    **If Phase 1b was skipped** (--full flag or SOURCE_MAP missing), process all files from Phase 1.
 
@@ -387,6 +479,7 @@ Process all files in single pass (step 12 below)
    - Type: [from metadata or _CONTEXT.md]
    - Date: [from metadata]
    - Participants: [if applicable]
+   - Preprocessed: [yes — only if Phase 1.5 normalized this file]
    - Extracted: [YYYY-MM-DDTHH:MM timestamp when this section was processed]
 
    ### Raw Claims
@@ -498,5 +591,6 @@ Process all files in single pass (step 12 below)
      - `[folder-name]/`: N files, X claims
      - `[folder-name]/`: N files, X claims
      - **Total:** Y files processed, Z claims extracted
+   - **Preprocessing:** N files (M speakers, P corrections) — or "none"
    - **Snapshot:** X source files · Y claims extracted · Z organization issues
    ```

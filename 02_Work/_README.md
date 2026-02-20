@@ -28,7 +28,7 @@ Manual edits to this folder will be detected and flagged by the agent at the sta
 
 | Directory | Purpose |
 |---|---|
-| `_temp/` | Ephemeral workspace — session checkpoints, intermediate indexes, format conversions. Auto-managed by the agent; contents may be deleted between sessions. |
+| `_temp/` | Ephemeral workspace — session checkpoints, intermediate indexes, format conversions, preprocessed source files. Auto-managed by the agent; contents may be deleted between sessions. |
 | `_assets/` | External materials intake — logos, brand guides, competitor screenshots, reference files that are **not** knowledge sources. `/extract` ignores this folder. |
 | `_assets/_INTAKE.md` | Asset log — tracks every file placed in `_assets/`. |
 
