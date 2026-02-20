@@ -126,7 +126,7 @@ Internal sources produce two types of content with different routing:
 2. "Operadores usan tablets en campo, necesitamos responsivo" [INTERNAL]
 
 ### Action Items
-- Niklas traspasa mockups a presentación principal
+- Nicolas traspasa mockups a presentación principal
 - Workshop jueves 10-12 presencial
 - Validar presentación antes del workshop
 ```
