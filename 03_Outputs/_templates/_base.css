@@ -1,0 +1,160 @@
+/* PD-Spec Base CSS — Shared across all output templates */
+/* Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: #F0F2F5;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #000;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+/* === A4 Page System === */
+.page {
+  background-color: #fff;
+  width: 21cm;
+  min-height: 29.7cm;
+  padding: 2.54cm;
+  margin: 0 auto 20px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* === Typography === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: #202124;
+}
+h1 { font-size: 26pt; font-weight: 700; margin: 0 0 12px; padding-bottom: 6px; }
+h2 { font-size: 16pt; font-weight: 700; color: #000; margin: 24pt 0 6pt; }
+h3 { font-size: 14pt; font-weight: 700; color: #434343; margin: 18pt 0 4pt; }
+h4 { font-size: 12pt; font-weight: 600; color: #434343; margin: 14pt 0 4pt; }
+
+p, li, td, th, blockquote { font-size: 11pt; line-height: 1.5; color: #000; margin-bottom: 12pt; }
+ul, ol { margin: 0 0 12pt; padding-left: 24pt; }
+li { margin-bottom: 0; }
+
+/* === Tables === */
+table { width: 100%; border-collapse: collapse; margin: 12pt 0; }
+th, td { border: 1px solid #c7c7c7; padding: 8pt; text-align: left; vertical-align: top; }
+th { background-color: #fff; font-weight: 700; }
+
+/* === Document Header === */
+.doc-meta {
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  color: #444;
+  margin-bottom: 24pt;
+}
+.doc-meta strong { color: #111; }
+.doc-meta details { margin-top: 8px; }
+.doc-meta summary { cursor: pointer; font-size: 0.8rem; color: #666; }
+.doc-meta ul { padding-left: 18pt; margin: 6px 0 0; }
+.doc-meta li { font-size: 0.8rem; color: #555; margin-bottom: 4px; }
+
+/* === Blockquotes === */
+blockquote {
+  background: none;
+  border-left: 3px solid #ccc;
+  margin: 12pt 24pt;
+  padding-left: 12pt;
+  color: #666;
+}
+
+/* === Callouts === */
+.callout {
+  background-color: #e6fffa;
+  border-left: 4px solid #00cea5;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+}
+.callout p { margin: 0; font-size: 0.9em; }
+
+/* === Insight References === */
+.insight-ref { font-size: 0.8em; color: #666; font-style: italic; }
+
+/* === Cross-reference Links === */
+.ref-link { color: #555; text-decoration: none; border-bottom: 1px dotted #999; }
+.ref-link:hover { color: #111; border-bottom-color: #111; }
+
+/* === Badges === */
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.badge-verified { background: #d4edda; color: #155724; }
+.badge-pending { background: #fef3cd; color: #856404; }
+.badge-merged { background: #d1ecf1; color: #0c5460; }
+.badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+.badge-resolved { background: #d4edda; color: #155724; }
+.badge-flagged { background: #fef3cd; color: #856404; }
+.badge-research { background: #d1ecf1; color: #0c5460; }
+.badge-ready { background: #d4edda; color: #155724; }
+.badge-blocked { background: #f8d7da; color: #721c24; }
+.badge-gap { background: #fff3cd; color: #856404; border: 1px dashed #856404; }
+
+/* === GAP Marker === */
+.gap-marker {
+  font-size: 0.8rem;
+  color: #856404;
+  background: #fff3cd;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px dashed #856404;
+}
+
+/* === Module List (for PRD) === */
+.module-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.module-card h4 { margin-top: 0; }
+.module-card .module-status { font-size: 0.8rem; color: #666; margin-bottom: 8px; }
+.module-card .implication { font-size: 0.9em; color: #333; padding: 4px 0; }
+.module-card .implication .ref-link { font-size: 0.85em; }
+
+/* === Open Questions === */
+.open-question {
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.9em;
+  color: #444;
+}
+.open-question:last-child { border-bottom: none; }
+
+/* === Print Media === */
+@media print {
+  body { background: none; padding: 0; display: block; }
+  .page {
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    padding: 0;
+    border: none;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+  .no-print { display: none; }
+}

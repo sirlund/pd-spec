@@ -2,6 +2,7 @@
 
 - **Date:** YYYY-MM-DD
 - **Type:** interview | brief | technical_doc | workshop | quantitative_data | benchmark
+- **Source Type:** interview | workshop | document | benchmark | field-note | ai-generated | transcript | ocr | chat-log
 - **Participants:** [names]
 - **Context:** [1 sentence describing why these sources matter]
 
@@ -19,6 +20,18 @@
   their own metadata. Markdown files can still use _SOURCE_TEMPLATE.md
   for internal metadata.
 
-  The /analyze skill reads this file to understand folder contents
+  The /extract skill reads this file to understand folder contents
   and apply context to all files in the folder.
+
+  Source Type values:
+  - interview, workshop, document, benchmark, field-note — standard sources
+  - ai-generated — content produced by AI tools (Gemini, ChatGPT, etc.)
+    Claims from ai-generated sources are tagged [AI-SOURCE] during extraction
+    and receive reduced authority (voice: ai, authority: hypothesis) during analysis.
+    AI-only insights cannot reach VERIFIED without corroboration from a non-AI source.
+  - transcript — speech-to-text output (Granola, Otter, Fireflies, etc.)
+    Triggers smart preprocessing in /extract Phase 1.5: speaker detection,
+    phonetic correction, and sentence repair before claim extraction.
+  - ocr — optical character recognition output (future v2 preprocessing)
+  - chat-log — messaging platform export (future v2 preprocessing)
 -->

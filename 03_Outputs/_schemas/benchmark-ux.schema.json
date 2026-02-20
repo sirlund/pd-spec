@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "benchmark-ux.schema.json",
+  "description": "JSON Schema for PD-Spec UX Benchmark output data — inter-industry design referents",
+  "type": "object",
+  "required": ["meta", "title", "categories"],
+  "properties": {
+    "meta": {
+      "$ref": "base.schema.json#/$defs/meta",
+      "properties": {
+        "type": { "const": "benchmark-ux" }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Document title (in output_language)"
+    },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/category" },
+      "description": "Design referents grouped by category (e.g. Data Visualization, Navigation, Onboarding)"
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "required": ["name", "referents"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Category name (e.g. Data Visualization, Navigation, Onboarding)"
+        },
+        "referents": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/referent" },
+          "minItems": 1
+        }
+      }
+    },
+    "referent": {
+      "type": "object",
+      "required": ["name", "industry", "factor_x", "pattern"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Product or company name (e.g. Compound Finance)"
+        },
+        "industry": {
+          "type": "string",
+          "description": "Industry label (e.g. DeFi, Healthcare, Logistics)"
+        },
+        "factor_x": {
+          "type": "string",
+          "description": "What makes this referent relevant — 1 sentence"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "Applicable design pattern for the current project"
+        },
+        "design_principle": {
+          "type": "string",
+          "description": "Linked design principle name from SYSTEM_MAP"
+        },
+        "refs": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^(IG|CF)-\\d+$" },
+          "description": "Insight/conflict references"
+        }
+      }
+    }
+  }
+}
