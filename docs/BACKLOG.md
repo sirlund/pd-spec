@@ -193,6 +193,12 @@ Acceptance criteria (Phase 2):
 
 Package as desktop app (Tauri/Electron) for non-technical users. No CLI dependency. Bundles Claude API integration. Multi-user collaboration. Cloud-hosted option. This is PD-OS scope — likely a separate repo.
 
+**Collaborative round-trip workflow:** Researcher creates presentation in HTML (rich, with transitions/effects) → exports wireframe PPTX for stakeholder editing → stakeholder edits in Google Slides/PowerPoint → changes unify back into the rich HTML. Three approaches identified:
+
+- **Option A (architecturally sound):** JSON is source of truth. Both HTML and PPTX are derived views. Parse edited PPTX delta back to JSON, HTML regenerates. Challenge: PPTX→JSON parser is non-trivial (PPTX = ZIP of XMLs, needs slide↔section ID mapping).
+- **Option B (pragmatic):** Use Markdown as the shared editing medium instead of PPTX. MD is trivial to parse back. Stakeholder edits MD (in GitHub, Google Docs, or the Live Research App itself). Aligns with PD-Spec's existing lingua franca.
+- **Option C (manual baseline):** PPTX export is one-way. Stakeholder marks changes, researcher applies manually.
+
 **User stories:**
 
 > As a researcher in a stakeholder meeting, I can show live research state (insights, conflicts, progress) in the browser while running skills in the CLI — no export step needed.
