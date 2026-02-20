@@ -10,8 +10,9 @@ Output: TIMining_CORE_Presentacion.pptx
 """
 
 import re
+import os
 from pathlib import Path
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -108,6 +109,74 @@ def subtitle(slide, text, top=Inches(0.95), sz=12, color=TEXT_MUTED):
     t.text_frame.word_wrap = True
     p = t.text_frame.paragraphs[0]
     run(p, text, sz=sz, color=color)
+
+
+def add_image_safe(slide, img_path, left, top, width=None, height=None):
+    """Try to add an image, return the shape if successful, None otherwise."""
+    path = BASE_DIR / img_path if not os.path.isabs(str(img_path)) else Path(img_path)
+    if not path.exists():
+        return None
+    try:
+        kwargs = {"image_file": str(path), "left": left, "top": top}
+        if width:
+            kwargs["width"] = width
+        if height:
+            kwargs["height"] = height
+        return slide.shapes.add_picture(**kwargs)
+    except Exception:
+        return None
+
+
+def extract_body(el):
+    """Extract body text from a card element, handling <p>, <ul>/<li>,
+    <strong>/<span>, and recap-section structures."""
+    parts = []
+    footer = ""
+
+    # Recap sections (STOP/START blocks with <ul>/<li>)
+    recap_sections = el.find_all("div", class_="recap-section")
+    if recap_sections:
+        for sec in recap_sections:
+            label_el = sec.find("div", class_="recap-section-label")
+            label = clean(label_el) if label_el else ""
+            items = [clean(li) for li in sec.find_all("li")]
+            if label and items:
+                parts.append(f"{label}: " + " | ".join(items))
+            elif items:
+                parts.extend(["- " + item for item in items])
+        return "\n".join(parts), footer
+
+    # Standard: collect <p> and <ul> in document order
+    for child in el.children:
+        if not isinstance(child, Tag):
+            continue
+        if child.name == "p":
+            txt = clean(child)
+            if not txt:
+                continue
+            style = child.get("style", "")
+            if "font-size: 11px" in style or "font-size: 10px" in style:
+                footer = txt
+            else:
+                parts.append(txt)
+        elif child.name == "ul":
+            items = [clean(li) for li in child.find_all("li")]
+            parts.extend(["- " + item for item in items if item])
+        elif child.name == "div":
+            # Nested divs (e.g. pilar-question)
+            if "pilar-question" in (child.get("class") or []):
+                footer = clean(child)
+            # Recurse into structural divs (recap-keep, etc.)
+            elif "recap-keep-block" not in (child.get("class") or []):
+                for p in child.find_all("p"):
+                    txt = clean(p)
+                    if txt:
+                        parts.append(txt)
+                for ul in child.find_all("ul"):
+                    items = [clean(li) for li in ul.find_all("li")]
+                    parts.extend(["- " + item for item in items if item])
+
+    return "\n".join(parts), footer
 
 
 def card(slide, left, top, w, h, card_title="", body="", footer="",
@@ -290,11 +359,18 @@ def build_benchmark(prs, num, stitle, pilar_desc, bench_cards, footer_text=""):
             p3.space_before = Pt(8)
             run(p3, bc["factorx"], sz=10, color=TEXT_BODY)
 
-        # Image placeholder
+        # Image — embed if available, else placeholder text
         if bc.get("image"):
-            p_img = tf.add_paragraph()
-            p_img.space_before = Pt(8)
-            run(p_img, f"[img: {bc['image']}]", sz=9, color=TEXT_MUTED, italic=True, font="Consolas")
+            img_path = f"img/bench/{bc['image']}"
+            img_h = Inches(1.8)
+            img_top = top_y + Inches(1.6)
+            img_left = left + Inches(0.08)
+            img_w = cw - Inches(0.16)
+            pic = add_image_safe(s, img_path, img_left, img_top, width=img_w)
+            if not pic:
+                p_img = tf.add_paragraph()
+                p_img.space_before = Pt(8)
+                run(p_img, f"[img: {bc['image']}]", sz=9, color=TEXT_MUTED, italic=True, font="Consolas")
 
         # Aplicaciones
         apps = bc.get("aplicaciones", [])
@@ -473,77 +549,140 @@ def build_concentric(prs, num, stitle):
     run(p4, "Patrón transversal que conecta todas las capas", sz=9, color=TEXT_MUTED, italic=True)
 
 
-def build_case_narrative(prs, num, stitle, context, stages):
+def build_case_narrative(prs, num, stitle, data):
     s = prs.slides.add_slide(prs.slide_layouts[6])
     bg(s)
     header(s, num)
     title(s, stitle, sz=18)
 
+    domain = data.get("domain", "")
+    context = data.get("context", "")
+    perfil = data.get("perfil", {})
+    agrupados = data.get("agrupados", [])
+    stages = data.get("stages", [])
+
+    # Domain label
+    if domain:
+        t = tb(s, ML, Inches(0.52), CW, Inches(0.22))
+        p = t.text_frame.paragraphs[0]
+        run(p, domain, sz=10, color=ACCENT, font="Consolas")
+
+    # Layout: left sidebar (profile) + right (context + DAR stages)
+    left_w = Inches(3.2)
+    gap = Inches(0.15)
+    right_w = CW - left_w - gap
+    right_left = ML + left_w + gap
+    body_top = Inches(0.9)
+
+    # ── Left sidebar: profile card ──
+    left_h = Inches(6.2)
+    shape = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ML, body_top, left_w, left_h)
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = CARD_BG
+    shape.line.color.rgb = CARD_BORDER
+    shape.line.width = Pt(1)
+    shape.adjustments[0] = 0.04
+    tf = shape.text_frame
+    tf.word_wrap = True
+    tf.margin_top = Inches(0.12)
+    tf.margin_left = Inches(0.12)
+    tf.margin_right = Inches(0.12)
+
+    # Roles
+    roles = perfil.get("roles", [])
+    if roles:
+        p = tf.paragraphs[0]
+        run(p, "Perfil", sz=10, color=ACCENT, bold=True, font="Consolas")
+        p2 = tf.add_paragraph()
+        p2.space_before = Pt(4)
+        run(p2, " · ".join(roles), sz=9, color=TEXT_DARK, bold=True)
+
+    # Perfil items (Rol, Necesidad, Dolor)
+    for item in perfil.get("items", []):
+        pi = tf.add_paragraph()
+        pi.space_before = Pt(4)
+        run(pi, item, sz=9, color=TEXT_BODY)
+
+    # Agrupados
+    if agrupados:
+        pa = tf.add_paragraph()
+        pa.space_before = Pt(10)
+        run(pa, "Casos Agrupados", sz=10, color=ACCENT, bold=True, font="Consolas")
+        pa2 = tf.add_paragraph()
+        pa2.space_before = Pt(4)
+        run(pa2, " · ".join(agrupados), sz=9, color=TEXT_BODY)
+
+    # ── Right side: context + 3 DAR stages ──
+    # Context
     if context:
-        t = tb(s, ML, Inches(0.95), CW, Inches(0.8))
+        ctx_h = Inches(1.0)
+        t = tb(s, right_left, body_top, right_w, ctx_h)
         t.text_frame.word_wrap = True
         p = t.text_frame.paragraphs[0]
-        run(p, context, sz=11, color=TEXT_BODY)
+        run(p, context, sz=10, color=TEXT_BODY)
+        stages_top = body_top + ctx_h + Inches(0.05)
+    else:
+        stages_top = body_top
 
-    top_y = Inches(1.9)
-    cols = 3
-    gap = Inches(0.12)
-    sw = (CW - gap * (cols - 1)) / cols
-    sh = Inches(5.1)
+    # DAR stages (3 columns)
+    cols = min(len(stages), 3)
+    sgap = Inches(0.1)
+    sw = (right_w - sgap * (cols - 1)) / cols
+    sh = SLIDE_H - stages_top - Inches(0.35)
     stage_colors = [COLOR_D, COLOR_A, COLOR_R]
     stage_labels = ["Detección", "Análisis", "Recomendación"]
 
     for i, stage in enumerate(stages[:3]):
-        left = ML + (sw + gap) * i
+        left = right_left + (sw + sgap) * i
         color = stage_colors[i]
 
-        shape = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top_y, sw, sh)
+        shape = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, stages_top, sw, sh)
         shape.fill.solid()
         shape.fill.fore_color.rgb = CARD_BG
         shape.line.color.rgb = color
         shape.line.width = Pt(1.5)
         shape.adjustments[0] = 0.04
 
-        tf = shape.text_frame
-        tf.word_wrap = True
-        tf.margin_top = Inches(0.1)
-        tf.margin_left = Inches(0.1)
-        tf.margin_right = Inches(0.1)
+        stf = shape.text_frame
+        stf.word_wrap = True
+        stf.margin_top = Inches(0.08)
+        stf.margin_left = Inches(0.08)
+        stf.margin_right = Inches(0.08)
 
-        p = tf.paragraphs[0]
-        run(p, f"E{i+1}: {stage_labels[i]}", sz=12, color=color, bold=True, font="Consolas")
+        p = stf.paragraphs[0]
+        run(p, f"E{i+1}: {stage_labels[i]}", sz=11, color=color, bold=True, font="Consolas")
 
         desc = stage.get("description", "")
         if desc:
-            p2 = tf.add_paragraph()
-            p2.space_before = Pt(6)
-            run(p2, desc, sz=10, color=TEXT_BODY)
+            p2 = stf.add_paragraph()
+            p2.space_before = Pt(5)
+            run(p2, desc, sz=9, color=TEXT_BODY)
 
         pilar = stage.get("pilar", "")
         if pilar:
-            p3 = tf.add_paragraph()
-            p3.space_before = Pt(6)
+            p3 = stf.add_paragraph()
+            p3.space_before = Pt(5)
             run(p3, f"Pilar: {pilar}", sz=9, color=ACCENT, italic=True)
 
         ref_name = stage.get("ref_name", "")
         if ref_name:
-            p4 = tf.add_paragraph()
-            p4.space_before = Pt(8)
-            run(p4, ref_name, sz=10, color=TEXT_DARK, bold=True)
+            p4 = stf.add_paragraph()
+            p4.space_before = Pt(6)
+            run(p4, ref_name, sz=9, color=TEXT_DARK, bold=True)
             ref_ind = stage.get("ref_industry", "")
             if ref_ind:
-                p5 = tf.add_paragraph()
-                run(p5, ref_ind, sz=9, color=TEXT_MUTED)
+                p5 = stf.add_paragraph()
+                run(p5, ref_ind, sz=8, color=TEXT_MUTED)
             ref_fx = stage.get("ref_factorx", "")
             if ref_fx:
-                p6 = tf.add_paragraph()
-                p6.space_before = Pt(3)
-                run(p6, ref_fx, sz=9, color=TEXT_MUTED, italic=True)
+                p6 = stf.add_paragraph()
+                p6.space_before = Pt(2)
+                run(p6, ref_fx, sz=8, color=TEXT_MUTED, italic=True)
 
         for app in stage.get("aplicaciones", [])[:3]:
-            pa = tf.add_paragraph()
+            pa = stf.add_paragraph()
             pa.space_before = Pt(2)
-            run(pa, f"• {app}", sz=9, color=TEXT_BODY)
+            run(pa, f"• {app}", sz=8, color=TEXT_BODY)
 
 
 def build_case_viz(prs, num, stitle, data):
@@ -575,20 +714,22 @@ def build_case_viz(prs, num, stitle, data):
     right_left = ML + left_w + col_gap
     info_top = Inches(1.5)
 
-    # Left: image placeholder
-    shape = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ML, info_top, left_w, Inches(5.3))
-    shape.fill.solid()
-    shape.fill.fore_color.rgb = RGBColor(0xF0, 0xF0, 0xF0)
-    shape.line.color.rgb = CARD_BORDER
-    shape.line.width = Pt(1)
-    shape.adjustments[0] = 0.03
-    tf = shape.text_frame
-    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    pp = tf.paragraphs[0]
-    pp.alignment = PP_ALIGN.CENTER
+    # Left: viz image or placeholder
     viz_img = data.get("viz_image", "")
-    run(pp, f"[Visualización: {viz_img}]" if viz_img else "[Visualización]",
-        sz=11, color=TEXT_MUTED, font="Consolas")
+    pic = add_image_safe(s, viz_img, ML, info_top, width=left_w) if viz_img else None
+    if not pic:
+        shape = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ML, info_top, left_w, Inches(5.3))
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = RGBColor(0xF0, 0xF0, 0xF0)
+        shape.line.color.rgb = CARD_BORDER
+        shape.line.width = Pt(1)
+        shape.adjustments[0] = 0.03
+        tf = shape.text_frame
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        pp = tf.paragraphs[0]
+        pp.alignment = PP_ALIGN.CENTER
+        run(pp, f"[Visualización: {viz_img}]" if viz_img else "[Visualización]",
+            sz=11, color=TEXT_MUTED, font="Consolas")
 
     # Right: moment card
     mt = data.get("moment_title", "")
@@ -768,7 +909,22 @@ def parse_slides(html_path):
         # Case narrative
         elif case_tl:
             info["type"] = "case_narrative"
-            ctx = section.find("p", class_="case-ctx")
+
+            # Domain
+            domain_el = section.find("div", class_="case-dominio")
+
+            # Context (in case-contexto-bajada, not case-ctx)
+            ctx_el = section.find("div", class_="case-contexto-bajada")
+            if not ctx_el:
+                ctx_el = section.find("p", class_="case-ctx")
+
+            # Profile: roles, perfil items, agrupados
+            roles = [clean(r) for r in section.find_all("span", class_="cluster-role")]
+            perfil_items = [clean(pi) for pi in section.find_all("div", class_="case-perfil-item")]
+            agrupados_el = section.find("div", class_="case-agrupados")
+            agrupados = [clean(s) for s in agrupados_el.find_all("span")] if agrupados_el else []
+
+            # DAR stages
             stages = []
             for se in case_tl.find_all("div", class_="case-stage"):
                 stages.append({
@@ -779,7 +935,13 @@ def parse_slides(html_path):
                     "ref_factorx": clean(se.find("div", class_="case-ref-factorx")),
                     "aplicaciones": [clean(li) for li in se.find_all("li")]
                 })
-            info["data"] = {"context": clean(ctx), "stages": stages}
+            info["data"] = {
+                "domain": clean(domain_el),
+                "context": clean(ctx_el),
+                "perfil": {"roles": roles, "items": perfil_items},
+                "agrupados": agrupados,
+                "stages": stages,
+            }
 
         # Transition
         elif trans_cols:
@@ -879,6 +1041,30 @@ def parse_slides(html_path):
                 cols = 2
 
             card_data = []
+
+            # Check for recap-keep-block (slide 02) — inject as first card
+            keep_block = section.find("div", class_="recap-keep-block")
+            if keep_block:
+                keep_items = keep_block.find_all("div", class_="recap-keep-item")
+                keep_parts = []
+                for ki in keep_items:
+                    strong = ki.find("strong")
+                    span = ki.find("span")
+                    s_text = clean(strong) if strong else ""
+                    d_text = clean(span) if span else ""
+                    if s_text and d_text:
+                        keep_parts.append(f"{s_text}: {d_text}")
+                    elif s_text:
+                        keep_parts.append(s_text)
+                keep_header_el = keep_block.find("div", class_="recap-keep-header")
+                keep_title = clean(keep_header_el) if keep_header_el else "KEEP"
+                card_data.append({
+                    "title": keep_title,
+                    "body": " | ".join(keep_parts),
+                    "footer": "", "is_highlight": False,
+                })
+                cols = max(cols, 1)  # full width for keep block row
+
             for c in cards_el:
                 ct = ""
                 h3 = c.find("h3")
@@ -887,26 +1073,27 @@ def parse_slides(html_path):
                     ct = clean(h3)
                 elif h4:
                     ct = clean(h4)
-                ps = c.find_all("p")
-                body_parts = []
-                cf = ""
-                for p in ps:
-                    txt = clean(p)
-                    style = p.get("style", "")
-                    if "font-size: 11px" in style or "font-size: 10px" in style:
-                        cf = txt
-                    else:
-                        body_parts.append(txt)
+                body_text, cf = extract_body(c)
                 is_hl = False
                 if "col-12" in c.get("class", []):
                     style = c.get("style", "")
                     if "dashed" in style or "transparent" in style:
                         is_hl = True
-                pq = c.find("div", class_="pilar-question")
-                if pq:
-                    cf = clean(pq)
-                card_data.append({"title": ct, "body": " ".join(body_parts),
+                card_data.append({"title": ct, "body": body_text,
                                   "footer": cf, "is_highlight": is_hl})
+
+            # Capture orphan rec-boxes (not inside cards) as highlight cards
+            if rec_boxes:
+                for rb in rec_boxes:
+                    if not rb.find_parent("div", class_="card"):
+                        ts = rb.find("span", class_="rec-title")
+                        rt = clean(ts) if ts else ""
+                        rb_body = clean(rb)
+                        if rt:
+                            rb_body = rb_body.replace(rt, "", 1).strip()
+                        card_data.append({"title": rt, "body": rb_body,
+                                          "footer": "", "is_highlight": True})
+
             info["data"] = {"subtitle": sub, "cols": cols, "cards": card_data}
 
         # Horizon steps
@@ -979,7 +1166,7 @@ def generate(slides_data, output_path):
         elif t == "concentric":
             build_concentric(prs, n, st)
         elif t == "case_narrative":
-            build_case_narrative(prs, n, st, d.get("context", ""), d.get("stages", []))
+            build_case_narrative(prs, n, st, d)
         elif t == "case_viz":
             build_case_viz(prs, n, st, d)
         elif t == "single_table":
