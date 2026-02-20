@@ -40,6 +40,25 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 - BL-31 (express mode): Handle 100-200 files by deferring heavy files
 - BL-22 (RAG layer): Handle 200+ files with embeddings + retrieval
 
+**Re-evaluation note (2026-02-20):**
+
+The 3-layer compression model may make full RAG unnecessary. Evidence from TIMining (61 files, 1,238 claims → 21 insights): downstream skills (/synthesis, /ship) never see raw volume. Analysis by pipeline phase:
+
+| Phase | Needs RAG? | Why |
+|---|---|---|
+| /extract | No — already incremental (file-by-file, BL-29 batching) |
+| /analyze | Maybe — reads full EXTRACTIONS.md. Worked at 1,238 claims. Bottleneck at ~5,000+ |
+| /synthesis | No — works on INSIGHTS_GRAPH (21 items in TIMining, already compressed) |
+| /ship | No — works on Work layer (already synthesized) |
+| Freemode | Maybe — cross-source queries, but BL-41 (state management) reduces need |
+
+Options under consideration:
+- **A) Keep as-is** — Low priority, activate when a project hits 200+ sources
+- **B) Reformulate as "Smart Context Loading"** — no embeddings/vector store, just thematic clustering of claims so /analyze processes by topic instead of sequentially. Lighter, no infra deps.
+- **C) Kill** — Homer's Car. The scaling strategy already covers realistic project sizes. Projects with 200+ sources may need sub-project decomposition, not RAG.
+
+Decision deferred — revisit when a real project hits the ceiling.
+
 ---
 
 ### [BL-33] Dashboard Enhancements — UX Fixes from QA v3
