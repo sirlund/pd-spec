@@ -40,6 +40,110 @@ Features:
 
 **Export button** — `[Export ▾]` dropdown per file: MD→DOCX (pandoc), HTML→PPTX (python-pptx), HTML→PDF (weasyprint/print CSS). Precedent: TIMining deliverables exported Reveal.js presentation to PPTX successfully. Script-based, not LLM-based.
 
+**Layout wireframes:**
+
+```
+Wireframe A — File viewer (sidebar tree + semantic renderer)
+┌─────────────────────────────────────────────────────────────────┐
+│  PD-Spec · TIMining                    [Pipeline: ●●●○○ Analyzed]│
+├──────────────┬──────────────────────────────────────────────────┤
+│ 📊 Dashboard │  INSIGHTS_GRAPH.md                    [Export ▾] │
+│              │                                                  │
+│ ▾ 02_Work/   │  ### [IG-SYNTH-01] TimeSight: Visibilidad       │
+│   EXTRACTIONS│  **Status:** VERIFIED  **Convergence:** 18/59   │
+│  ●INSIGHTS   │  **Voice:** stakeholder, data                    │
+│   CONFLICTS  │  **Category:** user-need (current)               │
+│   SYSTEM_MAP │                                                  │
+│   MEMORY     │  > "No tenemos visibilidad de lo que pasa        │
+│   SOURCE_MAP │    en el yacimiento en tiempo real"               │
+│              │                                                  │
+│ ▾ 01_Sources/│  Refs: CF-01, IG-03, IG-07                      │
+│  ▸ Anteceden │  ────────────────────────────────────────────    │
+│  ▸ Workshop 1│  ### [IG-SYNTH-02] Plan Minero Digital           │
+│  ▸ sesiones- │  **Status:** VERIFIED  **Convergence:** 15/59   │
+│  ▸ benchmark │  ...                                             │
+│  ▸ ai-reports│                                                  │
+│              │                                                  │
+│ ▾ 03_Outputs/│                                                  │
+│   STATUS.html│                                                  │
+│   PRD.html   │                                                  │
+│              │                                                  │
+├──────────────┤                                                  │
+│ ⚡ Actions   │                                                  │
+│  /extract    │                                                  │
+│  /analyze    │                                                  │
+│  /synthesis  │                                                  │
+│  /ship ▾     │                                                  │
+└──────────────┴──────────────────────────────────────────────────┘
+
+Wireframe B — Dashboard home (overview cards + open questions)
+┌─────────────────────────────────────────────────────────────────┐
+│  PD-Spec · TIMining        Pipeline: Extract → Analyze → [next] │
+├──────────────┬──────────────────────────────────────────────────┤
+│              │                                                  │
+│  Navigation  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌────────┐│
+│  (same tree) │  │ 59      │ │ 38      │ │ 12      │ │ 1350   ││
+│              │  │ Sources  │ │ Insights│ │Conflicts│ │ Claims ││
+│              │  │ 57P 1I 1A│ │20V 10P  │ │ 7R 5P   │ │        ││
+│              │  └─────────┘ └─────────┘ └─────────┘ └────────┘│
+│              │                                                  │
+│              │  ┌─ Open Questions ──────────────────────────┐  │
+│              │  │ ⚠ CF-07: Plataforma vs API (Flagged)      │  │
+│              │  │ ⚠ CF-12: Paz Mental framing (Flagged)     │  │
+│              │  │ 🔍 CF-03: Benchmark UX (Research)          │  │
+│              │  │ 🔍 CF-05: Modelo pricing (Research)        │  │
+│              │  └───────────────────────────────────────────┘  │
+│              │                                                  │
+│              │  ┌─ Authority Distribution ──────────────────┐  │
+│              │  │ Primary ████████████████████████████ 57    │  │
+│              │  │ Internal █ 1                               │  │
+│              │  │ AI       █ 1                               │  │
+│              │  └───────────────────────────────────────────┘  │
+│              │                                                  │
+│              │  ┌─ Evidence Gaps (3 actionable) ────────────┐  │
+│              │  │ 🔴 No user testing data (0/6 surveys)      │  │
+│              │  │ 🟡 Single-source insights: IG-15..IG-22    │  │
+│              │  │ 🟡 CFO perspective missing from conflicts  │  │
+│              │  └───────────────────────────────────────────┘  │
+└──────────────┴──────────────────────────────────────────────────┘
+
+Wireframe C — Source browser (folder detail + preprocessing metadata)
+┌──────────────┬──────────────────────────────────────────────────┐
+│              │  01_Sources/sesiones-idemax/          3 files     │
+│  Navigation  │                                                  │
+│              │  ┌──────────────────────┬────────┬──────┬──────┐ │
+│              │  │ File                 │ Status │ Auth │ Prep │ │
+│              │  ├──────────────────────┼────────┼──────┼──────┤ │
+│              │  │ session-align-camila │ ✅ 27c │ prim │ ✅   │ │
+│              │  │ reunion_camila       │ ✅ 28c │ prim │ skip │ │
+│              │  │ Touchpoint_TIMining  │ ✅ 38c │ prim │ skip │ │
+│              │  └──────────────────────┴────────┴──────┴──────┘ │
+│              │                                                  │
+│              │  _CONTEXT.md: (none — detected via heuristic)    │
+│              │                                                  │
+│              │  Preprocessing detail (session-align-camila):    │
+│              │  • Speakers: Nicolas (high), Camila (high)       │
+│              │  • Corrections: 15 (Jiminy→Gemini, Bercel→Vercel)│
+│              │  • Sentence repairs: 0 (Pass C not implemented)  │
+└──────────────┴──────────────────────────────────────────────────┘
+```
+
+**Export technical evidence (from TIMining `project/timining-entregables`):**
+
+Two approaches tested in TIMining deliverables:
+
+| | Python `html2pptx.py` | Node `dom-to-pptx` (branch `experiment/dom-to-pptx`) |
+|---|---|---|
+| **Approach** | Parse HTML with BeautifulSoup → reconstruct in PPTX programmatically | Render in headless Chrome (Playwright) → capture DOM → export |
+| **Fidelity** | ~80% (reconstructs layout) | ~95% (captures actual render) |
+| **Editability** | High (text, shapes, tables all editable in PowerPoint) | Low (slides as images) |
+| **Dependencies** | `beautifulsoup4` + `python-pptx` | `playwright` + `dom-to-pptx` + local fonts |
+| **Complexity** | High (1,200 lines, parser per slide type — hardcoded for TIMining) | Medium (~250 lines, generic for any HTML) |
+| **Generalizable** | Needs refactoring to be generic | Works on any HTML out of the box |
+| **Result** | 34 slides generated, editable PPTX, "more or less well" per user | Experiment branch, visual fidelity high but not editable |
+
+**Recommendation for BL-33 Phase 1 export:** Python approach (editable > screenshots) but needs generalization. The TIMining script is a proof-of-concept — a generic version would parse PD-Spec template conventions (cards, badges, tables) instead of hardcoded slide types. The Node/Playwright approach is a viable fallback for "quick and dirty" exports of any HTML output.
+
 Acceptance criteria (Phase 1):
 - [ ] Local web app reads `02_Work/` and `03_Outputs/` directly (no JSON generation step)
 - [ ] Export dropdown: MD→DOCX, HTML→PPTX, HTML→PDF (at least one format working)
