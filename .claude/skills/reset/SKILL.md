@@ -113,30 +113,44 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
    ```markdown
    # Project Memory
 
-   > Session log and state tracker. Written by skills after each execution.
-   > The agent reads this at session start to resume context and detect manual edits.
+   > Session log and state tracker. Fallback recovery when SESSION_CHECKPOINT is unavailable.
+   > Compacted at 80 lines — old entries summarized, 3 most recent kept in full.
 
-   <!-- No sessions recorded yet. Run /analyze, /synthesis, or /ship to begin. -->
+   ## Historical Summary
+
+   <!-- Compacted summaries of past sessions appear here. -->
+
+   ---
+
+   <!-- Entry format:
+   ### YYYY-MM-DDTHH:MM — /skill or action
+   - **Request:** what was asked
+   - **Actions:** what was done
+   - **Result:** outcome
+   - **Snapshot:** sources: X | extractions: X | insights: X (V verified) | conflicts: X (P pending) | outputs: X
+   -->
    ```
 
 4. **Do NOT touch** `02_Work/_README.md` — it's a structural file, not generated content.
 
+5. **Clean ephemeral workspace** — delete all files in `02_Work/_temp/` (SESSION_CHECKPOINT.md, STRUCTURE_INDEX.md, and any other temporary files). The `_temp/` directory itself is preserved.
+
 ### Phase 2: Reset Outputs Layer (if applicable)
 
-5. **Delete all generated files** in `03_Outputs/` except:
+6. **Delete all generated files** in `03_Outputs/` except:
    - `_README.md` (structural)
    - `.gitkeep` (structural)
    - `_custom/` (freemode outputs, preserved across resets)
 
-6. **Restore `03_Outputs/PRD.html`** to its template state — use `git checkout main -- 03_Outputs/PRD.html` if on a branch, or write the template HTML directly if on main.
+7. **Restore `03_Outputs/PRD.html`** to its template state — use `git checkout main -- 03_Outputs/PRD.html` if on a branch, or write the template HTML directly if on main.
 
 ### Phase 3: Report
 
-7. **Summarize what was reset** to the user:
+8. **Summarize what was reset** to the user:
    - Files restored to template state.
    - Files deleted.
    - Reminder: "Sources in `01_Sources/` are untouched. Run `/analyze` to rebuild the knowledge base."
 
-8. **Update CLAUDE.md Current State** if insight/conflict counts changed:
+9. **Update CLAUDE.md Current State** if insight/conflict counts changed:
    - Set insights count to 0.
    - Set conflicts count to 0.

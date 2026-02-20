@@ -96,8 +96,8 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
-| `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
-| `02_Work/_temp/SESSION_CHECKPOINT.md` | Freemode session state (compaction recovery) | Yes (ephemeral, auto-managed) |
+| `02_Work/MEMORY.md` | Session log & state tracker (compacted at 80 lines) | Yes (via all skills) |
+| `02_Work/_temp/SESSION_CHECKPOINT.md` | Session state & compaction recovery (all sessions) | Yes (ephemeral, auto-managed) |
 | `02_Work/_assets/_INTAKE.md` | Asset intake log | Yes (via freemode protocol) |
 | `03_Outputs/_custom/*` | Non-pipeline deliverables | Yes (via freemode protocol) |
 | `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
@@ -297,24 +297,38 @@ No git merge needed for idea flow — just filesystem reads across worktrees.
 
 ## Session Protocol
 
-At the start of every session (new conversation), the agent must:
+### Session Start (Recovery)
 
-1. **Read `02_Work/MEMORY.md`** — understand the last known state, recent actions, and current snapshot.
-2. **Integrity check** — compare the MEMORY snapshot against the actual state of `02_Work/` files. Look for:
-   - Insights, conflicts, or system map entries not logged in MEMORY (possible manual edits).
-   - Unexpected files in `02_Work/` or `03_Outputs/` (user may have added files directly).
-   - Any discrepancies are reported to the user before proceeding.
-3. **Resume context** — use MEMORY to continue where the last session left off, without requiring the user to re-explain.
+At the start of every session (new conversation), the agent recovers state with minimal reads:
 
-After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
+1. **Read `02_Work/_temp/SESSION_CHECKPOINT.md`** (~2K tokens, single read).
+   - If the checkpoint exists and its Quantitative Snapshot is **fresh** (counts match a quick header scan of INSIGHTS_GRAPH.md and CONFLICTS.md) → resume immediately from checkpoint context. No further reads needed.
+   - If the checkpoint is **stale** (snapshot counts diverge from actual file headers) or **absent** → read `02_Work/MEMORY.md` (compacted, ~2K tokens) and rebuild context from there.
+2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and system map entries. Report discrepancies to the user before proceeding.
+3. **Resume context** — use checkpoint (preferred) or MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
-**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
-- Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
-- Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
-- Direct insight injection (e.g., from STATUS.html Add Context flow)
-- Batch operations (approve/reject multiple insights)
+### After Every Skill Execution
 
-If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
+The agent performs two writes:
+
+1. **Append to `02_Work/MEMORY.md`** — request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
+2. **Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md`** — full checkpoint with updated Quantitative Snapshot reflecting current state.
+
+**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged (insight status changes, manual edits, direct injection, batch operations). The checkpoint must also be updated.
+
+### MEMORY Compaction
+
+When `02_Work/MEMORY.md` exceeds 80 lines, the agent compacts it:
+
+1. Summarize all entries except the 3 most recent into a `## Historical Summary` section at the top.
+2. Keep the 3 most recent entries in full detail below the summary.
+3. The compacted file must stay under 80 lines.
+
+This ensures MEMORY.md remains a fast fallback read (~2K tokens) when the checkpoint is unavailable.
+
+### Post-Compaction Behavior
+
+If context compaction occurs mid-operation, the agent re-reads `02_Work/_temp/SESSION_CHECKPOINT.md` (not MEMORY.md) to recover state. The checkpoint is the primary recovery mechanism; MEMORY.md is the fallback.
 
 ## Freemode Protocol
 
@@ -329,10 +343,10 @@ Before reading raw sources, the agent checks `02_Work/` for existing knowledge:
 
 ### Session Checkpoint
 
-For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (150 lines max) that survives context compaction:
-- **What:** Project context, session goals, key decisions made, files modified, pending work.
-- **When:** Write after every significant milestone (draft approved, section completed, direction change). Re-read immediately after context compaction.
-- **Lifecycle:** Ephemeral — deleted or overwritten at the start of each new freemode session.
+The agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (150 lines max) that serves as the **primary recovery mechanism** for all sessions (pipeline and freemode):
+- **What:** Project context, quantitative snapshot (sources, extractions, insights, conflicts, outputs, last skill), session goals, key decisions made, files modified, pending work.
+- **When:** Overwritten after every skill execution or significant milestone. Re-read immediately after context compaction.
+- **Lifecycle:** Ephemeral — overwritten after every skill. Deleted at the start of each new session if no longer relevant.
 
 ### Cost Awareness
 
@@ -362,7 +376,7 @@ PD-Spec maintains multiple documentation files. Each has a specific purpose and 
 | **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
 | **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
 | **QA findings** (`docs/QA_*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
-| **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (session resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Append-only. Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
+| **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (fallback resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Compacted at 80 lines (historical summary + recent entries). Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
 | **README.md** | Project overview and onboarding. | New users, contributors | What PD-Spec is, how to get started, quick examples, architecture overview. |
 
 ### Content Flow Example
