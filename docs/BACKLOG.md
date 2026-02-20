@@ -195,13 +195,20 @@ Package as desktop app (Tauri/Electron) for non-technical users. No CLI dependen
 
 **MCP Delivery Layer — Platform-Agnostic External Publishing**
 
-PD-Spec is the invisible engine. Deliverables are published to whatever tools the client already uses via MCP. The researcher configures target platforms per project. Clients and external collaborators never see the pipeline — they only experience high-quality results delivered at astonishing speed.
+PD-Spec is the invisible engine. Deliverables are published to whatever tools the client already uses via MCP. Clients and external collaborators never see the pipeline — they only experience high-quality results delivered at astonishing speed.
+
+**Base case (personal):** Researcher publishes to their own Google Docs via MCP. No admin approval, no enterprise config. Google Docs natively exports to PDF, DOCX, etc. This is the MVP of the delivery layer — one MCP, one account, zero friction. Setup: Google Cloud project + OAuth credentials + `claude mcp add` (~15 min once).
+
+**Enterprise case:** Researcher configures target platforms per project/client. Requires either a personal account (publish → share link) or admin approval for organizational OAuth. The personal account workaround avoids enterprise OAuth restrictions entirely.
+
+> **Security note:** Enterprise Google Workspace admins can [block third-party OAuth apps](https://support.google.com/a/answer/7281227?hl=en) by default. Three workarounds: (1) publish from personal account and share, (2) request admin whitelisting, (3) use [Google's official enterprise MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services) which is more likely to pass approval.
 
 Architecture:
 ```
 PD-Spec (internal)                         Client-facing (external)
-                         ┌──MCP──→ Google Slides / Docs / Sheets
-02_Work/ → JSON content ─┼──MCP──→ Notion pages / databases
+                         ┌──MCP──→ Google Docs (base case — reports, PRDs)
+02_Work/ → JSON content ─┼──MCP──→ Google Slides / Sheets (presentations, data)
+                         ├──MCP──→ Notion pages / databases
                          ├──MCP──→ Confluence / Jira
                          ├──MCP──→ Figma (design specs, handoff)
                          ├──MCP──→ Slack / Teams (notifications, summaries)
@@ -212,7 +219,7 @@ PD-Spec (internal)                         Client-facing (external)
 
 | Platform | MCP Server | Delivery use case |
 |---|---|---|
-| Google Workspace | [Official remote MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services), [google-drive-mcp](https://github.com/piotr-agier/google-drive-mcp) | Presentations (Slides), reports (Docs), data (Sheets) |
+| Google Workspace | [Official remote MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services), [google-drive-mcp](https://github.com/piotr-agier/google-drive-mcp), [google-workspace-mcp](https://github.com/taylorwilsdon/google_workspace_mcp) | Reports (Docs), presentations (Slides), data (Sheets) |
 | Notion | [Official notion-mcp-server](https://github.com/makenotion/notion-mcp-server) | PRDs, research databases, team wikis |
 | Microsoft 365 | [Agent 365 servers](https://learn.microsoft.com/en-us/microsoft-agent-365/tooling-servers-overview), [ms-365-mcp-server](https://github.com/Softeria/ms-365-mcp-server) | PowerPoint, Word, Excel, SharePoint, Teams |
 | Atlassian | [Rovo MCP Server](https://www.atlassian.com/blog/announcements/remote-mcp-server), [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | Confluence pages, Jira epics/stories |
