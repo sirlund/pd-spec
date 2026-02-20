@@ -193,24 +193,38 @@ Acceptance criteria (Phase 2):
 
 Package as desktop app (Tauri/Electron) for non-technical users. No CLI dependency. Bundles Claude API integration. Multi-user collaboration. Cloud-hosted option. This is PD-OS scope — likely a separate repo.
 
-**External delivery via Google Workspace MCP:** PD-Spec is the invisible engine. Deliverables are published to the client's native tools via MCP — Google Slides (presentations), Google Docs (reports, PRDs), Google Sheets (benchmarks, data). Clients and external collaborators never see the pipeline; they only see high-quality results delivered at astonishing speed.
+**MCP Delivery Layer — Platform-Agnostic External Publishing**
+
+PD-Spec is the invisible engine. Deliverables are published to whatever tools the client already uses via MCP. The researcher configures target platforms per project. Clients and external collaborators never see the pipeline — they only experience high-quality results delivered at astonishing speed.
 
 Architecture:
 ```
-PD-Spec (internal)                    Client-facing (external)
-02_Work/ → JSON content ──MCP──→ Google Slides (presentations)
-                         ──MCP──→ Google Docs (reports, PRDs)
-                         ──MCP──→ Google Sheets (benchmarks)
-                         ──────→ Self-contained HTML (offline fallback)
+PD-Spec (internal)                         Client-facing (external)
+                         ┌──MCP──→ Google Slides / Docs / Sheets
+02_Work/ → JSON content ─┼──MCP──→ Notion pages / databases
+                         ├──MCP──→ Confluence / Jira
+                         ├──MCP──→ Figma (design specs, handoff)
+                         ├──MCP──→ Slack / Teams (notifications, summaries)
+                         └──────→ Self-contained HTML (offline fallback)
 ```
 
-MCP servers available: [google-slides-mcp](https://github.com/matteoantoci/google-slides-mcp), [google-drive-mcp](https://github.com/piotr-agier/google-drive-mcp) (Drive + Docs + Sheets + Slides), and [Google official remote MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services) (enterprise-ready).
+**MCP server catalog** (all have official or mature community servers):
 
-**Collaborative round-trip:** Agent pushes JSON→Google Slides via MCP → stakeholder edits in Google Slides → agent reads changes via MCP → detects delta → updates JSON → HTML regenerates with full effects. No PPTX files, no manual export, no round-trip friction.
+| Platform | MCP Server | Delivery use case |
+|---|---|---|
+| Google Workspace | [Official remote MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services), [google-drive-mcp](https://github.com/piotr-agier/google-drive-mcp) | Presentations (Slides), reports (Docs), data (Sheets) |
+| Notion | [Official notion-mcp-server](https://github.com/makenotion/notion-mcp-server) | PRDs, research databases, team wikis |
+| Microsoft 365 | [Agent 365 servers](https://learn.microsoft.com/en-us/microsoft-agent-365/tooling-servers-overview), [ms-365-mcp-server](https://github.com/Softeria/ms-365-mcp-server) | PowerPoint, Word, Excel, SharePoint, Teams |
+| Atlassian | [Rovo MCP Server](https://www.atlassian.com/blog/announcements/remote-mcp-server), [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | Confluence pages, Jira epics/stories |
+| Figma | Native MCP (desktop plugin) | Design specs, component handoff, annotations |
+| Slack | [Official Slack MCP](https://docs.slack.dev/ai/slack-mcp-server/) | Status updates, insight alerts, gap notifications |
+| Discord | [Community servers](https://www.speakeasy.com/blog/build-a-mcp-server-tutorial) | Community/open-source project updates |
 
-**Self-contained HTML** remains a delivery channel for offline use, email sharing, or contexts without Google accounts. Already proven with Reveal.js presentations and Template+JSON outputs.
+**Collaborative round-trip:** Agent pushes content via MCP → stakeholder edits in their native tool → agent reads changes via MCP → detects delta → updates JSON → all views regenerate. No file exports, no format conversion, no round-trip friction. Works with any MCP-enabled platform.
 
-**Supersedes previous export approaches** (pptxgenjs, python-pptx, Playwright) for external delivery. Local export (Phase 1 export button) may still be useful as fallback but is no longer the primary path.
+**Self-contained HTML** remains a delivery channel for offline use, email sharing, or contexts without platform accounts. Already proven with Reveal.js presentations and Template+JSON outputs.
+
+**Supersedes local file export** (pptxgenjs, python-pptx, Playwright) as the primary delivery path. Phase 1 local export button remains useful as fallback for offline or quick sharing.
 
 **User stories:**
 
