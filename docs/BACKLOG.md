@@ -80,56 +80,6 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-43] Smart Source Preprocessing — Contextual Normalization & Speaker Detection
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** Session brainstorm (2026-02-20). Evidence: Granola.ai transcripts in Chilean Spanish with garbled words, missing speakers, and crosstalk — unusable for claim extraction without preprocessing. Pattern generalizes to any noisy source type.
-
-**Problem:** Raw sources (especially meeting transcripts) arrive with noise that makes /extract unreliable: missing speaker attribution, phonetic misspellings from STT ("ciefo" → "CFO"), cut sentences, crosstalk. Current /extract treats all sources equally — no quality assessment, no cleanup. Result: garbage in, garbage out.
-
-**Solution (framework + v1 implementation):**
-
-**Framework — Contextual Glossary (shared infrastructure):**
-- Built automatically from PROJECT.md (team, roles), SOURCE_MAP (processed files), INSIGHTS_GRAPH (domain terms), EXTRACTIONS (vocabulary from prior sources), and folder context metadata.
-- Produces a glossary of ~50-200 terms: roles, acronyms, domain jargon, known speaker names/styles.
-- Accumulative: each processed source feeds the glossary for the next. More sources = better preprocessing.
-
-**Framework — Preprocessor Pipeline (integrated in /extract):**
-1. Source type detection — "is this a transcript, OCR'd PDF, chat log, etc.?"
-2. Quality assessment — "does this need preprocessing?" Clean text → skip, noisy → activate.
-3. Type-specific preprocessor (registry pattern, extensible).
-4. Context-aware normalization using glossary.
-5. Quality report with confidence levels — user approves before /extract continues.
-6. Normalized output to `02_Work/_temp/{file}_normalized.md`. Original untouched in `01_Sources/`.
-
-**v1 Implementation — Transcript Preprocessor:**
-- **Normalization:** Phonetic fuzzy matching against glossary ("ciefo"→"CFO", "queipiái"→"KPI"), sentence repair for cut-off phrases, Chilean Spanish patterns (aspiration, elision).
-- **Speaker detection:** 3-pass approach — (1) segment turns, assign temp labels [S1][S2]; (2) identify via name mentions, role/domain consistency, cross-ref with existing sources; (3) propose to user with confidence: high (named), medium (fuzzy+context), low (context only).
-- **Integrity rules:** Never invent content (cut = `[incomplete]`), crosstalk = `[crosstalk, ~Ns]`, preserve original, mandatory user approval for medium/low confidence corrections.
-
-**Future preprocessors (not in v1 scope):**
-- v2: Chat log structuring (Slack, WhatsApp)
-- v3: OCR/PDF cleanup (scanned documents)
-- v4: Whiteboard/image interpretation (requires vision)
-
-**PD-Spec advantage over generic tools:** Fireflies/Otter do speaker detection from audio features at recording time. PD-Spec does it post-hoc with accumulated project knowledge — the glossary cross-references against known stakeholders, interview vocabulary, and insight attribution. Triple confirmation: phonetics + known role + thematic context.
-
-**Acceptance criteria (v1):**
-- [ ] Contextual glossary builder (reads PROJECT.md, SOURCE_MAP, INSIGHTS_GRAPH, EXTRACTIONS)
-- [ ] Source type detection in /extract (transcript vs other)
-- [ ] Quality assessment gate (clean → skip, noisy → preprocess)
-- [ ] Transcript preprocessor: phonetic normalization + sentence repair
-- [ ] Speaker detection: 3-pass (segment → identify → propose)
-- [ ] Confidence tagging (high/medium/low) on all corrections
-- [ ] Quality report with mandatory user approval
-- [ ] Normalized output in `02_Work/_temp/`, original preserved
-- [ ] Integrity rules enforced (no invention, crosstalk marked, original preserved)
-
-**User stories:**
-> As a researcher, I can drop a messy Granola transcript into 01_Sources/ and /extract handles cleanup automatically — I just approve the corrections.
-> As a project lead, speaker attribution in transcripts means I know WHO said what, preserving PD-Spec's voice hierarchy (direct-quotes > observations > hypotheses).
-
 ---
 
 ---
@@ -183,7 +133,13 @@ Decision deferred — revisit when a real project hits the ceiling.
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-41 — v4.3 to v4.11.0</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-43 — v4.3 to v4.12.0</strong> (click to expand)</summary>
+
+### [BL-43] Smart Source Preprocessing — Transcript Normalization + Speaker Detection — v4.12.0
+
+**Implemented:** 2026-02-20. Phase 1.5 added to /extract: detects noisy transcript sources (metadata `Source Type: transcript` or content heuristic), gathers project context as an in-memory glossary (no persistent file), normalizes via 3 passes (speaker detection, phonetic correction, sentence repair), presents quality report for mandatory user approval, writes normalized output to `02_Work/_temp/`. Phase 2 reads from normalized version via redirect map. v1 scope: transcripts only (OCR, chat-log reserved for v2). Simplified from original proposal: no glossary file, no preprocessor registry, no language-specific rules, no new SOURCE_MAP statuses.
+
+---
 
 ### [BL-41] State Management — MEMORY Compaction + Checkpoint Recovery — v4.11.0
 

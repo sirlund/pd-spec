@@ -1,5 +1,38 @@
 # Changelog
 
+## [4.12.0] — 2026-02-20
+
+### Highlights
+
+**Messy transcripts now get cleaned up before extraction.** Drop a Granola, Otter, or Fireflies transcript into `01_Sources/` and `/extract` detects it, identifies speakers, fixes phonetic errors ("ciefo" → "CFO"), repairs broken sentences, and presents all corrections for your approval — before a single claim is extracted. The original file stays untouched in `01_Sources/`.
+
+### Changes
+
+- **BL-43 — Smart Source Preprocessing.** New Phase 1.5 in `/extract` between source discovery and claim extraction. Detects transcript candidates (via `Source Type: transcript` metadata or content heuristics), gathers project context from Work layer files as an in-memory glossary, and normalizes with 3 passes: speaker detection (segment → identify → assign confidence), phonetic correction against project terms, and sentence repair (`[incomplete]`, `[crosstalk]`, `[unintelligible]` markers). Mandatory propose-before-execute with speaker table + corrections table. Normalized files written to `02_Work/_temp/`, read via redirect in Phase 2. v1: transcripts only.
+- **Source type metadata** — `_CONTEXT_TEMPLATE.md` and `_SOURCE_TEMPLATE.md` now support `transcript`, `ocr`, and `chat-log` types (ocr/chat-log reserved for future v2 preprocessing).
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 1.5 (steps 13-17), Phase 2 preprocessing redirect, Phase 3 Preprocessed metadata line, Phase 5 preprocessing stats in MEMORY entry
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Extended Source Type values + descriptions for transcript/ocr/chat-log
+- `01_Sources/_SOURCE_TEMPLATE.md` — Optional Source Type field
+- `02_Work/_README.md` — _temp/ description includes preprocessed source files
+
+**Design decisions (simplifications from original BL-43 proposal):**
+- No glossary file — agent reads Work layer files into context (no persistence needed)
+- No preprocessor registry — instructions inline in Phase 1.5, future types added as subsections
+- No language-specific rules — LLM handles fuzzy matching natively
+- No new SOURCE_MAP statuses — preprocessing is transparent via redirect map + Preprocessed metadata
+
+**BACKLOG impact:**
+- BL-43: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.11.0] — 2026-02-20
 
 ### Highlights
