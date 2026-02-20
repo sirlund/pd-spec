@@ -165,20 +165,28 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    **Metadata signal:** Check `_CONTEXT.md` or file frontmatter for `Source Type: transcript` (or `ocr`, `chat-log` — future v2). If found, the file is a candidate.
 
    **Content heuristic:** For files without explicit metadata, scan the first 50 lines for STT patterns:
-   - Speaker labels with timestamps (`[00:12:34]`, `Speaker 1:`, `John:`)
-   - Repeated filler words (`um`, `uh`, `like`, `you know`) at high density
-   - Sentence fragments without punctuation or capitalization
-   - Phonetically plausible but contextually wrong words
+   - **Pseudo-metadata block:** Lines like `Meeting Title:`, `Date:`, `Meeting participants:`, `Transcript:` — common in STT exports (Granola, Otter, Fireflies). Often preceded by an AI-generated summary paragraph.
+   - **Speaker labels with timestamps:** `[00:12:34]`, `Speaker 1:`, `Me:`, `Them:`, `John:`
+   - **Filler word density:** `um`, `uh`, `like`, `you know`, `o sea`, `¿cachái?` at high frequency
+   - **Sentence fragments** without punctuation or capitalization
+   - **Phonetically plausible but contextually wrong words**
 
    If either signal matches, add the file to the preprocessing queue. If no candidates are found, log `ℹ️ No preprocessing candidates detected` and skip to Phase 2.
 
-14. **Gather project context** — Build a contextual glossary in working memory (no file written). Read:
+14. **Gather project context** — Build a contextual glossary in working memory (no file written). Read from two layers:
+
+   **External context (Work layer + metadata):**
    - `PROJECT.md` — project name, domain, key terms
    - Folder `_CONTEXT.md` files — participant names, session context, dates
    - `02_Work/EXTRACTIONS.md` headers — previously extracted source metadata (participants, types)
    - `02_Work/INSIGHTS_GRAPH.md` — domain-specific terms, proper nouns, acronyms already established
 
-   This context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
+   **Embedded context (from the transcript itself):**
+   - **AI-generated summary** — STT tools often prepend an AI summary paragraph before the transcript. Extract domain terms, participant roles, and topic keywords from it.
+   - **Pseudo-metadata** — `Meeting Title:`, `Date:`, `Meeting participants:` lines. Extract participant names and use them as speaker identification candidates.
+   - These embedded signals are high-value: they come from the same session and often contain correctly-spelled versions of terms that are garbled in the transcript body.
+
+   This combined context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
 
 15. **Normalize — Transcript Preprocessing (v1):**
 
