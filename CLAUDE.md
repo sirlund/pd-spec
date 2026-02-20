@@ -329,7 +329,7 @@ Before reading raw sources, the agent checks `02_Work/` for existing knowledge:
 
 ### Session Checkpoint
 
-For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (50 lines max) that survives context compaction:
+For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (150 lines max) that survives context compaction:
 - **What:** Project context, session goals, key decisions made, files modified, pending work.
 - **When:** Write after every significant milestone (draft approved, section completed, direction change). Re-read immediately after context compaction.
 - **Lifecycle:** Ephemeral — deleted or overwritten at the start of each new freemode session.
