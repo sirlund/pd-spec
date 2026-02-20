@@ -25,7 +25,19 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 Local web app that reads `02_Work/` files directly — no generation step, always live.
 
-Tech stack: HTML + JS + minimal server (Python or Node). File watcher + WebSocket for auto-refresh when MD files change on disk.
+**Tech stack:** React + shadcn/ui frontend, Node/Express backend. In local, bundle size is irrelevant (no network, no CDN) — React's ecosystem (component libraries, state management, routing) pays for itself in development speed. shadcn provides accessible, well-designed components without custom CSS.
+
+**Shared server architecture:** The Node server is dual-purpose infrastructure — it serves the webapp AND provides export endpoints. This amortizes the dependency cost:
+
+| Capability | Dependency | Used by |
+|---|---|---|
+| Live viewer + auto-refresh | Express + chokidar + WebSocket | Viewer |
+| MD rendering | marked/remark | Viewer |
+| Export PPTX | python-pptx (Python sidecar) or Playwright | Export |
+| Export PDF | Playwright (print-to-PDF) or weasyprint | Export |
+| Export DOCX | pandoc (CLI) | Export |
+
+Single entry point: `npm install && npm start`. Node is already present on any machine running Claude Code.
 
 Features:
 - **PD-Spec semantic rendering** — marked.js with custom extensions: `[IG-XX]` → blue badge, `[CF-XX]` → red badge, status → colored tags, markdown tables → sortable tables
