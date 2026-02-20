@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.10.1] — 2026-02-20
+
+### Highlights
+
+**Session checkpoints can now hold 3x more context.** The limit on `SESSION_CHECKPOINT.md` increased from 50 to 150 lines, so intensive freemode sessions no longer lose critical state during compaction. Token cost: ~1% of context window — negligible.
+
+### Changes
+
+- **BL-40 — Session Checkpoint limit increase.** `CLAUDE.md` Freemode Protocol: `50 lines max` → `150 lines max`.
+
+---
+
 ## [4.10.0] — 2026-02-18
 
 ### Highlights

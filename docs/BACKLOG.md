@@ -64,7 +64,13 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-39 — v4.3 to v4.10</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-40 — v4.3 to v4.10.1</strong> (click to expand)</summary>
+
+### [BL-40] Session Checkpoint Limit Increase — v4.10.1
+
+**Implemented:** 2026-02-20. Increased `SESSION_CHECKPOINT.md` limit from 50 to 150 lines in CLAUDE.md. The 50-line cap was too restrictive for intensive freemode sessions; 150 lines (~2K tokens, 1.1% of context window) provides 3x more room with negligible performance impact.
+
+---
 
 ### [BL-39] Artifact Normalization — v4.10
 
