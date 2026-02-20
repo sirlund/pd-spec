@@ -132,50 +132,6 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-41] State Management — MEMORY Compaction + Checkpoint Recovery
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** Session brainstorm (2026-02-20). Evidence: TIMining project — MEMORY.md 122 lines (growing unbounded), HISTORY ad-hoc 619 lines, post-compaction recovery costs ~11K tokens across 5-6 reads.
-
-**Problem:** Post-compaction, the agent reads MEMORY.md (full, append-only, unbounded), SESSION_CHECKPOINT (compact but shallow), and does integrity checks across 5 Work layer files. Total cost: ~11K tokens, 5-6 tool calls, fragile recovery. The ad-hoc HISTORY log in TIMining (619 lines) proved most useful because it captured *reasoning*, not just actions — but it's not formalized and costs ~7.5K tokens to read.
-
-**Solution (3 components):**
-
-1. **MEMORY.md compaction** — when >80 lines, the agent summarizes entries older than the current session into a "Historical Summary" section at the top. Recent entries stay detailed. Keeps MEMORY useful without unbounded growth.
-
-2. **SESSION_CHECKPOINT enrichment** — expand the checkpoint format to include:
-   - Snapshot cuantitativo (sources/insights/conflicts counts + statuses)
-   - Key Decisions section (absorbs the value of the ad-hoc HISTORY pattern — captures *why*, not just *what*)
-   - Files modified this session
-   - Pending work
-
-3. **Session protocol optimization** — formalize single-read recovery in CLAUDE.md:
-   - Post-compaction: read CHECKPOINT first (1 read, ~2K tokens)
-   - If checkpoint fresh → resume immediately
-   - If checkpoint stale/absent → read compacted MEMORY
-   - Integrity check ONLY if discrepancy detected
-   - Result: 5-6 reads → 1-2 reads, ~11K → ~2K tokens (5x reduction)
-
-**HISTORY pattern:** Not formalized as a separate file. Its value (decisions + reasoning) is absorbed into the enriched CHECKPOINT. Eliminates the need for a third state file.
-
-**Scalability to `/state` skill:** This proposal defines the data structures and rules. A future `/state` skill would automate them:
-- `/state save` = compact MEMORY + write CHECKPOINT
-- `/state load` = read CHECKPOINT + integrity check
-- `/state` = show state summary in terminal
-
-The structures are the same — the skill just puts a button on top.
-
-**Acceptance criteria:**
-- [ ] CLAUDE.md: MEMORY compaction rule (>80 lines → summarize old entries)
-- [ ] CLAUDE.md: SESSION_CHECKPOINT expanded format (snapshot + key decisions + files + pending)
-- [ ] CLAUDE.md: Session protocol updated with single-read recovery order
-- [ ] HISTORY pattern documented as "absorbed into CHECKPOINT" (no separate file)
-
-**User stories:**
-> As an agent post-compaction, I can recover full context from a single file read instead of 5-6 scattered reads.
-> As a user, I stop seeing "where were we?" questions after compaction — the agent just resumes.
-
 ---
 
 ### [BL-42] Work Layer Viewer — Live MD Rendering with `/view` Skill
@@ -227,7 +183,13 @@ The structures are the same — the skill just puts a button on top.
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-40 — v4.3 to v4.10.1</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-41 — v4.3 to v4.11.0</strong> (click to expand)</summary>
+
+### [BL-41] State Management — MEMORY Compaction + Checkpoint Recovery — v4.11.0
+
+**Implemented:** 2026-02-20. SESSION_CHECKPOINT becomes primary recovery mechanism for all sessions (not just freemode). MEMORY.md compacted at 80 lines (historical summary + 3 most recent entries). Session protocol rewritten: read checkpoint first (1 read, ~2K tokens), fall back to MEMORY only if checkpoint stale/absent. Integrity check only on count divergence. Quantitative Snapshot added to checkpoint template. `/reset` now cleans `02_Work/_temp/`.
+
+---
 
 ### [BL-40] Session Checkpoint Limit Increase — v4.10.1
 

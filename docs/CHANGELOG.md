@@ -1,5 +1,31 @@
 # Changelog
 
+## [4.11.0] — 2026-02-20
+
+### Highlights
+
+**Post-compaction recovery now costs 1 read instead of 6.** The agent reads a single checkpoint file (~2K tokens) to resume where it left off — down from ~11K tokens across 5-6 scattered file reads. MEMORY.md auto-compacts at 80 lines, and the session checkpoint now works for all sessions (pipeline and freemode), not just freemode.
+
+### Changes
+
+- **BL-41 — State Management.** SESSION_CHECKPOINT becomes the primary recovery mechanism. MEMORY.md compacted at 80 lines (historical summary + 3 most recent entries in full). Session protocol rewritten with single-read recovery order. Quantitative Snapshot added to checkpoint format (source/insight/conflict counts for instant integrity checks). `/reset` now cleans `02_Work/_temp/` ephemeral workspace.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — Sources of Truth table (MEMORY + CHECKPOINT rows), Session Protocol (full rewrite: 3 subsections → 5), Freemode Protocol (checkpoint scoping), Documentation Guidelines (MEMORY.md row)
+- `02_Work/MEMORY.md` — New template with Historical Summary section and Snapshot entry format
+- `02_Work/_README.md` — Enriched SESSION_CHECKPOINT template with Quantitative Snapshot section
+- `.claude/skills/reset/SKILL.md` — Synced inline MEMORY template, added step 5 (_temp/ cleanup), renumbered steps
+
+**BACKLOG impact:**
+- BL-41: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.10.1] — 2026-02-20
 
 ### Highlights
