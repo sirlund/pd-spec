@@ -579,13 +579,15 @@ Process all files in single pass (step 12 below)
 
 ### Phase 4c: Cleanup
 
-15. **Clean temporary directory:**
+15. **Clean temporary conversion files** (preserve checkpoint and preprocessed files):
    ```bash
-   rm -rf 02_Work/_temp
+   # Remove converted files but preserve SESSION_CHECKPOINT.md and preprocessed sources
+   find 02_Work/_temp -type f ! -name 'SESSION_CHECKPOINT.md' ! -name '*_normalized.md' -delete 2>/dev/null
    ```
-   - Removes all converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - Removes converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - **Preserves** `SESSION_CHECKPOINT.md` (primary recovery mechanism)
+   - **Preserves** `*_normalized.md` (preprocessed sources for Phase 2 redirect)
    - Only runs after all batches complete (or single pass completes)
-   - Prevents repo bloat with temporary conversion files
 
 ### Phase 5: Write to MEMORY.md
 

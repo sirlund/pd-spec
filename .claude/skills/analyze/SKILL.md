@@ -379,7 +379,13 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`.
+
+    **IMPORTANT: Count from files, not from memory.** Before writing the snapshot, verify counts by scanning the actual files:
+    - Insights: count `### [IG-` headers in `INSIGHTS_GRAPH.md` (includes SYNTH, atomic, and all statuses)
+    - Conflicts: count `### [CF-` headers in `CONFLICTS.md`
+    - Do NOT rely on in-memory tallies — they may miss synthesized insights or convergence-created entries.
+
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze [--full]
     - **Request:** /analyze [incremental|full]
@@ -391,8 +397,8 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
       - Convergence updated: M existing insights
       - Ambiguities logged: [AMB-XX] count
       - Conflicts detected: K
-    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED) · C conflicts/ambiguities PENDING
-    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED) · C conflicts PENDING · O outputs
+    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts/ambiguities PENDING
+    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts PENDING · O outputs
     ```
 
 ### Phase 4b: Research Brief
