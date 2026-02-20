@@ -90,50 +90,63 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 **Problem:** The Session Protocol writes MEMORY.md + SESSION_CHECKPOINT.md only **after** skill execution completes. Heavy skills (/extract with preprocessing, /analyze on large projects) can consume enough context to trigger compaction before finishing. When this happens, mid-skill state is lost with no recovery mechanism.
 
-**Option A — Mid-skill checkpoints (practical, deterministic):**
+**Option A — Task-aware preventive checkpoints (recommended):**
 
-Add checkpoint writes at phase boundaries within heavy skills. No token estimation needed — just write after each phase completes:
+The agent can't query remaining context, but it CAN estimate task cost before starting. The rule:
+
+> Before any operation expected to consume >30% of the context window, write a preventive checkpoint with current state + remaining plan.
+
+Heuristics the agent already knows:
+- Number of files to process (from SOURCE_MAP / discovery)
+- Approximate file sizes (from Read / file metadata)
+- Whether preprocessing is involved (Phase 1.5 = high cost)
+- Historical patterns (60 files ≈ full context, 10 files ≈ 30%)
+
+Implementation: add a "cost gate" instruction at the start of heavy skills:
+
+```
+Before Phase 2 (extraction / analysis):
+  IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing_active:
+    Write preventive checkpoint: {phase_completed, files_remaining, state_so_far}
+  ALSO: write checkpoint after every 10 files processed (batch boundary)
+```
+
+Cost: 1-3 extra writes per heavy skill run (~1KB each). Zero overhead for light operations.
+
+Advantage over deterministic phase-boundary writes: only triggers when the task is actually large enough to risk compaction. A 3-file /extract doesn't need mid-skill checkpoints.
+
+**Option B — Deterministic phase-boundary checkpoints (fallback):**
+
+Write after every phase completes, regardless of task size:
 
 ```
 /extract:
   Phase 1 (discovery)      → checkpoint: file list, delta, mode
-  Phase 1.5 (preprocessing)→ checkpoint: normalized files written, redirect map, corrections summary
-  Phase 2 (per batch/file) → checkpoint: last batch completed, claims so far
-  Phase 4 (report)         → checkpoint: final state (existing behavior)
+  Phase 1.5 (preprocessing)→ checkpoint: normalized files, redirect map
+  Phase 2 (per batch/file) → checkpoint: last batch, claims so far
+  Phase 4 (report)         → checkpoint: final state (existing)
 
 /analyze:
   Phase 1 (read extractions) → checkpoint: claims loaded, mode
-  Phase 2 (per batch)        → checkpoint: insights so far, conflicts so far
-  Phase 4 (report)           → checkpoint: final state (existing behavior)
+  Phase 2 (per batch)        → checkpoint: insights/conflicts so far
+  Phase 4 (report)           → checkpoint: final state (existing)
 ```
 
-Cost: ~5 extra writes per /extract run. Each write is small (~1KB). Negligible vs. the cost of losing 10 minutes of work.
+Cost: ~5 extra writes per run. Simple but writes unnecessarily on small tasks.
 
-Recovery: post-compaction, agent reads checkpoint → sees which phase completed last → resumes from there instead of restarting.
+**Option C — Context-aware preemptive save (advanced, future):**
 
-**Option B — Context-aware preemptive save (advanced, heuristic):**
+Agent estimates token consumption via proxy (tool call count, file sizes read) and triggers emergency checkpoint at ~75% usage. Challenges: approximate estimation, calibration risk, latency overhead. Only needed if Option A proves insufficient for very long operations.
 
-Agent estimates its own context consumption and triggers a preventive checkpoint when approaching the compaction threshold (~80% usage):
-
-1. After each major operation (file read, batch write), estimate tokens consumed so far
-2. If estimated usage > 75% of context window → write emergency checkpoint + MEMORY entry
-3. Continue working — if compaction hits, checkpoint is fresh
-
-Challenges:
-- Token estimation is approximate (agent doesn't have exact token counts)
-- Adds latency to every operation (estimation overhead)
-- Threshold calibration: too aggressive = unnecessary writes, too conservative = misses the window
-
-Could use a proxy: count tool calls as rough token estimate (each file read ≈ 1-3K tokens, each write ≈ 0.5K). After N tool calls without a checkpoint, force one.
-
-**Recommendation:** Start with Option A (deterministic, zero-risk). Option B as future enhancement if mid-skill checkpoints prove insufficient for very long operations.
+**Recommendation:** Option A (task-aware). Simple, no infrastructure dependency, leverages information the agent already has. Option B as fallback if heuristic estimation proves unreliable.
 
 **Acceptance criteria:**
-- [ ] /extract writes checkpoint after Phase 1, Phase 1.5, and each batch in Phase 2
-- [ ] /analyze writes checkpoint after Phase 1 and each batch in Phase 2
-- [ ] Checkpoint includes `resume_from: phase_N` field for post-compaction recovery
+- [ ] Cost gate at start of /extract and /analyze: estimate task size, write preventive checkpoint if >30% context risk
+- [ ] Batch-boundary checkpoint every 10 files during Phase 2 (both skills)
+- [ ] Checkpoint includes `resume_from: phase_N` field + `files_remaining` list for post-compaction recovery
 - [ ] Post-compaction: agent reads checkpoint, detects incomplete skill, resumes from last completed phase
 - [ ] No duplicate work: already-written extractions/insights preserved on resume
+- [ ] Small tasks (<10 files, no preprocessing) skip mid-skill checkpoints entirely
 
 ---
 
