@@ -61,6 +61,150 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 ---
 
+### [BL-43] Smart Source Preprocessing — Contextual Normalization & Speaker Detection
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** Session brainstorm (2026-02-20). Evidence: Granola.ai transcripts in Chilean Spanish with garbled words, missing speakers, and crosstalk — unusable for claim extraction without preprocessing. Pattern generalizes to any noisy source type.
+
+**Problem:** Raw sources (especially meeting transcripts) arrive with noise that makes /extract unreliable: missing speaker attribution, phonetic misspellings from STT ("ciefo" → "CFO"), cut sentences, crosstalk. Current /extract treats all sources equally — no quality assessment, no cleanup. Result: garbage in, garbage out.
+
+**Solution (framework + v1 implementation):**
+
+**Framework — Contextual Glossary (shared infrastructure):**
+- Built automatically from PROJECT.md (team, roles), SOURCE_MAP (processed files), INSIGHTS_GRAPH (domain terms), EXTRACTIONS (vocabulary from prior sources), and folder context metadata.
+- Produces a glossary of ~50-200 terms: roles, acronyms, domain jargon, known speaker names/styles.
+- Accumulative: each processed source feeds the glossary for the next. More sources = better preprocessing.
+
+**Framework — Preprocessor Pipeline (integrated in /extract):**
+1. Source type detection — "is this a transcript, OCR'd PDF, chat log, etc.?"
+2. Quality assessment — "does this need preprocessing?" Clean text → skip, noisy → activate.
+3. Type-specific preprocessor (registry pattern, extensible).
+4. Context-aware normalization using glossary.
+5. Quality report with confidence levels — user approves before /extract continues.
+6. Normalized output to `02_Work/_temp/{file}_normalized.md`. Original untouched in `01_Sources/`.
+
+**v1 Implementation — Transcript Preprocessor:**
+- **Normalization:** Phonetic fuzzy matching against glossary ("ciefo"→"CFO", "queipiái"→"KPI"), sentence repair for cut-off phrases, Chilean Spanish patterns (aspiration, elision).
+- **Speaker detection:** 3-pass approach — (1) segment turns, assign temp labels [S1][S2]; (2) identify via name mentions, role/domain consistency, cross-ref with existing sources; (3) propose to user with confidence: high (named), medium (fuzzy+context), low (context only).
+- **Integrity rules:** Never invent content (cut = `[incomplete]`), crosstalk = `[crosstalk, ~Ns]`, preserve original, mandatory user approval for medium/low confidence corrections.
+
+**Future preprocessors (not in v1 scope):**
+- v2: Chat log structuring (Slack, WhatsApp)
+- v3: OCR/PDF cleanup (scanned documents)
+- v4: Whiteboard/image interpretation (requires vision)
+
+**PD-Spec advantage over generic tools:** Fireflies/Otter do speaker detection from audio features at recording time. PD-Spec does it post-hoc with accumulated project knowledge — the glossary cross-references against known stakeholders, interview vocabulary, and insight attribution. Triple confirmation: phonetics + known role + thematic context.
+
+**Acceptance criteria (v1):**
+- [ ] Contextual glossary builder (reads PROJECT.md, SOURCE_MAP, INSIGHTS_GRAPH, EXTRACTIONS)
+- [ ] Source type detection in /extract (transcript vs other)
+- [ ] Quality assessment gate (clean → skip, noisy → preprocess)
+- [ ] Transcript preprocessor: phonetic normalization + sentence repair
+- [ ] Speaker detection: 3-pass (segment → identify → propose)
+- [ ] Confidence tagging (high/medium/low) on all corrections
+- [ ] Quality report with mandatory user approval
+- [ ] Normalized output in `02_Work/_temp/`, original preserved
+- [ ] Integrity rules enforced (no invention, crosstalk marked, original preserved)
+
+**User stories:**
+> As a researcher, I can drop a messy Granola transcript into 01_Sources/ and /extract handles cleanup automatically — I just approve the corrections.
+> As a project lead, speaker attribution in transcripts means I know WHO said what, preserving PD-Spec's voice hierarchy (direct-quotes > observations > hypotheses).
+
+---
+
+### [BL-41] State Management — MEMORY Compaction + Checkpoint Recovery
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** Session brainstorm (2026-02-20). Evidence: TIMining project — MEMORY.md 122 lines (growing unbounded), HISTORY ad-hoc 619 lines, post-compaction recovery costs ~11K tokens across 5-6 reads.
+
+**Problem:** Post-compaction, the agent reads MEMORY.md (full, append-only, unbounded), SESSION_CHECKPOINT (compact but shallow), and does integrity checks across 5 Work layer files. Total cost: ~11K tokens, 5-6 tool calls, fragile recovery. The ad-hoc HISTORY log in TIMining (619 lines) proved most useful because it captured *reasoning*, not just actions — but it's not formalized and costs ~7.5K tokens to read.
+
+**Solution (3 components):**
+
+1. **MEMORY.md compaction** — when >80 lines, the agent summarizes entries older than the current session into a "Historical Summary" section at the top. Recent entries stay detailed. Keeps MEMORY useful without unbounded growth.
+
+2. **SESSION_CHECKPOINT enrichment** — expand the checkpoint format to include:
+   - Snapshot cuantitativo (sources/insights/conflicts counts + statuses)
+   - Key Decisions section (absorbs the value of the ad-hoc HISTORY pattern — captures *why*, not just *what*)
+   - Files modified this session
+   - Pending work
+
+3. **Session protocol optimization** — formalize single-read recovery in CLAUDE.md:
+   - Post-compaction: read CHECKPOINT first (1 read, ~2K tokens)
+   - If checkpoint fresh → resume immediately
+   - If checkpoint stale/absent → read compacted MEMORY
+   - Integrity check ONLY if discrepancy detected
+   - Result: 5-6 reads → 1-2 reads, ~11K → ~2K tokens (5x reduction)
+
+**HISTORY pattern:** Not formalized as a separate file. Its value (decisions + reasoning) is absorbed into the enriched CHECKPOINT. Eliminates the need for a third state file.
+
+**Scalability to `/state` skill:** This proposal defines the data structures and rules. A future `/state` skill would automate them:
+- `/state save` = compact MEMORY + write CHECKPOINT
+- `/state load` = read CHECKPOINT + integrity check
+- `/state` = show state summary in terminal
+
+The structures are the same — the skill just puts a button on top.
+
+**Acceptance criteria:**
+- [ ] CLAUDE.md: MEMORY compaction rule (>80 lines → summarize old entries)
+- [ ] CLAUDE.md: SESSION_CHECKPOINT expanded format (snapshot + key decisions + files + pending)
+- [ ] CLAUDE.md: Session protocol updated with single-read recovery order
+- [ ] HISTORY pattern documented as "absorbed into CHECKPOINT" (no separate file)
+
+**User stories:**
+> As an agent post-compaction, I can recover full context from a single file read instead of 5-6 scattered reads.
+> As a user, I stop seeing "where were we?" questions after compaction — the agent just resumes.
+
+---
+
+### [BL-42] Work Layer Viewer — Live MD Rendering with `/view` Skill
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Session brainstorm (2026-02-20). Evidence: TIMining project — repeated pattern of duplicating MD content to HTML for human consumption (/visualize, /ship status). Each duplication costs tokens and HTML drifts stale when MD changes.
+
+**Problem:** Work layer files (INSIGHTS_GRAPH.md, CONFLICTS.md, SYSTEM_MAP.md, etc.) are the source of truth but not human-friendly. Current workaround: `/visualize` and `/ship` generate HTML copies — costs tokens, creates duplication, output goes stale immediately when MD changes.
+
+**Solution (2 components):**
+
+1. **Semantic viewer** — a single HTML file (`03_Outputs/_viewer/index.html`) with:
+   - marked.js for MD→HTML rendering
+   - ~100-150 lines of PD-Spec JS that understands conventions:
+     - `[IG-XX]` → clickeable blue badge
+     - `**Status:** VERIFIED` → green badge
+     - `[CF-XX]` → red badge with cross-ref link
+     - Markdown tables → sortable tables
+   - File selector menu listing all `02_Work/*.md` files
+   - CSS consistent with existing template design system (`_base.css`)
+   - Always live — reads MD on load, no generation step
+
+2. **`/view` skill** — eliminates friction of running a local server:
+   - Starts `python3 -m http.server 8420` in background (if not already running)
+   - Opens `http://localhost:8420/03_Outputs/_viewer/index.html` in default browser
+   - Accepts argument: `/view insights` → navigates directly to INSIGHTS_GRAPH.md
+   - Detects if server already running (no duplicate processes)
+
+**Impact on existing skills:**
+- `/visualize` becomes candidate for deprecation (or reduced to "export Mermaid diagrams only")
+- `/ship` unaffected — still generates formal stakeholder deliverables with full design
+- The viewer is for internal team use, not client-facing
+
+**Technical note:** Requires HTTP server (not file://) for fetch() to load MD files. The `/view` skill handles this automatically.
+
+**Acceptance criteria:**
+- [ ] `03_Outputs/_viewer/index.html` — generic MD viewer with PD-Spec semantics
+- [ ] `.claude/skills/view/SKILL.md` — `/view [file]` skill definition
+- [ ] Viewer renders all Work layer MDs with badges, cross-refs, sortable tables
+- [ ] Local server lifecycle managed by skill (start/detect/reuse)
+
+**User stories:**
+> As a researcher, I can read Work layer insights with human-friendly formatting without waiting for the agent to generate HTML.
+> As a user, I type `/view` and immediately see my project data in the browser — no manual server setup.
+
+---
+
 ## ✅ Implemented (Archive)
 
 <details>
