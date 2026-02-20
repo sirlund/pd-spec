@@ -8,58 +8,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## 🎯 Proposed (Pending Implementation)
 
-### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v2 (2026-02-15)
-
-Typography, micro-interactions, data viz, accessibility improvements for all templates.
-
-**Evidence from TIMining entregables (2026-02-17):**
-- Dark mode + light/dark toggle with localStorage
-- JetBrains Mono font, fichas 2x2 with sidebar layout
-- Timeline D→A→R pattern
-- Clearbit logos with fallback
-- Source: `pds--timining/02_Work/IDEAS.md` → idea "Upgrade de template de presentación"
-
----
-
-### [BL-22] RAG Layer — Scale Source Ingestion Beyond Context Window
-
-**Status:** Proposed
-**Priority:** Low (becomes High at 100+ sources)
-**Depends on:** BL-17
-
-**Problem:** PD-Spec reads all sources sequentially. Works for 10-20 sources. At 57+ files, context compaction causes state loss and file skipping. NotebookLM handles 100+ via RAG.
-
-**Solution:** BM25 keyword search (zero deps) or embeddings + vector store. Index claims as extracted, query for relevant context instead of loading all.
-
-**Scaling strategy:**
-- BL-29 (batching): Handle 40-100 files ✅ done
-- BL-31 (express mode): Handle 100-200 files by deferring heavy files
-- BL-22 (RAG layer): Handle 200+ files with embeddings + retrieval
-
-**Re-evaluation note (2026-02-20):**
-
-The 3-layer compression model may make full RAG unnecessary. Evidence from TIMining (61 files, 1,238 claims → 21 insights): downstream skills (/synthesis, /ship) never see raw volume. Analysis by pipeline phase:
-
-| Phase | Needs RAG? | Why |
-|---|---|---|
-| /extract | No — already incremental (file-by-file, BL-29 batching) |
-| /analyze | Maybe — reads full EXTRACTIONS.md. Worked at 1,238 claims. Bottleneck at ~5,000+ |
-| /synthesis | No — works on INSIGHTS_GRAPH (21 items in TIMining, already compressed) |
-| /ship | No — works on Work layer (already synthesized) |
-| Freemode | Maybe — cross-source queries, but BL-41 (state management) reduces need |
-
-Options under consideration:
-- **A) Keep as-is** — Low priority, activate when a project hits 200+ sources
-- **B) Reformulate as "Smart Context Loading"** — no embeddings/vector store, just thematic clustering of claims so /analyze processes by topic instead of sequentially. Lighter, no infra deps.
-- **C) Kill** — Homer's Car. The scaling strategy already covers realistic project sizes. Projects with 200+ sources may need sub-project decomposition, not RAG.
-
-Decision deferred — revisit when a real project hits the ceiling.
-
----
+> Ordered by priority: P1 → P2 → P3 → Low.
 
 ### [BL-33] Dashboard Enhancements — UX Fixes from QA v3
 
@@ -77,76 +26,6 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 **User story:**
 > As a researcher, I expect the dashboard to show clear pipeline progress, actionable evidence gaps, and navigable cross-references.
-
----
-
----
-
-### [BL-45] Mid-Skill Checkpoints — Survive Context Compaction During Long Operations
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** QA v4 (2026-02-20). Evidence: context compacted mid-/extract during Phase 1.5 preprocessing. MEMORY and SESSION_CHECKPOINT were not yet written (protocol only writes after skill completion). All in-memory state lost — preprocessing results, redirect map, detection findings. Agent recovered by re-reading files but lost ~8 minutes of work.
-
-**Problem:** The Session Protocol writes MEMORY.md + SESSION_CHECKPOINT.md only **after** skill execution completes. Heavy skills (/extract with preprocessing, /analyze on large projects) can consume enough context to trigger compaction before finishing. When this happens, mid-skill state is lost with no recovery mechanism.
-
-**Option A — Task-aware preventive checkpoints (recommended):**
-
-The agent can't query remaining context, but it CAN estimate task cost before starting. The rule:
-
-> Before any operation expected to consume >30% of the context window, write a preventive checkpoint with current state + remaining plan.
-
-Heuristics the agent already knows:
-- Number of files to process (from SOURCE_MAP / discovery)
-- Approximate file sizes (from Read / file metadata)
-- Whether preprocessing is involved (Phase 1.5 = high cost)
-- Historical patterns (60 files ≈ full context, 10 files ≈ 30%)
-
-Implementation: add a "cost gate" instruction at the start of heavy skills:
-
-```
-Before Phase 2 (extraction / analysis):
-  IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing_active:
-    Write preventive checkpoint: {phase_completed, files_remaining, state_so_far}
-  ALSO: write checkpoint after every 10 files processed (batch boundary)
-```
-
-Cost: 1-3 extra writes per heavy skill run (~1KB each). Zero overhead for light operations.
-
-Advantage over deterministic phase-boundary writes: only triggers when the task is actually large enough to risk compaction. A 3-file /extract doesn't need mid-skill checkpoints.
-
-**Option B — Deterministic phase-boundary checkpoints (fallback):**
-
-Write after every phase completes, regardless of task size:
-
-```
-/extract:
-  Phase 1 (discovery)      → checkpoint: file list, delta, mode
-  Phase 1.5 (preprocessing)→ checkpoint: normalized files, redirect map
-  Phase 2 (per batch/file) → checkpoint: last batch, claims so far
-  Phase 4 (report)         → checkpoint: final state (existing)
-
-/analyze:
-  Phase 1 (read extractions) → checkpoint: claims loaded, mode
-  Phase 2 (per batch)        → checkpoint: insights/conflicts so far
-  Phase 4 (report)           → checkpoint: final state (existing)
-```
-
-Cost: ~5 extra writes per run. Simple but writes unnecessarily on small tasks.
-
-**Option C — Context-aware preemptive save (advanced, future):**
-
-Agent estimates token consumption via proxy (tool call count, file sizes read) and triggers emergency checkpoint at ~75% usage. Challenges: approximate estimation, calibration risk, latency overhead. Only needed if Option A proves insufficient for very long operations.
-
-**Recommendation:** Option A (task-aware). Simple, no infrastructure dependency, leverages information the agent already has. Option B as fallback if heuristic estimation proves unreliable.
-
-**Acceptance criteria:**
-- [ ] Cost gate at start of /extract and /analyze: estimate task size, write preventive checkpoint if >30% context risk
-- [ ] Batch-boundary checkpoint every 10 files during Phase 2 (both skills)
-- [ ] Checkpoint includes `resume_from: phase_N` field + `files_remaining` list for post-compaction recovery
-- [ ] Post-compaction: agent reads checkpoint, detects incomplete skill, resumes from last completed phase
-- [ ] No duplicate work: already-written extractions/insights preserved on resume
-- [ ] Small tasks (<10 files, no preprocessing) skip mid-skill checkpoints entirely
 
 ---
 
@@ -221,6 +100,136 @@ Internal sources produce two types of content with different routing:
 
 ---
 
+### [BL-45] Mid-Skill Checkpoints — Survive Context Compaction During Long Operations
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v4 (2026-02-20). Evidence: context compacted mid-/extract during Phase 1.5 preprocessing. MEMORY and SESSION_CHECKPOINT were not yet written (protocol only writes after skill completion). All in-memory state lost — preprocessing results, redirect map, detection findings. Agent recovered by re-reading files but lost ~8 minutes of work.
+
+**Problem:** The Session Protocol writes MEMORY.md + SESSION_CHECKPOINT.md only **after** skill execution completes. Heavy skills (/extract with preprocessing, /analyze on large projects) can consume enough context to trigger compaction before finishing. When this happens, mid-skill state is lost with no recovery mechanism.
+
+**Option A — Task-aware preventive checkpoints (recommended):**
+
+The agent can't query remaining context, but it CAN estimate task cost before starting. The rule:
+
+> Before any operation expected to consume >30% of the context window, write a preventive checkpoint with current state + remaining plan.
+
+Heuristics the agent already knows:
+- Number of files to process (from SOURCE_MAP / discovery)
+- Approximate file sizes (from Read / file metadata)
+- Whether preprocessing is involved (Phase 1.5 = high cost)
+- Historical patterns (60 files ≈ full context, 10 files ≈ 30%)
+
+Implementation: add a "cost gate" instruction at the start of heavy skills:
+
+```
+Before Phase 2 (extraction / analysis):
+  IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing_active:
+    Write preventive checkpoint: {phase_completed, files_remaining, state_so_far}
+  ALSO: write checkpoint after every 10 files processed (batch boundary)
+```
+
+Cost: 1-3 extra writes per heavy skill run (~1KB each). Zero overhead for light operations.
+
+Advantage over deterministic phase-boundary writes: only triggers when the task is actually large enough to risk compaction. A 3-file /extract doesn't need mid-skill checkpoints.
+
+**Option B — Deterministic phase-boundary checkpoints (fallback):**
+
+Write after every phase completes, regardless of task size:
+
+```
+/extract:
+  Phase 1 (discovery)      → checkpoint: file list, delta, mode
+  Phase 1.5 (preprocessing)→ checkpoint: normalized files, redirect map
+  Phase 2 (per batch/file) → checkpoint: last batch, claims so far
+  Phase 4 (report)         → checkpoint: final state (existing)
+
+/analyze:
+  Phase 1 (read extractions) → checkpoint: claims loaded, mode
+  Phase 2 (per batch)        → checkpoint: insights/conflicts so far
+  Phase 4 (report)           → checkpoint: final state (existing)
+```
+
+Cost: ~5 extra writes per run. Simple but writes unnecessarily on small tasks.
+
+**Option C — Context-aware preemptive save (advanced, future):**
+
+Agent estimates token consumption via proxy (tool call count, file sizes read) and triggers emergency checkpoint at ~75% usage. Challenges: approximate estimation, calibration risk, latency overhead. Only needed if Option A proves insufficient for very long operations.
+
+**Recommendation:** Option A (task-aware). Simple, no infrastructure dependency, leverages information the agent already has. Option B as fallback if heuristic estimation proves unreliable.
+
+**Acceptance criteria:**
+- [ ] Cost gate at start of /extract and /analyze: estimate task size, write preventive checkpoint if >30% context risk
+- [ ] Batch-boundary checkpoint every 10 files during Phase 2 (both skills)
+- [ ] Checkpoint includes `resume_from: phase_N` field + `files_remaining` list for post-compaction recovery
+- [ ] Post-compaction: agent reads checkpoint, detects incomplete skill, resumes from last completed phase
+- [ ] No duplicate work: already-written extractions/insights preserved on resume
+- [ ] Small tasks (<10 files, no preprocessing) skip mid-skill checkpoints entirely
+
+---
+
+### [BL-46] Smart Speaker Attribution — Best-Effort Segmentation + Clarification Loop
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v4 (2026-02-20). Evidence: QA4-OBS-07 (9 insights misattributed CTO→CEO from unsegmented transcript), QA4-OBS-08 (collapsed conflict from 2 distinct stakeholder objections), Granola pseudo-speakers test (generic LLM achieved reasonable segmentation without project context).
+
+**Problem:** Unsegmented multi-speaker transcripts (e.g., Granola collapsing 6 speakers into one `Me:` block) cause Phase 1.5 to skip normalization, leaving /analyze to guess speakers by frequency. Result: systematic misattribution when the dominant speaker changes mid-meeting.
+
+**Two-component solution:**
+
+**Component 1: Phase 1.5 best-effort segmentation** (extends BL-43)
+
+When Phase 1.5 detects an unsegmented multi-speaker source (participant list > 1 but no per-line speaker labels):
+
+1. Gather speaker priors from Work layer: roles (CEO, CTO, consultant), known topics per speaker (from existing insights), voice patterns
+2. Segment by content signals: topic shifts, role-specific vocabulary ("yo eliminé" = implementer, "pricing" = business), temporal markers ("cuando Philippe se fue")
+3. Assign speakers with confidence: `[SPEAKER: Carlo (high)]` vs `[SPEAKER: uncertain]`
+4. Present segmentation report for user approval (same propose-before-execute as current Phase 1.5)
+
+Evidence this works: Granola (generic LLM, zero project context) correctly separated 3 of 4 speakers using content patterns alone. Phase 1.5 with Work layer context (known roles, existing insights, participant list) would outperform.
+
+**Component 2: Post-/analyze speaker clarification loop** (new sub-step in /analyze)
+
+After /analyze proposes new insights from transcript sources:
+
+1. Detect insights with uncertain speaker attribution (from Phase 1.5 confidence or from unsegmented sources that skipped preprocessing)
+2. Group uncertain insights by transcript segment and present targeted questions: "IG-03 mentions 'yo eliminé navegación temporal' — this sounds like an implementer (CTO?), not CEO. Who said this?"
+3. User corrects in batch (30-second interaction for 9+ insights)
+4. Propagate: same speaker correction applies to all insights from the same transcript segment
+
+**Why clarification loop matters:** The user attended the meeting. They know who arrived when, who left, voice patterns, interpersonal dynamics. A 30-second correction is worth more than any heuristic.
+
+**Acceptance criteria:**
+- [ ] Phase 1.5 attempts content-based segmentation for unsegmented multi-speaker transcripts
+- [ ] Segmentation uses Work layer context as speaker priors (roles, topics, voice patterns)
+- [ ] Confidence levels per segment: high / medium / uncertain
+- [ ] /analyze detects uncertain speaker attribution and asks targeted questions
+- [ ] Corrections propagate across same-segment insights
+- [ ] Both components respect propose-before-execute (user approves segmentation and corrections)
+
+**User story:**
+> As a researcher who records in-person meetings, I can extract insights from unsegmented transcripts with reasonable speaker attribution, and quickly correct the few mistakes via targeted questions.
+
+---
+
+### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v2 (2026-02-15)
+
+Typography, micro-interactions, data viz, accessibility improvements for all templates.
+
+**Evidence from TIMining entregables (2026-02-17):**
+- Dark mode + light/dark toggle with localStorage
+- JetBrains Mono font, fichas 2x2 with sidebar layout
+- Timeline D→A→R pattern
+- Clearbit logos with fallback
+- Source: `pds--timining/02_Work/IDEAS.md` → idea "Upgrade de template de presentación"
+
+---
+
 ### [BL-42] Work Layer Viewer — Live MD Rendering with `/view` Skill
 
 **Status:** Proposed
@@ -264,6 +273,163 @@ Internal sources produce two types of content with different routing:
 **User stories:**
 > As a researcher, I can read Work layer insights with human-friendly formatting without waiting for the agent to generate HTML.
 > As a user, I type `/view` and immediately see my project data in the browser — no manual server setup.
+
+---
+
+### [BL-47] Script-First Skill Execution — Automate Mechanical Pipeline Tasks
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v4 (2026-02-20). Evidence: QA agent built ad hoc `build_status.py` for STATUS.html JSON generation (46 insights + 12 conflicts). BUG-04 (agent miscounted SYNTH insights in snapshot) would not have occurred with script-based counting.
+
+**Problem:** Mechanical tasks in the pipeline (JSON generation, counting, denominator updates) are done by the LLM reading files and reasoning about them. This is: (a) token-expensive (~15-20x vs a script), (b) error-prone (BUG-04: agent forgot to count SYNTH insights), (c) slow (multiple Grep+Read+Edit cycles for what a script does in one pass).
+
+**Solution: 90/10 rule**
+
+Scripts handle the 90% mechanical case. The agent supervises output and intervenes manually for the 10% exceptions (format changes, merged/split insights, new categories not in the regex).
+
+**Candidates for scripting:**
+
+| Task | Current Cost | Script Approach |
+|---|---|---|
+| STATUS.html JSON generation | ~20 tool calls (Grep+Read+Edit) | Python: parse Work files → build JSON → write |
+| Convergence denominator update | ~N edits (one per insight) | Python: regex `X/N` → `X/N+1` across file |
+| SOURCE_MAP hash computation | ~N Bash calls (md5) | Python: walk 01_Sources, compute hashes, diff |
+| MEMORY line count + compaction trigger | ~2 tool calls (Read+count) | Bash one-liner: `wc -l` |
+| EXTRACTIONS.md claim counting | ~1 Grep call | Bash one-liner: `grep -c` |
+| Snapshot counts (insights, conflicts) | ~2 Grep calls | Bash one-liner: `grep -c '### \[IG-'` |
+
+**Implementation approach:**
+
+Option A: Inline scripts (agent writes and runs ad hoc Python/Bash in tool calls). No persistent files. Agent decides when to script vs when to reason.
+
+Option B: Persistent helper scripts in `.claude/scripts/` — version-controlled, tested, reusable. Agent calls them via Bash. More reliable but adds engine files.
+
+Recommendation: Start with Option A (inline). If patterns stabilize across 2+ QA cycles, promote to Option B.
+
+**Acceptance criteria:**
+- [ ] Skill instructions explicitly mark mechanical steps as "script-eligible"
+- [ ] Agent uses inline scripts for counting, JSON generation, and denominator updates
+- [ ] Agent validates script output before writing (sanity check: count > 0, JSON parses, no data loss)
+- [ ] Manual override when script output doesn't match expected patterns
+- [ ] Token savings measurable: compare /analyze or /ship token cost before/after
+
+**User story:**
+> As a PD-Spec user, mechanical pipeline operations (counting, JSON generation) are fast and deterministic, without wasting tokens on LLM reasoning for tasks a regex can handle.
+
+---
+
+### [BL-49] BUG: Oversized Lines Break Read Tool in /extract
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v4 (2026-02-20), QA4-BUG-01. Evidence: `Touchpoint_TIMining-IDEMAX _2026-02-19.md` — 134KB file with 14 lines (~10K chars each). Read tool fails with "exceeds 25K token limit" even with `limit=50`.
+
+**Problem:** Granola STT exports produce files with no line breaks within speaker turns. A 2-hour meeting transcript becomes a handful of lines, each 5-15K characters. The Read tool rejects these because its token limit applies per-call, and even 1 line can exceed it. Current workaround: agent falls back to `Bash` with `head -c` / `tail -c`, but this violates the "use Read not Bash" rule and is ad hoc.
+
+**Solution:** Early detection in /extract Phase 1 (discovery) + automatic routing:
+
+1. During file discovery, check file size vs line count ratio. If `file_size / line_count > 2000` → flag as oversized-lines.
+2. For flagged files, use Bash byte-range reads (`head -c 4000`, `tail -c +4001 | head -c 4000`) instead of Read tool.
+3. Phase 1.5 preprocessing should handle this transparently — normalized output has proper line breaks, so Phase 2 reads the normalized version normally.
+
+**Note:** BL-43 Phase 1.5 already fixes this for files that get preprocessed (normalized output has proper line breaks). This BL covers the edge case where preprocessing is skipped (user chooses Skip, or file isn't a preprocessing candidate).
+
+**Acceptance criteria:**
+- [ ] /extract detects oversized-line files during discovery (size/linecount ratio)
+- [ ] Automatic fallback to Bash byte-range reads for flagged files
+- [ ] No Read tool errors on files with lines >10K chars
+
+---
+
+### [BL-48] AI Convergence Breakdown — Show Authority Distribution in Convergence Ratios
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v4 (2026-02-20), QA4-OBS-09. Evidence: AI source contributed 18/59 to convergence ratios, indistinguishable from stakeholder sources in dashboard display.
+
+**Problem:** After BL-37, AI-generated sources enter the pipeline with `voice: ai` and `authority: hypothesis` metadata. However, convergence ratios (e.g., `18/59`) don't surface this distinction. A dashboard consumer sees `18/59` and assumes 18 independent stakeholder data points — but 1 of those 59 sources is AI-generated.
+
+**Solution:** Extend convergence display format to show authority breakdown:
+
+```
+Convergence: 18/59 (1 AI, 1 internal)
+```
+
+Or in dashboard JSON:
+```json
+{
+  "convergence": "18/59",
+  "convergence_breakdown": { "primary": 57, "internal": 1, "ai": 1 }
+}
+```
+
+**Scope:** Refinement of BL-37 display layer. No logic changes — AI sources already tagged correctly. Only affects how convergence is rendered in INSIGHTS_GRAPH.md entries and STATUS.html dashboard.
+
+**Acceptance criteria:**
+- [ ] Convergence ratio in INSIGHTS_GRAPH.md shows authority breakdown when non-primary sources exist
+- [ ] Dashboard JSON includes `convergence_breakdown` field
+- [ ] Dashboard template renders breakdown (e.g., footnote or parenthetical)
+- [ ] No change when all sources are primary (clean `18/59` display)
+
+---
+
+### [BL-50] BUG: Phase 1.5 Pass C (Sentence Repair) Not Implemented
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v4 (2026-02-20), QA4-BUG-02. Evidence: Camila session normalization applied speaker labels and phonetic corrections via `sed`, but no `[incomplete]`, `[crosstalk]`, or `[unintelligible]` markers were added. Run-on sentences not split.
+
+**Problem:** BL-43 Phase 1.5 specifies a 3-pass normalization: Pass A (speaker detection), Pass B (phonetic correction), Pass C (sentence repair — mark incomplete, crosstalk, unintelligible, split run-ons). The v4.12.0 implementation used mechanical `sed` one-liners for Passes A+B, which can't detect sentence-level patterns. Pass C was silently skipped.
+
+**Solution:** Pass C requires LLM-based processing, not regex. Two options:
+
+**Option A (targeted):** After `sed` handles A+B, run a second LLM pass on the normalized file to add sentence repair markers. Cost: ~1 extra read+write per preprocessed file.
+
+**Option B (unified):** Replace `sed` normalization entirely with a single LLM pass that does all 3 passes at once. Simpler but more expensive (LLM processes full transcript instead of just corrections).
+
+**Recommendation:** Option A. Passes A+B via `sed` are fast and cheap. Only Pass C needs LLM reasoning.
+
+**Acceptance criteria:**
+- [ ] Normalized files contain `[incomplete]`, `[crosstalk]`, `[unintelligible]` markers where appropriate
+- [ ] Run-on sentences split at logical boundaries
+- [ ] Pass C runs after sed-based A+B (not replacing them)
+
+---
+
+### [BL-22] RAG Layer — Scale Source Ingestion Beyond Context Window
+
+**Status:** Proposed
+**Priority:** Low (becomes High at 100+ sources)
+**Depends on:** BL-17
+
+**Problem:** PD-Spec reads all sources sequentially. Works for 10-20 sources. At 57+ files, context compaction causes state loss and file skipping. NotebookLM handles 100+ via RAG.
+
+**Solution:** BM25 keyword search (zero deps) or embeddings + vector store. Index claims as extracted, query for relevant context instead of loading all.
+
+**Scaling strategy:**
+- BL-29 (batching): Handle 40-100 files ✅ done
+- BL-31 (express mode): Handle 100-200 files by deferring heavy files
+- BL-22 (RAG layer): Handle 200+ files with embeddings + retrieval
+
+**Re-evaluation note (2026-02-20):**
+
+The 3-layer compression model may make full RAG unnecessary. Evidence from TIMining (61 files, 1,238 claims → 21 insights): downstream skills (/synthesis, /ship) never see raw volume. Analysis by pipeline phase:
+
+| Phase | Needs RAG? | Why |
+|---|---|---|
+| /extract | No — already incremental (file-by-file, BL-29 batching) |
+| /analyze | Maybe — reads full EXTRACTIONS.md. Worked at 1,238 claims. Bottleneck at ~5,000+ |
+| /synthesis | No — works on INSIGHTS_GRAPH (21 items in TIMining, already compressed) |
+| /ship | No — works on Work layer (already synthesized) |
+| Freemode | Maybe — cross-source queries, but BL-41 (state management) reduces need |
+
+Options under consideration:
+- **A) Keep as-is** — Low priority, activate when a project hits 200+ sources
+- **B) Reformulate as "Smart Context Loading"** — no embeddings/vector store, just thematic clustering of claims so /analyze processes by topic instead of sequentially. Lighter, no infra deps.
+- **C) Kill** — Homer's Car. The scaling strategy already covers realistic project sizes. Projects with 200+ sources may need sub-project decomposition, not RAG.
+
+Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
@@ -517,4 +683,4 @@ Internal sources produce two types of content with different routing:
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md` and `QA_V3_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-18 (v4.10.0)
+Last updated: 2026-02-20 (v4.12.0)
