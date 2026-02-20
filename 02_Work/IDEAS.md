@@ -74,6 +74,19 @@
 3. **Sync bidireccional** — investigar si es viable: editar en Google Slides → re-importar cambios al HTML source of truth. Probablemente inviable, pero el modelo mental importa: el HTML no debería ser cárcel.
 4. **Alternativa pragmática:** Hacer el HTML el "master de diseño" y el PPTX el "master de contenido". Cambios de texto van en PPTX (Camila puede editar), cambios visuales van en HTML (Nico + Claude). Merge manual pero con roles claros.
 
+### [IDEA] — dom-to-pptx: export PPTX directo desde el DOM renderizado
+**Context:** Investigación feb 2026 sobre HTML "ready to export". Ningún framework resuelve "HTML bello + PPTX editable" desde una fuente. Pero **dom-to-pptx** (JS, client-side) lee posiciones finales del DOM via `getComputedStyle()` y genera PPTX nativo con shapes editables. Usa PptxGenJS (2.1K stars) como backend. Soporta gradientes, border-radius, SVG, icon fonts.
+**Implicación para PD-Spec:** Eliminaría la necesidad de parsers HTML custom (como nuestro html2pptx.py de 1100 líneas). Un botón "Exportar PPTX" en el HTML lee el DOM tal como se ve → PPTX editable. La capa JSON (Template+JSON de PD-Spec) habilita renders alternativos: HTML para preview, dom-to-pptx para PPTX, Pandoc para DOCX.
+**Arquitectura propuesta:**
+```
+[Content JSON] ──┬──> HTML renderer (dark/light)  ──> Decktape ──> PDF
+                 ├──> dom-to-pptx (desde DOM)      ──> PPTX ──> Google Slides
+                 └──> Pandoc (vista simplificada)   ──> DOCX
+```
+**Riesgo:** Comunidad pequeña (60 GitHub stars), pero MIT license y concepto sólido. Requiere browser environment (client-side only).
+**Herramientas evaluadas:** dom-to-pptx (winner), PptxGenJS (manual), python-pptx (actual, frágil), Pandoc (pierde layout), Marp/Slidev (PPTX = imágenes no editables), Aspose (comercial), Google Slides API (mismo problema de mapping manual).
+**Estado:** Pendiente test con presentación TIMining.
+
 ---
 
 ## Bugs & Gotchas Técnicos
