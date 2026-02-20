@@ -82,6 +82,61 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
+### [BL-45] Mid-Skill Checkpoints — Survive Context Compaction During Long Operations
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v4 (2026-02-20). Evidence: context compacted mid-/extract during Phase 1.5 preprocessing. MEMORY and SESSION_CHECKPOINT were not yet written (protocol only writes after skill completion). All in-memory state lost — preprocessing results, redirect map, detection findings. Agent recovered by re-reading files but lost ~8 minutes of work.
+
+**Problem:** The Session Protocol writes MEMORY.md + SESSION_CHECKPOINT.md only **after** skill execution completes. Heavy skills (/extract with preprocessing, /analyze on large projects) can consume enough context to trigger compaction before finishing. When this happens, mid-skill state is lost with no recovery mechanism.
+
+**Option A — Mid-skill checkpoints (practical, deterministic):**
+
+Add checkpoint writes at phase boundaries within heavy skills. No token estimation needed — just write after each phase completes:
+
+```
+/extract:
+  Phase 1 (discovery)      → checkpoint: file list, delta, mode
+  Phase 1.5 (preprocessing)→ checkpoint: normalized files written, redirect map, corrections summary
+  Phase 2 (per batch/file) → checkpoint: last batch completed, claims so far
+  Phase 4 (report)         → checkpoint: final state (existing behavior)
+
+/analyze:
+  Phase 1 (read extractions) → checkpoint: claims loaded, mode
+  Phase 2 (per batch)        → checkpoint: insights so far, conflicts so far
+  Phase 4 (report)           → checkpoint: final state (existing behavior)
+```
+
+Cost: ~5 extra writes per /extract run. Each write is small (~1KB). Negligible vs. the cost of losing 10 minutes of work.
+
+Recovery: post-compaction, agent reads checkpoint → sees which phase completed last → resumes from there instead of restarting.
+
+**Option B — Context-aware preemptive save (advanced, heuristic):**
+
+Agent estimates its own context consumption and triggers a preventive checkpoint when approaching the compaction threshold (~80% usage):
+
+1. After each major operation (file read, batch write), estimate tokens consumed so far
+2. If estimated usage > 75% of context window → write emergency checkpoint + MEMORY entry
+3. Continue working — if compaction hits, checkpoint is fresh
+
+Challenges:
+- Token estimation is approximate (agent doesn't have exact token counts)
+- Adds latency to every operation (estimation overhead)
+- Threshold calibration: too aggressive = unnecessary writes, too conservative = misses the window
+
+Could use a proxy: count tool calls as rough token estimate (each file read ≈ 1-3K tokens, each write ≈ 0.5K). After N tool calls without a checkpoint, force one.
+
+**Recommendation:** Start with Option A (deterministic, zero-risk). Option B as future enhancement if mid-skill checkpoints prove insufficient for very long operations.
+
+**Acceptance criteria:**
+- [ ] /extract writes checkpoint after Phase 1, Phase 1.5, and each batch in Phase 2
+- [ ] /analyze writes checkpoint after Phase 1 and each batch in Phase 2
+- [ ] Checkpoint includes `resume_from: phase_N` field for post-compaction recovery
+- [ ] Post-compaction: agent reads checkpoint, detects incomplete skill, resumes from last completed phase
+- [ ] No duplicate work: already-written extractions/insights preserved on resume
+
+---
+
 ### [BL-44] Source Authority Layer — Unified Weight System for Non-Primary Sources
 
 **Status:** Proposed
