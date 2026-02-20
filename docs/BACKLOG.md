@@ -193,11 +193,24 @@ Acceptance criteria (Phase 2):
 
 Package as desktop app (Tauri/Electron) for non-technical users. No CLI dependency. Bundles Claude API integration. Multi-user collaboration. Cloud-hosted option. This is PD-OS scope — likely a separate repo.
 
-**Collaborative round-trip workflow:** Researcher creates presentation in HTML (rich, with transitions/effects) → exports wireframe PPTX for stakeholder editing → stakeholder edits in Google Slides/PowerPoint → changes unify back into the rich HTML. Three approaches identified:
+**External delivery via Google Workspace MCP:** PD-Spec is the invisible engine. Deliverables are published to the client's native tools via MCP — Google Slides (presentations), Google Docs (reports, PRDs), Google Sheets (benchmarks, data). Clients and external collaborators never see the pipeline; they only see high-quality results delivered at astonishing speed.
 
-- **Option A (architecturally sound):** JSON is source of truth. Both HTML and PPTX are derived views. Parse edited PPTX delta back to JSON, HTML regenerates. Challenge: PPTX→JSON parser is non-trivial (PPTX = ZIP of XMLs, needs slide↔section ID mapping).
-- **Option B (pragmatic):** Use Markdown as the shared editing medium instead of PPTX. MD is trivial to parse back. Stakeholder edits MD (in GitHub, Google Docs, or the Live Research App itself). Aligns with PD-Spec's existing lingua franca.
-- **Option C (manual baseline):** PPTX export is one-way. Stakeholder marks changes, researcher applies manually.
+Architecture:
+```
+PD-Spec (internal)                    Client-facing (external)
+02_Work/ → JSON content ──MCP──→ Google Slides (presentations)
+                         ──MCP──→ Google Docs (reports, PRDs)
+                         ──MCP──→ Google Sheets (benchmarks)
+                         ──────→ Self-contained HTML (offline fallback)
+```
+
+MCP servers available: [google-slides-mcp](https://github.com/matteoantoci/google-slides-mcp), [google-drive-mcp](https://github.com/piotr-agier/google-drive-mcp) (Drive + Docs + Sheets + Slides), and [Google official remote MCP](https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services) (enterprise-ready).
+
+**Collaborative round-trip:** Agent pushes JSON→Google Slides via MCP → stakeholder edits in Google Slides → agent reads changes via MCP → detects delta → updates JSON → HTML regenerates with full effects. No PPTX files, no manual export, no round-trip friction.
+
+**Self-contained HTML** remains a delivery channel for offline use, email sharing, or contexts without Google accounts. Already proven with Reveal.js presentations and Template+JSON outputs.
+
+**Supersedes previous export approaches** (pptxgenjs, python-pptx, Playwright) for external delivery. Local export (Phase 1 export button) may still be useful as fallback but is no longer the primary path.
 
 **User stories:**
 
