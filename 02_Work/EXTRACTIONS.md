@@ -1648,3 +1648,166 @@
 25. "'Timining Core no es software, es la validación matemática de la realidad.'"
 26. "Evolución en tres fases: Ayer: Visualización (Ver) → Hoy: Ecosistema Multimodal (Entender) → Mañana: Prescripción y Autonomía (Actuar)"
 27. "Documento etiquetado como 'Editorial Engineering' — generado via NotebookLM para comunicación interna de estrategia de plataforma"
+
+---
+
+## [sesiones-idemax/session-align-con-camila(wed18feb).md]
+- Type: transcript (Granola STT)
+- Date: 2026-02-18
+- Participants: Nlundin, Cbonilla
+- Preprocessed: yes
+- Extracted: 2026-02-20T15:23
+
+### Raw Claims
+1. "Presentación de casos de uso TIMining Core será mostrada desde un link HTML (Vercel), no desde PowerPoint, para el workshop del jueves"
+2. "Presentación tiene 8 casos de uso: 6 de cumplimiento del plan + 2 extras de optimización del plan"
+3. "Cada caso de uso tiene estructura: contexto narrativo + flujo DAR (Detección, Análisis, Recomendación) + mockup visual + referentes por etapa del flujo + pilares aplicados"
+4. "Dominio D es multipilar — incluye láminas de optimización del plan y reportería del CFO"
+5. "Las imágenes generadas por Gemini tienen sesgo de género: todos hombres, no refleja que hay mujeres en minería"
+6. "Referentes por pilar: SpaceX (consola acromática, glow externo para alertas), CrowdStrike (Quad UI), Vercel (Clear Path), Mobit (logística de flotas, filtro 99% alertas falsas)"
+7. "El formato HTML (link) permite templates reutilizables: cambiar un color en la parte superior cambia toda la presentación, a diferencia de PowerPoint donde se edita una por una"
+8. "Camila no tiene acceso al contenido de la presentación — necesita el link para poder revisarla y colaborar"
+9. "Las referencias internas (L20, L8) deben ocultarse de la presentación final porque son información interna del workshop"
+10. "Keep-Stop-Start del workshop debe moverse al inicio de la presentación como recordatorio de lo que salió del workshop"
+11. "Las 5 cajitas finales (automatización cada X minutos, urgente vs importante, hub de decisiones) necesitan un nuevo título — no son principios ni pilares, son algo diferente"
+12. "Propuesta de valor de TIMining Core podría ser el título de las 5 cajitas: 'toma los principios, toma los dominios, tiene la capacidad de implementarla en los distintos casos de uso con los distintos perfiles'"
+13. "Roadmap en 3 horizontes: cumplir el plan (2026), optimizar el plan (futuro cercano), control automatizado de la mina / Skynet (2040)"
+14. "Slide de cierre necesaria: consolidar las 4 capas de definiciones (visión estratégica, dominios, ejes de diseño, 5 cajitas) en una sola vista"
+15. "La diapositiva 9 del PowerPoint (clusters Stop-Start) debe incorporarse al formato link como continuidad visual de las tablas existentes"
+16. "Carlos (TIMining) pidió 'dos cucharadas de papá' — el contenido está suficientemente maduro, no agregar más complejidad"
+17. "Riesgo de implementación: cumplimiento de metas en el CUC2 está difícil — ya casi termina Q1"
+18. "Workshop presencial jueves 10:00-11:30, TIMining oficina, Nicolás y Camila (Ale no estará)"
+19. "Reunión de alineación previa: 9:30 en café Félix, antes de subir al workshop"
+20. "Estrategia post-workshop: desarrollar manual UX con reglas específicas por pilar"
+21. "Granola (herramienta STT) está transcribiendo la conversación en tiempo real y generando tareas automáticas"
+22. "Gemini tiene problema de UX: pierde archivos creados en el chat, quitaron el ícono de navegación de archivos, quema tokens excesivos en cambios menores"
+23. "El concepto DART (Detección, Análisis, Recomendación) viene de una plantilla que se les pasó a la empresa en el workshop anterior — no fue inventado por Idemax"
+24. "Presentación HTML se puede poner en modo claro/oscuro — modo claro tiene mejor lectura pero hay un bug con el gradiente de la portada"
+25. "Pendiente: traspasar la presentación HTML a formato PowerPoint para el Google Drive que pide el cliente"
+26. "Los insights extraídos del análisis con IA sirven como respaldo: 'continuidad operativa está mencionado 25 veces en los documentos, tanto en documentos de Philip como de entrevistas'"
+27. "Urgente vs importante como diferenciador: Pedro arregla el camino (output previsible), Juan manda camiones por otro camino y mitiga 30% más (impacto al plan)"
+
+---
+
+## [sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md]
+- Type: transcript (Granola STT, multi-participante)
+- Date: 2026-02-19
+- Participants: Cbonilla, AGomez, Nlundin, PWhatmore, AGuzzoni, CCalderon
+- Preprocessed: no
+- Extracted: 2026-02-20T15:23
+
+### Raw Claims
+1. "Objetivo de la sesión: presentar definiciones derivadas de análisis de antecedentes, entrevistas y workshop, para validación con equipo TIMining — si hay dedito arriba, siguiente paso es validar con clientes"
+2. "54 fuentes analizadas: transcripts, fotos de post-its, láminas de workshop, entrevistas con Philip y equipo, documentos de visión estratégica, benchmark — todo procesado por herramienta de IA"
+3. "6 insights clave presentados con indicador de peso (cuántas veces se mencionó cada concepto en las 54 fuentes)"
+4. "Visión estratégica tiene 3 elementos: (1) Mantra operativo — el valor reside en generar paz mental al usuario, (2) Salto del modelo — de dashboard a copiloto/médico operacional con patrón DAR, (3) Valor percibido — experiencia iPhone-like para B2B"
+5. "Philip (TIMining): 'paz mental' como concepto es problemático para presentar a clientes mineros — 'te vas a encontrar un tipo que te diga que es un chanta', propone no usar en ventas directas, solo como concepto interno"
+6. "Philip: el plan minero es probabilístico, no determinístico — 'tienes una probabilidad de sacar cinco piedras, una probabilidad menor de sacar seis' — la decisión de dónde cortar es del dueño, no del software"
+7. "Philip: 'no puedo sacar al humano' del proceso de planificación — es supersensible porque el plan involucra decisiones del dueño sobre niveles de riesgo aceptable"
+8. "Philip: TIMining tiene un paradigma diferenciador — 'en vez de gestionar desde los equipos (la pala), gestionamos desde la geometría (la piedra)' — nadie más en el mercado hace esto"
+9. "Philip: 'ponerle sensores a las piedras' es el cambio de paradigma — construir el historial de la piedra para encontrar patrones repetibles, en vez de solo monitorear equipos"
+10. "Philip: geometry gap es el diferencial estratégico — 'el mundo está acostumbrado a operar desde la máquina, nosotros tenemos una visión distinta'"
+11. "Philip: navegación en el tiempo (rebobinar el pasado) fue eliminada del producto — costosa en datos, difícil de explicar al usuario, mejor concentrar el pasado en el presente (mostrar la traza, no la animación)"
+12. "Philip: el concepto temporal correcto es 'comprender el pasado para proyectar', no 'rebobinar' — traer el pasado al presente para tomar mejor decisión"
+13. "Philip: la predicción de futuro debe basarse en el sistema (patrones, estadísticas), no en individuos — 'no podemos predecir que un camión se saldrá de ruta, pero sí que el sistema tendrá un impacto'"
+14. "Philip: operativizar el plan es como una 'táctica de guerra' — planificación trabaja con geometrías, operación con equipos, el rito de conciliación entre ambos está mal resuelto"
+15. "Philip: reglas de negocio (60+ reglas de ifs) son el grounding que evita que la IA alucine — 'motores de cálculo y motores de reglas de negocio que le entregan vectores a la IA para que agregue valor'"
+16. "Philip: human-in-the-loop es necesario pero la automatización ya se está probando — 'estamos conversando con clientes para desviar camiones automáticamente'"
+17. "Philip: 'no me interesa tanto la pala, me interesa la piedra — si la piedra se movió o no' — paradigma diferenciador que viene de la geología, no de la operación"
+18. "Carlos sobre machine-to-machine: desviar un camión autónomo ya es factible — 'hoy integro al despacho, le mando una alerta, si después de varios meses todas nuestras recomendaciones las implementó, le cuento al camión directamente'"
+19. "4 pilares de diseño presentados: (1) Quad UI — silencio como estado default, alertas solo para anomalías; (2) Clear Path — cada dato lleva a acción concreta, patrón DAR; (3) TimeSight — pasado, presente y futuro en la misma vista; (4) OmniSense — el sistema percibe, comprende y responde por el canal correcto"
+20. "Carlos feedback sobre Quad UI: 'no necesariamente es todo gris y rojo' — la atención debería ser un llamado para que el usuario explícitamente decida ver más, no un modo forzado"
+21. "Carlos feedback sobre anticipación: 'falla' como término es reduccionista — no solo fallas mecánicas, sino cualquier evento anticipable (cola en chancador, desvío de ruta, etc.)"
+22. "4 dominios operativos detectados: (A) Respuesta a crisis, (B) Anticipación operativa, (C) Asistencia inteligente en terreno, (D) Alineación estratégica (multipilar)"
+23. "Philip: dominio D (alineación estratégica) está 'arriba de los otros tres' — el problema real no es la operación misma sino elevar a la minera una capa de inteligencia"
+24. "Philip sobre Clear Path y niveles: 'hay decisiones tácticas (mover equipo) y estratégicas (replanificar) — cuando es más complejo, no llegamos a una acción concreta sino a una conclusión que gatilla cosas fuera del sistema'"
+25. "WhatsApp es el canal dominante de toma de decisiones en la operación minera — 'impresionante la cantidad de toma de decisiones que ocurren vía WhatsApp'"
+26. "Philip: el hub de decisiones debe integrarse vía machine-to-machine con sistemas existentes (Komatsu, Caterpillar) — 'no me imagino que alguien desde WhatsApp diga mueve la pala, sino cómo nos enchufamos al sistema que ya controla los equipos'"
+27. "Plan de página web TIMining: la página actual es una app React que no indexa en SEO — necesitan achicar, rediseñar por fases, e integrar TIMining Core"
+28. "Necesidad de entrevistas con usuarios reales: 5-7 entrevistas de media hora, remoto — identificar perfiles vía Felipe Zoloza y Juan Pablo Palma, pedir que recomienden entrevistados"
+29. "Carlos: 'cuando yo digo operar desde la piedra, es un paradigma diferenciador que no viene de entrevistas con clientes — es nuestro, tuvimos que pelear internamente porque estaban diseñando lo que el cliente pedía'"
+30. "Transición de 7 productos a TIMining Core: no se pueden matar los anteriores — 'lo más probable es que venga un nuevo software que conviva con los anteriores'"
+31. "Benchmark UX con 3 campeones por pilar: CrowdStrike (Quad UI), SpaceX Dragon (acromático), Mobit (filtrado 99% alertas); Sentinel One Purple AI (Clear Path), Vercel, Datadog; Tesla Fleet (TimeSight); Samsara IoT (OmniSense)"
+32. "Philip: 'estamos jugando con cosas donde la industria no está suficientemente madura' — riesgo de que las apuestas de diseño no tengan mercado preparado"
+33. "Caso de uso: plan vs realidad — el gerente de mina revisa números en cierre semanal, algo no cuadra, información dispersa — necesita cadena causal completa en una sola vista"
+34. "Philip: 'hay dos dimensiones en la desviación del plan: (1) realidad vs plan esperado, (2) realidad vs parámetros originales de construcción del plan' — navegar esas dos dimensiones es complejo"
+35. "Caso de uso: reportería CFO — usuario invisible, hoy Erika hace reportes manuales en media hora, CFO no usa TIMining — necesita 4 KPIs traducidos a lenguaje financiero en su teléfono antes de la reunión"
+36. "Skynet / North Star: evolución de DAR — percibe cada X minutos, analiza situación completa, ejecuta sin intervención humana — primero sugiere a humanos, luego a máquinas"
+37. "Philip: suite TIMining no es percibida como suite por el usuario — cada producto sirve a perfiles diferentes, 'no es Google Docs+Slides para ti, es un software para ti y otro para otro'"
+38. "Próximos pasos: enviar PDF con presentación para revisión, agendar sesión de revisión de casos de uso con Carlos, gestionar lista de contactos para entrevistas con usuarios, definir perfiles con Felipe Zoloza"
+
+---
+
+## [sesiones-idemax/reunion_camila_2026-02-17.md]
+- Type: meeting_notes
+- Date: 2026-02-17
+- Participants: Nlundin, Cbonilla, Hmunoz, AGuzzoni
+- Extracted: 2026-02-20T15:23
+
+### Raw Claims
+1. "Nicolás traspasará casos de uso, pilares de diseño y mockups a presentación principal — incluir referentes visuales por cada etapa del flujo (detección, análisis, recomendación)"
+2. "Se agregarán 2 casos de uso nuevos: optimización del plan minero y reportería CFO"
+3. "Workshop jueves presencial (10:00-12:00) en TIMining — asistirán Nicolás y Camila (Ale no estará)"
+4. "Estrategia post-aprobación: desarrollar manual UX con reglas específicas — definir qué significa cada pilar en términos concretos"
+5. "Estructura de referentes por flujo de trabajo: Detección (consola cromática con glow externo, ref SpaceX), Análisis (proyección temporal de impactos, 45 min hasta bloqueo chancador), Recomendación (opciones ranqueadas con impacto de tonelaje cuantificado)"
+6. "Principios de diseño: Clear Path (máximo 3 recomendaciones), Quad UI (interfaz limpia, colores solo para anomalías), TimeSight (visualización de futuro y proyecciones), priorización numérica esencial"
+7. "Gap crítico: decisiones se toman fuera del software — comunicaciones por radio no quedan registradas, pérdida de conocimiento entre jefes de turno"
+8. "Software debe convertirse en hub central de toma de decisiones — si el jefe de turno toma decisión por radio, queda logueado que en turno 368 Juan tomó esta decisión con este impacto"
+9. "Urgente vs importante como capacidad clave: Pedro arregla el camino (output previsible), Juan manda camiones por otro camino y mitiga 30% más (impacto al plan)"
+10. "Evolución estratégica en 3 fases: (1) cumplimiento del plan, (2) optimización en tiempo real, (3) anticipación proactiva basada en aprendizaje histórico"
+11. "Oportunidad de repricing: de $300K a $450K anuales si se demuestra valor — 'si genera más de 6 millones en valor capturado, el costo del software ya se pagó quinientas veces'"
+12. "Transición de 7 productos fragmentados a plataforma core unificada — cada producto sirve perfiles diferentes, necesidad de interfaces dinámicas"
+13. "Adopción dual necesaria: bottom-up (>100 usuarios activos post-piloto) + top-down (decisión la toma BHP en Canadá, no la mina local)"
+14. "Validación con usuarios finales crítica pero pendiente: no hay entrevistas programadas con jefes de turno reales — riesgo de diseñar basado solo en percepción interna"
+15. "Propuesta: entrevistar ex-empleados que ahora trabajan en clientes — 'es mejor que nada' como primer paso de validación"
+16. "KPIs y métricas de impacto no definidos: ¿Cómo medir cumplimiento del plan minero? ¿Cómo demostrar valor vs. precio cobrado?"
+17. "Bloqueantes técnicos para migración a core platform: posible reestructuración de backend necesaria, estándares de accesibilidad no considerados, conectividad en terreno desconocida"
+18. "Confusión temporal en sistema actual: datos con diferentes delays (15, 30, 45 minutos) — usuarios no entienden qué está actualizado vs histórico"
+19. "Dependencia de venta consultiva: 6 meses de consultoría por proyecto indica producto complejo — usuarios no adoptan por dificultad de uso"
+20. "23 insights extraídos de 54 fuentes — ranqueados por relevancia, geometry gap y efecto Suiza validados como diferenciales"
+21. "Perfiles de usuario con necesidades radicalmente diferentes: 4-5 densidades de uso, interfaz estática actual no se adapta"
+22. "Sistema de diseño AI-first propuesto: no Figma tradicional sino agentes que crean productos respetando pilares"
+23. "Manual UX como entregable: reglas concretas por pilar para que TIMining pueda diseñar sin depender de consultoría permanente"
+24. "Cortar flujo de retroalimentación interna: no preguntarle a Erika (que trabaja con usuarios) sino al usuario real"
+25. "Northstar / Skynet: sistema omnisciente que cada X minutos analiza situación completa, percibe todo, escala solo lo relevante, simulaciones buscan óptimo global"
+26. "Aprendizaje del sistema: jefe de turno experto rechaza opciones A, B, C y elige D — sistema aprende y eventualmente sugiere D como primera opción"
+27. "Anticipación multifactorial: histórico de equipos, condiciones climáticas (fenómeno del Niño), patrones estacionales"
+28. "Plan conservador de 100 unidades vs. realidad de 50, pero potencial de 150 — incentivos mal alineados (bonos por cumplimiento, no por optimización)"
+
+---
+
+## [Propuesta ruta/_FIELD_NOTES.md]
+- Type: field_notes
+- Date: 2026-02-16
+- Extracted: 2026-02-20T15:23
+
+### Raw Claims
+1. "Estamos en semana 3-4 del plan de Idemax, entrando a Etapa 3 (Lineamientos de diseño) sin haber completado la Etapa 2. El plan contemplaba '6 entrevistas en profundidad con usuarios clave y stakeholders' pero todas las perspectivas de usuario recopiladas hasta ahora son indirectas — provienen de stakeholders internos (COO, PMs, equipo TIMining), no de mineros, despachadores o jefes de turno reales. El conflicto CF-07 (prioridad CRÍTICA) ya lo documenta. Si los lineamientos de diseño de Etapa 3 se construyen sobre suposiciones de stakeholders sin validación directa con usuarios finales, existe el riesgo de repetir el patrón 'Auto de Homero Simpson' (IG-SYNTH-02) a nivel de estrategia UX." (Confidence: high)
+
+---
+
+## [ai-reports/competitive-landscape.md] ⚠️ AI-GENERATED
+- Type: analysis
+- Date: 2026-02-15
+- Participants: Gemini 2.0
+- Extracted: 2026-02-20T17:15
+
+### Raw Claims
+1. "El mercado global de software de tecnología minera se estima en $4.2B, con un CAGR de 8.3% hasta 2030. Los segmentos clave incluyen fleet management systems (FMS), planificación minera y plataformas de inteligencia operacional." [AI-SOURCE]
+2. "Hexagon Mining (HxGN MineOperate) es líder de mercado en fleet management con ~35% de participación en operaciones a cielo abierto." [AI-SOURCE]
+3. "Hexagon tiene integración profunda con Caterpillar como OEM y precisión en posicionamiento en tiempo real como fortalezas." [AI-SOURCE]
+4. "La UX de Hexagon es anticuada y requiere entrenamiento extenso (típicamente 40+ horas para operadores)." [AI-SOURCE]
+5. "Hexagon usa modelo de licencia enterprise, $500K-$2M por despliegue por sitio." [AI-SOURCE]
+6. "Wenco International Mining Systems es fuerte en operaciones mid-market, conocido por flexibilidad y despliegue modular con flotas mixtas." [AI-SOURCE]
+7. "Wenco tiene capacidades limitadas de visualización 3D y no ofrece features de AI/ML." [AI-SOURCE]
+8. "Wenco usa modelo de suscripción, ~$150K-$400K anualmente." [AI-SOURCE]
+9. "Maptek (Vulcan + BlastLogic) es dominante en modelado geológico y diseño de tronaduras, estándar de industria para planificación minera." [AI-SOURCE]
+10. "Maptek tiene productos en silos con pobre integración operacional en tiempo real." [AI-SOURCE]
+11. "Maptek usa licenciamiento por asiento, $30K-$80K por asiento." [AI-SOURCE]
+12. "Ningún competidor ofrece actualizaciones de topografía cada 15 minutos como diferenciador central — oportunidad para TIMining." [AI-SOURCE]
+13. "El tiempo de entrenamiento de operadores podría reducirse a <4 horas con diseño intuitivo." [AI-SOURCE]
+14. "Las recomendaciones proactivas (copiloto IA) no son ofrecidas por ningún competidor actual." [AI-SOURCE]
+15. "La mayoría de competidores están alineados con OEMs; el enfoque vendor-agnostic de TIMining es único." [AI-SOURCE]
+16. "La estrategia de adquisiciones de Hexagon podría cerrar la brecha competitiva rápidamente." [AI-SOURCE]
+17. "Las empresas mineras son risk-averse y prefieren soluciones probadas sobre innovadoras." [AI-SOURCE]
+18. "Los requisitos de cumplimiento regulatorio varían significativamente por región." [AI-SOURCE]

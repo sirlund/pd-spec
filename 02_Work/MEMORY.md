@@ -3,81 +3,89 @@
 > Session log and state tracker. Written by skills after each execution.
 > The agent reads this at session start to resume context and detect manual edits.
 
-## [2026-02-16T18:45] /extract
-- **Request:** Full extraction of all sources in 01_Sources/
-- **Actions:** Discovered 61 files across 7 folders. 54 files processed (full extraction), 7 files unsupported (video). TWO-PASS BATCHING activated (>40 files). Pass 1: 38 light files in 4 batches. Pass 2: 16 heavy files one-at-a-time. Validated 54 sections written to EXTRACTIONS.md. Fixed 2 SOURCE_MAP entries lost during context compaction.
-- **Result:** 54 files processed, 1238 total claims extracted, 7 video files unsupported
+## Historical Summary
+
+**Full pipeline executed 2026-02-16 across 5 skills:**
+- `/extract` (18:45): 54 files from 7 folders, 1238 claims. TWO-PASS BATCHING (38 light + 16 heavy). 7 video files unsupported.
+- `/analyze --full` (20:30): 1238 claims → 21 synthesized insights (12 high, 9 medium), 6 ambiguities, 5 research gaps. Research Brief generated.
+- `/status` (21:00): Injected IG-01 (iPhone-like observation) + field note in Workshop 1/.
+- `/synthesis` (21:30): 20 VERIFIED, 2 INVALIDATED, 1 MERGED. 7 conflicts RESOLVED, 4 PENDING. SYSTEM_MAP built.
+- `/ship prd` (22:00): PRD.html v2.0 (Template+JSON, 20 insights, 4 pending conflicts).
+- `/ship persona` (22:15): PERSONAS.html v1.0 (4 personas, 17 insight refs).
+- `/status` (23:00): Injected IG-02 (Etapa 2 incompleta) + field note in Propuesta ruta/.
+
+**QA padding entries (2026-02-17 to 2026-02-18) — dummy data for T43 compaction test:**
+- `/status` (02-17 10:00): IG-DUMMY-01 injected.
+- `/status` (02-17 11:00): IG-DUMMY-02 injected.
+- `/synthesis` (02-18 09:00): Resolved 2 test conflicts, verified 2 test insights.
+
+---
+
+## [2026-02-20T15:23] /extract sesiones-idemax (incremental, QA v4 Phase A)
+- **Request:** Incremental extraction of 3 new files in sesiones-idemax/ + 1 missed file in Propuesta ruta/
+- **Mode:** Express (all 4 files are light/md)
+- **Preprocessing (BL-43):**
+  - Phase 1.5 detected 2 candidates via content heuristic (no _CONTEXT.md exists)
+  - `session-align-con-camila(wed18feb).md`: APPROVED — 2 speakers (Nlundin high, Cbonilla high), 15 phonetic corrections
+  - `Touchpoint_TIMining-IDEMAX _2026-02-19.md`: SKIPPED by user — 134KB, speaker detection infeasible
+  - `reunion_camila_2026-02-17.md`: correctly rejected (clean notes, no STT patterns)
+  - `_FIELD_NOTES.md`: correctly rejected (structured field notes)
+- **Stats:** 4 files processed, 94 new claims (27 + 38 + 28 + 1)
+- **Result:** 58 files processed, 1332 total claims
+- **Snapshot:** 58 sources · 1332 claims · 24 insights (20V, 1P, 1M, 2I) · 4 conflicts PENDING · 2 outputs
+
+---
+
+## [2026-02-20T16:10] /analyze (incremental, QA v4 Phase B)
+- **Request:** /analyze incremental
+- **Mode:** INCREMENTAL (processed 94 new claims from 4 sections, skipped 54 unchanged sections)
+- **Synthesis:** 12 atomic observations → 2 synthesized insights + 7 atomic PENDING + 5 MERGED. 1 new conflict (CF-12). 15 existing insights convergence-updated.
+- **Speaker correction:** User corrected Touchpoint speaker attribution — CTO (Carlo) for technical/product claims, not CEO (Philip).
+- **Actions:**
+  - Synthesized insights created: 2 (IG-SYNTH-22, IG-SYNTH-23)
+  - Atomic observations PENDING: 7 (IG-08 through IG-14)
+  - Atomic observations MERGED: 5 (IG-03 through IG-07)
+  - Convergence updated: 15 existing insights (denominator 54→58)
+  - Conflicts: CF-12 created, CF-07 reinforced
+- **Result:** 38 total insights (20 VERIFIED, 10 PENDING, 6 MERGED, 2 INVALIDATED) · 5 conflicts PENDING · 2 outputs
+- **Snapshot:** 58 sources · 1332 claims · 38 insights (20V, 10P, 6M, 2I) · 12 conflicts (7R, 5P) · 2 outputs
+
+---
+
+## [2026-02-20T16:45] /synthesis (QA v4 Phase B — T43 compaction test)
+- **Request:** /synthesis (5 PENDING conflicts)
+- **Actions:**
+  - CF-03: PENDING — Flagged → PENDING — Research (benchmark UX en progreso)
+  - CF-12: PENDING → PENDING — Flagged (llevar a próxima sesión de trabajo con equipo)
+  - CF-05, CF-07, CF-08: no changes (kept current intermediate states)
+  - SYSTEM_MAP: 3 open questions added (IG-SYNTH-22, IG-SYNTH-23, CF-12)
+  - No insight status changes
+- **Result:** 38 insights (20V, 10P, 6M, 2I) · 5 conflicts PENDING · 2 outputs
+- **Snapshot:** 58 sources · 1332 claims · 38 insights (20V, 10P, 6M, 2I) · 12 conflicts (7R, 5P) · 2 outputs
+- **Note:** MEMORY compacted (was 82 lines, now <80). Historical Summary updated with QA padding entries.
+
+---
+
+## [2026-02-20T17:15] /extract ai-reports (incremental, QA v4 Phase C — T48)
+- **Request:** /extract ai-reports (AI source validation test)
+- **Mode:** Express (1 light file)
+- **Actions:** 1 file processed with AI-GENERATED tagging (Source Type: ai-generated in _CONTEXT.md)
 - **Stats:**
-  - `entrevistas operaciones/`: 4 files, 128 claims
-  - `entrevistas iniciales stakeholders/`: 4 files, 71 claims
-  - `Workshop 1/`: 32 files, 757 claims
-  - `Antecedentes/`: 5 files, 216 claims
-  - `Antecedentes/Ppt & videos evento Google/`: 1 file processed (24 claims), 7 video files unsupported
-  - `Propuesta ruta/`: 1 file, 19 claims
-  - Root-level files: 3 files, 68 claims (Referencia 3, Sello 38, Workshop 01 pptx 27)
-  - `Visión Futuro _CORE_/`: 4 files, 139 claims
-  - **Total:** 54 files processed, 1238 claims extracted, 7 unsupported
-- **Snapshot:** 54 source files processed · 1238 claims extracted · 0 insights · 0 conflicts · 0 organization issues
+  - `ai-reports/`: 1 file, 18 claims (all tagged [AI-SOURCE])
+  - **Total:** 1 file processed, 18 claims extracted
+- **Preprocessing:** none
+- **Snapshot:** 59 sources · 1350 claims · 38 insights (20V, 10P, 6M, 2I) · 12 conflicts (7R, 5P) · 2 outputs
 
-## [2026-02-16T20:30] /analyze --full
-- **Request:** /analyze (full mode — first run)
-- **Mode:** FULL (processed 1238 claims from 54 sections)
-- **Synthesis:** 1238 atomic claims → 21 synthesized insights (12 high confidence, 9 medium confidence), 6 ambiguities detected, 5 research gaps identified
+---
+
+## [2026-02-20T17:30] /analyze (incremental, QA v4 Phase C — T49)
+- **Request:** /analyze (incremental — AI source validation)
+- **Mode:** INCREMENTAL (processed 18 claims from 1 AI-GENERATED section, skipped 58 unchanged sections)
 - **Actions:**
-  - Synthesized insights created: 21 (IG-SYNTH-01 through IG-SYNTH-21, plus IG-SYNTH-16b)
-  - Deduplication: ~450 claims were semantic duplicates across sources (reduced to ~790 unique)
-  - Ambiguities logged: 6 (CF-01 through CF-06) — deferred to /synthesis
-  - Research gaps logged: 5 (CF-07 through CF-11) — added to backlog
-  - Research Brief generated: RESEARCH_BRIEF.md
-- **Insight breakdown by category:**
-  - user-need (current): 4 — IG-SYNTH-02, 03, 09, 11
-  - user-need (aspirational): 4 — IG-SYNTH-04, 06, 07, 16
-  - technical (current): 2 — IG-SYNTH-01, 13
-  - technical (aspirational): 1 — IG-SYNTH-19
-  - business (current): 4 — IG-SYNTH-05, 12, 14, 17
-  - business (aspirational): 3 — IG-SYNTH-10, 16b, 21
-  - constraint (current): 3 — IG-SYNTH-15, 18, 20
-- **Convergence highlights:**
-  - Highest: IG-SYNTH-06 (Detección→Análisis→Recomendación) — 25/54 sources
-  - Strong: IG-SYNTH-01 (Geometry Gap) — 15/54, IG-SYNTH-04 (Dashboard→Copiloto) — 12/54, IG-SYNTH-09 (Perfiles) — 12/54
-  - Fragile: IG-SYNTH-20 (Expertise Carlo) — 2/54, IG-SYNTH-13 (Stack fragmentado) — 3/54
-- **Source diversity:** 3/6 (user research parcial, business parcial, technical parcial; competitive y accesibilidad ausentes)
-- **Result:** 21 insights PENDING · 11 conflicts/gaps PENDING · 1 Research Brief
-- **Snapshot:** 21 insights (0 VERIFIED, 21 PENDING) · 11 conflicts PENDING (6 ambiguities + 5 research gaps) · 0 outputs
-
-## [2026-02-16T21:00] /status Add Context
-- **Request:** Inject field note observation from dashboard
-- **Actions:** Injected [IG-01] (PENDING, user-need current, researcher observation, confidence: high) — concepto "iPhone-like" acuñado por stakeholder en Workshop 01 para justificar ticket USD 450k. Saved field note to Workshop 1/_FIELD_NOTES.md.
-- **Result:** 1 insight injected, 1 field note saved
-- **Snapshot:** 23 insights (0 VERIFIED, 23 PENDING) · 11 conflicts PENDING · 0 outputs
-
-## [2026-02-16T21:30] /synthesis
-- **Request:** Resolve all 11 conflicts, approve 20 insights, reject 2, merge 1
-- **Actions:**
-  - 20 insights → VERIFIED: IG-SYNTH-01 through IG-SYNTH-19 + IG-SYNTH-16b
-  - 2 insights → INVALIDATED: IG-SYNTH-20 (baja convergencia), IG-SYNTH-21 (visión 2040 no accionable)
-  - 1 insight → MERGED: IG-01 → IG-SYNTH-16 (convergencia 4→5)
-  - 7 conflicts → RESOLVED: CF-01 (7 productos, 2 dominios), CF-02 (3D sí agrega valor, UX problema), CF-04 (subterránea es secuencia temporal), CF-06 (CORE reemplaza Aware/Orchestra), CF-09 (benchmark pendiente documentar), CF-10 (aplicar WCAG sin observación terreno), CF-11 (riesgo técnico documentado)
-  - 2 conflicts → PENDING (flagged): CF-03 (benchmark UX con CTO), CF-07 (entrevistas en mina)
-  - 2 conflicts → PENDING (research): CF-05 (framework config vs custom), CF-08 (financial model)
-  - SYSTEM_MAP.md reescrito: visión, 7 módulos (5 Ready, 2 Blocked), 7 principios de diseño, 6 preguntas abiertas
-- **Result:** 20 VERIFIED, 2 INVALIDATED, 1 MERGED · 7 conflicts RESOLVED, 4 PENDING · System Map built
-- **Snapshot:** 23 insights (20 VERIFIED, 0 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 0 outputs
-
-## [2026-02-16T22:00] /ship prd
-- **Request:** Generate PRD v2.0
-- **Actions:** Reescritura completa del PRD usando Template+JSON. 11 secciones generadas (visión, problema central, propuesta de valor, patrón UX, perfiles usuario, 7 módulos, 7 principios, modelo negocio, restricciones, preguntas abiertas, resumen insights). CSS y JS inlined. Regex de cross-references actualizado para soportar IDs IG-SYNTH-XX.
-- **Result:** PRD.html v2.0 generado. 20 insights verificados referenciados, 4 conflictos PENDING mencionados, 0 gaps.
-- **Snapshot:** 23 insights (20 VERIFIED, 0 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 1 output
-
-## [2026-02-16T22:15] /ship persona
-- **Request:** Generate user personas
-- **Actions:** 4 personas generadas (P-01 Despachador, P-02 Jefa de Turno, P-03 Gerente de Mina, P-04 Planificadora). Template+JSON con CSS/JS inlined. 17 insights referenciados, cada persona respaldada por 6-10 insights. Section labels traducidos a español.
-- **Result:** PERSONAS.html v1.0 generado. 4 personas, 17 unique insight refs, 0 gaps.
-- **Snapshot:** 23 insights (20 VERIFIED, 0 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 2 outputs
-
-## [2026-02-16T23:00] /status Add Context
-- **Request:** Inyectar field note — Etapa 2 del plan Idemax incompleta, entrando a Etapa 3 sin validación de usuarios finales
-- **Actions:** Inyectado [IG-02] (PENDING, constraint current, researcher observation, confidence: high). Creado field note en Propuesta ruta/_FIELD_NOTES.md. Relacionado con CF-07 e IG-SYNTH-02.
-- **Result:** 1 insight inyectado, 1 field note creado
-- **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 2 outputs
+  - New atomic insights: 8 (IG-15 through IG-22) — all voice: ai, authority: hypothesis
+  - Convergence updated: 5 existing insights (IG-SYNTH-01, IG-SYNTH-04, IG-SYNTH-05, IG-SYNTH-11, IG-14)
+  - Deduplicated: 5 claims (convergence updates to existing insights)
+  - Ambiguities: 0
+  - Conflicts: 0 new
+- **Result:** 46 insights (20V, 18P, 6M, 2I) · 12 conflicts (7R, 5P)
+- **Snapshot:** 59 sources · 1350 claims · 46 insights (20V, 18P, 6M, 2I) · 12 conflicts (7R, 5P) · 2 outputs

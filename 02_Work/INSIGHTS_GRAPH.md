@@ -15,7 +15,7 @@ Atomic verified insights extracted from sources. Each insight has a unique `[IG-
 
 ### [IG-SYNTH-01] "Geometry Gap" — Brecha geométrica entre plan y realidad
 **Consolidates:** 15+ claims atómicos de fuentes múltiples
-**Convergence:** 15/54 sources
+**Convergence:** 18/59 sources
 **Category:** technical (current)
 **Voice:** stakeholder (COO, CEO, CTO), document (briefs, pitch decks)
 **Authority:** direct-quote, observation, fact
@@ -36,7 +36,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, Antecedentes/Narrativa 
 
 ### [IG-SYNTH-12] Adherencia al plan como métrica central del negocio
 **Consolidates:** 10+ claims atómicos
-**Convergence:** 10/54 sources
+**Convergence:** 11/59 sources
 **Category:** business (current)
 **Voice:** stakeholder (CEO, COO, CTO), document (cases, metrics)
 **Authority:** fact, observation
@@ -59,7 +59,7 @@ Ref: TIMINING_Workshop 01 _ 28 Enero 26.pptx, Visión Futuro _CORE_/GEMINI exerc
 
 ### [IG-SYNTH-02] "Auto de Homero Simpson" — Trampa de customización y feature bloat
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 8/54 sources
+**Convergence:** 8/59 sources
 **Category:** user-need (current)
 **Voice:** stakeholder (COO, operaciones), user (operadores vía stakeholders)
 **Authority:** direct-quote, observation
@@ -80,7 +80,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-03] Confusión Temporal — Los tiempos del dato generan abandono
 **Consolidates:** 4 claims atómicos
-**Convergence:** 4/54 sources
+**Convergence:** 4/59 sources
 **Category:** user-need (current)
 **Voice:** user (operadores vía stakeholders), stakeholder (operaciones)
 **Authority:** direct-quote, fact
@@ -100,7 +100,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-07] Gestión por Excepción — Solo mostrar lo que importa
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 8/54 sources
+**Convergence:** 8/59 sources
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CEO, operaciones), user (workshop)
 **Authority:** direct-quote, observation
@@ -121,7 +121,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop
 
 ### [IG-SYNTH-09] Perfiles de usuario diferenciados con necesidades distintas
 **Consolidates:** 12+ claims atómicos
-**Convergence:** 12/54 sources
+**Convergence:** 14/59 sources
 **Category:** user-need (current)
 **Voice:** user (workshop), stakeholder (COO, PM)
 **Authority:** direct-quote, observation
@@ -141,9 +141,9 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-11] Curva de aprendizaje y barrera de adopción
 **Consolidates:** 6+ claims atómicos
-**Convergence:** 6/54 sources
+**Convergence:** 7/59 sources
 **Category:** user-need (current)
-**Voice:** stakeholder (PM Orchestra, operaciones), user (indirecto)
+**Voice:** stakeholder (PM Orchestra, operaciones), user (indirecto), ai (competitive-landscape)
 **Authority:** direct-quote, observation
 Status: VERIFIED
 
@@ -161,7 +161,7 @@ Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas
 
 ### [IG-SYNTH-15] Efecto Gaviota — Dolor del cambio de turno
 **Consolidates:** 5 claims atómicos
-**Convergence:** 5/54 sources
+**Convergence:** 5/59 sources
 **Category:** user-need (current)
 **Voice:** stakeholder (CEO, CTO), document (vision docs)
 **Authority:** observation, vision
@@ -184,9 +184,9 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Visión Futuro _
 
 ### [IG-SYNTH-04] Del Dashboard al Copiloto — Paradigma de asistencia proactiva
 **Consolidates:** 12+ claims atómicos
-**Convergence:** 12/54 sources
+**Convergence:** 16/59 sources
 **Category:** user-need (aspirational)
-**Voice:** stakeholder (CEO, CTO, PM), document (design brief, vision docs)
+**Voice:** stakeholder (CEO, CTO, PM), document (design brief, vision docs), ai (competitive-landscape)
 **Authority:** vision, observation, hypothesis
 Status: VERIFIED
 
@@ -205,7 +205,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Workshop 1/works
 
 ### [IG-SYNTH-06] Patrón Detección → Análisis → Recomendación
 **Consolidates:** 25+ claims atómicos (20 láminas de workshop + documentación)
-**Convergence:** 25/54 sources
+**Convergence:** 28/59 sources
 **Category:** user-need (aspirational)
 **Voice:** user (operadores en workshop), stakeholder (equipo TIMining)
 **Authority:** direct-quote, observation
@@ -224,7 +224,7 @@ Ref: Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/laminas-caso-uso-1.png
 
 ### [IG-SYNTH-08] Democratización del Dato — De expertos a todos
 **Consolidates:** 9+ claims atómicos
-**Convergence:** 9/54 sources
+**Convergence:** 9/59 sources
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CTO, CEO, PM), document (vision docs)
 **Authority:** vision, observation
@@ -245,7 +245,7 @@ Ref: Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Visión Futuro _CORE_/D
 
 ### [IG-SYNTH-19] Interfaz Multimodal — 4 Lentes de navegación
 **Consolidates:** 7+ claims atómicos
-**Convergence:** 7/54 sources
+**Convergence:** 7/59 sources
 **Category:** technical (aspirational)
 **Voice:** document (design brief, vision docs)
 **Authority:** vision
@@ -266,7 +266,7 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experienci
 
 ### [IG-SYNTH-16] Paz Mental como propuesta de valor experiencial
 **Consolidates:** 5 claims atómicos (incluye IG-01 "iPhone-like")
-**Convergence:** 5/54 sources
+**Convergence:** 5/59 sources
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CEO, workshop), document (Sello)
 **Authority:** direct-quote, observation
@@ -289,9 +289,9 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Sello de Experie
 
 ### [IG-SYNTH-05] Efecto Suiza — Integrador neutral como diferenciador
 **Consolidates:** 10+ claims atómicos
-**Convergence:** 10/54 sources
+**Convergence:** 12/59 sources
 **Category:** business (current)
-**Voice:** stakeholder (COO, CEO, CTO), document (strategic narratives)
+**Voice:** stakeholder (COO, CEO, CTO), document (strategic narratives), ai (competitive-landscape)
 **Authority:** fact, observation
 Status: VERIFIED
 
@@ -310,7 +310,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-10] De herramientas fragmentadas a plataforma CORE
 **Consolidates:** 9+ claims atómicos
-**Convergence:** 9/54 sources
+**Convergence:** 9/59 sources
 **Category:** business (aspirational)
 **Voice:** stakeholder (CEO, CTO), document (strategic narratives, design brief)
 **Authority:** vision, fact
@@ -331,7 +331,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 
 ### [IG-SYNTH-14] Dependencia de venta consultiva
 **Consolidates:** 3 claims atómicos
-**Convergence:** 3/54 sources
+**Convergence:** 3/59 sources
 **Category:** business (current)
 **Voice:** stakeholder (operaciones)
 **Authority:** fact
@@ -350,7 +350,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-16b] Oportunidad de repricing: precio vs valor
 **Consolidates:** 6 claims atómicos
-**Convergence:** 6/54 sources
+**Convergence:** 6/59 sources
 **Category:** business (aspirational)
 **Voice:** stakeholder (CEO, CTO, workshop)
 **Authority:** fact, observation
@@ -370,7 +370,7 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Antecedentes/31_12_
 
 ### [IG-SYNTH-17] Adopción bottom-up: "operational pull"
 **Consolidates:** 5 claims atómicos
-**Convergence:** 5/54 sources
+**Convergence:** 5/59 sources
 **Category:** business (current)
 **Voice:** stakeholder (CEO), document (strategic narrative)
 **Authority:** fact, observation
@@ -393,7 +393,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 
 ### [IG-SYNTH-13] Stack tecnológico fragmentado
 **Consolidates:** 3 claims atómicos
-**Convergence:** 3/54 sources
+**Convergence:** 3/59 sources
 **Category:** technical (current)
 **Voice:** stakeholder (COO)
 **Authority:** fact
@@ -413,7 +413,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-18] Seguridad y gestión geotécnica integrada
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 8/54 sources
+**Convergence:** 8/59 sources
 **Category:** constraint (current)
 **Voice:** user (workshop), stakeholder (operaciones)
 **Authority:** direct-quote, observation
@@ -433,7 +433,7 @@ Ref: Workshop 1/workshop-laminas-11.02.57 AM.png, Workshop 1/workshop-laminas-11
 
 ### [IG-SYNTH-20] Concentración de expertise en Carlo (CTO)
 **Consolidates:** 2 claims atómicos
-**Convergence:** 2/54 sources
+**Convergence:** 2/59 sources
 **Category:** constraint (current)
 **Voice:** stakeholder (Ana, Gerente Comunicaciones), researcher (field notes)
 **Authority:** direct-quote, observation
@@ -453,7 +453,7 @@ Ref: entrevistas iniciales stakeholders/Entrevista_Ana.png, Workshop 1/_FIELD_NO
 
 ### [IG-SYNTH-21] Visión 2040 — La mina autónoma
 **Consolidates:** 5 claims atómicos
-**Convergence:** 5/54 sources
+**Convergence:** 5/59 sources
 **Category:** business (aspirational)
 **Voice:** document (strategic narratives, vision docs)
 **Authority:** vision
@@ -506,4 +506,310 @@ Related: [CF-07], [IG-SYNTH-02]
 
 ---
 
-<!-- Updated by /status Add Context on 2026-02-16 -->
+## Restricciones de Automatización y Diseño
+
+### [IG-SYNTH-22] Automatización Progresiva — de reglas a humanos a máquinas
+**Consolidates:** IG-03, IG-04, IG-05
+**Convergence:** 2/59 sources
+**Category:** constraint (current → aspirational)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+Status: PENDING
+
+> **Narrative:** El plan minero es probabilístico — "la decisión de dónde cortar es del dueño, no del software." TIMining aborda la automatización gradualmente: 60+ reglas de negocio validan recomendaciones de IA (grounding anti-alucinación), el humano aprueba/rechaza, y solo tras meses de concordancia el sistema actúa sobre máquinas. "No puedo sacar al humano" (CTO) coexiste con "estamos conversando para desviar camiones automáticamente" (CTO).
+
+**Evidence trail:**
+- Carlo (CTO): "tienes una probabilidad de sacar cinco piedras — la decisión de dónde cortar es del dueño"
+- Carlo (CTO): "motores de reglas de negocio que le entregan vectores a la IA para que agregue valor"
+- Carlo (CTO): "si después de varios meses todas nuestras recomendaciones las implementó, le cuento al camión directamente"
+
+**Named concept origin:** "Grounding" / "Human-in-the-loop gradual" — Touchpoint session con CTO
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-SYNTH-23] Hub de Decisiones — capturar lo invisible
+**Consolidates:** IG-06, IG-07
+**Convergence:** 3/59 sources
+**Category:** user-need (current)
+**Voice:** stakeholder (CTO), stakeholder (equipo)
+**Authority:** direct-quote, observation
+Status: PENDING
+
+> **Narrative:** Las decisiones operacionales críticas ocurren fuera del software — en WhatsApp, por radio, en terreno. CORE debe ser el hub donde estas decisiones quedan registradas: "en turno 368, Juan tomó esta decisión con este impacto." El diferenciador es distinguir "urgente" (Pedro arregla el camino — output previsible) de "importante" (Juan redirige camiones y mitiga 30% más — impacto al plan).
+
+**Evidence trail:**
+- Carlo (CTO): "impresionante la cantidad de toma de decisiones que ocurren vía WhatsApp"
+- reunion_camila: "decisiones por radio no quedan registradas, pérdida de conocimiento entre jefes de turno"
+- Camila session: "Pedro arregla el camino vs Juan manda camiones por otro camino y mitiga 30%"
+
+**Named concept origin:** "Urgente vs Importante" / "Hub de Decisiones" — Touchpoint, reunion_camila, Camila session
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md, sesiones-idemax/session-align-con-camila(wed18feb).md
+
+---
+
+## Observaciones Atómicas (sesiones-idemax, 2026-02-20)
+
+### [IG-03] Plan minero probabilístico — restricción de automatización
+**Category:** constraint (current)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 1/59 sources
+Status: MERGED → IG-SYNTH-22
+
+> "Tienes una probabilidad de sacar cinco piedras, una probabilidad menor de sacar seis — la decisión de dónde cortar es del dueño, no del software."
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-04] Human-in-the-loop como restricción y camino gradual
+**Category:** constraint (current → aspirational)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 2/59 sources
+Status: MERGED → IG-SYNTH-22
+
+> "No puedo sacar al humano." "Estamos conversando con clientes para desviar camiones automáticamente." Primero sugiere a humanos, luego a máquinas.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-05] Reglas de negocio (60+) como grounding de IA
+**Category:** technical (current)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 1/59 sources
+Status: MERGED → IG-SYNTH-22
+
+> "Motores de cálculo y motores de reglas de negocio que le entregan vectores a la IA para que agregue valor."
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-06] WhatsApp/radio — decisiones fuera del software
+**Category:** user-need (current)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 2/59 sources
+Status: MERGED → IG-SYNTH-23
+
+> "Impresionante la cantidad de toma de decisiones que ocurren vía WhatsApp." Comunicaciones por radio no quedan registradas, pérdida de conocimiento entre jefes de turno.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-07] Urgente vs importante como diferenciador
+**Category:** user-need (aspirational)
+**Voice:** stakeholder (equipo)
+**Authority:** observation
+**Convergence:** 2/59 sources
+Status: MERGED → IG-SYNTH-23
+
+> "Pedro arregla el camino (output previsible) vs Juan manda camiones por otro camino y mitiga 30% más (impacto al plan)."
+
+Ref: sesiones-idemax/session-align-con-camila(wed18feb).md, sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-08] TimeSight redefinido — "comprender para proyectar", no "rebobinar"
+**Category:** technical (aspirational)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> Carlo eliminó navegación temporal del producto (rebobinar el pasado). Concepto correcto: "comprender el pasado para proyectar." Predicción basada en patrones del sistema, no en individuos.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-09] 4 dominios operativos — estructura de producto CORE
+**Category:** business (aspirational)
+**Voice:** stakeholder (CTO)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> (A) Respuesta a crisis, (B) Anticipación operativa, (C) Asistencia inteligente en terreno, (D) Alineación estratégica (multipilar). Carlo: dominio D "arriba de los otros tres" — elevar la minera una capa de inteligencia.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-10] Caso de uso CFO — usuario invisible
+**Category:** user-need (aspirational)
+**Voice:** stakeholder (CTO)
+**Authority:** observation
+**Convergence:** 2/59 sources
+Status: PENDING
+
+> Erika hace reportes manuales en 30 min, CFO no usa TIMining. Necesita 4 KPIs traducidos a lenguaje financiero en teléfono antes de reunión. Perfil invisible no cubierto por perfiles actuales.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-11] "Paz mental" problemático para uso externo
+**Category:** constraint (current)
+**Voice:** stakeholder (CEO + CTO)
+**Authority:** direct-quote
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> Dos objeciones distintas: Philip (CEO): "no es tanto paz mental, más bien estos tipos no tienen tiempo" — redefine necesidad subyacente. Carlo (CTO): "si les digo que les doy paz mental quedamos como chantas" — rechaza branding para clientes. Coinciden: no para uso externo, pero por razones distintas.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-12] Dos dimensiones de desviación del plan
+**Category:** technical (current)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Hay dos dimensiones: (1) realidad vs plan esperado, (2) realidad vs parámetros originales de construcción del plan." Navegar ambas dimensiones es complejo.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-13] Incentivos mal alineados — cumplimiento vs optimización
+**Category:** business (current)
+**Voice:** stakeholder (equipo)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> Plan conservador 100 unidades, realidad 50, potencial 150. Bonos por cumplimiento, no por optimización — incentivos no estimulan explotar el potencial real.
+
+Ref: sesiones-idemax/reunion_camila_2026-02-17.md
+
+---
+
+### [IG-14] Industria no suficientemente madura para apuestas de diseño
+**Category:** constraint (current)
+**Voice:** stakeholder (CTO)
+**Authority:** direct-quote
+**Convergence:** 2/59 sources
+Status: PENDING
+
+> Carlo: "estamos jugando con cosas donde la industria no está suficientemente madura." Riesgo de que las apuestas de diseño no tengan mercado preparado.
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, ai-reports/competitive-landscape.md
+
+---
+
+## Competitive Landscape (AI-Generated — requires non-AI corroboration)
+
+### [IG-15] Mercado global de software minero — $4.2B con CAGR 8.3%
+**Category:** business (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "El mercado global de software de tecnología minera se estima en $4.2B, con un CAGR de 8.3% hasta 2030."
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-16] Hexagon Mining — líder FMS con ~35% market share
+**Category:** business (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Hexagon Mining (HxGN MineOperate) es líder de mercado en fleet management con ~35% de participación en operaciones a cielo abierto." Integración OEM profunda con Caterpillar. Pricing: $500K-$2M por despliegue por sitio.
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-17] Hexagon UX anticuada — 40+ horas de entrenamiento para operadores
+**Category:** business (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "La UX de Hexagon es anticuada y requiere entrenamiento extenso (típicamente 40+ horas para operadores)."
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-18] Wenco — mid-market modular, sin 3D ni AI
+**Category:** business (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Wenco International Mining Systems es fuerte en operaciones mid-market, despliegue modular con flotas mixtas." Sin visualización 3D ni features AI/ML. Pricing: $150K-$400K suscripción anual.
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-19] Maptek — dominante en geological modeling, productos en silos
+**Category:** business (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Maptek (Vulcan + BlastLogic) es dominante en modelado geológico y diseño de tronaduras." Productos en silos con pobre integración operacional en tiempo real. Pricing: $30K-$80K por asiento.
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-20] Riesgo de adquisiciones de Hexagon — cierre de brecha competitiva
+**Category:** constraint (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "La estrategia de adquisiciones de Hexagon podría cerrar la brecha competitiva rápidamente."
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-21] Cumplimiento regulatorio — variabilidad significativa por región
+**Category:** constraint (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Los requisitos de cumplimiento regulatorio varían significativamente por región."
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+### [IG-22] Industria minera risk-averse — preferencia por soluciones probadas
+**Category:** constraint (current)
+**Voice:** ai
+**Authority:** hypothesis
+**Convergence:** 1/59 sources
+Status: PENDING
+
+> "Las empresas mineras son risk-averse y prefieren soluciones probadas sobre innovadoras."
+
+Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
+
+---
+
+<!-- Updated by /analyze (incremental) on 2026-02-20 -->

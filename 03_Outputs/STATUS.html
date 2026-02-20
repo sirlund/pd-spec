@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PD-Spec Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* === Reset === */
+    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* === Layout === */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #111;
+      background: #f8f8f8;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* === Sidebar === */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: #fff;
+      border-right: 1px solid #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .sidebar-header h1 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .sidebar-header .meta {
+      font-size: 0.7rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 0.5rem 0;
+      overflow-y: auto;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      color: #444;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .sidebar-nav a:hover { background: #f5f5f5; }
+    .sidebar-nav a.active {
+      background: #f0f0f0;
+      color: #111;
+      border-left-color: #111;
+      font-weight: 600;
+    }
+    .sidebar-nav a .nav-count {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: #999;
+      font-weight: 400;
+    }
+    .sidebar-sep {
+      height: 1px;
+      background: #e5e5e5;
+      margin: 0.5rem 1rem;
+    }
+    .sidebar-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid #e5e5e5;
+      font-size: 0.7rem;
+      color: #999;
+    }
+    .sidebar-footer .decision-badge {
+      display: inline-block;
+      background: #111;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      margin-left: 0.25rem;
+    }
+
+    /* Mobile toggle */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 200;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 0.375rem 0.625rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* === Main === */
+    .main {
+      flex: 1;
+      margin-left: 220px;
+      padding: 2rem;
+      max-width: 900px;
+    }
+
+    /* === Module Sections === */
+    .module { display: none; }
+    .module.active { display: block; }
+
+    /* === Summary Cards (Overview) === */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .summary-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    .summary-card .count {
+      font-size: 2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .summary-card .label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.125rem;
+    }
+    .summary-card .breakdown {
+      font-size: 0.7rem;
+      color: #999;
+      margin-top: 0.25rem;
+    }
+    .summary-card.card-ok { border-left: 3px solid #a3d9a5; }
+    .summary-card.card-warn { border-left: 3px solid #f0d080; }
+    .summary-card.card-error { border-left: 3px solid #e8a0a0; }
+
+    /* Progress bar */
+    .progress-section { margin-bottom: 1.5rem; }
+    .progress-section h3 { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem; color: #444; }
+    .progress-bar {
+      height: 8px;
+      background: #e5e5e5;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+    .progress-bar .seg-verified { background: #a3d9a5; }
+    .progress-bar .seg-pending { background: #f0d080; }
+    .progress-bar .seg-invalidated { background: #e8a0a0; }
+    .progress-legend {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.375rem;
+      font-size: 0.7rem;
+      color: #666;
+    }
+    .progress-legend span::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 0.25rem;
+      vertical-align: middle;
+    }
+    .progress-legend .leg-verified::before { background: #a3d9a5; }
+    .progress-legend .leg-pending::before { background: #f0d080; }
+    .progress-legend .leg-invalidated::before { background: #e8a0a0; }
+
+    /* === Section Headers === */
+    .module h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #111;
+    }
+    .module h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+      color: #333;
+    }
+
+    /* === Toolbar (filter/search) === */
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toolbar input[type="text"] {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.375rem 0.625rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      outline: none;
+    }
+    .toolbar input[type="text"]:focus { border-color: #999; }
+    .filter-btn {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 0.375rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+    }
+    .filter-btn:hover { background: #f5f5f5; }
+    .filter-btn.active { background: #111; color: #fff; border-color: #111; }
+
+    /* === Badges === */
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-pending { background: #fef3cd; color: #856404; }
+    .badge-verified { background: #d4edda; color: #155724; }
+    .badge-merged { background: #d1ecf1; color: #0c5460; }
+    .badge-invalidated { background: #f5f5f5; color: #999; text-decoration: line-through; }
+    .badge-resolved { background: #d4edda; color: #155724; }
+    .badge-flagged { background: #fef3cd; color: #856404; }
+    .badge-research { background: #d1ecf1; color: #0c5460; }
+    .badge-ready { background: #d4edda; color: #155724; }
+    .badge-blocked { background: #f8d7da; color: #721c24; }
+    .badge-gap { background: #fff3cd; color: #856404; border: 1px dashed #856404; }
+    .badge-cat {
+      background: none;
+      border: 1px solid #ddd;
+      color: #888;
+      font-weight: 400;
+      font-size: 0.6rem;
+    }
+
+    /* === Insight Cards === */
+    .insight-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s;
+    }
+    .insight-card:target {
+      background: #fffde7;
+      border-left: 3px solid #ffc107;
+      padding-left: calc(1rem - 3px);
+    }
+    .insight-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .insight-id { font-weight: 700; font-size: 0.8rem; color: #333; }
+    .insight-claim { flex: 1; min-width: 200px; font-size: 0.85rem; }
+    .insight-source {
+      margin-top: 0.375rem;
+    }
+    .insight-source summary {
+      font-size: 0.75rem;
+      color: #999;
+      cursor: pointer;
+      list-style: none;
+    }
+    .insight-source summary::-webkit-details-marker { display: none; }
+    .insight-source summary::before { content: '▸ '; }
+    .insight-source[open] summary::before { content: '▾ '; }
+    .insight-source blockquote {
+      margin: 0.375rem 0 0;
+      padding: 0.5rem 0.75rem;
+      border-left: 3px solid #e5e5e5;
+      background: #fafafa;
+      font-size: 0.8rem;
+      color: #444;
+      line-height: 1.5;
+      border-radius: 0 4px 4px 0;
+    }
+    .insight-action {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .insight-btn {
+      background: none;
+      border: 1px solid #e5e5e5;
+      border-radius: 3px;
+      padding: 0.15rem 0.4rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: #666;
+      font-family: inherit;
+    }
+    .insight-btn:hover { background: #f5f5f5; }
+    .insight-btn.selected-approve { background: #d4edda; color: #155724; border-color: #a3d9a5; }
+    .insight-btn.selected-reject { background: #f8d7da; color: #721c24; border-color: #e8a0a0; text-decoration: line-through; }
+    .insight-card.hidden { display: none; }
+
+    /* === Conflict Cards === */
+    .conflict-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .conflict-card:target {
+      box-shadow: 0 0 0 2px #ffc107;
+    }
+    .conflict-card.resolved { border-color: #a3d9a5; background: #fafff9; }
+    .conflict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.375rem;
+    }
+    .conflict-id { font-weight: 700; font-size: 0.875rem; }
+    .conflict-refs { font-size: 0.75rem; color: #999; margin-bottom: 0.375rem; }
+    .conflict-tension { font-size: 0.85rem; margin-bottom: 0.75rem; }
+    .conflict-resolution {
+      font-size: 0.85rem;
+      color: #155724;
+      padding: 0.5rem 0.75rem;
+      background: #d4edda;
+      border-radius: 4px;
+    }
+    .conflict-options { display: flex; flex-direction: column; gap: 0.375rem; }
+    .conflict-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .conflict-option input[type="radio"] { margin-top: 0.3rem; }
+    .conflict-option .option-label { font-weight: 500; }
+    .conflict-note {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.375rem 0.5rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      resize: vertical;
+      display: none;
+    }
+    .conflict-note.visible { display: block; }
+    .conflict-card.hidden { display: none; }
+
+    /* === Source Coverage === */
+    .source-folder {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .source-folder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .source-folder-name { font-weight: 600; font-size: 0.85rem; }
+    .source-folder-meta { font-size: 0.75rem; color: #666; }
+    .source-types {
+      display: flex;
+      gap: 0.375rem;
+      margin-top: 0.375rem;
+      flex-wrap: wrap;
+    }
+    .source-type-tag {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+      background: #f5f5f5;
+      color: #666;
+    }
+    .source-diversity {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+    }
+    .source-diversity h3 { margin-top: 0; }
+    .diversity-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .diversity-item {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #e5e5e5;
+    }
+    .diversity-item.present { background: #d4edda; border-color: #a3d9a5; color: #155724; }
+    .diversity-item.missing { background: #fff; border-style: dashed; color: #999; }
+
+    /* === Evidence Gaps === */
+    .gap-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-left: 3px solid #f0d080;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .gap-type {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #856404;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.25rem;
+    }
+    .gap-desc { font-size: 0.85rem; }
+    .gap-suggestion {
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    /* === System Map === */
+    .sysmap-vision {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #333;
+    }
+    .module-card {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .module-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .module-card-name { font-weight: 600; font-size: 0.875rem; }
+    .module-card-refs { font-size: 0.75rem; color: #999; margin-top: 0.25rem; }
+    .module-card-implications {
+      margin-top: 0.375rem;
+      font-size: 0.8rem;
+      color: #444;
+    }
+    .module-card-implications li { margin-bottom: 0.125rem; }
+    .module-card-blocker {
+      margin-top: 0.375rem;
+      font-size: 0.8rem;
+      color: #721c24;
+      font-weight: 500;
+    }
+    .oq-list { list-style: none; padding: 0; }
+    .oq-item {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.625rem 1rem;
+      margin-bottom: 0.375rem;
+      font-size: 0.85rem;
+      color: #444;
+    }
+    .principles-list { list-style: none; padding: 0; }
+    .principle-item {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 0.625rem 1rem;
+      margin-bottom: 0.375rem;
+      font-size: 0.85rem;
+    }
+
+    /* === Add Context === */
+    .context-form { background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; padding: 1rem; }
+    .context-form label { font-size: 0.8rem; font-weight: 500; display: block; margin-bottom: 0.375rem; color: #333; }
+    .context-form textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.5rem 0.625rem;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      resize: vertical;
+      margin-bottom: 0.75rem;
+    }
+    .context-form textarea:focus { border-color: #999; outline: none; }
+    .confidence-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .confidence-row span { font-size: 0.8rem; font-weight: 500; color: #333; margin-right: 0.25rem; }
+    .confidence-btn {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+    }
+    .confidence-btn:hover { background: #f5f5f5; }
+    .confidence-btn.active { background: #111; color: #fff; border-color: #111; }
+    .context-output {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f8f8;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
+    .context-output.visible { display: block; }
+
+    /* === Action Bar === */
+    .action-bar {
+      background: #fff;
+      border: 2px solid #111;
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .action-bar h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0; }
+    .action-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .decision-count { font-size: 0.75rem; color: #666; }
+    .generate-btn {
+      display: block;
+      width: 100%;
+      padding: 0.625rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .generate-btn:hover { background: #333; }
+    .prompt-output {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f8f8;
+      border: 1px solid #e5e5e5;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      display: none;
+      position: relative;
+    }
+    .prompt-output.visible { display: block; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* === Toast === */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 300;
+    }
+    .toast.show { opacity: 1; }
+
+    /* === Empty state === */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: block; }
+      .main { margin-left: 0; padding: 1rem; padding-top: 3rem; }
+      .summary-cards { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* === Print === */
+    @media print {
+      body { display: block; background: #fff; }
+      .sidebar, .sidebar-toggle { display: none; }
+      .main { margin-left: 0; max-width: 100%; padding: 0; }
+      .module { display: block !important; margin-bottom: 2rem; }
+      .action-bar, .insight-btn, .conflict-options, .toolbar { display: none; }
+      .insight-card, .conflict-card, .source-folder, .gap-card, .module-card, .oq-item, .principle-item, .summary-card, .sysmap-vision {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+      .insight-source { display: block; }
+      .insight-source[open] summary { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">Menu</button>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1 id="sidebarTitle">PD-Spec Dashboard</h1>
+      <div class="meta" id="sidebarMeta"></div>
+    </div>
+    <div class="sidebar-nav" id="sidebarNav">
+      <!-- Populated by JS -->
+    </div>
+    <div class="sidebar-footer" id="sidebarFooter">
+      <span id="sidebarDecisions">0 decisions</span>
+    </div>
+  </nav>
+
+  <main class="main" id="main">
+    <!-- Modules rendered by JS -->
+  </main>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script id="pd-data" type="application/json">{"meta": {"type": "status", "generated": "2026-02-20", "language": "es", "last_session": "2026-02-20T17:30"}, "title": "TIMining — Dashboard", "cards": [{"count": 46, "label": "Insights", "breakdown": "20 verified, 18 pending, 6 merged, 2 invalidated", "style": "warn"}, {"count": 12, "label": "Conflicts", "breakdown": "5 pending, 7 resolved", "style": "warn"}, {"count": 54, "label": "Sources", "style": "ok"}, {"count": 19, "label": "Evidence Gaps", "style": "warn"}], "insights": [{"id": "IG-SYNTH-01", "status": "VERIFIED", "category": "technical (current)", "temporal": "current", "claim": "\"Geometry Gap\" — Brecha geométrica entre plan y realidad", "source": "entrevistas operaciones/reu_coo_roberto-catalan.md, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Antecedentes/TIMining_s strategic position in the mining software market_Sept 25.pdf, Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx, Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx", "quote": "**Narrative:** El problema fundamental que TIMining resuelve es la desconexión entre el plan minero (entidad geométrica estática) y la operación real (dinámica, ruidosa, cambiante). La industria inten", "voice": "stakeholder (COO, CEO, CTO), document (briefs, pitch decks)", "authority": "direct-quote, observation, fact", "convergence": "18/59"}, {"id": "IG-SYNTH-12", "status": "VERIFIED", "category": "business (current)", "temporal": "current", "claim": "Adherencia al plan como métrica central del negocio", "source": "TIMINING_Workshop 01 _ 28 Enero 26.pptx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, entrevistas operaciones/analisis reu con operaciones.md", "quote": "**Narrative:** El cambio de paradigma de TIMining es medir \"adherencia espacial\" (cumplimiento geométrico del plan) en vez de \"toneladas movidas\" (productividad ciega). Los desvíos no ocurren una vez ", "voice": "stakeholder (CEO, COO, CTO), document (cases, metrics)", "authority": "fact, observation", "convergence": "11/59"}, {"id": "IG-SYNTH-02", "status": "VERIFIED", "category": "user-need (current)", "temporal": "current", "claim": "\"Auto de Homero Simpson\" — Trampa de customización y feature bloat", "source": "entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, entrevistas operaciones/reu_coo_roberto-catalan.md, Workshop 1/KEEP-STOP-START (retro).docx, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, entrevistas iniciales stakeholders/Entrevista Roberto COO.png, entrevistas iniciales stakeholders/Entrevista_Ana.png", "quote": "**Narrative:** TIMining enfrenta un riesgo existencial que el propio equipo ha bautizado \"Auto de Homero Simpson\": cada cliente pide funcionalidades, se implementan sin validar uso real, y el producto", "voice": "stakeholder (COO, operaciones), user (operadores vía stakeholders)", "authority": "direct-quote, observation", "convergence": "8/59"}, {"id": "IG-SYNTH-03", "status": "VERIFIED", "category": "user-need (current)", "temporal": "current", "claim": "Confusión Temporal — Los tiempos del dato generan abandono", "source": "entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/notas_entrevista_COO_(segunda entrevista).md", "quote": "**Narrative:** Aware opera con múltiples frecuencias de actualización (GPS casi real-time, mapas de calor cada 3h con 30min de desfase, indicadores cada 30min, topografía cada 15min) que los usuarios ", "voice": "user (operadores vía stakeholders), stakeholder (operaciones)", "authority": "direct-quote, fact", "convergence": "4/59"}, {"id": "IG-SYNTH-07", "status": "VERIFIED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Gestión por Excepción — Solo mostrar lo que importa", "source": "Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx", "quote": "**Narrative:** Los usuarios no quieren más dashboards ni más datos. Quieren que el sistema vigile silenciosamente y los interrumpa solo cuando es crítico. \"Si hay 50 camiones bien, no mostrarlos; most", "voice": "stakeholder (CEO, operaciones), user (workshop)", "authority": "direct-quote, observation", "convergence": "8/59"}, {"id": "IG-SYNTH-09", "status": "VERIFIED", "category": "user-need (current)", "temporal": "current", "claim": "Perfiles de usuario diferenciados con necesidades distintas", "source": "entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/workshop-laminas-*.png (20 láminas), Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, entrevistas iniciales stakeholders/Entrevista Roberto COO.png, entrevistas iniciales stakeholders/Entrevista PM AWARE.png, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png", "quote": "**Narrative:** Al menos 4-5 perfiles de usuario claramente diferenciados necesitan información radicalmente distinta: el Despachador necesita control segundo a segundo; el Jefe de Turno necesita alert", "voice": "user (workshop), stakeholder (COO, PM)", "authority": "direct-quote, observation", "convergence": "14/59"}, {"id": "IG-SYNTH-11", "status": "VERIFIED", "category": "user-need (current)", "temporal": "current", "claim": "Curva de aprendizaje y barrera de adopción", "source": "entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Sello de Experiencia TIMINING.pptx", "quote": "**Narrative:** Orchestra tiene un 30% de uso real. Los usuarios no tienen tiempo para la curva de aprendizaje porque \"trabajan en mina, constantemente reagendan.\" La capacitación inicial no alcanza pa", "voice": "stakeholder (PM Orchestra, operaciones), user (indirecto), ai (competitive-landscape)", "authority": "direct-quote, observation", "convergence": "7/59"}, {"id": "IG-SYNTH-15", "status": "VERIFIED", "category": "user-need (current)", "temporal": "current", "claim": "Efecto Gaviota — Dolor del cambio de turno", "source": "Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx", "quote": "**Narrative:** Las transiciones de turno generan caídas de producción por pérdida de contexto (\"Efecto Gaviota\"). El turno entrante no sabe qué pasó, qué quedó pendiente ni dónde están los problemas. ", "voice": "stakeholder (CEO, CTO), document (vision docs)", "authority": "observation, vision", "convergence": "5/59"}, {"id": "IG-SYNTH-04", "status": "VERIFIED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Del Dashboard al Copiloto — Paradigma de asistencia proactiva", "source": "Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Workshop 1/workshop-laminas-11.04.10 AM.png, Workshop 1/workshop-laminas-11.03.59 AM.png, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png", "quote": "**Narrative:** TIMining plantea una transición fundamental: de pantallas con gráficos que el usuario debe interpretar, a un sistema proactivo que anticipa problemas, sugiere soluciones y se comunica p", "voice": "stakeholder (CEO, CTO, PM), document (design brief, vision docs), ai (competitive-landscape)", "authority": "vision, observation, hypothesis", "convergence": "16/59"}, {"id": "IG-SYNTH-06", "status": "VERIFIED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Patrón Detección → Análisis → Recomendación", "source": "Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/laminas-caso-uso-1.png, Workshop 1/laminas-caso-uso-2.png, Workshop 1/workshop-laminas-11.02.43 AM.png through 11.04.10 AM.png (17 láminas), Workshop 1/analisis(keep)-4.57.30 PM.png, Workshop 1/analisis(start)-4.58.21 PM.png, Sello de Experiencia TIMINING.pptx, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf", "quote": "**Narrative:** Las 20 láminas del Workshop 01 siguen un patrón consistente: el usuario enfrenta una situación de estrés operacional, TIMining la detecta automáticamente, analiza el impacto (causa raíz", "voice": "user (operadores en workshop), stakeholder (equipo TIMining)", "authority": "direct-quote, observation", "convergence": "28/59"}, {"id": "IG-SYNTH-08", "status": "VERIFIED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Democratización del Dato — De expertos a todos", "source": "Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Antecedentes/Ppt & videos evento Google/[Evento Google] FINAL SCRIPT - V4.docx, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx", "quote": "**Narrative:** Hoy, acceder a datos de la mina requiere expertos en SQL y software de planificación. La visión de TIM Agent (en alianza con Google Gemini) es que cualquier supervisor pueda preguntar e", "voice": "stakeholder (CTO, CEO, PM), document (vision docs)", "authority": "vision, observation", "convergence": "9/59"}, {"id": "IG-SYNTH-19", "status": "VERIFIED", "category": "technical (aspirational)", "temporal": "aspirational", "claim": "Interfaz Multimodal — 4 Lentes de navegación", "source": "Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf", "quote": "**Narrative:** La arquitectura de navegación de CORE se basa en 4 lentes: Reality (3D Digital Twin con Time-Travel Slider), Tactical (simulación 2D con Scenario Ghosting), Agent (TIM copiloto conversa", "voice": "document (design brief, vision docs)", "authority": "vision", "convergence": "7/59"}, {"id": "IG-SYNTH-16", "status": "VERIFIED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Paz Mental como propuesta de valor experiencial", "source": "Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Sello de Experiencia TIMINING.pptx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx", "quote": "**Narrative:** El valor de TIMining no reside en el software sino en la \"paz mental\" del operador: la certeza de que está tomando la decisión correcta. Si la herramienta no reduce la carga mental, no ", "voice": "stakeholder (CEO, workshop), document (Sello)", "authority": "direct-quote, observation", "convergence": "5/59"}, {"id": "IG-SYNTH-05", "status": "VERIFIED", "category": "business (current)", "temporal": "current", "claim": "Efecto Suiza — Integrador neutral como diferenciador", "source": "entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/notas_entrevista_COO_(segunda entrevista).md, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Antecedentes/TIMining_s strategic position in the mining software market_Sept 25.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, entrevistas iniciales stakeholders/Entrevista Roberto COO.png", "quote": "**Narrative:** En una industria donde los líderes (Hexagon, Sandvik, Caterpillar) compran competidores para crear \"super suites\" con lock-in, TIMining se diferencia por ser agnóstico al hardware y pro", "voice": "stakeholder (COO, CEO, CTO), document (strategic narratives), ai (competitive-landscape)", "authority": "fact, observation", "convergence": "12/59"}, {"id": "IG-SYNTH-10", "status": "VERIFIED", "category": "business (aspirational)", "temporal": "aspirational", "claim": "De herramientas fragmentadas a plataforma CORE", "source": "Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, Antecedentes/TIMining_8-Layer_Diagram.pptx", "quote": "**Narrative:** TIMining tiene 6-8 productos (Aware, Orchestra, Delta, SIC, Tangram, ARIS, Drillit) desarrollados en momentos distintos con tecnologías distintas. La visión CORE es consolidarlos en una", "voice": "stakeholder (CEO, CTO), document (strategic narratives, design brief)", "authority": "vision, fact", "convergence": "9/59"}, {"id": "IG-SYNTH-14", "status": "VERIFIED", "category": "business (current)", "temporal": "current", "claim": "Dependencia de venta consultiva", "source": "entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, entrevistas iniciales stakeholders/Entrevista Roberto COO.png", "quote": "**Narrative:** TIMining invierte 30-36 horas por caso de renovación, realizó ~20 casos y 2 consultorías completas (~600 horas) en 2022. El equipo de servicios es descrito como \"las manos del cerebro\" ", "voice": "stakeholder (operaciones)", "authority": "fact", "convergence": "3/59"}, {"id": "IG-SYNTH-16b", "status": "VERIFIED", "category": "business (aspirational)", "temporal": "aspirational", "claim": "Oportunidad de repricing: precio vs valor", "source": "Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, Antecedentes/TIMining_s strategic position in the mining software market_Sept 25.pdf", "quote": "**Narrative:** Aware se vende a USD 300k/año por faena con usuarios ilimitados; CORE apunta a USD 450k. Pero el valor capturado es de millones (USD 6M en 5 meses en una faena, USD 10M+ en 3 minas). Ex", "voice": "stakeholder (CEO, CTO, workshop)", "authority": "fact, observation", "convergence": "6/59"}, {"id": "IG-SYNTH-17", "status": "VERIFIED", "category": "business (current)", "temporal": "current", "claim": "Adopción bottom-up: \"operational pull\"", "source": "Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, Antecedentes/Narrativa CCB para Mngt Team_ESP.docx", "quote": "**Narrative:** El modelo de adopción de TIMining arranca con equipos de operaciones y se expande orgánicamente a 100+ usuarios activos por sitio. Los patrones de uso diario muestran alta \"stickiness\" ", "voice": "stakeholder (CEO), document (strategic narrative)", "authority": "fact, observation", "convergence": "5/59"}, {"id": "IG-SYNTH-13", "status": "VERIFIED", "category": "technical (current)", "temporal": "current", "claim": "Stack tecnológico fragmentado", "source": "entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/notas_entrevista_COO_(segunda entrevista).md, entrevistas operaciones/reunion_operaciones (27-01-2026).md", "quote": "**Narrative:** Los productos están construidos en C++, Unity, Go, Python y web, sin autenticación unificada. Para conectar Orchestra con sistemas web se recurre a \"bajar bases de datos y hacer cruces ", "voice": "stakeholder (COO)", "authority": "fact", "convergence": "3/59"}, {"id": "IG-SYNTH-18", "status": "VERIFIED", "category": "constraint (current)", "temporal": "current", "claim": "Seguridad y gestión geotécnica integrada", "source": "Workshop 1/workshop-laminas-11.02.57 AM.png, Workshop 1/workshop-laminas-11.03.15 AM.png, Workshop 1/workshop-laminas-11.03.23 AM.png, Workshop 1/Casos de Uso Workshop 01.docx, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf", "quote": "**Narrative:** La seguridad es prioridad inminente en la operación minera: alertas por incursión en zonas geotécnicas de riesgo, verificación de procedimientos de trabajo, gestión de tronaduras y desp", "voice": "user (workshop), stakeholder (operaciones)", "authority": "direct-quote, observation", "convergence": "8/59"}, {"id": "IG-SYNTH-20", "status": "INVALIDATED", "category": "constraint (current)", "temporal": "current", "claim": "Concentración de expertise en Carlo (CTO)", "source": "entrevistas iniciales stakeholders/Entrevista_Ana.png, Workshop 1/_FIELD_NOTES.md", "quote": "**Narrative:** El expertise técnico está muy concentrado en Carlo (CTO/CEO). Existe un \"gap entre producto y storytelling\" — gente super técnica que comunica técnicamente. El CTO está confiado en la c", "voice": "stakeholder (Ana, Gerente Comunicaciones), researcher (field notes)", "authority": "direct-quote, observation", "convergence": "2/59"}, {"id": "IG-SYNTH-21", "status": "INVALIDATED", "category": "business (aspirational)", "temporal": "aspirational", "claim": "Visión 2040 — La mina autónoma", "source": "Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Interno.docx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Antecedentes/TIMining_s strategic position in the mining software market_Sept 25.pdf", "quote": "**Narrative:** La visión a largo plazo describe un IROC maduro donde corporaciones gestionan múltiples minas globales desde centros urbanos, la distinción mina-planta desaparece, los vehículos son 100", "voice": "document (strategic narratives, vision docs)", "authority": "vision", "convergence": "5/59"}, {"id": "IG-01", "status": "MERGED", "category": "user-need (current)", "temporal": "current", "claim": "Concepto \"iPhone-like\" — Justificación de ticket premium", "source": "field-note (Workshop 1/_FIELD_NOTES.md)", "quote": "\"Es una frase que acuñó un stakeholder presente en el workshop para según él poder justificar vender la suite a 450k USD. Se refería a algo sofisticado y fácil de usar.\"", "voice": "researcher", "authority": "observation", "convergence": "1/1"}, {"id": "IG-02", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "Etapa 2 incompleta — Lineamientos de diseño sin validación de usuarios", "source": "field-note (Propuesta ruta/_FIELD_NOTES.md)", "quote": "\"Estamos entrando a Etapa 3 del plan Idemax (Lineamientos de diseño) sin haber completado las 6 entrevistas con usuarios clave de Etapa 2. Todas las perspectivas de usuario son indirectas (stakeholder", "voice": "researcher", "authority": "observation", "convergence": "1/1"}, {"id": "IG-SYNTH-22", "status": "PENDING", "category": "constraint (current → aspirational)", "temporal": "aspirational", "claim": "Automatización Progresiva — de reglas a humanos a máquinas", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "**Narrative:** El plan minero es probabilístico — \"la decisión de dónde cortar es del dueño, no del software.\" TIMining aborda la automatización gradualmente: 60+ reglas de negocio validan recomendaci", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "2/59"}, {"id": "IG-SYNTH-23", "status": "PENDING", "category": "user-need (current)", "temporal": "current", "claim": "Hub de Decisiones — capturar lo invisible", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md, sesiones-idemax/session-align-con-camila(wed18feb).md", "quote": "**Narrative:** Las decisiones operacionales críticas ocurren fuera del software — en WhatsApp, por radio, en terreno. CORE debe ser el hub donde estas decisiones quedan registradas: \"en turno 368, Jua", "voice": "stakeholder (CTO), stakeholder (equipo)", "authority": "direct-quote, observation", "convergence": "3/59"}, {"id": "IG-03", "status": "MERGED", "category": "constraint (current)", "temporal": "current", "claim": "Plan minero probabilístico — restricción de automatización", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "\"Tienes una probabilidad de sacar cinco piedras, una probabilidad menor de sacar seis — la decisión de dónde cortar es del dueño, no del software.\"", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "1/59"}, {"id": "IG-04", "status": "MERGED", "category": "constraint (current → aspirational)", "temporal": "aspirational", "claim": "Human-in-the-loop como restricción y camino gradual", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "\"No puedo sacar al humano.\" \"Estamos conversando con clientes para desviar camiones automáticamente.\" Primero sugiere a humanos, luego a máquinas.", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "2/59"}, {"id": "IG-05", "status": "MERGED", "category": "technical (current)", "temporal": "current", "claim": "Reglas de negocio (60+) como grounding de IA", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "\"Motores de cálculo y motores de reglas de negocio que le entregan vectores a la IA para que agregue valor.\"", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "1/59"}, {"id": "IG-06", "status": "MERGED", "category": "user-need (current)", "temporal": "current", "claim": "WhatsApp/radio — decisiones fuera del software", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "\"Impresionante la cantidad de toma de decisiones que ocurren vía WhatsApp.\" Comunicaciones por radio no quedan registradas, pérdida de conocimiento entre jefes de turno.", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "2/59"}, {"id": "IG-07", "status": "MERGED", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Urgente vs importante como diferenciador", "source": "sesiones-idemax/session-align-con-camila(wed18feb).md, sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "\"Pedro arregla el camino (output previsible) vs Juan manda camiones por otro camino y mitiga 30% más (impacto al plan).\"", "voice": "stakeholder (equipo)", "authority": "observation", "convergence": "2/59"}, {"id": "IG-08", "status": "PENDING", "category": "technical (aspirational)", "temporal": "aspirational", "claim": "TimeSight redefinido — \"comprender para proyectar\", no \"rebobinar\"", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "Carlo eliminó navegación temporal del producto (rebobinar el pasado). Concepto correcto: \"comprender el pasado para proyectar.\" Predicción basada en patrones del sistema, no en individuos.", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "1/59"}, {"id": "IG-09", "status": "PENDING", "category": "business (aspirational)", "temporal": "aspirational", "claim": "4 dominios operativos — estructura de producto CORE", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "(A) Respuesta a crisis, (B) Anticipación operativa, (C) Asistencia inteligente en terreno, (D) Alineación estratégica (multipilar). Carlo: dominio D \"arriba de los otros tres\" — elevar la minera una c", "voice": "stakeholder (CTO)", "authority": "observation", "convergence": "1/59"}, {"id": "IG-10", "status": "PENDING", "category": "user-need (aspirational)", "temporal": "aspirational", "claim": "Caso de uso CFO — usuario invisible", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "Erika hace reportes manuales en 30 min, CFO no usa TIMining. Necesita 4 KPIs traducidos a lenguaje financiero en teléfono antes de reunión. Perfil invisible no cubierto por perfiles actuales.", "voice": "stakeholder (CTO)", "authority": "observation", "convergence": "2/59"}, {"id": "IG-11", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "\"Paz mental\" problemático para uso externo", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "Dos objeciones distintas: Philip (CEO): \"no es tanto paz mental, más bien estos tipos no tienen tiempo\" — redefine necesidad subyacente. Carlo (CTO): \"si les digo que les doy paz mental quedamos como ", "voice": "stakeholder (CEO + CTO)", "authority": "direct-quote", "convergence": "1/59"}, {"id": "IG-12", "status": "PENDING", "category": "technical (current)", "temporal": "current", "claim": "Dos dimensiones de desviación del plan", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md", "quote": "\"Hay dos dimensiones: (1) realidad vs plan esperado, (2) realidad vs parámetros originales de construcción del plan.\" Navegar ambas dimensiones es complejo.", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "1/59"}, {"id": "IG-13", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Incentivos mal alineados — cumplimiento vs optimización", "source": "sesiones-idemax/reunion_camila_2026-02-17.md", "quote": "Plan conservador 100 unidades, realidad 50, potencial 150. Bonos por cumplimiento, no por optimización — incentivos no estimulan explotar el potencial real.", "voice": "stakeholder (equipo)", "authority": "observation", "convergence": "1/59"}, {"id": "IG-14", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "Industria no suficientemente madura para apuestas de diseño", "source": "sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md, ai-reports/competitive-landscape.md", "quote": "Carlo: \"estamos jugando con cosas donde la industria no está suficientemente madura.\" Riesgo de que las apuestas de diseño no tengan mercado preparado.", "voice": "stakeholder (CTO)", "authority": "direct-quote", "convergence": "2/59"}, {"id": "IG-15", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Mercado global de software minero — $4.2B con CAGR 8.3%", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"El mercado global de software de tecnología minera se estima en $4.2B, con un CAGR de 8.3% hasta 2030.\"", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-16", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Hexagon Mining — líder FMS con ~35% market share", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"Hexagon Mining (HxGN MineOperate) es líder de mercado en fleet management con ~35% de participación en operaciones a cielo abierto.\" Integración OEM profunda con Caterpillar. Pricing: $500K-$2M por d", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-17", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Hexagon UX anticuada — 40+ horas de entrenamiento para operadores", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"La UX de Hexagon es anticuada y requiere entrenamiento extenso (típicamente 40+ horas para operadores).\"", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-18", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Wenco — mid-market modular, sin 3D ni AI", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"Wenco International Mining Systems es fuerte en operaciones mid-market, despliegue modular con flotas mixtas.\" Sin visualización 3D ni features AI/ML. Pricing: $150K-$400K suscripción anual.", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-19", "status": "PENDING", "category": "business (current)", "temporal": "current", "claim": "Maptek — dominante en geological modeling, productos en silos", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"Maptek (Vulcan + BlastLogic) es dominante en modelado geológico y diseño de tronaduras.\" Productos en silos con pobre integración operacional en tiempo real. Pricing: $30K-$80K por asiento.", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-20", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "Riesgo de adquisiciones de Hexagon — cierre de brecha competitiva", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"La estrategia de adquisiciones de Hexagon podría cerrar la brecha competitiva rápidamente.\"", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-21", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "Cumplimiento regulatorio — variabilidad significativa por región", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"Los requisitos de cumplimiento regulatorio varían significativamente por región.\"", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}, {"id": "IG-22", "status": "PENDING", "category": "constraint (current)", "temporal": "current", "claim": "Industria minera risk-averse — preferencia por soluciones probadas", "source": "ai-reports/competitive-landscape.md [AI-SOURCE]", "quote": "\"Las empresas mineras son risk-averse y prefieren soluciones probadas sobre innovadoras.\"", "voice": "ai", "authority": "hypothesis", "convergence": "1/59"}], "conflicts": [{"id": "CF-01", "status": "RESOLVED", "title": "Imprecisión — Cantidad de productos en portafolio", "refs": ["[IG-SYNTH-10]"], "tension": "Imprecisión — Cantidad de productos en portafolio", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-02", "status": "RESOLVED", "title": "Conflicto — Valor de la visualización 3D", "refs": ["[IG-SYNTH-07]", "[IG-SYNTH-19]"], "tension": "Conflicto — Valor de la visualización 3D", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-03", "status": "PENDING", "title": "Conflicto de perspectiva — Confianza UX del CTO vs realidad de uso", "refs": ["[IG-SYNTH-03]", "[IG-SYNTH-11]"], "tension": "Conflicto de perspectiva — Confianza UX del CTO vs realidad de uso", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research", "intermediate_status": "research", "intermediate_note": "benchmark UX en progreso"}, {"id": "CF-04", "status": "RESOLVED", "title": "Contradicción — Foco en minería subterránea", "refs": ["[IG-SYNTH-10]"], "tension": "Contradicción — Foco en minería subterránea", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-05", "status": "PENDING", "title": "Definición ambigua — Customización vs configuración", "refs": ["[IG-SYNTH-02]", "[IG-SYNTH-10]"], "tension": "Definición ambigua — Customización vs configuración", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research", "intermediate_status": "research"}, {"id": "CF-06", "status": "RESOLVED", "title": "Definición ambigua — Relación CORE vs Aware", "refs": ["[IG-SYNTH-10]", "[IG-SYNTH-01]"], "tension": "Definición ambigua — Relación CORE vs Aware", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-07", "status": "PENDING", "title": "Research Gap — Sin investigación directa con usuarios finales", "refs": ["[IG-SYNTH-03]", "[IG-SYNTH-09]", "[IG-SYNTH-11]"], "tension": "Research Gap — Sin investigación directa con usuarios finales", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research", "intermediate_status": "flagged", "intermediate_note": "stakeholder discussion"}, {"id": "CF-08", "status": "PENDING", "title": "Research Gap — Sin datos financieros detallados", "refs": ["[IG-SYNTH-16b]", "[IG-SYNTH-14]"], "tension": "Research Gap — Sin datos financieros detallados", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research", "intermediate_status": "research"}, {"id": "CF-09", "status": "RESOLVED", "title": "Research Gap — Sin benchmark competitivo formal", "refs": ["[IG-SYNTH-05]", "[IG-SYNTH-01]"], "tension": "Research Gap — Sin benchmark competitivo formal", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-10", "status": "RESOLVED", "title": "Research Gap — Sin datos de accesibilidad", "refs": ["[IG-SYNTH-19]", "[IG-SYNTH-09]"], "tension": "Research Gap — Sin datos de accesibilidad", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-11", "status": "RESOLVED", "title": "Research Gap — Sin perspectiva de ingeniería de software interna", "refs": ["[IG-SYNTH-13]", "[IG-SYNTH-10]"], "tension": "Research Gap — Sin perspectiva de ingeniería de software interna", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research"}, {"id": "CF-12", "status": "PENDING", "title": "Tensión sobre framing de \"Paz Mental\"", "refs": ["[IG-SYNTH-16]", "[IG-11]", "[IG-SYNTH-16]"], "tension": "Tensión sobre framing de \"Paz Mental\"", "flag_label": "Flag for stakeholder review", "research_label": "Validate with additional research", "intermediate_status": "flagged", "intermediate_note": "llevar a próxima sesión de trabajo con equipo"}], "sources": [{"folder": "Antecedentes", "files": 6, "types": ["pdf", "pptx", "docx"]}, {"folder": "Propuesta ruta", "files": 1, "types": ["pptx"]}, {"folder": "Visión Futuro _CORE_", "files": 4, "types": ["pdf", "docx"]}, {"folder": "Workshop 1", "files": 31, "types": ["png", "md", "HEIC", "docx"]}, {"folder": "ai-reports", "files": 1, "types": ["md"]}, {"folder": "entrevistas iniciales stakeholders", "files": 4, "types": ["png"]}, {"folder": "entrevistas operaciones", "files": 4, "types": ["md"]}, {"folder": "sesiones-idemax", "files": 3, "types": ["md"]}], "source_diversity": [{"type": "Interviews", "present": true}, {"type": "Workshops", "present": true}, {"type": "Benchmarks", "present": true}, {"type": "AI-Generated", "present": true}, {"type": "Analytics", "present": false}, {"type": "Surveys", "present": false}], "source_issues": [], "evidence_gaps": [{"type": "claim-level", "insight": "IG-01", "description": "IG-01 supported by only 1/1 sources"}, {"type": "claim-level", "insight": "IG-02", "description": "IG-02 supported by only 1/1 sources"}, {"type": "claim-level", "insight": "IG-03", "description": "IG-03 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-05", "description": "IG-05 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-08", "description": "IG-08 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-09", "description": "IG-09 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-11", "description": "IG-11 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-12", "description": "IG-12 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-13", "description": "IG-13 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-15", "description": "IG-15 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-16", "description": "IG-16 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-17", "description": "IG-17 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-18", "description": "IG-18 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-19", "description": "IG-19 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-20", "description": "IG-20 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-21", "description": "IG-21 supported by only 1/59 sources"}, {"type": "claim-level", "insight": "IG-22", "description": "IG-22 supported by only 1/59 sources"}, {"type": "source-diversity", "description": "No Analytics sources"}, {"type": "source-diversity", "description": "No Surveys sources"}], "system_map": {"modules": [{"name": "Geometry Engine", "status": "Ready"}, {"name": "Copiloto Inteligente (TIM Agent)", "status": "Ready"}, {"name": "Experiencia Multimodal (4 Lentes)", "status": "Blocked"}, {"name": "Briefing de Turno", "status": "Ready"}, {"name": "Seguridad y Geotecnia", "status": "Ready"}, {"name": "Plataforma de Integración (Efecto Suiza)", "status": "Blocked"}, {"name": "Onboarding Progresivo", "status": "Ready"}], "principles": ["Paz Mental", "Quiet UI", "Zero Homer", "D→A→R", "Inteligencia Democrática", "Efecto Suiza", "Operational Pull"], "open_questions": ["¿Framework formal para distinguir configuración (umbrales sin código) vs customización (features con código)? — [CF-05]", "¿Unit economics del modelo SaaS actual? CAC, LTV, márgenes, breakdown de revenue — [CF-08]", "¿Benchmark UX formal vs competencia minera (Hexagon, Maptek, Deswik, Wenco)? — [CF-03]", "¿Validación directa con usuarios finales en mina? Entrevistas y tests de usabilidad — [CF-07]", "¿Bloqueantes técnicos para migración a CORE? APIs, modelos de datos, backend headless, pasos previos — [CF-11]", "¿Estándares WCAG aplicables a cada pilar de CORE? — [CF-10]", "¿Automatización progresiva: human-in-the-loop como restricción permanente o transicional? — [IG-SYNTH-22]", "¿Hub de decisiones: cómo capturar lo que ocurre en WhatsApp/radio? — [IG-SYNTH-23]", "¿\"Paz Mental\" como concepto: mantener interno, renombrar o eliminar? — [CF-12]"]}}</script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // === Load Data ===
+    var el = document.getElementById('pd-data');
+    if (!el) return;
+    var data;
+    try { data = JSON.parse(el.textContent); } catch(e) { return; }
+    if (!data) return;
+
+    if (data.meta && data.meta.language) document.documentElement.lang = data.meta.language;
+
+    // === State ===
+    var insightDecisions = {};
+    var conflictDecisions = {};
+    var activeModule = 'overview';
+    var activeFilters = { status: null, category: null, temporal: null };
+    var searchQuery = '';
+
+    // === Helpers ===
+    function esc(str) {
+      if (typeof str !== 'string') return '';
+      var e = document.createElement('span');
+      e.textContent = str;
+      return e.innerHTML;
+    }
+
+    function $(id) { return document.getElementById(id); }
+
+    // === Sidebar ===
+    var modules = [
+      { id: 'overview', label: 'Overview', count: null },
+      { id: 'insights', label: 'Insights', count: data.insights ? data.insights.length : 0 },
+      { id: 'conflicts', label: 'Conflicts', count: data.conflicts ? data.conflicts.length : 0 },
+      { id: 'sources', label: 'Sources', count: data.sources ? data.sources.length : 0 },
+      { id: 'gaps', label: 'Evidence Gaps', count: data.evidence_gaps ? data.evidence_gaps.length : 0 },
+      { id: 'systemmap', label: 'System Map', count: null },
+      { id: 'context', label: 'Add Context', count: null },
+      { id: 'actions', label: 'Actions', count: null }
+    ];
+
+    var meta = data.meta || {};
+    $('sidebarTitle').textContent = data.title || 'PD-Spec Dashboard';
+    $('sidebarMeta').textContent = 'Generated ' + (meta.generated || '—');
+
+    var navHtml = '';
+    modules.forEach(function(m) {
+      var countStr = m.count !== null ? '<span class="nav-count">' + m.count + '</span>' : '';
+      navHtml += '<a href="#" data-module="' + m.id + '"' + (m.id === 'overview' ? ' class="active"' : '') + '>' + esc(m.label) + countStr + '</a>';
+      if (m.id === 'gaps' || m.id === 'systemmap') navHtml += '<div class="sidebar-sep"></div>';
+    });
+    $('sidebarNav').innerHTML = navHtml;
+
+    // Navigation click
+    $('sidebarNav').addEventListener('click', function(e) {
+      var link = e.target.closest('a[data-module]');
+      if (!link) return;
+      e.preventDefault();
+      showModule(link.dataset.module);
+      // Close sidebar on mobile
+      $('sidebar').classList.remove('open');
+    });
+
+    // Mobile toggle
+    $('sidebarToggle').addEventListener('click', function() {
+      $('sidebar').classList.toggle('open');
+    });
+
+    function showModule(id) {
+      activeModule = id;
+      document.querySelectorAll('.module').forEach(function(m) { m.classList.remove('active'); });
+      var target = $('mod-' + id);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.sidebar-nav a').forEach(function(a) {
+        a.classList.toggle('active', a.dataset.module === id);
+      });
+    }
+
+    // === Render Modules ===
+    var main = $('main');
+
+    // --- Overview ---
+    (function() {
+      var html = '<div class="module active" id="mod-overview">';
+      html += '<h2>Overview</h2>';
+      html += '<div class="summary-cards">';
+      (data.cards || []).forEach(function(card) {
+        var cls = card.style ? ' card-' + card.style : '';
+        html += '<div class="summary-card' + cls + '">';
+        html += '<div class="count">' + esc(String(card.count)) + '</div>';
+        html += '<div class="label">' + esc(card.label) + '</div>';
+        if (card.breakdown) html += '<div class="breakdown">' + esc(card.breakdown) + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+
+      // Progress bar
+      var insights = data.insights || [];
+      if (insights.length > 0) {
+        var verified = 0, pending = 0, invalidated = 0;
+        insights.forEach(function(ig) {
+          if (ig.status === 'VERIFIED' || ig.status === 'MERGED') verified++;
+          else if (ig.status === 'INVALIDATED') invalidated++;
+          else pending++;
+        });
+        var total = insights.length;
+        html += '<div class="progress-section">';
+        html += '<h3>Research Maturity</h3>';
+        html += '<div class="progress-bar">';
+        if (verified) html += '<div class="seg-verified" style="width:' + (verified/total*100) + '%"></div>';
+        if (pending) html += '<div class="seg-pending" style="width:' + (pending/total*100) + '%"></div>';
+        if (invalidated) html += '<div class="seg-invalidated" style="width:' + (invalidated/total*100) + '%"></div>';
+        html += '</div>';
+        html += '<div class="progress-legend">';
+        html += '<span class="leg-verified">Verified ' + verified + '</span>';
+        html += '<span class="leg-pending">Pending ' + pending + '</span>';
+        html += '<span class="leg-invalidated">Invalidated ' + invalidated + '</span>';
+        html += '</div></div>';
+      }
+
+      // Quick stats
+      if (meta.last_session) {
+        html += '<div style="font-size:0.8rem;color:#666;margin-top:0.5rem;">Last session: ' + esc(meta.last_session) + '</div>';
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Insights ---
+    (function() {
+      var html = '<div class="module" id="mod-insights">';
+      html += '<h2>Insights</h2>';
+
+      var insights = data.insights || [];
+      if (insights.length === 0) {
+        html += '<div class="empty-state">No insights yet. Run /extract and /analyze first.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Toolbar
+      html += '<div class="toolbar">';
+      html += '<input type="text" id="insightSearch" placeholder="Search insights..." oninput="filterInsights()">';
+      html += '<button class="filter-btn" data-filter="status" data-value="all" onclick="toggleFilter(this)">All</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="PENDING" onclick="toggleFilter(this)">Pending</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="VERIFIED" onclick="toggleFilter(this)">Verified</button>';
+      html += '<button class="filter-btn" data-filter="status" data-value="INVALIDATED" onclick="toggleFilter(this)">Invalidated</button>';
+      html += '</div>';
+
+      // Sort: PENDING first
+      var sortOrder = { PENDING: 0, VERIFIED: 1, MERGED: 2, INVALIDATED: 3 };
+      var sorted = insights.slice().sort(function(a, b) {
+        return (sortOrder[a.status] || 9) - (sortOrder[b.status] || 9);
+      });
+
+      html += '<div id="insightsList">';
+      sorted.forEach(function(ig) {
+        var id = esc(ig.id);
+        var statusLower = (ig.status || 'pending').toLowerCase();
+        html += '<div class="insight-card" data-insight="' + id + '" data-status="' + esc(ig.status) + '" data-category="' + esc(ig.category || '') + '" data-temporal="' + esc(ig.temporal || '') + '">';
+        html += '<div class="insight-row">';
+        html += '<span class="insight-id">' + id + '</span>';
+        html += '<span class="badge badge-' + esc(statusLower) + '">' + esc(ig.status) + '</span>';
+        if (ig.category) html += '<span class="badge badge-cat">' + esc(ig.category) + '</span>';
+        if (ig.temporal) html += '<span class="badge badge-cat">' + esc(ig.temporal) + '</span>';
+        html += '<span class="insight-claim">' + esc(ig.claim) + '</span>';
+        if (ig.status === 'PENDING') {
+          html += '<div class="insight-action">';
+          html += '<button class="insight-btn" data-action="approve" onclick="toggleInsight(this,\'approve\')">Approve</button>';
+          html += '<button class="insight-btn" data-action="reject" onclick="toggleInsight(this,\'reject\')">Reject</button>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (ig.source || ig.quote) {
+          html += '<details class="insight-source"><summary>' + esc(ig.source || 'Source') + '</summary>';
+          if (ig.quote) html += '<blockquote>' + esc(ig.quote) + '</blockquote>';
+          html += '</details>';
+        }
+        html += '</div>';
+      });
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Conflicts ---
+    (function() {
+      var html = '<div class="module" id="mod-conflicts">';
+      html += '<h2>Conflicts</h2>';
+
+      var conflicts = data.conflicts || [];
+      if (conflicts.length === 0) {
+        html += '<div class="empty-state">No conflicts detected.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Toolbar
+      html += '<div class="toolbar">';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="all" onclick="toggleCfFilter(this)">All</button>';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="PENDING" onclick="toggleCfFilter(this)">Pending</button>';
+      html += '<button class="filter-btn" data-filter="cfstatus" data-value="RESOLVED" onclick="toggleCfFilter(this)">Resolved</button>';
+      html += '</div>';
+
+      html += '<div id="conflictsList">';
+      conflicts.forEach(function(cf) {
+        var id = esc(cf.id);
+        var cfKey = cf.id.replace(/-/g, '').toLowerCase();
+        if (cf.status === 'RESOLVED') {
+          html += '<div class="conflict-card resolved" data-conflict="' + id + '" data-cfstatus="RESOLVED">';
+          html += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          html += '<span class="badge badge-resolved">Resolved</span></div>';
+          if (cf.refs) html += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) html += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          if (cf.resolution) html += '<div class="conflict-resolution">' + esc(cf.resolution) + '</div>';
+          html += '</div>';
+        } else {
+          var isFlagged = cf.intermediate_status === 'flagged';
+          var isResearch = cf.intermediate_status === 'research';
+          html += '<div class="conflict-card" data-conflict="' + id + '" data-cfstatus="PENDING">';
+          html += '<div class="conflict-header"><span class="conflict-id">' + id + ' · ' + esc(cf.title || '') + '</span>';
+          html += '<span class="badge badge-pending">Pending</span>';
+          if (isFlagged) html += ' <span class="badge badge-flagged">Flagged</span>';
+          if (isResearch) html += ' <span class="badge badge-research">Research</span>';
+          html += '</div>';
+          if (cf.intermediate_note) html += '<div style="font-size:0.8rem;color:#666;margin-bottom:0.375rem;font-style:italic;">' + esc(cf.intermediate_note) + '</div>';
+          if (cf.refs) html += '<div class="conflict-refs">' + esc(cf.refs) + '</div>';
+          if (cf.tension) html += '<div class="conflict-tension">' + esc(cf.tension) + '</div>';
+          html += '<div class="conflict-options">';
+          var flagLabel = cf.flag_label || 'Flag for discussion';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'a" value="Flag for discussion — ' + esc(flagLabel) + '"' + (isFlagged ? ' checked' : '') + ' onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'a"><span class="option-label">Flag for discussion</span> — ' + esc(flagLabel) + '</label></div>';
+          var researchLabel = cf.research_label || 'Needs more research';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'b" value="Needs more research — ' + esc(researchLabel) + '"' + (isResearch ? ' checked' : '') + ' onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'b"><span class="option-label">Needs more research</span> — ' + esc(researchLabel) + '</label></div>';
+          html += '<div class="conflict-option"><input type="radio" name="' + cfKey + '" id="' + cfKey + 'c" value="I have context" onchange="onConflictChange(this)">';
+          html += '<label for="' + cfKey + 'c"><span class="option-label">I have context</span> — add notes below</label></div>';
+          html += '<textarea class="conflict-note" data-for="' + cfKey + '" placeholder="What context?"></textarea>';
+          html += '</div></div>';
+        }
+      });
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Sources ---
+    (function() {
+      var html = '<div class="module" id="mod-sources">';
+      html += '<h2>Source Coverage</h2>';
+
+      var sources = data.sources || [];
+      if (sources.length === 0) {
+        html += '<div class="empty-state">No sources found in 01_Sources/.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      sources.forEach(function(src) {
+        html += '<div class="source-folder">';
+        html += '<div class="source-folder-header">';
+        html += '<span class="source-folder-name">' + esc(src.folder) + '</span>';
+        html += '<span class="source-folder-meta">' + (src.files || 0) + ' files';
+        if (src.extraction_status) html += ' · ' + esc(src.extraction_status);
+        html += '</span></div>';
+        if (src.types && src.types.length) {
+          html += '<div class="source-types">';
+          src.types.forEach(function(t) {
+            html += '<span class="source-type-tag">' + esc(t) + '</span>';
+          });
+          html += '</div>';
+        }
+        html += '</div>';
+      });
+
+      // Source diversity
+      if (data.source_diversity) {
+        html += '<div class="source-diversity">';
+        html += '<h3>Source Diversity</h3>';
+        html += '<div class="diversity-grid">';
+        (data.source_diversity || []).forEach(function(d) {
+          var cls = d.present ? 'present' : 'missing';
+          html += '<div class="diversity-item ' + cls + '">' + esc(d.type) + '</div>';
+        });
+        html += '</div></div>';
+      }
+
+      // Source issues
+      if (data.source_issues && data.source_issues.length) {
+        html += '<h3>Issues</h3>';
+        data.source_issues.forEach(function(issue) {
+          html += '<div class="gap-card">';
+          html += '<div class="gap-desc">' + esc(issue.description) + '</div>';
+          if (issue.action) html += '<div class="gap-suggestion">' + esc(issue.action) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Evidence Gaps ---
+    (function() {
+      var html = '<div class="module" id="mod-gaps">';
+      html += '<h2>Evidence Gaps</h2>';
+
+      var gaps = data.evidence_gaps || [];
+      if (gaps.length === 0) {
+        html += '<div class="empty-state">No evidence gaps detected.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      // Group by type
+      var grouped = {};
+      gaps.forEach(function(g) {
+        var type = g.type || 'general';
+        if (!grouped[type]) grouped[type] = [];
+        grouped[type].push(g);
+      });
+
+      Object.keys(grouped).forEach(function(type) {
+        html += '<h3>' + esc(type.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); })) + '</h3>';
+        grouped[type].forEach(function(gap) {
+          html += '<div class="gap-card">';
+          html += '<div class="gap-type">' + esc(gap.type || 'gap') + '</div>';
+          html += '<div class="gap-desc">' + esc(gap.description) + '</div>';
+          if (gap.suggestion) html += '<div class="gap-suggestion">' + esc(gap.suggestion) + '</div>';
+          html += '</div>';
+        });
+      });
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- System Map ---
+    (function() {
+      var html = '<div class="module" id="mod-systemmap">';
+      html += '<h2>System Map</h2>';
+
+      var sm = data.system_map;
+      if (!sm) {
+        html += '<div class="empty-state">No system map data. Run /synthesis first.</div>';
+        html += '</div>';
+        main.insertAdjacentHTML('beforeend', html);
+        return;
+      }
+
+      if (sm.vision) {
+        html += '<div class="sysmap-vision">' + esc(sm.vision) + '</div>';
+      }
+
+      // Modules
+      if (sm.modules && sm.modules.length) {
+        html += '<h3>Modules</h3>';
+        sm.modules.forEach(function(mod) {
+          html += '<div class="module-card">';
+          html += '<div class="module-card-header">';
+          html += '<span class="module-card-name">' + esc(mod.name) + '</span>';
+          if (mod.status) html += '<span class="badge badge-' + esc(mod.status.toLowerCase()) + '">' + esc(mod.status) + '</span>';
+          html += '</div>';
+          if (mod.refs) html += '<div class="module-card-refs">' + esc(mod.refs) + '</div>';
+          if (mod.implications && mod.implications.length) {
+            html += '<ul class="module-card-implications">';
+            mod.implications.forEach(function(imp) {
+              html += '<li>' + esc(typeof imp === 'string' ? imp : imp.text || '');
+              if (imp.ref) html += ' <span style="color:#999;font-size:0.75rem;">[' + esc(imp.ref) + ']</span>';
+              html += '</li>';
+            });
+            html += '</ul>';
+          }
+          if (mod.blocker) html += '<div class="module-card-blocker">Blocker: ' + esc(mod.blocker) + '</div>';
+          html += '</div>';
+        });
+      }
+
+      // Principles
+      if (sm.principles && sm.principles.length) {
+        html += '<h3>Design Principles</h3>';
+        html += '<ul class="principles-list">';
+        sm.principles.forEach(function(p) {
+          html += '<li class="principle-item">' + esc(typeof p === 'string' ? p : p.text || '') + '</li>';
+        });
+        html += '</ul>';
+      }
+
+      // Open questions
+      if (sm.open_questions && sm.open_questions.length) {
+        html += '<h3>Open Questions</h3>';
+        html += '<ul class="oq-list">';
+        sm.open_questions.forEach(function(q) {
+          html += '<li class="oq-item">' + esc(q) + '</li>';
+        });
+        html += '</ul>';
+      }
+
+      html += '</div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Add Context ---
+    (function() {
+      var html = '<div class="module" id="mod-context">';
+      html += '<h2>Add Context</h2>';
+      html += '<p style="font-size:0.85rem;color:#666;margin-bottom:1rem;">Quick observations, hunches, or professional intuition. This generates a prompt that injects a PENDING insight directly into the knowledge base AND saves a field note for traceability. No full pipeline run needed.</p>';
+      html += '<div class="context-form">';
+      html += '<label for="contextTopic">Topic</label>';
+      html += '<input type="text" id="contextTopic" placeholder="e.g. CEO alignment, user onboarding, pricing model" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
+      html += '<label for="contextNote">Your observation</label>';
+      html += '<textarea id="contextNote" placeholder="What did you notice? Can be 1 sentence or a paragraph."></textarea>';
+      html += '<div class="confidence-row"><span>Confidence:</span>';
+      ['high', 'medium', 'low', 'hunch'].forEach(function(level) {
+        html += '<button class="confidence-btn" data-confidence="' + level + '" onclick="selectConfidence(this)">' + level + '</button>';
+      });
+      html += '</div>';
+      html += '<label for="contextTrigger">What triggered this? <span style="font-weight:400;color:#999;">(optional)</span></label>';
+      html += '<input type="text" id="contextTrigger" placeholder="e.g. Interview with Maria, reviewing competitor X" style="width:100%;padding:0.375rem 0.625rem;border:1px solid #e5e5e5;border-radius:4px;font-family:inherit;font-size:0.85rem;margin-bottom:0.75rem;">';
+      html += '<button class="generate-btn" onclick="generateFieldNote()">Generate prompt</button>';
+      html += '<div class="context-output" id="contextOutput">';
+      html += '<button class="copy-btn" onclick="copyContext()">Copy</button>';
+      html += '<pre id="contextText"></pre>';
+      html += '</div>';
+      html += '</div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // --- Actions ---
+    (function() {
+      var html = '<div class="module" id="mod-actions">';
+      html += '<h2>Actions</h2>';
+      html += '<div class="action-bar">';
+      html += '<div class="action-bar-header"><h2>Generate /synthesis prompt</h2>';
+      html += '<span class="decision-count" id="decisionCount">0 decisions made</span></div>';
+      html += '<button class="generate-btn" onclick="generatePrompt()">Generate prompt</button>';
+      html += '<div class="prompt-output" id="promptOutput">';
+      html += '<button class="copy-btn" onclick="copyPrompt()">Copy</button>';
+      html += '<pre id="promptText"></pre>';
+      html += '</div></div></div>';
+      main.insertAdjacentHTML('beforeend', html);
+    })();
+
+    // === Cross-referencing: assign IDs ===
+    document.querySelectorAll('[data-insight]').forEach(function(el) { el.id = el.dataset.insight; });
+    document.querySelectorAll('[data-conflict]').forEach(function(el) { el.id = el.dataset.conflict; });
+
+    // Auto-open module and scroll on anchor navigation
+    function openAnchor() {
+      if (!location.hash) return;
+      var hash = location.hash.substring(1);
+      var target = document.getElementById(hash);
+      if (!target) return;
+
+      // Determine which module contains the target
+      var modEl = target.closest('.module');
+      if (modEl) {
+        var modId = modEl.id.replace('mod-', '');
+        showModule(modId);
+      }
+
+      setTimeout(function() {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+    }
+    openAnchor();
+    window.addEventListener('hashchange', openAnchor);
+
+    // === Interactive Functions ===
+    window.toggleInsight = function(btn, action) {
+      var card = btn.closest('.insight-card');
+      var id = card.dataset.insight;
+      var btns = card.querySelectorAll('.insight-btn');
+      if (btn.classList.contains('selected-' + action)) {
+        btn.classList.remove('selected-' + action);
+        delete insightDecisions[id];
+      } else {
+        btns.forEach(function(b) { b.classList.remove('selected-approve', 'selected-reject'); });
+        btn.classList.add('selected-' + action);
+        insightDecisions[id] = action;
+      }
+      updateCount();
+    };
+
+    window.onConflictChange = function(radio) {
+      var card = radio.closest('.conflict-card');
+      var id = card.dataset.conflict;
+      var note = card.querySelector('.conflict-note');
+      if (radio.value === 'I have context') {
+        if (note) note.classList.add('visible');
+      } else {
+        if (note) note.classList.remove('visible');
+      }
+      conflictDecisions[id] = radio.value;
+      updateCount();
+    };
+
+    function updateCount() {
+      var count = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length + (fieldNoteText ? 1 : 0);
+      var el = $('decisionCount');
+      if (el) el.textContent = count + ' decisions made';
+      $('sidebarDecisions').textContent = count + ' decisions';
+    }
+
+    // === Insight filtering ===
+    window.toggleFilter = function(btn) {
+      var value = btn.dataset.value;
+      // Clear all filter buttons in the same group
+      btn.parentElement.querySelectorAll('.filter-btn[data-filter="status"]').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      activeFilters.status = value === 'all' ? null : value;
+      applyInsightFilters();
+    };
+
+    window.filterInsights = function() {
+      searchQuery = ($('insightSearch') || {}).value || '';
+      applyInsightFilters();
+    };
+
+    function applyInsightFilters() {
+      var cards = document.querySelectorAll('#insightsList .insight-card');
+      var query = searchQuery.toLowerCase();
+      cards.forEach(function(card) {
+        var matchStatus = !activeFilters.status || card.dataset.status === activeFilters.status;
+        var matchSearch = !query || card.textContent.toLowerCase().indexOf(query) !== -1;
+        card.classList.toggle('hidden', !(matchStatus && matchSearch));
+      });
+    }
+
+    // === Conflict filtering ===
+    window.toggleCfFilter = function(btn) {
+      var value = btn.dataset.value;
+      btn.parentElement.querySelectorAll('.filter-btn[data-filter="cfstatus"]').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      var filter = value === 'all' ? null : value;
+      document.querySelectorAll('#conflictsList .conflict-card').forEach(function(card) {
+        var match = !filter || card.dataset.cfstatus === filter;
+        card.classList.toggle('hidden', !match);
+      });
+    };
+
+    // === Prompt Generator ===
+    window.generatePrompt = function() {
+      var lines = ['/synthesis with these inputs:', ''];
+      var flags = [], research = [], context = [];
+
+      Object.keys(conflictDecisions).forEach(function(id) {
+        var val = conflictDecisions[id];
+        if (val.indexOf('Flag') === 0) flags.push(id + ': ' + val);
+        else if (val.indexOf('Needs') === 0) research.push(id + ': ' + val);
+        else if (val === 'I have context') {
+          var card = document.querySelector('[data-conflict="' + id + '"]');
+          var note = card ? card.querySelector('.conflict-note') : null;
+          var text = note ? note.value.trim() : '';
+          context.push(id + ': Context: ' + (text || '[no notes provided]'));
+        }
+      });
+
+      if (flags.length) { lines.push('## Flag for stakeholder discussion'); flags.forEach(function(f) { lines.push(f); }); lines.push(''); }
+      if (research.length) { lines.push('## Needs more research'); research.forEach(function(r) { lines.push(r); }); lines.push(''); }
+      if (context.length) { lines.push('## Resolution context provided'); context.forEach(function(c) { lines.push(c); }); lines.push(''); }
+
+      var approved = [], rejected = [];
+      Object.keys(insightDecisions).forEach(function(id) {
+        if (insightDecisions[id] === 'approve') approved.push(id);
+        else rejected.push(id);
+      });
+      if (approved.length) lines.push('Approve insights: ' + approved.join(', '));
+      if (rejected.length) lines.push('Reject insights: ' + rejected.join(', '));
+
+      if (fieldNoteText) {
+        lines.push('');
+        lines.push('## Field note to save');
+        lines.push('Save the following entry to a _FIELD_NOTES.md file in the appropriate 01_Sources/ subfolder:');
+        lines.push('');
+        lines.push(fieldNoteText);
+      }
+
+      var output = $('promptOutput');
+      $('promptText').textContent = lines.join('\n');
+      output.classList.add('visible');
+    };
+
+    // === Add Context Functions ===
+    var selectedConfidence = 'medium';
+
+    window.selectConfidence = function(btn) {
+      btn.parentElement.querySelectorAll('.confidence-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedConfidence = btn.dataset.confidence;
+    };
+
+    var fieldNoteText = '';
+
+    window.generateFieldNote = function() {
+      var topic = ($('contextTopic') || {}).value || '';
+      var note = ($('contextNote') || {}).value || '';
+      var trigger = ($('contextTrigger') || {}).value || '';
+      if (!note.trim()) { alert('Please write an observation.'); return; }
+      var today = (meta.generated || new Date().toISOString().slice(0, 10));
+
+      // Find next IG-XX ID from existing insights
+      var maxId = 0;
+      (data.insights || []).forEach(function(ig) {
+        var num = parseInt((ig.id || '').replace('IG-', ''), 10);
+        if (num > maxId) maxId = num;
+      });
+      var nextId = 'IG-' + (maxId + 1 < 10 ? '0' + (maxId + 1) : (maxId + 1));
+
+      // Build field note entry
+      var fnLines = [];
+      fnLines.push('### ' + today + ' ' + (topic || 'Untitled'));
+      fnLines.push('**Confidence:** ' + selectedConfidence);
+      if (trigger.trim()) fnLines.push('**Context:** ' + trigger.trim());
+      fnLines.push('');
+      fnLines.push(note.trim());
+      fnLines.push('');
+      fnLines.push('---');
+      fieldNoteText = fnLines.join('\n');
+
+      // Build dual-write prompt
+      var prompt = [];
+      prompt.push('Please do two things:\n');
+      prompt.push('## 1. Inject PENDING insight to 02_Work/INSIGHTS_GRAPH.md\n');
+      prompt.push('### [' + nextId + '] (user-need, current) PENDING');
+      prompt.push(note.trim());
+      prompt.push('> "' + note.trim() + '"');
+      prompt.push('Voice: researcher');
+      prompt.push('Authority: observation');
+      prompt.push('Source confidence: ' + selectedConfidence);
+      prompt.push('Convergence: 1/1 sources');
+      prompt.push('Ref: field-note');
+      if (trigger.trim()) prompt.push('Trigger: ' + trigger.trim());
+      prompt.push('');
+      prompt.push('## 2. Save field note to 01_Sources/[relevant-folder]/_FIELD_NOTES.md\n');
+      prompt.push(fieldNoteText);
+      prompt.push('');
+      prompt.push('## 3. Log to 02_Work/MEMORY.md');
+      prompt.push('Append entry: /status Add Context — injected ' + nextId + ' (PENDING, researcher observation, confidence: ' + selectedConfidence + ')');
+
+      var output = $('contextOutput');
+      $('contextText').textContent = prompt.join('\n');
+      output.classList.add('visible');
+      updateCount();
+    };
+
+    window.copyContext = function() {
+      var text = $('contextText').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var toast = $('toast');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 1500);
+      });
+    };
+
+    window.copyPrompt = function() {
+      var text = $('promptText').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        var toast = $('toast');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 1500);
+      });
+    };
+
+  })();
+  </script>
+</body>
+</html>

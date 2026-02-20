@@ -42,7 +42,7 @@ Related insights: [IG-SYNTH-07], [IG-SYNTH-19]
 ---
 
 ### [CF-03] Conflicto de perspectiva — Confianza UX del CTO vs realidad de uso
-Status: PENDING — Flagged for stakeholder discussion
+Status: PENDING — Research (benchmark UX en progreso)
 Type: AMB-03 (Perspective conflict)
 Related insights: [IG-SYNTH-03], [IG-SYNTH-11]
 
@@ -103,8 +103,9 @@ Related insights: [IG-SYNTH-03], [IG-SYNTH-09], [IG-SYNTH-11]
 
 - **Gap:** Todas las perspectivas de usuario provienen de stakeholders internos (COO, PMs, equipo TIMining). No hay entrevistas directas con mineros, despachadores, jefes de turno, ni tests de usabilidad.
 - **Risk:** Las necesidades de usuario son suposiciones de stakeholders, no evidencia directa. Los insights user-need pueden ser incorrectos.
+- **Reinforced (2026-02-20):** 3 fuentes adicionales confirman la necesidad: Touchpoint (plan de 5-7 entrevistas remotas vía Felipe Zoloza), reunion_camila (propuesta de entrevistar ex-empleados como primer paso), _FIELD_NOTES.md (IG-02: "Etapa 2 incompleta sin entrevistas con usuarios clave").
 
-**Action:** Planificar entrevistas directas con usuarios finales en mina. Sugerencia: 6-8 entrevistas en contexto + test de usabilidad con prototipos de CORE.
+**Action:** Planificar entrevistas directas con usuarios finales en mina. Sugerencia: 6-8 entrevistas en contexto + test de usabilidad con prototipos de CORE. Alternativa propuesta: entrevistar ex-empleados que ahora trabajan en clientes.
 - **Priority:** Crítica — fundamento de toda la estrategia UX
 
 ---
@@ -155,4 +156,19 @@ Related insights: [IG-SYNTH-13], [IG-SYNTH-10]
 
 ---
 
-<!-- Updated by /synthesis on 2026-02-16 -->
+### [CF-12] Tensión sobre framing de "Paz Mental"
+Status: PENDING — Flagged (llevar a próxima sesión de trabajo con equipo)
+Type: AMB-03 (Perspective conflict)
+Related insights: [IG-SYNTH-16], [IG-11]
+
+- **Source claim A (interno):** "Paz Mental" como propuesta de valor core — "Mantra operativo: valor no reside en el software sino en la 'Paz Mental' del operador" — Sello de Experiencia, Design Brief, Workshop [IG-SYNTH-16]
+- **Source claim B (CEO):** Philip: "no es tanto paz mental, más bien estos tipos no tienen tiempo" — Redefine la necesidad subyacente como falta de tiempo operacional, no ansiedad — sesiones-idemax/Touchpoint
+- **Source claim C (CTO):** Carlo: "si les digo que les doy paz mental quedamos como chantas" — Rechaza el branding para uso externo — sesiones-idemax/Touchpoint
+
+**Analysis:** El conflicto tiene dos capas: el CEO cuestiona si el concepto describe la necesidad real (es tiempo, no ansiedad); el CTO rechaza la etiqueta para clientes. Coinciden en que no es para uso externo, pero por razones distintas. Internamente el concepto sigue activo como principio de diseño.
+
+**Action:** Resolver en /synthesis: ¿se mantiene "Paz Mental" como principio interno con otro framing para clientes, o se redefine completamente? Opciones: (A) mantener interno + renombrar para clientes, (B) reemplazar por "certeza operacional" o similar, (C) eliminar del lenguaje.
+
+---
+
+<!-- Updated by /analyze (incremental) on 2026-02-20 -->

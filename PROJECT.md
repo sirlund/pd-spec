@@ -15,7 +15,7 @@
 > Updated automatically by skills after each execution.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-17
-- **Status:** Full pipeline executed. 54 sources processed, 24 insights, 11 conflicts.
-- **Insights count:** 24
-- **Conflicts count:** 11
+- **Last updated:** 2026-02-20
+- **Status:** Incremental analysis (94 new claims from 4 sesiones-idemax sources). 36 insights (20V, 8P, 6M, 2I), 12 conflicts (7R, 5P).
+- **Insights count:** 36
+- **Conflicts count:** 12

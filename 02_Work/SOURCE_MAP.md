@@ -58,5 +58,10 @@ Per-file extraction state tracker. Maintained automatically by `/extract`.
 | Visión Futuro _CORE_/GEMINI exercies_TIMining_CORE_The_Operating_Brain_of_the_Digital_Mine.pdf | pdf | processed | 35 | 64c75c93bd5fa65d064b4d4520750f58 | 2026-02-16T18:30 |
 | Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf | pdf | processed | 37 | 16e17732b9986bf5cc4e787bdb983c02 | 2026-02-16T18:35 |
 | Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf | pdf | processed | 27 | 1254c00e9f53fbe3136da86d2fcebfe5 | 2026-02-16T18:40 |
+| sesiones-idemax/session-align-con-camila(wed18feb).md | md | processed | 27 | 3b9d04245c78f1fe375c911bceb49cb5 | 2026-02-20T15:23 |
+| sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md | md | processed | 38 | de1149b7630e7b82186dfff80740ff62 | 2026-02-20T15:23 |
+| sesiones-idemax/reunion_camila_2026-02-17.md | md | processed | 28 | 91183e80a488f3aa9faee9ee541250b7 | 2026-02-20T15:23 |
+| Propuesta ruta/_FIELD_NOTES.md | md | processed | 1 | e275cbc0f80d38082d9d22918d1a122b | 2026-02-20T15:23 |
+| ai-reports/competitive-landscape.md | md | processed | 18 | abdaaf5e762441fda91b3aceca9a35f8 | 2026-02-20T17:15 |
 
 <!-- Updated automatically by /extract -->

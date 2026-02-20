@@ -108,5 +108,8 @@ Diseñar para adopción bottom-up. La herramienta debe embeberse en rutinas oper
 - [ ] ¿Validación directa con usuarios finales en mina? Entrevistas y tests de usabilidad — [CF-07]
 - [ ] ¿Bloqueantes técnicos para migración a CORE? APIs, modelos de datos, backend headless, pasos previos — [CF-11]
 - [ ] ¿Estándares WCAG aplicables a cada pilar de CORE? — [CF-10]
+- [ ] ¿Automatización progresiva: human-in-the-loop como restricción permanente o transicional? — [IG-SYNTH-22]
+- [ ] ¿Hub de decisiones: cómo capturar lo que ocurre en WhatsApp/radio? — [IG-SYNTH-23]
+- [ ] ¿"Paz Mental" como concepto: mantener interno, renombrar o eliminar? — [CF-12]
 
-<!-- Updated by /synthesis on 2026-02-16 -->
+<!-- Updated by /synthesis on 2026-02-20 -->
