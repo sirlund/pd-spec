@@ -74,6 +74,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
+| View | `/view` | Start the Live Research App — local web viewer for Work layer data |
 
 ## Maturity Levels
 
@@ -123,7 +124,11 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   └── audit/SKILL.md        /audit — quality gate before /ship
+│   ├── audit/SKILL.md        /audit — quality gate before /ship
+│   └── view/SKILL.md         /view — start Live Research App
+├── app/                       Live Research App (local web viewer)
+│   ├── server/                Express server + parsers + WebSocket
+│   └── client/                React SPA (Vite build)
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
