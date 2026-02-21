@@ -84,6 +84,15 @@ EVERY file discovered in Phase 1 MUST be:
    - **Heavy-only mode:** Read SOURCE_MAP.md, select ONLY files with status `pending-heavy`. If no pending-heavy files found, report "No heavy files pending — run /extract first" and stop.
    - **Full mode:** Process all files (no filtering).
 
+5b. **Oversized line detection** — For each file in the processing queue:
+   - Check: `file_size / line_count > 2000` chars/line (approximate via `wc -l` and `wc -c`)
+   - If detected: flag file as `oversized-lines` in working memory
+   - These files MUST be read using Bash byte-range reads (`head -c 8000`, `tail -c +8001 | head -c 8000`)
+     instead of the Read tool. Each chunk ≤8000 chars ensures it fits within tool response limits.
+   - Note: if Phase 1.5 preprocessing normalizes the file, the normalized version will have
+     proper line breaks and the oversized-lines flag is cleared for that file.
+   - Log: `⚠️ Oversized lines detected: {filename} ({avg_chars_per_line} chars/line) — using byte-range reads`
+
 6. **Batch detection (MANDATORY for >40 files in processing queue):**
    - Count files remaining in queue after mode filtering
    - **If count ≤ 40:** Process all files in single pass (standard mode)
@@ -96,6 +105,18 @@ EVERY file discovered in Phase 1 MUST be:
      - Log: "  Pass 2: {heavy_count} heavy files (processing 1 at a time)"
      - Set batching flag for Phase 2
      - **CRITICAL: Process files DIRECTLY in main context (NO Task agents, NO parallelization)**
+
+7. **Cost gate — preventive checkpoint:**
+   IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing candidates detected:
+     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
+     - Phase completed: Phase 1 (discovery)
+     - Files in queue: [list with sizes]
+     - Mode: [express/full/heavy]
+     - Preprocessing candidates: [list or "none"]
+     - Resume instruction: "If recovering from compaction, skip Phase 1, read this checkpoint, continue from Phase 1.5 (or Phase 2 if no preprocessing)"
+   ELSE (≤10 files, small, no preprocessing):
+     Skip mid-skill checkpoints (task is small enough to complete safely)
+   Log: `💾 Preventive checkpoint written (${file_count} files, ${est_size}KB)`
 
 ### Phase 1b: Compute Delta (Incremental Extraction)
 
@@ -210,6 +231,12 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
    - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
 
+   **Implementation constraint for Pass C:** Sentence repair CANNOT be done mechanically (sed, awk, regex).
+   It requires LLM reasoning to detect semantic boundaries, incomplete thoughts, and overlapping speech.
+   After Passes A+B (which CAN use mechanical substitution), process the file content through a dedicated
+   LLM analysis pass for sentence repair. Read the mechanically-corrected content back and apply Pass C
+   markers. This is a separate step, not part of the sed pipeline.
+
 16. **Quality report & user approval (MANDATORY propose-before-execute):**
 
    Present the preprocessing results for each candidate file:
@@ -261,6 +288,11 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 When processing a document, apply these criteria for claim extraction:
 
 1. **Read full content** — Don't skip pages, sections, or files based on assumed redundancy
+   **If file is flagged `oversized-lines` (from step 5b):**
+   - Do NOT use the Read tool (it will fail on lines >10K chars)
+   - Use Bash byte-range reads: `head -c 8000 {filepath}`, then `tail -c +8001 {filepath} | head -c 8000`, etc.
+   - Concatenate chunks in working memory, then extract claims as normal
+   - For files >50KB, read first 25KB + last 10KB (sufficient for extraction signal)
 2. **Extract claims meeting these criteria:**
    - User needs, pain points, behaviors (direct quotes preferred)
    - Business constraints, success metrics, strategic decisions
@@ -303,6 +335,12 @@ For each Light batch (batch size = 10 files):
      - Append all 10 sections to EXTRACTIONS.md (single Edit operation)
      - Update SOURCE_MAP.md (10 rows via Edit tool)
      - Clean temp: `rm -rf 02_Work/_temp/*`
+     - **Update SESSION_CHECKPOINT** (if mid-skill checkpoints are active):
+       - Phase: "Phase 2 — batch {N}/{total}"
+       - Files processed so far: [list]
+       - Files remaining: [list]
+       - Claims extracted so far: count
+       - Resume instruction: "Continue from file {next_file} in batch {N+1}"
      - Log: "✓ Batch X/Y: 10 files, Z claims"
   4. **Continue to next Light batch** — Repeat until all Light files complete
 
