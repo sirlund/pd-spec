@@ -58,6 +58,14 @@ Single entry point: `npm install && npm start`. Node is already present on any m
 
 This simplifies `/ship`: structured data is already JSON in Work layer → map directly to MCP target or template. No MD→JSON transformation at ship time. Existing `03_Outputs/_schemas/` remain as validation contracts for the JSON files.
 
+**Key insight — Markdown is a storage format, not a consumption format.** Nobody reads raw markdown comfortably — not the researcher (uses chat + app), not the stakeholder (uses Google Docs/Slides), not the client (uses MCP-published deliverables). Even GitHub's README preview is preferred over raw MD in an editor. This validates every architectural decision above: the Live Research App is the "GitHub preview" for PD-Spec, MCP is the delivery layer, and raw files are just the database underneath.
+
+| Persona | Interface | Reads raw files? |
+|---|---|---|
+| Researcher | Chat (Claude Code) + Live Research App | No |
+| Technical stakeholder | Live Research App or Google Docs via MCP | No |
+| External client | Google Docs / Slides / Notion via MCP | No |
+
 Features:
 - **PD-Spec semantic rendering** — marked.js with custom extensions: `[IG-XX]` → blue badge, `[CF-XX]` → red badge, status → colored tags, markdown tables → sortable tables
 - **File navigator** — sidebar listing all `02_Work/*.md` files, one-click switching
