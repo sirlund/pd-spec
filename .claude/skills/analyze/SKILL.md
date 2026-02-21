@@ -340,6 +340,36 @@ BEFORE writing to files, present synthesis findings:
 [List from step 18 — missing validations]
 ```
 
+**19a. Speaker clarification loop** (only when uncertain attributions exist):
+
+Scan the proposed insights for uncertain speaker attribution. Sources of uncertainty:
+- Claims from content-based segmentation (Phase 1.5 Pass A, confidence `low/uncertain`)
+- Claims from unsegmented transcripts that skipped preprocessing
+- Claims where the speaker attribution seems inconsistent with the content (e.g., implementation detail attributed to CEO)
+
+**If uncertain attributions found:**
+
+Group them by transcript/source and present targeted correction questions via AskUserQuestion:
+
+```
+Speaker attribution review — {N} insights have uncertain speakers:
+
+From [sesion-gerencia/transcript.md]:
+  IG-03: "yo eliminé la navegación temporal" — attributed to CEO (uncertain)
+    → Sounds like an implementer (CTO?). Who said this?
+  IG-07: "el pricing tiene que ser por usuario" — attributed to CEO (uncertain)
+    → Business decision. Could be CEO or CFO. Who said this?
+```
+
+Options per group:
+- **Correct in batch** — user provides the actual speaker, correction propagates to all insights from the same transcript segment
+- **Accept as-is** — keep current attribution (user confirms it's correct despite low confidence)
+- **Skip** — leave uncertain, mark for later review
+
+**Propagation rule:** When the user corrects a speaker for one segment, apply the same correction to ALL insights extracted from that segment (same speaker, same transcript section).
+
+**If no uncertain attributions:** Skip this step silently.
+
 **19b. Use AskUserQuestion for structured approval** (no free-text prompt):
 
 Invoke AskUserQuestion with 2 questions. Write question text and option labels in `output_language`. Substitute actual counts for N and M.

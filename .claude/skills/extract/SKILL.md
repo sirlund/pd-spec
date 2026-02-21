@@ -218,8 +218,14 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
    **Pass A — Speaker Detection (3-step):**
    1. **Segment:** Identify speaker turn boundaries using timestamps, indentation, labels, or dialogue patterns.
+      - **Unsegmented multi-speaker detection:** If the participant list (from `_CONTEXT.md` or file metadata) lists >1 participant BUT the transcript has no per-line speaker labels or turn markers (e.g., Granola collapsing all speakers into one `Me:` block):
+        a. Gather **speaker priors** from Work layer: known roles (CEO, CTO, consultant), topics per speaker (from existing insights in `INSIGHTS_GRAPH.md`), vocabulary patterns
+        b. **Content-based segmentation:** Identify speaker changes by topic shifts, role-specific vocabulary ("yo eliminé" = implementer, "pricing model" = business), temporal markers ("cuando Philippe se fue"), self-references to role
+        c. Insert speaker boundaries: `[SPEAKER: Name (confidence)]` at each detected transition
+        d. Log: `🔍 Unsegmented transcript — content-based segmentation applied ({N} speaker changes detected)`
    2. **Identify:** Match speaker segments to known participants (from `_CONTEXT.md`, file metadata, or project context). Use contextual clues: role references ("as CFO I think..."), name mentions ("like Maria said..."), speaking style consistency.
-   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low/uncertain` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+      - For content-based segmentation (step 1 unsegmented path): most attributions will be `medium` or `low/uncertain`. This is expected — the clarification loop in /analyze handles corrections.
 
    **Pass B — Phonetic Correction:**
    - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
@@ -262,10 +268,13 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ## Preprocessing: [folder/filename.ext]
 
    ### Speaker Table
-   | Speaker | Identified As | Confidence | Turns |
-   |---|---|---|---|
-   | Speaker 1 | María López (Project Lead) | high | 23 |
-   | Speaker 2 | [Speaker 2] | low | 8 |
+   | Speaker | Identified As | Confidence | Turns | Method |
+   |---|---|---|---|---|
+   | Speaker 1 | María López (Project Lead) | high | 23 | label |
+   | Speaker 2 | [Speaker 2] | low | 8 | content-based |
+
+   ⚠️ Content-based segmentation applied (no speaker labels in source).
+   Attributions marked "content-based" may need correction in /analyze.
 
    ### Corrections (top 15)
    | Original | Corrected | Context | Confidence |

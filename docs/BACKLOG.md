@@ -358,9 +358,11 @@ Internal sources produce two types of content with different routing:
 
 ### [BL-46] Smart Speaker Attribution — Best-Effort Segmentation + Clarification Loop
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
 **Priority:** P1
 **Origin:** QA v4 (2026-02-20). Evidence: QA4-OBS-07 (9 insights misattributed CTO→CEO from unsegmented transcript), QA4-OBS-08 (collapsed conflict from 2 distinct stakeholder objections), Granola pseudo-speakers test (generic LLM achieved reasonable segmentation without project context).
+
+**Summary:** Two-component solution. (1) Extract Phase 1.5 Pass A: content-based segmentation for unsegmented multi-speaker transcripts — uses Work layer speaker priors (roles, topics, vocabulary patterns) to insert `[SPEAKER: Name (confidence)]` boundaries. Quality report includes Method column (label vs content-based). (2) Analyze step 19a: speaker clarification loop — detects uncertain attributions, groups by transcript segment, presents targeted questions, propagates corrections in batch.
 
 **Problem:** Unsegmented multi-speaker transcripts (e.g., Granola collapsing 6 speakers into one `Me:` block) cause Phase 1.5 to skip normalization, leaving /analyze to guess speakers by frequency. Result: systematic misattribution when the dominant speaker changes mid-meeting.
 
