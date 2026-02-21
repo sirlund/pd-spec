@@ -96,9 +96,9 @@ export function createApi(projectRoot) {
   });
 
   // GET /api/file/:path — render any markdown file as HTML
-  router.get('/file/*', async (req, res) => {
+  router.get('/file/{*filePath}', async (req, res) => {
     try {
-      const filePath = req.params[0];
+      const filePath = req.params.filePath;
       // Security: only allow reading from project directories
       if (filePath.includes('..') || filePath.startsWith('/')) {
         return res.status(403).json({ error: 'Invalid path' });

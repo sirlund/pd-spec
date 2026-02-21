@@ -58,7 +58,7 @@ app.use('/outputs', express.static(resolve(projectRoot, '03_Outputs'), {
 const distDir = resolve(__dirname, '../dist');
 if (existsSync(distDir)) {
   app.use(express.static(distDir));
-  app.get('*', (req, res) => {
+  app.get('{*path}', (req, res) => {
     if (!req.path.startsWith('/api') && !req.path.startsWith('/ws') && !req.path.startsWith('/outputs')) {
       res.sendFile(resolve(distDir, 'index.html'));
     }
