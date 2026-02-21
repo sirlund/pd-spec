@@ -1,5 +1,44 @@
 # Changelog
 
+## [4.15.0] — 2026-02-21
+
+### Highlights
+
+**Your research is now a live web app.** Run `/view` and PD-Spec opens a local browser application showing your Work layer data — insights, conflicts, sources, extractions — all updating in real time as the agent works. No more regenerating static dashboards or reading raw markdown files.
+
+**Built for stakeholder meetings.** The Live Research App shows pipeline progress, insight cards with status badges and convergence bars, conflict cards with resolution tracking, a source file browser with extraction status, and an output launcher that opens deliverables in new tabs. PD-Spec semantic rendering turns `[IG-XX]` and `[CF-XX]` references into clickable navigation badges.
+
+### Changes
+
+- **BL-33 Phase 1 — Live Research App.** Express server with chokidar file watcher and WebSocket push for live updates. Five markdown parsers (insights, conflicts, source map, system map, extractions). React frontend with Vite: dashboard with pipeline stats, filterable insight/conflict views, source browser, markdown renderer with PD-Spec extensions, output launcher. New `/view` skill starts the server and opens the browser.
+- **BL-42 absorbed** into BL-33 (Work Layer Viewer functionality included in the app).
+
+<details>
+<summary>Technical details</summary>
+
+**New files:**
+- `app/` — Complete Node.js + React application (server, parsers, components, styles)
+- `app/server/parsers/` — INSIGHTS_GRAPH, CONFLICTS, SOURCE_MAP, SYSTEM_MAP, EXTRACTIONS markdown → JSON
+- `app/client/components/` — Dashboard, InsightCard, ConflictCard, MarkdownView, SourceBrowser, OutputLauncher, SearchBar, Sidebar
+- `.claude/skills/view/SKILL.md` — New `/view` skill
+
+**Files changed:**
+- `CLAUDE.md` — Skills table (added /view), folder structure (added app/)
+- `.gitignore` — Added app/node_modules/ and app/dist/
+
+**Architecture:**
+- Backend: Express + chokidar + WebSocket (ws)
+- Frontend: React 19 + Vite 6 + Tailwind CSS 4
+- App reads Work layer files (read-only), never writes
+- Live updates: file watcher → WebSocket push → frontend refetch
+- Outputs opened in new tabs (not embedded) to preserve their self-contained CSS/JS
+
+**BACKLOG impact:**
+- BL-33: Phase 1 IMPLEMENTED (Phase 2 = BL-33a JSON Work layer, future)
+- BL-42: ABSORBED by BL-33
+
+</details>
+
 ## [4.14.0] — 2026-02-21
 
 ### Highlights
