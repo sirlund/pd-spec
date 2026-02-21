@@ -1,5 +1,38 @@
 # Changelog
 
+## [4.14.0] — 2026-02-21
+
+### Highlights
+
+**Sources now carry authority, not just format.** New `Authority` metadata field separates *what a source is* (transcript, document, OCR) from *how much weight it carries* (primary, internal, ai-generated). Consultant brainstorming sessions, internal alignment meetings, and AI summaries now get proper reduced authority without contaminating stakeholder evidence. Action items from internal sources are automatically separated and excluded from analysis.
+
+**Pass C finally works as a separate step.** Phase 1.5 is now two sub-phases: 1.5a (mechanical Passes A+B, scripting allowed) writes an intermediate `_mechanical.md` file, then 1.5b (semantic Pass C) forces the agent to stop, read it back, and apply sentence repair as an LLM reasoning task. Python regex explicitly prohibited for Pass C. Mandatory verification confirms markers exist or logs "no repairs needed."
+
+**Unsegmented transcripts get speaker attribution.** When a multi-speaker transcript has no per-line speaker labels (e.g., Granola collapsing everyone into `Me:`), Phase 1.5 now attempts content-based segmentation using Work layer speaker priors — roles, known topics, vocabulary patterns. After analysis, a clarification loop presents uncertain attributions for quick user correction with batch propagation.
+
+### Changes
+
+- **BL-51 — Pass C enforcement fix.** Restructured Phase 1.5 into Phase 1.5a (mechanical, writes `_mechanical.md`) and Phase 1.5b (semantic, LLM-only). Hard gate between them. Python regex added to prohibited tools list for Pass C. Verification step mandatory.
+- **BL-44 — Source authority layer.** New `Authority` field in `_SOURCE_TEMPLATE.md` and `_CONTEXT_TEMPLATE.md` (primary/internal/ai-generated). Extract tags claims `[INTERNAL]` or `[AI-SOURCE]`. Analyze applies verification gate: non-primary insights can't reach VERIFIED without primary corroboration. Internal sources get action items separated. Backwards compatible with `Source Type: ai-generated`.
+- **BL-46 — Smart speaker attribution.** Extract Phase 1.5 Pass A extended with content-based segmentation for unsegmented multi-speaker transcripts. Analyze step 19a adds speaker clarification loop with targeted questions and batch propagation.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 1.5 split into 1.5a+1.5b, authority detection in step 2, authority-based claim tagging in Phase 2, unsegmented multi-speaker segmentation in Pass A, quality report Method column
+- `.claude/skills/analyze/SKILL.md` — Authority-based rules (verification gates for INTERNAL and AI-SOURCE), action items skip rule, conflict authority imbalance notes, speaker clarification loop (step 19a)
+- `01_Sources/_SOURCE_TEMPLATE.md` — Authority field added
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Authority field added, Source Type cleaned (ai-generated removed), Authority documentation in comments
+
+**BACKLOG impact:**
+- BL-51: IMPLEMENTED (fixes BL-50 enforcement gap from QA v5)
+- BL-44: IMPLEMENTED (refactors BL-37 ai-generated into proper authority axis)
+- BL-46: IMPLEMENTED (addresses QA4-OBS-07/08 speaker misattribution)
+- BL-54: IMPLEMENTED (QA pipeline formalization)
+
+</details>
+
 ## [4.13.0] — 2026-02-21
 
 ### Highlights
