@@ -356,72 +356,6 @@ Internal sources produce two types of content with different routing:
 
 ---
 
-### [BL-45] Mid-Skill Checkpoints — Survive Context Compaction During Long Operations
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** QA v4 (2026-02-20). Evidence: context compacted mid-/extract during Phase 1.5 preprocessing. MEMORY and SESSION_CHECKPOINT were not yet written (protocol only writes after skill completion). All in-memory state lost — preprocessing results, redirect map, detection findings. Agent recovered by re-reading files but lost ~8 minutes of work.
-
-**Problem:** The Session Protocol writes MEMORY.md + SESSION_CHECKPOINT.md only **after** skill execution completes. Heavy skills (/extract with preprocessing, /analyze on large projects) can consume enough context to trigger compaction before finishing. When this happens, mid-skill state is lost with no recovery mechanism.
-
-**Option A — Task-aware preventive checkpoints (recommended):**
-
-The agent can't query remaining context, but it CAN estimate task cost before starting. The rule:
-
-> Before any operation expected to consume >30% of the context window, write a preventive checkpoint with current state + remaining plan.
-
-Heuristics the agent already knows:
-- Number of files to process (from SOURCE_MAP / discovery)
-- Approximate file sizes (from Read / file metadata)
-- Whether preprocessing is involved (Phase 1.5 = high cost)
-- Historical patterns (60 files ≈ full context, 10 files ≈ 30%)
-
-Implementation: add a "cost gate" instruction at the start of heavy skills:
-
-```
-Before Phase 2 (extraction / analysis):
-  IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing_active:
-    Write preventive checkpoint: {phase_completed, files_remaining, state_so_far}
-  ALSO: write checkpoint after every 10 files processed (batch boundary)
-```
-
-Cost: 1-3 extra writes per heavy skill run (~1KB each). Zero overhead for light operations.
-
-Advantage over deterministic phase-boundary writes: only triggers when the task is actually large enough to risk compaction. A 3-file /extract doesn't need mid-skill checkpoints.
-
-**Option B — Deterministic phase-boundary checkpoints (fallback):**
-
-Write after every phase completes, regardless of task size:
-
-```
-/extract:
-  Phase 1 (discovery)      → checkpoint: file list, delta, mode
-  Phase 1.5 (preprocessing)→ checkpoint: normalized files, redirect map
-  Phase 2 (per batch/file) → checkpoint: last batch, claims so far
-  Phase 4 (report)         → checkpoint: final state (existing)
-
-/analyze:
-  Phase 1 (read extractions) → checkpoint: claims loaded, mode
-  Phase 2 (per batch)        → checkpoint: insights/conflicts so far
-  Phase 4 (report)           → checkpoint: final state (existing)
-```
-
-Cost: ~5 extra writes per run. Simple but writes unnecessarily on small tasks.
-
-**Option C — Context-aware preemptive save (advanced, future):**
-
-Agent estimates token consumption via proxy (tool call count, file sizes read) and triggers emergency checkpoint at ~75% usage. Challenges: approximate estimation, calibration risk, latency overhead. Only needed if Option A proves insufficient for very long operations.
-
-**Recommendation:** Option A (task-aware). Simple, no infrastructure dependency, leverages information the agent already has. Option B as fallback if heuristic estimation proves unreliable.
-
-**Acceptance criteria:**
-- [ ] Cost gate at start of /extract and /analyze: estimate task size, write preventive checkpoint if >30% context risk
-- [ ] Batch-boundary checkpoint every 10 files during Phase 2 (both skills)
-- [ ] Checkpoint includes `resume_from: phase_N` field + `files_remaining` list for post-compaction recovery
-- [ ] Post-compaction: agent reads checkpoint, detects incomplete skill, resumes from last completed phase
-- [ ] No duplicate work: already-written extractions/insights preserved on resume
-- [ ] Small tasks (<10 files, no preprocessing) skip mid-skill checkpoints entirely
-
 ---
 
 ### [BL-46] Smart Speaker Attribution — Best-Effort Segmentation + Clarification Loop
@@ -536,27 +470,6 @@ Recommendation: Start with Option A (inline). If patterns stabilize across 2+ QA
 
 ---
 
-### [BL-49] BUG: Oversized Lines Break Read Tool in /extract
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v4 (2026-02-20), QA4-BUG-01. Evidence: `Touchpoint_TIMining-IDEMAX _2026-02-19.md` — 134KB file with 14 lines (~10K chars each). Read tool fails with "exceeds 25K token limit" even with `limit=50`.
-
-**Problem:** Granola STT exports produce files with no line breaks within speaker turns. A 2-hour meeting transcript becomes a handful of lines, each 5-15K characters. The Read tool rejects these because its token limit applies per-call, and even 1 line can exceed it. Current workaround: agent falls back to `Bash` with `head -c` / `tail -c`, but this violates the "use Read not Bash" rule and is ad hoc.
-
-**Solution:** Early detection in /extract Phase 1 (discovery) + automatic routing:
-
-1. During file discovery, check file size vs line count ratio. If `file_size / line_count > 2000` → flag as oversized-lines.
-2. For flagged files, use Bash byte-range reads (`head -c 4000`, `tail -c +4001 | head -c 4000`) instead of Read tool.
-3. Phase 1.5 preprocessing should handle this transparently — normalized output has proper line breaks, so Phase 2 reads the normalized version normally.
-
-**Note:** BL-43 Phase 1.5 already fixes this for files that get preprocessed (normalized output has proper line breaks). This BL covers the edge case where preprocessing is skipped (user chooses Skip, or file isn't a preprocessing candidate).
-
-**Acceptance criteria:**
-- [ ] /extract detects oversized-line files during discovery (size/linecount ratio)
-- [ ] Automatic fallback to Bash byte-range reads for flagged files
-- [ ] No Read tool errors on files with lines >10K chars
-
 ---
 
 ### [BL-48] AI Convergence Breakdown — Show Authority Distribution in Convergence Ratios
@@ -590,27 +503,6 @@ Or in dashboard JSON:
 - [ ] No change when all sources are primary (clean `18/59` display)
 
 ---
-
-### [BL-50] BUG: Phase 1.5 Pass C (Sentence Repair) Not Implemented
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v4 (2026-02-20), QA4-BUG-02. Evidence: Camila session normalization applied speaker labels and phonetic corrections via `sed`, but no `[incomplete]`, `[crosstalk]`, or `[unintelligible]` markers were added. Run-on sentences not split.
-
-**Problem:** BL-43 Phase 1.5 specifies a 3-pass normalization: Pass A (speaker detection), Pass B (phonetic correction), Pass C (sentence repair — mark incomplete, crosstalk, unintelligible, split run-ons). The v4.12.0 implementation used mechanical `sed` one-liners for Passes A+B, which can't detect sentence-level patterns. Pass C was silently skipped.
-
-**Solution:** Pass C requires LLM-based processing, not regex. Two options:
-
-**Option A (targeted):** After `sed` handles A+B, run a second LLM pass on the normalized file to add sentence repair markers. Cost: ~1 extra read+write per preprocessed file.
-
-**Option B (unified):** Replace `sed` normalization entirely with a single LLM pass that does all 3 passes at once. Simpler but more expensive (LLM processes full transcript instead of just corrections).
-
-**Recommendation:** Option A. Passes A+B via `sed` are fast and cheap. Only Pass C needs LLM reasoning.
-
-**Acceptance criteria:**
-- [ ] Normalized files contain `[incomplete]`, `[crosstalk]`, `[unintelligible]` markers where appropriate
-- [ ] Run-on sentences split at logical boundaries
-- [ ] Pass C runs after sed-based A+B (not replacing them)
 
 ---
 
@@ -653,7 +545,25 @@ Decision deferred — revisit when a real project hits the ceiling.
 ## ✅ Implemented (Archive)
 
 <details>
-<summary><strong>BL-18 to BL-43 — v4.3 to v4.12.0</strong> (click to expand)</summary>
+<summary><strong>BL-18 to BL-50 — v4.3 to v4.13.0</strong> (click to expand)</summary>
+
+### [BL-49] BUG: Oversized Lines Break Read Tool in /extract — v4.13.0
+
+**Implemented:** 2026-02-20. Added step 5b (oversized line detection) in Phase 1: checks `file_size / line_count > 2000` chars/line ratio, flags files as `oversized-lines`. Phase 2 routes flagged files to Bash byte-range reads (`head -c 8000`) instead of Read tool. Files normalized by Phase 1.5 have flag cleared (proper line breaks after preprocessing). Covers edge case where preprocessing is skipped.
+
+---
+
+### [BL-50] BUG: Phase 1.5 Pass C (Sentence Repair) Not Implemented — v4.13.0
+
+**Implemented:** 2026-02-20. Added explicit enforcement instruction in Phase 1.5 Pass C: sentence repair CANNOT be done mechanically (sed, awk, regex). Requires LLM reasoning to detect semantic boundaries, incomplete thoughts, and overlapping speech. After Passes A+B (which CAN use mechanical substitution), a dedicated LLM analysis pass applies Pass C markers.
+
+---
+
+### [BL-45] Mid-Skill Checkpoints — Survive Context Compaction During Long Operations — v4.13.0
+
+**Implemented:** 2026-02-20 (Option A — task-aware preventive checkpoints). Added cost gate after Phase 1 in both /extract and /analyze: if file_count > 10 OR total_size > 50KB OR preprocessing candidates detected, writes preventive checkpoint to SESSION_CHECKPOINT.md with file queue, mode, and resume instructions. Small tasks skip mid-skill checkpoints. Batch-boundary checkpoints in /extract Phase 2 update SESSION_CHECKPOINT after every 10-file batch. /analyze gets additional checkpoint after Phase 2 analysis draft. Zero overhead for light operations.
+
+---
 
 ### [BL-43] Smart Source Preprocessing — Transcript Normalization + Speaker Detection — v4.12.0
 
