@@ -39,6 +39,10 @@ Local web app that reads `02_Work/` files directly — no generation step, alway
 
 Single entry point: `npm install && npm start`. Node is already present on any machine running Claude Code.
 
+**Design principle — HTML easy-to-export:** Templates must be designed for conversion, not just browser viewing. Semantic HTML, minimal inline styles, predictable structure (headings → sections → content blocks). This makes PPTX/PDF/DOCX conversion more faithful. The TIMining html2pptx.py suffered because the original HTML wasn't designed to be parsed — fixing this at the template level prevents the problem upstream.
+
+**Design principle — Content-First:** HTML outputs should consume markdown as primary source rather than embedding all content. Current architecture is Template+JSON (JSON block embedded in HTML). The evolution is templates that read from `02_Work/` directly — the same pattern the Live Research App uses. This means outputs are live views over the Work layer, not static snapshots. Implications: `/ship` evolves from "generate JSON + embed" to "generate view configuration", and outputs stay fresh without regeneration.
+
 Features:
 - **PD-Spec semantic rendering** — marked.js with custom extensions: `[IG-XX]` → blue badge, `[CF-XX]` → red badge, status → colored tags, markdown tables → sortable tables
 - **File navigator** — sidebar listing all `02_Work/*.md` files, one-click switching
