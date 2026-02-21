@@ -75,6 +75,7 @@ Features:
 - **Open questions prominent** — first-class section pulling from CONFLICTS.md (PENDING), evidence gaps, system map open questions
 - **Evidence gaps by severity** — grouped by actionability, not a flat list
 - **Preprocessing metadata** — which sources were normalized, speaker confidence levels
+- **Knowledge Delta view** — after each /analyze cycle, show before/after diff: insights added/promoted/invalidated, conflicts created/resolved, convergence shifts, coverage gaps. Derived from MEMORY.md deltas or a formalized delta block in /analyze output. (Origin: QA v5 session discussion, 2026-02-21)
 - **Consistent design** — reuses `_base.css` design system (Inter font, badges, print-friendly)
 
 **Export button** — `[Export ▾]` dropdown per file: MD→DOCX (pandoc), HTML→PPTX (python-pptx), HTML→PDF (weasyprint/print CSS). Precedent: TIMining deliverables exported Reveal.js presentation to PPTX successfully. Script-based, not LLM-based.
@@ -503,6 +504,124 @@ Or in dashboard JSON:
 - [ ] No change when all sources are primary (clean `18/59` display)
 
 ---
+
+---
+
+### [BL-51] BUG: Pass C Silently Skipped Despite User Approval (BL-50 enforcement gap)
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-01 in `docs/qa/QA_V5_FINDINGS.md`. T64 FAIL, T65 FAIL.
+
+**Problem:** BL-50 added a constraint that Pass C (sentence repair) "CANNOT be done mechanically." The agent ignores this: it builds a single Python regex script for all 3 passes, applies it mechanically, declares "Preprocessing complete," and moves on. Pass C markers (`[incomplete]`, `[crosstalk]`, `[unintelligible]`) are never generated. The constraint text is not strong enough to override the agent's tendency to batch all preprocessing into one mechanical step.
+
+**Root cause:** The BL-50 constraint is an inline paragraph within Pass C description. The agent reads it as a guideline, not a hard stop. Also, "Python regex/re module" is mechanically equivalent to sed/awk but not explicitly listed as prohibited.
+
+**Fix:** Restructure Phase 1.5 to make Pass C a separate, unmissable step:
+
+1. **Rename current Phase 1.5 steps** to clearly separate mechanical (A+B) from semantic (C):
+   - Phase 1.5a: Mechanical preprocessing (Pass A speaker labels + Pass B phonetic corrections) — sed, awk, regex, Python regex all allowed
+   - Phase 1.5b: Semantic preprocessing (Pass C sentence repair) — **requires LLM analysis pass**
+2. **Add explicit gate** between 1.5a and 1.5b: "After writing the mechanically-corrected file, READ IT BACK and apply Pass C as a separate LLM reasoning step. Do NOT bundle with the mechanical script."
+3. **Add 'Python regex/re module' to the prohibited tools list** for Pass C
+4. **Add verification step:** "Confirm at least one `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker exists in the normalized file, OR log 'Pass C: no repairs needed — transcript is clean'"
+
+**Acceptance criteria:**
+- [ ] Phase 1.5 has two distinct sub-steps (mechanical + semantic) with a gate between them
+- [ ] Pass C produces markers or explicit "no repairs needed" log
+- [ ] Python regex listed as prohibited for Pass C alongside sed/awk/regex
+- [ ] Pass C only runs when user approved full preprocessing (not "Solo phonetics")
+
+---
+
+### [BL-52] BUG: Normalization Does Not Break Oversized Lines (BL-49 interaction)
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-02 in `docs/qa/QA_V5_FINDINGS.md`. T62 FAIL.
+
+**Problem:** Files flagged as `oversized-lines` in Phase 1 step 5b (>2000 chars/line) remain oversized after Phase 1.5 normalization. The preprocessing script applies phonetic corrections in-place without reformatting line structure. Workshop transcript: 16→16 lines. Touchpoint: 14→14 lines. Phase 2 must still use byte-range reads even for preprocessed files.
+
+**Root cause:** No line-breaking logic exists in the preprocessing pipeline. The Python script does `re.sub()` on existing content without splitting lines.
+
+**Fix:** Add mandatory line-breaking pass to Phase 1.5 for files with `oversized-lines` flag:
+
+1. After all applicable passes (A, B, and optionally C), if the file has `oversized-lines` flag:
+   - Break lines at sentence boundaries (`. `, `? `, `! ` followed by uppercase or newline)
+   - Target: no line longer than 1500 chars
+   - This is a mechanical operation (regex is fine)
+2. After line-breaking, clear the `oversized-lines` flag
+3. Verify: `wc -L` on normalized file < 2000
+
+**Acceptance criteria:**
+- [ ] Normalized files from oversized sources have proper line breaks
+- [ ] `oversized-lines` flag cleared after normalization
+- [ ] Phase 2 uses standard Read tool for normalized files (no byte-range fallback)
+- [ ] Line-breaking does not corrupt content (no mid-word breaks)
+
+---
+
+### [BL-53] BUG: No Batch-Boundary Checkpoint Updates in /extract Phase 2 (BL-45 gap)
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-03 in `docs/qa/QA_V5_FINDINGS.md`. T68 FAIL.
+
+**Problem:** BL-45 spec says "After writing batch to EXTRACTIONS.md + SOURCE_MAP.md, ALSO update SESSION_CHECKPOINT." During QA v5, 43 files were processed in 5 batches with 0 checkpoint updates between batches. The cost gate checkpoint (Phase 1) was the only one written. Two context compactions during Phase 2 relied on the Phase 1 checkpoint, which was sufficient but lacked batch progress.
+
+**Root cause:** The batch-boundary checkpoint instruction is embedded in the existing "Write checkpoint after batch" step. The agent interprets "checkpoint after batch" as writing EXTRACTIONS.md + SOURCE_MAP.md only — SESSION_CHECKPOINT is mentioned but not prominent enough.
+
+**Fix:** Make the SESSION_CHECKPOINT update a numbered, separate step in the batch loop:
+
+1. Current: single step "Write checkpoint after batch" that covers EXTRACTIONS + SOURCE_MAP + SESSION_CHECKPOINT
+2. Proposed: split into two explicit steps:
+   - Step N: "Write batch results to EXTRACTIONS.md + SOURCE_MAP.md"
+   - Step N+1: "**IMMEDIATELY** write SESSION_CHECKPOINT.md with: Phase 2 — batch {N}/{total}, files processed so far, files remaining, claims count, resume instruction: 'Continue from file {next_file}'"
+
+**Severity note:** Low priority because the Phase 1 cost gate checkpoint proved sufficient for recovery (5/5 compactions recovered). Batch-boundary checkpoints would reduce re-work on recovery but are not critical for correctness.
+
+**Acceptance criteria:**
+- [ ] SESSION_CHECKPOINT.md updated after each batch write in Phase 2
+- [ ] Checkpoint contains batch number, files processed, files remaining, resume instruction
+- [ ] Phase 2 batch-boundary checkpoint is a separate numbered step in the skill
+
+---
+
+### [BL-54] Formalized QA Pipeline — Separation of Execution and Evaluation
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v5 (2026-02-21). Evidence: OBS-05 in `docs/qa/QA_V5_FINDINGS.md`. QA v2-v4 had the same agent execute skills and write findings (grading its own test). QA v5 improved with dual-terminal observation but the process is manual.
+
+**Problem:** QA objectivity depends on separating the executing agent from the evaluating agent. Currently: (1) no automated log capture, (2) observer copies output manually, (3) no structured protocol for what to capture.
+
+**Proposed 6-step pipeline:**
+
+| Step | Who | What | Artifact |
+|---|---|---|---|
+| 1. PLAN | Developer on main | Write test matrix | `docs/qa/QA_V{N}_PLAN.md` |
+| 2. SETUP | Developer | Merge main → QA worktree | Engine files updated |
+| 3. EXECUTE | Agent in QA terminal | Run skills (unaware it's being tested) | Skill outputs in 02_Work/ |
+| 4. OBSERVE | Observer agent or script | Capture output, logs, checkpoints, file diffs | Raw evidence |
+| 5. EVALUATE | Observer on main | Compare evidence against test matrix | Test results |
+| 6. DOCUMENT | Observer on main | Write findings | `docs/qa/QA_V{N}_FINDINGS.md` |
+
+**Key constraint:** The executing agent (step 3) MUST NOT write findings. Separation of execution and evaluation is the core principle.
+
+**Step 4 automation candidates:**
+- `git diff` before/after skill execution (captures all file changes)
+- SESSION_CHECKPOINT.md snapshots (structured state at each phase)
+- MEMORY.md entries (skill execution log)
+- Transcript log capture (Claude Code `.jsonl` files — already exist but large)
+
+**Acceptance criteria:**
+- [ ] `docs/qa/README.md` updated with 6-step pipeline
+- [ ] PLAN template includes: version, scope, setup commands, test matrix, success criteria, execution order
+- [ ] FINDINGS template includes: pre-test state, results by phase, observations, bugs, summary with pass/fail counts
+- [ ] Step 4 has at minimum a `git diff` capture instruction (no custom tooling required)
+
+**User story:**
+> As a PD-Spec developer, QA findings are objective because the agent being tested never writes its own evaluation, and evidence is captured systematically rather than manually.
 
 ---
 
