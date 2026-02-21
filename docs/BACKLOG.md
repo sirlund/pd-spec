@@ -233,9 +233,18 @@ PD-Spec (internal)                         Client-facing (external)
 
 **Collaborative round-trip:** Agent pushes content via MCP → stakeholder edits in their native tool → agent reads changes via MCP → detects delta → updates JSON → all views regenerate. No file exports, no format conversion, no round-trip friction. Works with any MCP-enabled platform.
 
-**Self-contained HTML** remains a delivery channel for offline use, email sharing, or contexts without platform accounts. Already proven with Reveal.js presentations and Template+JSON outputs.
+**Delivery model — two paths, not one intermediary:**
 
-**Supersedes local file export** (pptxgenjs, python-pptx, Playwright) as the primary delivery path. Phase 1 local export button remains useful as fallback for offline or quick sharing.
+```
+Work layer (MD)
+  ├── → Live App (HTML, for the researcher — local viewer)
+  ├── → MCP → Google/Notion/etc (direct, for the client — primary delivery)
+  └── → Self-contained HTML (fallback — "no MCP yet, here's a file")
+```
+
+HTML is NOT the intermediary format. Markdown is truth, MCP publishes directly to the client's platform. HTML is the pragmatic fallback for when MCP isn't configured yet or the recipient needs a quick file to open locally. For rich presentations (Reveal.js with transitions), HTML remains the best format.
+
+This means standard deliverables (PRD, report, personas) go markdown → MCP → target. No HTML generation step in the primary path. `/ship` evolves from "generate HTML" to "publish to configured target" (MCP if available, HTML if not).
 
 **User stories:**
 
