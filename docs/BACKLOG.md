@@ -43,6 +43,21 @@ Single entry point: `npm install && npm start`. Node is already present on any m
 
 **Design principle — Content-First:** HTML outputs should consume markdown as primary source rather than embedding all content. Current architecture is Template+JSON (JSON block embedded in HTML). The evolution is templates that read from `02_Work/` directly — the same pattern the Live Research App uses. This means outputs are live views over the Work layer, not static snapshots. Implications: `/ship` evolves from "generate JSON + embed" to "generate view configuration", and outputs stay fresh without regeneration.
 
+**Architectural decision — Hybrid Work Layer (MD + JSON):** Structured, queryable data lives as JSON. Narrative, exploratory content stays as markdown. The researcher never reads structured files raw — interaction is always through the chat (Claude Code) or the Live Research App. JSON in the Work layer feeds the app and MCP delivery directly, no transformation step needed.
+
+| File | Format | Reason |
+|---|---|---|
+| INSIGHTS_GRAPH | **JSON** | Queryable, filtrable, sortable. Feeds app + MCP. |
+| CONFLICTS | **JSON** | Queryable, status tracking. Feeds app + MCP. |
+| SYSTEM_MAP | **JSON** | Structured decisions + refs. Feeds app + MCP. |
+| SOURCE_MAP | **JSON** | Lookup table (hash, status, timestamp). Already mechanical. |
+| EXTRACTIONS | **MD** | Raw claims, quotes, narrative. Agent writes free-form. |
+| RESEARCH_BRIEF | **MD** | Prose summary for stakeholders. |
+| MEMORY | **MD** | Sequential log. Human-auditable. |
+| IDEAS | **MD** | Informal notes. |
+
+This simplifies `/ship`: structured data is already JSON in Work layer → map directly to MCP target or template. No MD→JSON transformation at ship time. Existing `03_Outputs/_schemas/` remain as validation contracts for the JSON files.
+
 Features:
 - **PD-Spec semantic rendering** — marked.js with custom extensions: `[IG-XX]` → blue badge, `[CF-XX]` → red badge, status → colored tags, markdown tables → sortable tables
 - **File navigator** — sidebar listing all `02_Work/*.md` files, one-click switching
