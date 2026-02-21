@@ -401,6 +401,34 @@ When a bug is discovered during formal QA:
 - **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
 - **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
 
+## Engine Development Anti-Patterns
+
+Things that have caused real bugs. Do NOT:
+
+| Rule | Why | Evidence |
+|---|---|---|
+| **Never edit engine files in project branches** | Causes merge conflicts, breaks all worktrees | Pre-v4.2 incidents |
+| **Never `git add .` or `git add -A` on main** | Main must never contain 01_Sources/, 02_Work/, or generated outputs | Architecture rule |
+| **Never edit files without explicit user request** | Especially during QA — observe, don't fix | User preference, QA v5 |
+| **Never push ideas to BACKLOG without consolidation** | Keep a session list, validate with Homer's Car gate first | User preference |
+| **Never build large JSON in-context** | >10KB JSON causes compaction loops. Use external Python/Bash scripts | QA v5 OBS-07: dashboard 31KB JSON |
+| **Never let the executing agent write QA findings** | Grading own test = objectivity gap. Observer writes findings | QA v5 OBS-05 |
+| **Never treat all preprocessing as one mechanical step** | Pass C (sentence repair) requires LLM reasoning, not regex | QA v5 BUG-01 |
+| **Never amend after pre-commit hook failure** | The commit didn't happen — amend modifies the PREVIOUS commit | Git safety |
+| **Never implement a BL without evidenced problem** | Homer's Car: if no `[IG-XX]` or QA finding justifies it, challenge it | BL-22 RAG (still unjustified) |
+
+## Pre-Commit Verification
+
+Before committing engine changes, verify:
+
+1. **Version consistency** — `engine_version` in PROJECT.md template matches latest CHANGELOG.md header
+2. **BACKLOG consistency** — BL items referenced in commit message exist in BACKLOG.md. Implemented items have version and date.
+3. **Skill integrity** — Changed skill files have valid YAML frontmatter (`name`, `description`, `user-invocable`, `allowed-tools`)
+4. **No generated content on main** — `git status` shows no files in 01_Sources/, 02_Work/, or 03_Outputs/*.html
+5. **CHANGELOG format** — New entries use highlights-first format with `<details>` for technical notes. Framed for PD-Spec consumers, not developers.
+
+Use `/verify` to automate these checks.
+
 ## Current State → PROJECT.md
 
 Project-specific state (maturity, insights count, conflicts count) lives in `PROJECT.md` under "Current State". This keeps CLAUDE.md as pure engine config — no merge conflicts when updating project branches from main.

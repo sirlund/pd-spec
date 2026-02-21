@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git push origin:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(git mv:*)",
+      "Bash(git config:*)",
+      "Bash(git worktree:*)",
+      "Bash(git remote:*)",
+      "Bash(python3:*)",
+      "Bash(md5:*)",
+      "Bash(textutil:*)",
+      "Bash(pandoc:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(open:*)",
+      "Bash(test:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(gh api:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh repo:*)",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -f:*)"
+    ]
+  }
+}
