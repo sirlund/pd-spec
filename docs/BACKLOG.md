@@ -509,28 +509,11 @@ Or in dashboard JSON:
 
 ### [BL-51] BUG: Pass C Silently Skipped Despite User Approval (BL-50 enforcement gap)
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
 **Priority:** P1
 **Origin:** QA v5 (2026-02-21). Evidence: BUG-01 in `docs/qa/QA_V5_FINDINGS.md`. T64 FAIL, T65 FAIL.
 
-**Problem:** BL-50 added a constraint that Pass C (sentence repair) "CANNOT be done mechanically." The agent ignores this: it builds a single Python regex script for all 3 passes, applies it mechanically, declares "Preprocessing complete," and moves on. Pass C markers (`[incomplete]`, `[crosstalk]`, `[unintelligible]`) are never generated. The constraint text is not strong enough to override the agent's tendency to batch all preprocessing into one mechanical step.
-
-**Root cause:** The BL-50 constraint is an inline paragraph within Pass C description. The agent reads it as a guideline, not a hard stop. Also, "Python regex/re module" is mechanically equivalent to sed/awk but not explicitly listed as prohibited.
-
-**Fix:** Restructure Phase 1.5 to make Pass C a separate, unmissable step:
-
-1. **Rename current Phase 1.5 steps** to clearly separate mechanical (A+B) from semantic (C):
-   - Phase 1.5a: Mechanical preprocessing (Pass A speaker labels + Pass B phonetic corrections) — sed, awk, regex, Python regex all allowed
-   - Phase 1.5b: Semantic preprocessing (Pass C sentence repair) — **requires LLM analysis pass**
-2. **Add explicit gate** between 1.5a and 1.5b: "After writing the mechanically-corrected file, READ IT BACK and apply Pass C as a separate LLM reasoning step. Do NOT bundle with the mechanical script."
-3. **Add 'Python regex/re module' to the prohibited tools list** for Pass C
-4. **Add verification step:** "Confirm at least one `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker exists in the normalized file, OR log 'Pass C: no repairs needed — transcript is clean'"
-
-**Acceptance criteria:**
-- [ ] Phase 1.5 has two distinct sub-steps (mechanical + semantic) with a gate between them
-- [ ] Pass C produces markers or explicit "no repairs needed" log
-- [ ] Python regex listed as prohibited for Pass C alongside sed/awk/regex
-- [ ] Pass C only runs when user approved full preprocessing (not "Solo phonetics")
+**Summary:** Restructured Phase 1.5 into two sub-phases: Phase 1.5a (mechanical Passes A+B, scripting allowed) and Phase 1.5b (semantic Pass C, LLM-only). Hard gate between them forces the agent to write `_mechanical.md`, stop, read it back, and apply Pass C as a separate LLM reasoning step. Python regex/re module explicitly added to prohibited tools for Pass C. Mandatory verification: output must contain at least one `[incomplete]`/`[crosstalk]`/`[unintelligible]` marker or an explicit "no repairs needed" log.
 
 ---
 

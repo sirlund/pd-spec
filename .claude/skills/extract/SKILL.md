@@ -209,9 +209,10 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
    This combined context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
 
-15. **Normalize — Transcript Preprocessing (v1):**
+15. **Phase 1.5a — Mechanical Preprocessing (Passes A + B):**
 
-   For each transcript candidate, apply three normalization passes:
+   For each transcript candidate, apply two mechanical normalization passes.
+   These passes CAN use sed, awk, regex, Python regex/re module, or any scripting approach.
 
    **Pass A — Speaker Detection (3-step):**
    1. **Segment:** Identify speaker turn boundaries using timestamps, indentation, labels, or dialogue patterns.
@@ -224,6 +225,21 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
    - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
 
+   After Passes A+B, write the mechanically-corrected file to `02_Work/_temp/{filename}_mechanical.md`.
+   Log: `✓ Passes A+B complete: {filename} ({speakers} speakers, {corrections} phonetic corrections)`
+
+15b. **Phase 1.5b — Semantic Preprocessing (Pass C — Sentence Repair):**
+
+   **⛔ STOP.** Do NOT continue from the mechanical script. This is a SEPARATE step.
+   Read the mechanically-corrected file (`02_Work/_temp/{filename}_mechanical.md`) back using the Read tool.
+   Pass C requires LLM reasoning — it CANNOT be bundled with the mechanical Passes A+B.
+
+   **Only runs when:** the user approved full preprocessing (not "Solo phonetics" or similar partial option).
+   If the user chose phonetics-only, skip this step entirely and use the `_mechanical.md` file as the final normalized output.
+
+   **Prohibited tools for Pass C:** sed, awk, grep, regex, Python re module, any mechanical text processing.
+   Pass C MUST be performed as an LLM analysis pass — read the content, reason about semantic boundaries, and write the repaired version.
+
    **Pass C — Sentence Repair:**
    - **Incomplete sentences:** Mark with `[incomplete]` if a thought is clearly cut off mid-sentence.
    - **Crosstalk:** Mark overlapping speech with `[crosstalk]` and attempt to separate speakers.
@@ -231,11 +247,10 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
    - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
 
-   **Implementation constraint for Pass C:** Sentence repair CANNOT be done mechanically (sed, awk, regex).
-   It requires LLM reasoning to detect semantic boundaries, incomplete thoughts, and overlapping speech.
-   After Passes A+B (which CAN use mechanical substitution), process the file content through a dedicated
-   LLM analysis pass for sentence repair. Read the mechanically-corrected content back and apply Pass C
-   markers. This is a separate step, not part of the sed pipeline.
+   **Verification (mandatory):** After applying Pass C, confirm that the output contains at least one
+   `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker. If the transcript is genuinely clean
+   and no repairs are needed, log: `Pass C: no repairs needed — transcript is clean` (this is acceptable
+   but must be an explicit decision, not a silent skip).
 
 16. **Quality report & user approval (MANDATORY propose-before-execute):**
 
@@ -274,10 +289,12 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    Wait for user response before proceeding.
 
 17. **Write normalized files** — For each approved file:
-   - Write normalized content to `02_Work/_temp/{filename}_normalized.md`
+   - If Pass C ran: write the sentence-repaired content to `02_Work/_temp/{filename}_normalized.md`
+   - If phonetics-only: rename/copy `_mechanical.md` to `02_Work/_temp/{filename}_normalized.md`
+   - Clean up intermediate `_mechanical.md` file (delete after `_normalized.md` is written)
    - Build redirect map in working memory: `{original_path → normalized_path}`
    - The original file in `01_Sources/` is NEVER modified (read-only layer)
-   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections)`
+   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections, Pass C: {yes/skipped})`
 
 ### Phase 2: Read & Extract
 
