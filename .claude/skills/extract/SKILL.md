@@ -59,7 +59,9 @@ EVERY file discovered in Phase 1 MUST be:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
-   - **AI-generated detection** — Check `_CONTEXT.md` for `Source Type: ai-generated`. If found, mark the entire folder as AI-generated. All files in this folder will be tagged during extraction (see Phase 2 AI tagging rule).
+   - **Authority detection** — Check `_CONTEXT.md` for `Authority:` field. Valid values: `primary` (default), `internal`, `ai-generated`. This sets the folder-level authority. Individual files can override via frontmatter `Authority:` field.
+   - **Backwards compatibility:** If `_CONTEXT.md` has `Source Type: ai-generated` (old format), map to `Authority: ai-generated` and treat Source Type as the actual format. Log: `⚠️ Migrated 'Source Type: ai-generated' → 'Authority: ai-generated' for {folder}`
+   - Files without an Authority field (in frontmatter or folder _CONTEXT.md) default to `primary`.
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -325,13 +327,37 @@ When processing a document, apply these criteria for claim extraction:
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
 
-**AI-Generated Source Tagging:**
+**Authority-Based Claim Tagging:**
 
-When processing a file from a folder marked as `ai-generated` (detected in Phase 1, step 2):
-- **Section header:** Add warning tag: `## [folder/file.md] ⚠️ AI-GENERATED`
-- **Each claim:** Append `[AI-SOURCE]` suffix to the claim text
-- **Log:** `⚠️ AI-generated source — claims tagged for verification`
-- Also check individual markdown files for `source_type: ai-generated` in their frontmatter metadata. Apply the same tagging if found, even if the folder's `_CONTEXT.md` doesn't flag it.
+Determine each file's authority level (from file frontmatter > folder `_CONTEXT.md` > default `primary`). Tag claims based on authority:
+
+**`primary` (default):** No tag. Standard extraction.
+- Section header: `## [folder/file.md]`
+
+**`internal`:** Tag all claims `[INTERNAL]`.
+- Section header: `## [folder/file.md] 🏢 INTERNAL`
+- Each claim: append `[INTERNAL]` suffix
+- **Action items separation:** Internal sources often contain operational content (action items, agreements, delivery decisions). Separate these from product observations:
+  ```
+  ### Raw Claims
+  1. "El UX de Figma es superior para este caso" [INTERNAL]
+  2. "Operadores necesitan responsivo en tablets de campo" [INTERNAL]
+
+  ### Action Items (reference only — not forwarded to /analyze)
+  - Nicolas traspasa mockups a presentación principal
+  - Workshop jueves 10-12 presencial
+  ```
+  Action Items stay in EXTRACTIONS.md as context but are NOT processed by /analyze.
+- Log: `🏢 Internal source — claims tagged [INTERNAL], action items separated`
+
+**`ai-generated`:** Tag all claims `[AI-SOURCE]`.
+- Section header: `## [folder/file.md] ⚠️ AI-GENERATED`
+- Each claim: append `[AI-SOURCE]` suffix
+- Log: `⚠️ AI-generated source — claims tagged [AI-SOURCE]`
+
+**Combined authority:** A file can carry both tags (e.g., AI summary of internal session → `Authority: ai-generated` with `[INTERNAL]` context from folder). In this case, apply both: `[INTERNAL][AI-SOURCE]`. Lowest authority wins during /analyze.
+
+**Backwards compatibility:** Check individual markdown files for `source_type: ai-generated` in frontmatter (old format). Map to `Authority: ai-generated` and apply AI-SOURCE tagging.
 
 **Batch Processing Logic (MANDATORY for >40 files):**
 

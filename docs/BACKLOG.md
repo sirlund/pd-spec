@@ -288,16 +288,13 @@ This means standard deliverables (PRD, report, personas) go markdown → MCP →
 
 ### [BL-44] Source Authority Layer — Unified Weight System for Non-Primary Sources
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
 **Priority:** P1
 **Origin:** QA v4 session (2026-02-20). Evidence: IDEMAX internal sessions contain valuable product observations and ideas but shouldn't have equal weight to stakeholder research. Same need exists for AI-generated artifacts. Currently BL-37 handles `ai-generated` as a special Source Type — this refactors it into a proper authority axis.
 
-**Problem:** PD-Spec treats sources as either "primary" (full authority) or "ai-generated" (reduced). Real projects have a third tier: internal team sessions (consultant ideation, alignment meetings, delivery planning). These contain:
-- Product observations and ideas (valuable, but shouldn't override stakeholder voice)
-- Action items and agreements (operational, not insight material)
-- Deliverable decisions (context, not evidence)
+**Summary:** Separated format (Source Type) from weight (Authority) as orthogonal metadata axes. Three authority tiers: `primary` (default, full weight), `internal` (consultant/team, reduced weight, `[INTERNAL]` tag), `ai-generated` (AI tools, lowest weight, `[AI-SOURCE]` tag). Verification gate: internal/ai insights cannot reach VERIFIED without primary corroboration. Internal sources get action items separated from raw claims. Backwards compatible: `Source Type: ai-generated` (old) maps to `Authority: ai-generated`. Per-file authority via frontmatter overrides folder default.
 
-Currently `ai-generated` is overloaded as a Source Type value, but it's really an authority level — orthogonal to format. A Granola transcript of an IDEMAX session is `Source Type: transcript` (format) + `Authority: internal` (weight). A Gemini summary of that session is `Authority: ai-generated`. Both can coexist in the same folder.
+**Problem:** PD-Spec treats sources as either "primary" (full authority) or "ai-generated" (reduced). Real projects have a third tier: internal team sessions (consultant ideation, alignment meetings, delivery planning).
 
 **Solution: Separate format from authority**
 

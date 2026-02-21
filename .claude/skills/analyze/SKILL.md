@@ -117,7 +117,17 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - `hypothesis` — someone proposes something unvalidated ("we think X", "users probably Y")
      - `vision` — aspirational statement about the future ("in 2040 we will...", "the goal is...")
      - `fact` — verifiable data point (metric, date, technical spec, contractual term)
-   - **AI-source rule:** Claims tagged `[AI-SOURCE]` in EXTRACTIONS.md MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one non-AI source (`user`, `stakeholder`, `document`, or `researcher`).
+   - **Authority-based rules (verification gates):**
+
+     **`[AI-SOURCE]` claims:** MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one primary source (`user`, `stakeholder`, `document`, or `researcher`).
+
+     **`[INTERNAL]` claims:** Use the actual voice of the speaker (e.g., `researcher`, `stakeholder`) but the insight carries reduced weight. An insight supported ONLY by `[INTERNAL]` sources cannot reach `VERIFIED` status; it requires corroboration from at least one `primary` authority source. Internal observations inform the analysis but don't constitute independent evidence.
+
+     **`[INTERNAL][AI-SOURCE]` claims (combined):** Lowest authority wins — treat as `[AI-SOURCE]` rules (voice: ai, authority: hypothesis). Both corroboration requirements apply.
+
+     **Action Items from internal sources** (marked `### Action Items` in EXTRACTIONS.md): Skip entirely during /analyze. These are operational references, not product claims.
+
+     **Conflict handling:** When an internal/ai claim contradicts a primary claim, log the conflict but note the authority imbalance in the conflict description: `Note: [INTERNAL] vs primary source — primary takes precedence unless internal evidence is compelling.`
    - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
    - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
      - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
