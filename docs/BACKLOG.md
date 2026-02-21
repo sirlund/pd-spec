@@ -587,58 +587,9 @@ Or in dashboard JSON:
 
 ---
 
-### [BL-54] Formalized QA Pipeline — Separation of Execution and Evaluation
+### ~~[BL-54] Formalized QA Pipeline~~ — Implemented v4.13.0
 
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v5 (2026-02-21). Evidence: OBS-05 in `docs/qa/QA_V5_FINDINGS.md`. QA v2-v4 had the same agent execute skills and write findings (grading its own test). QA v5 improved with dual-terminal observation but the process is manual.
-
-**Problem:** QA objectivity depends on separating the executing agent from the evaluating agent. Currently: (1) no automated log capture, (2) observer copies output manually, (3) no structured protocol for what to capture.
-
-**Proposed 6-step pipeline:**
-
-| Step | Who | What | Artifact |
-|---|---|---|---|
-| 1. PLAN | Developer on main | Write test matrix | `docs/qa/QA_V{N}_PLAN.md` |
-| 2. SETUP | Developer | Merge main → QA worktree | Engine files updated |
-| 3. EXECUTE | Agent in QA terminal | Run skills (unaware it's being tested) | Skill outputs in 02_Work/ |
-| 4. OBSERVE | Observer agent or script | Capture output, logs, checkpoints, file diffs | Raw evidence |
-| 5. EVALUATE | Observer on main | Compare evidence against test matrix | Test results |
-| 6. DOCUMENT | Observer on main | Write findings | `docs/qa/QA_V{N}_FINDINGS.md` |
-
-**Key constraint:** The executing agent (step 3) MUST NOT write findings. Separation of execution and evaluation is the core principle.
-
-**Step 4 — Auto-observation mode:**
-
-The observer agent reads the executing agent's terminal output in real-time via `script`:
-
-```bash
-# QA terminal — before opening Claude Code:
-script /tmp/qa-session.txt
-claude
-
-# Observer terminal — reads output live:
-# tail -100 /tmp/qa-session.txt
-# Or: Read /tmp/qa-session.txt with offset for latest output
-```
-
-The observer also polls structured state:
-- `SESSION_CHECKPOINT.md` — phase transitions, checkpoint content
-- `git diff` in QA worktree — file changes after each skill
-- `MEMORY.md` — skill execution log entries
-
-**Decision points remain manual:** The user still responds to the executing agent's AskUserQuestion prompts (preprocessing options, insight approval, etc.). The test plan specifies which option to choose for each anticipated question. The observer captures the choice and its effect.
-
-**Acceptance criteria:**
-- [ ] `docs/qa/README.md` updated with 6-step pipeline
-- [ ] PLAN template includes: version, scope, setup commands, test matrix, success criteria, execution order
-- [ ] PLAN template includes: anticipated decision points with prescribed answers
-- [ ] FINDINGS template includes: pre-test state, results by phase, observations, bugs, summary with pass/fail counts
-- [ ] Step 4 uses `script` for terminal capture + checkpoint polling for state tracking
-- [ ] QA worktree has permissive `settings.json` to minimize permission prompts
-
-**User story:**
-> As a PD-Spec developer, I run QA by opening two terminals: one executes skills (with `script` capturing output), the other observes automatically. I only intervene to answer the executing agent's questions — the observer handles evidence capture and findings.
+**Implemented:** 2026-02-21. `docs/qa/README.md` rewritten with 6-step pipeline (PLAN → SETUP → EXECUTE → OBSERVE → EVALUATE → DOCUMENT). Key principle: executing agent never writes findings. Auto-observation via `script` terminal capture + SESSION_CHECKPOINT polling. PLAN template includes anticipated decision points with prescribed answers. FINDINGS template includes score tables, verdict by BL, and recommendations. QA worktree setup checklist with permissive settings.json.
 
 ---
 
