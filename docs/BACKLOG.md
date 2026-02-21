@@ -608,20 +608,37 @@ Or in dashboard JSON:
 
 **Key constraint:** The executing agent (step 3) MUST NOT write findings. Separation of execution and evaluation is the core principle.
 
-**Step 4 automation candidates:**
-- `git diff` before/after skill execution (captures all file changes)
-- SESSION_CHECKPOINT.md snapshots (structured state at each phase)
-- MEMORY.md entries (skill execution log)
-- Transcript log capture (Claude Code `.jsonl` files — already exist but large)
+**Step 4 — Auto-observation mode:**
+
+The observer agent reads the executing agent's terminal output in real-time via `script`:
+
+```bash
+# QA terminal — before opening Claude Code:
+script /tmp/qa-session.txt
+claude
+
+# Observer terminal — reads output live:
+# tail -100 /tmp/qa-session.txt
+# Or: Read /tmp/qa-session.txt with offset for latest output
+```
+
+The observer also polls structured state:
+- `SESSION_CHECKPOINT.md` — phase transitions, checkpoint content
+- `git diff` in QA worktree — file changes after each skill
+- `MEMORY.md` — skill execution log entries
+
+**Decision points remain manual:** The user still responds to the executing agent's AskUserQuestion prompts (preprocessing options, insight approval, etc.). The test plan specifies which option to choose for each anticipated question. The observer captures the choice and its effect.
 
 **Acceptance criteria:**
 - [ ] `docs/qa/README.md` updated with 6-step pipeline
 - [ ] PLAN template includes: version, scope, setup commands, test matrix, success criteria, execution order
+- [ ] PLAN template includes: anticipated decision points with prescribed answers
 - [ ] FINDINGS template includes: pre-test state, results by phase, observations, bugs, summary with pass/fail counts
-- [ ] Step 4 has at minimum a `git diff` capture instruction (no custom tooling required)
+- [ ] Step 4 uses `script` for terminal capture + checkpoint polling for state tracking
+- [ ] QA worktree has permissive `settings.json` to minimize permission prompts
 
 **User story:**
-> As a PD-Spec developer, QA findings are objective because the agent being tested never writes its own evaluation, and evidence is captured systematically rather than manually.
+> As a PD-Spec developer, I run QA by opening two terminals: one executes skills (with `script` capturing output), the other observes automatically. I only intervene to answer the executing agent's questions — the observer handles evidence capture and findings.
 
 ---
 
