@@ -53,6 +53,18 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 7. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
 
+7b. **Cost gate — preventive checkpoint:**
+   IF section_count > 15 OR total_claims > 300:
+     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
+     - Phase completed: Phase 1 (load extractions)
+     - Mode: [incremental/full]
+     - Sections to process: count + list
+     - Total claims: count
+     - Resume instruction: "If recovering, skip Phase 1, load checkpoint, continue from Phase 2"
+   ELSE:
+     Skip mid-skill checkpoints
+   Log: `💾 Preventive checkpoint written (${section_count} sections, ${claim_count} claims)`
+
 ### Phase 1b: Express Mode Detection
 
 8. **Detect project size** — Count total source files (from EXTRACTIONS.md section headers) and total claims (from raw claim lines):
@@ -172,6 +184,14 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    Calculate a **diversity score**: number of source types present out of 6 (e.g., `3/6`). This is a simple health indicator, not a quality judgment — a 6/6 project with shallow sources is worse than a 3/6 project with deep ones.
 
    **e. Single-source fragility flags** — After insights are prepared (step 10), review them for source diversity at the insight level. Flag any insight whose supporting evidence comes from only one source type. These insights are more fragile — they lack cross-type corroboration. In the report (Phase 5), list fragile insights with a note like: `[IG-05] supported only by user research — would benefit from technical or business corroboration`.
+
+**Write analysis checkpoint** — Before proceeding to Phase 3/4:
+   Update `02_Work/_temp/SESSION_CHECKPOINT.md` (if mid-skill checkpoints are active) with:
+   - Phase: "Phase 2 complete — analysis draft ready"
+   - New insights drafted: count + IDs
+   - New conflicts found: count + IDs
+   - Ambiguities: count
+   - Resume instruction: "If recovering, read INSIGHTS_GRAPH.md + CONFLICTS.md for current state, skip to Phase 3/4"
 
 ### 🆕 Phase 3: SYNTHESIS (Observation → Insight Consolidation)
 
@@ -379,7 +399,13 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`.
+
+    **IMPORTANT: Count from files, not from memory.** Before writing the snapshot, verify counts by scanning the actual files:
+    - Insights: count `### [IG-` headers in `INSIGHTS_GRAPH.md` (includes SYNTH, atomic, and all statuses)
+    - Conflicts: count `### [CF-` headers in `CONFLICTS.md`
+    - Do NOT rely on in-memory tallies — they may miss synthesized insights or convergence-created entries.
+
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze [--full]
     - **Request:** /analyze [incremental|full]
@@ -391,8 +417,8 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
       - Convergence updated: M existing insights
       - Ambiguities logged: [AMB-XX] count
       - Conflicts detected: K
-    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED) · C conflicts/ambiguities PENDING
-    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED) · C conflicts PENDING · O outputs
+    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts/ambiguities PENDING
+    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts PENDING · O outputs
     ```
 
 ### Phase 4b: Research Brief

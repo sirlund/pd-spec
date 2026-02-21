@@ -109,6 +109,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
+| `docs/qa/*` | QA plans and findings | Reference only |
 
 ## Folder Structure
 
@@ -170,7 +171,9 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
 │   ├── FRAMEWORK.md           Full methodology documentation
-│   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+│   ├── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+│   └── qa/                    QA plans and findings (formalized process)
+│       └── README.md          QA process, naming conventions, templates
 ├── .gitattributes             Merge strategy (protects project files)
 ├── PROJECT.md                 Project settings + current state
 ├── CLAUDE.md                  This file
@@ -375,7 +378,7 @@ PD-Spec maintains multiple documentation files. Each has a specific purpose and 
 |---|---|---|---|
 | **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
 | **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
-| **QA findings** (`docs/QA_*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
+| **QA findings** (`docs/qa/QA_V*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
 | **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (fallback resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Compacted at 80 lines (historical summary + recent entries). Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
 | **README.md** | Project overview and onboarding. | New users, contributors | What PD-Spec is, how to get started, quick examples, architecture overview. |
 

@@ -1,5 +1,47 @@
 # Changelog
 
+## [4.13.0] — 2026-02-21
+
+### Highlights
+
+**Oversized transcript lines no longer crash extraction.** Granola exports with 10K-character lines (no line breaks within speaker turns) now get detected early and read via byte-range chunking instead of the Read tool. Phase 1.5 preprocessing clears the flag when it normalizes the file — so you only hit the fallback when preprocessing is skipped.
+
+**Pass C (sentence repair) now actually runs.** In v4.12.0, the `sed` pipeline handled speaker detection and phonetic corrections but silently skipped sentence repair. The skill now explicitly requires an LLM pass for Pass C — detecting incomplete sentences, crosstalk, unintelligible passages, and run-on speech that regex can't handle.
+
+**Long operations survive context compaction.** Heavy `/extract` and `/analyze` runs now write preventive checkpoints before starting expensive phases. If the context window compacts mid-skill, the agent reads the checkpoint and resumes from where it left off instead of losing all in-memory state. Small tasks (<10 files) skip checkpoints entirely — zero overhead.
+
+**QA artifacts have a home.** All QA plans and findings now live in `docs/qa/` with formalized naming conventions and templates.
+
+### Changes
+
+- **BL-49 — Oversized line detection.** New step 5b in `/extract` Phase 1: checks file_size/line_count ratio > 2000 chars/line. Flagged files use Bash `head -c` / `tail -c` byte-range reads instead of the Read tool. Phase 2 conditional routes oversized files automatically.
+- **BL-50 — Pass C enforcement.** Explicit implementation constraint in Phase 1.5: sentence repair requires LLM reasoning, not mechanical substitution. Runs as a dedicated pass after sed-based Passes A+B.
+- **BL-45 — Mid-skill preventive checkpoints.** Cost gate after Phase 1 in `/extract` and `/analyze`: writes SESSION_CHECKPOINT with file queue, mode, and resume instructions when task is large. Batch-boundary checkpoints in `/extract` Phase 2 update checkpoint after every 10-file batch. Analysis checkpoint after Phase 2 draft. Small tasks skip entirely.
+- **QA folder structure.** `docs/qa/` with README (process + templates), formalized QA_V4_PLAN, QA_V4_FINDINGS, QA_V5_PLAN.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Step 5b (oversized detection), Phase 2 conditional (byte-range reads), Pass C enforcement instruction, cost gate after Phase 1, batch-boundary checkpoint in Phase 2
+- `.claude/skills/analyze/SKILL.md` — Cost gate after Phase 1 (step 7b), analysis checkpoint before Phase 3
+- `CLAUDE.md` — Sources of Truth table (docs/qa/ entry), Folder Structure (docs/qa/), Documentation Guidelines (QA findings path update)
+- `docs/qa/README.md` — QA process, naming conventions, plan + findings templates
+- `docs/qa/QA_V4_PLAN.md` — Formalized from memory (47 tests + 10 regressions)
+- `docs/qa/QA_V4_FINDINGS.md` — Copied from QA worktree (29 PASS, 3 PARTIAL, 1 FAIL)
+- `docs/qa/QA_V5_PLAN.md` — New plan for v4.13.0 validation (12 tests + 4 regressions)
+- `docs/qa/QA_V2_FINDINGS.md` — Moved from docs/
+- `docs/qa/QA_V3_FINDINGS.md` — Moved from docs/
+
+**BACKLOG impact:**
+- BL-49: IMPLEMENTED
+- BL-50: IMPLEMENTED
+- BL-45: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.12.0] — 2026-02-20
 
 ### Highlights
