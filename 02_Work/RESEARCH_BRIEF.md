@@ -1,6 +1,6 @@
 # Research Brief
-> Auto-generado por /analyze el 2026-02-20 (incremental)
-> Basado en 36 insights de 58 fuentes (1332 claims)
+> Auto-generado por /analyze el 2026-02-21 (express, light files only)
+> Basado en 48 insights de 43 fuentes light (284 claims) + 16 heavy pending
 
 ## Lo que está roto
 

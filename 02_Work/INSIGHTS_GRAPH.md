@@ -812,4 +812,32 @@ Ref: ai-reports/competitive-landscape.md [AI-SOURCE]
 
 ---
 
-<!-- Updated by /analyze (incremental) on 2026-02-20 -->
+## Observaciones Atómicas (light files, 2026-02-21)
+
+### [IG-23] Arquitectura de marca CORE — ¿sub-marca o independiente?
+**Category:** business (aspirational)
+**Voice:** stakeholder (equipo)
+**Authority:** observation
+**Convergence:** 1/43 sources
+Status: PENDING
+
+> "Marca y arquitectura: ¿Core es sub-marca de TIMining o marca independiente? Productos legacy necesitan convergencia visual."
+
+Ref: sesiones-idemax/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+
+---
+
+### [IG-24] "El gemelo que no es gemelo" — Riesgo de percepción de Aware standalone
+**Category:** business (current)
+**Voice:** stakeholder (operaciones)
+**Authority:** fact
+**Convergence:** 1/43 sources
+Status: PENDING
+
+> "Sentinela compró 5 licencias de Orquestra y dejó Aware — llamaban a Aware 'el gemelo que no es gemelo.'" Aware sin Orchestra no se justifica: "si no puedes justificar cómo te ayudó, perdiste."
+
+Ref: entrevistas operaciones/reunion_operaciones (27-01-2026).md
+
+---
+
+<!-- Updated by /analyze (incremental, express) on 2026-02-21 -->
