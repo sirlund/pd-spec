@@ -117,7 +117,17 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - `hypothesis` — someone proposes something unvalidated ("we think X", "users probably Y")
      - `vision` — aspirational statement about the future ("in 2040 we will...", "the goal is...")
      - `fact` — verifiable data point (metric, date, technical spec, contractual term)
-   - **AI-source rule:** Claims tagged `[AI-SOURCE]` in EXTRACTIONS.md MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one non-AI source (`user`, `stakeholder`, `document`, or `researcher`).
+   - **Authority-based rules (verification gates):**
+
+     **`[AI-SOURCE]` claims:** MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one primary source (`user`, `stakeholder`, `document`, or `researcher`).
+
+     **`[INTERNAL]` claims:** Use the actual voice of the speaker (e.g., `researcher`, `stakeholder`) but the insight carries reduced weight. An insight supported ONLY by `[INTERNAL]` sources cannot reach `VERIFIED` status; it requires corroboration from at least one `primary` authority source. Internal observations inform the analysis but don't constitute independent evidence.
+
+     **`[INTERNAL][AI-SOURCE]` claims (combined):** Lowest authority wins — treat as `[AI-SOURCE]` rules (voice: ai, authority: hypothesis). Both corroboration requirements apply.
+
+     **Action Items from internal sources** (marked `### Action Items` in EXTRACTIONS.md): Skip entirely during /analyze. These are operational references, not product claims.
+
+     **Conflict handling:** When an internal/ai claim contradicts a primary claim, log the conflict but note the authority imbalance in the conflict description: `Note: [INTERNAL] vs primary source — primary takes precedence unless internal evidence is compelling.`
    - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
    - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
      - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
@@ -329,6 +339,36 @@ BEFORE writing to files, present synthesis findings:
 ### Research Gaps (N)
 [List from step 18 — missing validations]
 ```
+
+**19a. Speaker clarification loop** (only when uncertain attributions exist):
+
+Scan the proposed insights for uncertain speaker attribution. Sources of uncertainty:
+- Claims from content-based segmentation (Phase 1.5 Pass A, confidence `low/uncertain`)
+- Claims from unsegmented transcripts that skipped preprocessing
+- Claims where the speaker attribution seems inconsistent with the content (e.g., implementation detail attributed to CEO)
+
+**If uncertain attributions found:**
+
+Group them by transcript/source and present targeted correction questions via AskUserQuestion:
+
+```
+Speaker attribution review — {N} insights have uncertain speakers:
+
+From [sesion-gerencia/transcript.md]:
+  IG-03: "yo eliminé la navegación temporal" — attributed to CEO (uncertain)
+    → Sounds like an implementer (CTO?). Who said this?
+  IG-07: "el pricing tiene que ser por usuario" — attributed to CEO (uncertain)
+    → Business decision. Could be CEO or CFO. Who said this?
+```
+
+Options per group:
+- **Correct in batch** — user provides the actual speaker, correction propagates to all insights from the same transcript segment
+- **Accept as-is** — keep current attribution (user confirms it's correct despite low confidence)
+- **Skip** — leave uncertain, mark for later review
+
+**Propagation rule:** When the user corrects a speaker for one segment, apply the same correction to ALL insights extracted from that segment (same speaker, same transcript section).
+
+**If no uncertain attributions:** Skip this step silently.
 
 **19b. Use AskUserQuestion for structured approval** (no free-text prompt):
 

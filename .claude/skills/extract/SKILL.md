@@ -59,7 +59,9 @@ EVERY file discovered in Phase 1 MUST be:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
-   - **AI-generated detection** — Check `_CONTEXT.md` for `Source Type: ai-generated`. If found, mark the entire folder as AI-generated. All files in this folder will be tagged during extraction (see Phase 2 AI tagging rule).
+   - **Authority detection** — Check `_CONTEXT.md` for `Authority:` field. Valid values: `primary` (default), `internal`, `ai-generated`. This sets the folder-level authority. Individual files can override via frontmatter `Authority:` field.
+   - **Backwards compatibility:** If `_CONTEXT.md` has `Source Type: ai-generated` (old format), map to `Authority: ai-generated` and treat Source Type as the actual format. Log: `⚠️ Migrated 'Source Type: ai-generated' → 'Authority: ai-generated' for {folder}`
+   - Files without an Authority field (in frontmatter or folder _CONTEXT.md) default to `primary`.
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -209,20 +211,42 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
    This combined context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
 
-15. **Normalize — Transcript Preprocessing (v1):**
+15. **Phase 1.5a — Mechanical Preprocessing (Passes A + B):**
 
-   For each transcript candidate, apply three normalization passes:
+   For each transcript candidate, apply two mechanical normalization passes.
+   These passes CAN use sed, awk, regex, Python regex/re module, or any scripting approach.
 
    **Pass A — Speaker Detection (3-step):**
    1. **Segment:** Identify speaker turn boundaries using timestamps, indentation, labels, or dialogue patterns.
+      - **Unsegmented multi-speaker detection:** If the participant list (from `_CONTEXT.md` or file metadata) lists >1 participant BUT the transcript has no per-line speaker labels or turn markers (e.g., Granola collapsing all speakers into one `Me:` block):
+        a. Gather **speaker priors** from Work layer: known roles (CEO, CTO, consultant), topics per speaker (from existing insights in `INSIGHTS_GRAPH.md`), vocabulary patterns
+        b. **Content-based segmentation:** Identify speaker changes by topic shifts, role-specific vocabulary ("yo eliminé" = implementer, "pricing model" = business), temporal markers ("cuando Philippe se fue"), self-references to role
+        c. Insert speaker boundaries: `[SPEAKER: Name (confidence)]` at each detected transition
+        d. Log: `🔍 Unsegmented transcript — content-based segmentation applied ({N} speaker changes detected)`
    2. **Identify:** Match speaker segments to known participants (from `_CONTEXT.md`, file metadata, or project context). Use contextual clues: role references ("as CFO I think..."), name mentions ("like Maria said..."), speaking style consistency.
-   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low/uncertain` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+      - For content-based segmentation (step 1 unsegmented path): most attributions will be `medium` or `low/uncertain`. This is expected — the clarification loop in /analyze handles corrections.
 
    **Pass B — Phonetic Correction:**
    - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
    - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
    - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
    - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
+
+   After Passes A+B, write the mechanically-corrected file to `02_Work/_temp/{filename}_mechanical.md`.
+   Log: `✓ Passes A+B complete: {filename} ({speakers} speakers, {corrections} phonetic corrections)`
+
+15b. **Phase 1.5b — Semantic Preprocessing (Pass C — Sentence Repair):**
+
+   **⛔ STOP.** Do NOT continue from the mechanical script. This is a SEPARATE step.
+   Read the mechanically-corrected file (`02_Work/_temp/{filename}_mechanical.md`) back using the Read tool.
+   Pass C requires LLM reasoning — it CANNOT be bundled with the mechanical Passes A+B.
+
+   **Only runs when:** the user approved full preprocessing (not "Solo phonetics" or similar partial option).
+   If the user chose phonetics-only, skip this step entirely and use the `_mechanical.md` file as the final normalized output.
+
+   **Prohibited tools for Pass C:** sed, awk, grep, regex, Python re module, any mechanical text processing.
+   Pass C MUST be performed as an LLM analysis pass — read the content, reason about semantic boundaries, and write the repaired version.
 
    **Pass C — Sentence Repair:**
    - **Incomplete sentences:** Mark with `[incomplete]` if a thought is clearly cut off mid-sentence.
@@ -231,11 +255,10 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
    - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
 
-   **Implementation constraint for Pass C:** Sentence repair CANNOT be done mechanically (sed, awk, regex).
-   It requires LLM reasoning to detect semantic boundaries, incomplete thoughts, and overlapping speech.
-   After Passes A+B (which CAN use mechanical substitution), process the file content through a dedicated
-   LLM analysis pass for sentence repair. Read the mechanically-corrected content back and apply Pass C
-   markers. This is a separate step, not part of the sed pipeline.
+   **Verification (mandatory):** After applying Pass C, confirm that the output contains at least one
+   `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker. If the transcript is genuinely clean
+   and no repairs are needed, log: `Pass C: no repairs needed — transcript is clean` (this is acceptable
+   but must be an explicit decision, not a silent skip).
 
 16. **Quality report & user approval (MANDATORY propose-before-execute):**
 
@@ -245,10 +268,13 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    ## Preprocessing: [folder/filename.ext]
 
    ### Speaker Table
-   | Speaker | Identified As | Confidence | Turns |
-   |---|---|---|---|
-   | Speaker 1 | María López (Project Lead) | high | 23 |
-   | Speaker 2 | [Speaker 2] | low | 8 |
+   | Speaker | Identified As | Confidence | Turns | Method |
+   |---|---|---|---|---|
+   | Speaker 1 | María López (Project Lead) | high | 23 | label |
+   | Speaker 2 | [Speaker 2] | low | 8 | content-based |
+
+   ⚠️ Content-based segmentation applied (no speaker labels in source).
+   Attributions marked "content-based" may need correction in /analyze.
 
    ### Corrections (top 15)
    | Original | Corrected | Context | Confidence |
@@ -274,10 +300,12 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    Wait for user response before proceeding.
 
 17. **Write normalized files** — For each approved file:
-   - Write normalized content to `02_Work/_temp/{filename}_normalized.md`
+   - If Pass C ran: write the sentence-repaired content to `02_Work/_temp/{filename}_normalized.md`
+   - If phonetics-only: rename/copy `_mechanical.md` to `02_Work/_temp/{filename}_normalized.md`
+   - Clean up intermediate `_mechanical.md` file (delete after `_normalized.md` is written)
    - Build redirect map in working memory: `{original_path → normalized_path}`
    - The original file in `01_Sources/` is NEVER modified (read-only layer)
-   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections)`
+   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections, Pass C: {yes/skipped})`
 
 ### Phase 2: Read & Extract
 
@@ -308,13 +336,37 @@ When processing a document, apply these criteria for claim extraction:
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
 
-**AI-Generated Source Tagging:**
+**Authority-Based Claim Tagging:**
 
-When processing a file from a folder marked as `ai-generated` (detected in Phase 1, step 2):
-- **Section header:** Add warning tag: `## [folder/file.md] ⚠️ AI-GENERATED`
-- **Each claim:** Append `[AI-SOURCE]` suffix to the claim text
-- **Log:** `⚠️ AI-generated source — claims tagged for verification`
-- Also check individual markdown files for `source_type: ai-generated` in their frontmatter metadata. Apply the same tagging if found, even if the folder's `_CONTEXT.md` doesn't flag it.
+Determine each file's authority level (from file frontmatter > folder `_CONTEXT.md` > default `primary`). Tag claims based on authority:
+
+**`primary` (default):** No tag. Standard extraction.
+- Section header: `## [folder/file.md]`
+
+**`internal`:** Tag all claims `[INTERNAL]`.
+- Section header: `## [folder/file.md] 🏢 INTERNAL`
+- Each claim: append `[INTERNAL]` suffix
+- **Action items separation:** Internal sources often contain operational content (action items, agreements, delivery decisions). Separate these from product observations:
+  ```
+  ### Raw Claims
+  1. "El UX de Figma es superior para este caso" [INTERNAL]
+  2. "Operadores necesitan responsivo en tablets de campo" [INTERNAL]
+
+  ### Action Items (reference only — not forwarded to /analyze)
+  - Nicolas traspasa mockups a presentación principal
+  - Workshop jueves 10-12 presencial
+  ```
+  Action Items stay in EXTRACTIONS.md as context but are NOT processed by /analyze.
+- Log: `🏢 Internal source — claims tagged [INTERNAL], action items separated`
+
+**`ai-generated`:** Tag all claims `[AI-SOURCE]`.
+- Section header: `## [folder/file.md] ⚠️ AI-GENERATED`
+- Each claim: append `[AI-SOURCE]` suffix
+- Log: `⚠️ AI-generated source — claims tagged [AI-SOURCE]`
+
+**Combined authority:** A file can carry both tags (e.g., AI summary of internal session → `Authority: ai-generated` with `[INTERNAL]` context from folder). In this case, apply both: `[INTERNAL][AI-SOURCE]`. Lowest authority wins during /analyze.
+
+**Backwards compatibility:** Check individual markdown files for `source_type: ai-generated` in frontmatter (old format). Map to `Authority: ai-generated` and apply AI-SOURCE tagging.
 
 **Batch Processing Logic (MANDATORY for >40 files):**
 

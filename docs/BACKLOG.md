@@ -10,9 +10,9 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority: P1 → P2 → P3 → Low.
 
-### [BL-33] Live Research App — From Static Dashboard to Interactive Web App
+### [BL-33] Live Research App — From Static Dashboard to Interactive Web App — v4.15.0
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (Phase 1 MVP)
 **Priority:** P1
 **Origin:** QA v3 (2026-02-16), expanded QA v4 (2026-02-20). Evidence: every pipeline run requires manual `/ship status` to regenerate the dashboard (~5 min + tokens). During stakeholder meetings (e.g., IDEMAX sessions with Camila), showing live research state requires exporting HTML per output — unacceptable for real-time collaboration and impossible for non-technical users.
 **Absorbs:** BL-42 (Work Layer Viewer)
@@ -75,6 +75,7 @@ Features:
 - **Open questions prominent** — first-class section pulling from CONFLICTS.md (PENDING), evidence gaps, system map open questions
 - **Evidence gaps by severity** — grouped by actionability, not a flat list
 - **Preprocessing metadata** — which sources were normalized, speaker confidence levels
+- **Knowledge Delta view** — after each /analyze cycle, show before/after diff: insights added/promoted/invalidated, conflicts created/resolved, convergence shifts, coverage gaps. Derived from MEMORY.md deltas or a formalized delta block in /analyze output. (Origin: QA v5 session discussion, 2026-02-21)
 - **Consistent design** — reuses `_base.css` design system (Inter font, badges, print-friendly)
 
 **Export button** — `[Export ▾]` dropdown per file: MD→DOCX (pandoc), HTML→PPTX (python-pptx), HTML→PDF (weasyprint/print CSS). Precedent: TIMining deliverables exported Reveal.js presentation to PPTX successfully. Script-based, not LLM-based.
@@ -287,16 +288,13 @@ This means standard deliverables (PRD, report, personas) go markdown → MCP →
 
 ### [BL-44] Source Authority Layer — Unified Weight System for Non-Primary Sources
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
 **Priority:** P1
 **Origin:** QA v4 session (2026-02-20). Evidence: IDEMAX internal sessions contain valuable product observations and ideas but shouldn't have equal weight to stakeholder research. Same need exists for AI-generated artifacts. Currently BL-37 handles `ai-generated` as a special Source Type — this refactors it into a proper authority axis.
 
-**Problem:** PD-Spec treats sources as either "primary" (full authority) or "ai-generated" (reduced). Real projects have a third tier: internal team sessions (consultant ideation, alignment meetings, delivery planning). These contain:
-- Product observations and ideas (valuable, but shouldn't override stakeholder voice)
-- Action items and agreements (operational, not insight material)
-- Deliverable decisions (context, not evidence)
+**Summary:** Separated format (Source Type) from weight (Authority) as orthogonal metadata axes. Three authority tiers: `primary` (default, full weight), `internal` (consultant/team, reduced weight, `[INTERNAL]` tag), `ai-generated` (AI tools, lowest weight, `[AI-SOURCE]` tag). Verification gate: internal/ai insights cannot reach VERIFIED without primary corroboration. Internal sources get action items separated from raw claims. Backwards compatible: `Source Type: ai-generated` (old) maps to `Authority: ai-generated`. Per-file authority via frontmatter overrides folder default.
 
-Currently `ai-generated` is overloaded as a Source Type value, but it's really an authority level — orthogonal to format. A Granola transcript of an IDEMAX session is `Source Type: transcript` (format) + `Authority: internal` (weight). A Gemini summary of that session is `Authority: ai-generated`. Both can coexist in the same folder.
+**Problem:** PD-Spec treats sources as either "primary" (full authority) or "ai-generated" (reduced). Real projects have a third tier: internal team sessions (consultant ideation, alignment meetings, delivery planning).
 
 **Solution: Separate format from authority**
 
@@ -360,9 +358,11 @@ Internal sources produce two types of content with different routing:
 
 ### [BL-46] Smart Speaker Attribution — Best-Effort Segmentation + Clarification Loop
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
 **Priority:** P1
 **Origin:** QA v4 (2026-02-20). Evidence: QA4-OBS-07 (9 insights misattributed CTO→CEO from unsegmented transcript), QA4-OBS-08 (collapsed conflict from 2 distinct stakeholder objections), Granola pseudo-speakers test (generic LLM achieved reasonable segmentation without project context).
+
+**Summary:** Two-component solution. (1) Extract Phase 1.5 Pass A: content-based segmentation for unsegmented multi-speaker transcripts — uses Work layer speaker priors (roles, topics, vocabulary patterns) to insert `[SPEAKER: Name (confidence)]` boundaries. Quality report includes Method column (label vs content-based). (2) Analyze step 19a: speaker clarification loop — detects uncertain attributions, groups by transcript segment, presents targeted questions, propagates corrections in batch.
 
 **Problem:** Unsegmented multi-speaker transcripts (e.g., Granola collapsing 6 speakers into one `Me:` block) cause Phase 1.5 to skip normalization, leaving /analyze to guess speakers by frequency. Result: systematic misattribution when the dominant speaker changes mid-meeting.
 
@@ -503,6 +503,75 @@ Or in dashboard JSON:
 - [ ] No change when all sources are primary (clean `18/59` display)
 
 ---
+
+---
+
+### [BL-51] BUG: Pass C Silently Skipped Despite User Approval (BL-50 enforcement gap)
+
+**Status:** IMPLEMENTED (v4.14.0 — 2026-02-21)
+**Priority:** P1
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-01 in `docs/qa/QA_V5_FINDINGS.md`. T64 FAIL, T65 FAIL.
+
+**Summary:** Restructured Phase 1.5 into two sub-phases: Phase 1.5a (mechanical Passes A+B, scripting allowed) and Phase 1.5b (semantic Pass C, LLM-only). Hard gate between them forces the agent to write `_mechanical.md`, stop, read it back, and apply Pass C as a separate LLM reasoning step. Python regex/re module explicitly added to prohibited tools for Pass C. Mandatory verification: output must contain at least one `[incomplete]`/`[crosstalk]`/`[unintelligible]` marker or an explicit "no repairs needed" log.
+
+---
+
+### [BL-52] BUG: Normalization Does Not Break Oversized Lines (BL-49 interaction)
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-02 in `docs/qa/QA_V5_FINDINGS.md`. T62 FAIL.
+
+**Problem:** Files flagged as `oversized-lines` in Phase 1 step 5b (>2000 chars/line) remain oversized after Phase 1.5 normalization. The preprocessing script applies phonetic corrections in-place without reformatting line structure. Workshop transcript: 16→16 lines. Touchpoint: 14→14 lines. Phase 2 must still use byte-range reads even for preprocessed files.
+
+**Root cause:** No line-breaking logic exists in the preprocessing pipeline. The Python script does `re.sub()` on existing content without splitting lines.
+
+**Fix:** Add mandatory line-breaking pass to Phase 1.5 for files with `oversized-lines` flag:
+
+1. After all applicable passes (A, B, and optionally C), if the file has `oversized-lines` flag:
+   - Break lines at sentence boundaries (`. `, `? `, `! ` followed by uppercase or newline)
+   - Target: no line longer than 1500 chars
+   - This is a mechanical operation (regex is fine)
+2. After line-breaking, clear the `oversized-lines` flag
+3. Verify: `wc -L` on normalized file < 2000
+
+**Acceptance criteria:**
+- [ ] Normalized files from oversized sources have proper line breaks
+- [ ] `oversized-lines` flag cleared after normalization
+- [ ] Phase 2 uses standard Read tool for normalized files (no byte-range fallback)
+- [ ] Line-breaking does not corrupt content (no mid-word breaks)
+
+---
+
+### [BL-53] BUG: No Batch-Boundary Checkpoint Updates in /extract Phase 2 (BL-45 gap)
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v5 (2026-02-21). Evidence: BUG-03 in `docs/qa/QA_V5_FINDINGS.md`. T68 FAIL.
+
+**Problem:** BL-45 spec says "After writing batch to EXTRACTIONS.md + SOURCE_MAP.md, ALSO update SESSION_CHECKPOINT." During QA v5, 43 files were processed in 5 batches with 0 checkpoint updates between batches. The cost gate checkpoint (Phase 1) was the only one written. Two context compactions during Phase 2 relied on the Phase 1 checkpoint, which was sufficient but lacked batch progress.
+
+**Root cause:** The batch-boundary checkpoint instruction is embedded in the existing "Write checkpoint after batch" step. The agent interprets "checkpoint after batch" as writing EXTRACTIONS.md + SOURCE_MAP.md only — SESSION_CHECKPOINT is mentioned but not prominent enough.
+
+**Fix:** Make the SESSION_CHECKPOINT update a numbered, separate step in the batch loop:
+
+1. Current: single step "Write checkpoint after batch" that covers EXTRACTIONS + SOURCE_MAP + SESSION_CHECKPOINT
+2. Proposed: split into two explicit steps:
+   - Step N: "Write batch results to EXTRACTIONS.md + SOURCE_MAP.md"
+   - Step N+1: "**IMMEDIATELY** write SESSION_CHECKPOINT.md with: Phase 2 — batch {N}/{total}, files processed so far, files remaining, claims count, resume instruction: 'Continue from file {next_file}'"
+
+**Severity note:** Low priority because the Phase 1 cost gate checkpoint proved sufficient for recovery (5/5 compactions recovered). Batch-boundary checkpoints would reduce re-work on recovery but are not critical for correctness.
+
+**Acceptance criteria:**
+- [ ] SESSION_CHECKPOINT.md updated after each batch write in Phase 2
+- [ ] Checkpoint contains batch number, files processed, files remaining, resume instruction
+- [ ] Phase 2 batch-boundary checkpoint is a separate numbered step in the skill
+
+---
+
+### ~~[BL-54] Formalized QA Pipeline~~ — Implemented v4.13.0
+
+**Implemented:** 2026-02-21. `docs/qa/README.md` rewritten with 6-step pipeline (PLAN → SETUP → EXECUTE → OBSERVE → EVALUATE → DOCUMENT). Key principle: executing agent never writes findings. Auto-observation via `script` terminal capture + SESSION_CHECKPOINT polling. PLAN template includes anticipated decision points with prescribed answers. FINDINGS template includes score tables, verdict by BL, and recommendations. QA worktree setup checklist with permissive settings.json.
 
 ---
 

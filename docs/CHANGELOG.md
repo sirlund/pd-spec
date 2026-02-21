@@ -1,5 +1,77 @@
 # Changelog
 
+## [4.15.0] — 2026-02-21
+
+### Highlights
+
+**Your research is now a live web app.** Run `/view` and PD-Spec opens a local browser application showing your Work layer data — insights, conflicts, sources, extractions — all updating in real time as the agent works. No more regenerating static dashboards or reading raw markdown files.
+
+**Built for stakeholder meetings.** The Live Research App shows pipeline progress, insight cards with status badges and convergence bars, conflict cards with resolution tracking, a source file browser with extraction status, and an output launcher that opens deliverables in new tabs. PD-Spec semantic rendering turns `[IG-XX]` and `[CF-XX]` references into clickable navigation badges.
+
+### Changes
+
+- **BL-33 Phase 1 — Live Research App.** Express server with chokidar file watcher and WebSocket push for live updates. Five markdown parsers (insights, conflicts, source map, system map, extractions). React frontend with Vite: dashboard with pipeline stats, filterable insight/conflict views, source browser, markdown renderer with PD-Spec extensions, output launcher. New `/view` skill starts the server and opens the browser.
+- **BL-42 absorbed** into BL-33 (Work Layer Viewer functionality included in the app).
+
+<details>
+<summary>Technical details</summary>
+
+**New files:**
+- `app/` — Complete Node.js + React application (server, parsers, components, styles)
+- `app/server/parsers/` — INSIGHTS_GRAPH, CONFLICTS, SOURCE_MAP, SYSTEM_MAP, EXTRACTIONS markdown → JSON
+- `app/client/components/` — Dashboard, InsightCard, ConflictCard, MarkdownView, SourceBrowser, OutputLauncher, SearchBar, Sidebar
+- `.claude/skills/view/SKILL.md` — New `/view` skill
+
+**Files changed:**
+- `CLAUDE.md` — Skills table (added /view), folder structure (added app/)
+- `.gitignore` — Added app/node_modules/ and app/dist/
+
+**Architecture:**
+- Backend: Express + chokidar + WebSocket (ws)
+- Frontend: React 19 + Vite 6 + Tailwind CSS 4
+- App reads Work layer files (read-only), never writes
+- Live updates: file watcher → WebSocket push → frontend refetch
+- Outputs opened in new tabs (not embedded) to preserve their self-contained CSS/JS
+
+**BACKLOG impact:**
+- BL-33: Phase 1 IMPLEMENTED (Phase 2 = BL-33a JSON Work layer, future)
+- BL-42: ABSORBED by BL-33
+
+</details>
+
+## [4.14.0] — 2026-02-21
+
+### Highlights
+
+**Sources now carry authority, not just format.** New `Authority` metadata field separates *what a source is* (transcript, document, OCR) from *how much weight it carries* (primary, internal, ai-generated). Consultant brainstorming sessions, internal alignment meetings, and AI summaries now get proper reduced authority without contaminating stakeholder evidence. Action items from internal sources are automatically separated and excluded from analysis.
+
+**Pass C finally works as a separate step.** Phase 1.5 is now two sub-phases: 1.5a (mechanical Passes A+B, scripting allowed) writes an intermediate `_mechanical.md` file, then 1.5b (semantic Pass C) forces the agent to stop, read it back, and apply sentence repair as an LLM reasoning task. Python regex explicitly prohibited for Pass C. Mandatory verification confirms markers exist or logs "no repairs needed."
+
+**Unsegmented transcripts get speaker attribution.** When a multi-speaker transcript has no per-line speaker labels (e.g., Granola collapsing everyone into `Me:`), Phase 1.5 now attempts content-based segmentation using Work layer speaker priors — roles, known topics, vocabulary patterns. After analysis, a clarification loop presents uncertain attributions for quick user correction with batch propagation.
+
+### Changes
+
+- **BL-51 — Pass C enforcement fix.** Restructured Phase 1.5 into Phase 1.5a (mechanical, writes `_mechanical.md`) and Phase 1.5b (semantic, LLM-only). Hard gate between them. Python regex added to prohibited tools list for Pass C. Verification step mandatory.
+- **BL-44 — Source authority layer.** New `Authority` field in `_SOURCE_TEMPLATE.md` and `_CONTEXT_TEMPLATE.md` (primary/internal/ai-generated). Extract tags claims `[INTERNAL]` or `[AI-SOURCE]`. Analyze applies verification gate: non-primary insights can't reach VERIFIED without primary corroboration. Internal sources get action items separated. Backwards compatible with `Source Type: ai-generated`.
+- **BL-46 — Smart speaker attribution.** Extract Phase 1.5 Pass A extended with content-based segmentation for unsegmented multi-speaker transcripts. Analyze step 19a adds speaker clarification loop with targeted questions and batch propagation.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 1.5 split into 1.5a+1.5b, authority detection in step 2, authority-based claim tagging in Phase 2, unsegmented multi-speaker segmentation in Pass A, quality report Method column
+- `.claude/skills/analyze/SKILL.md` — Authority-based rules (verification gates for INTERNAL and AI-SOURCE), action items skip rule, conflict authority imbalance notes, speaker clarification loop (step 19a)
+- `01_Sources/_SOURCE_TEMPLATE.md` — Authority field added
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Authority field added, Source Type cleaned (ai-generated removed), Authority documentation in comments
+
+**BACKLOG impact:**
+- BL-51: IMPLEMENTED (fixes BL-50 enforcement gap from QA v5)
+- BL-44: IMPLEMENTED (refactors BL-37 ai-generated into proper authority axis)
+- BL-46: IMPLEMENTED (addresses QA4-OBS-07/08 speaker misattribution)
+- BL-54: IMPLEMENTED (QA pipeline formalization)
+
+</details>
+
 ## [4.13.0] — 2026-02-21
 
 ### Highlights
