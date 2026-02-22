@@ -1,5 +1,56 @@
 # Changelog
 
+## [4.16.0] — 2026-02-22
+
+### Highlights
+
+**The Live Research App now has its own design system.** Dark-first theme with a light mode toggle, PD-Spec's accent-cyan palette, animated card hover borders, JetBrains Mono for code, Tabler icon sprite for consistent iconography. The previous generic light theme is gone — the app now has a distinct visual identity that works in both dark and light environments.
+
+**Files are now browsable, not just listed.** Sources and Outputs have a Dropbox-style split panel — folder tree on the left, context-aware preview on the right. Click a markdown file to see it rendered inline, click an image to preview it, click a PDF or DOCX to open it with your system app. No more staring at a flat list of filenames.
+
+**Decision tracking turns passive viewing into active research.** Approve or reject pending insights, choose conflict resolution options, add context notes — all accumulated as ephemeral decisions. When ready, the Actions view generates a complete `/synthesis` prompt capturing every decision for your agent session.
+
+**The status dashboard is now the Live Research App.** Everything the static `STATUS.html` had — maturity bar, authority distribution, evidence gaps — is now live and interactive. Plus new features: auto-computed evidence gaps, source diversity grid, structured system map cards with vision/modules/principles/questions, and an Add Context prompt generator for field observations.
+
+### Changes
+
+- **BL-33 Phase 2 — Visual redesign.** Dark-first design system with CSS custom properties. 3-file CSS architecture (tokens/base/components) replacing Tailwind. Tabler SVG sprite (20 icons). Shared UI primitives (Card, Badge, CopyBlock, AccentBox, StatCard, ProgressBar). Theme toggle with localStorage persistence and anti-flash script.
+- **BL-33 Phase 2 — System Map view.** Structured cards for vision (accent-box), modules (status badges, refs, implications, blockers), design principles (numbered with refs), open questions (with conflict cross-refs). Replaces raw markdown rendering.
+- **BL-33 Phase 2 — Evidence Gaps.** Auto-computed from insight data: claim-level (single-source support), category gaps (underrepresented categories), source diversity (missing source types). Canary-level detection for structural weaknesses.
+- **BL-33 Phase 2 — Dashboard enhancements.** Segmented research maturity bar, authority distribution tiers, source diversity grid, insight categories, action item quick links.
+- **BL-33 Phase 2 — Decision tracking.** Approve/reject for PENDING insights, radio options for conflicts (flag/research/context with textarea). Ephemeral state lost on refresh (intentional).
+- **BL-33 Phase 2 — Add Context + Actions.** Field note prompt generator and `/synthesis` prompt builder from accumulated decisions.
+- **BL-33 Phase 2 — File Browser.** Split-panel replacing SourceBrowser + OutputLauncher. Collapsible folder tree, status dots, type-aware preview (MD rendered, images inline, HTML/binary open externally). New API endpoints: `/api/raw/*`, `POST /api/open`, `/api/evidence-gaps`.
+
+<details>
+<summary>Technical details</summary>
+
+**Removed:** Tailwind CSS, PostCSS, Autoprefixer, OutputLauncher.jsx, SourceBrowser.jsx, app.css
+
+**New files:**
+- `app/client/styles/tokens.css` — Design tokens (dark/light)
+- `app/client/styles/base.css` — Layout and typography
+- `app/client/styles/components.css` — All reusable component styles
+- `app/client/public/icons/sprite.svg` — Tabler SVG sprite (20 icons)
+- `app/client/components/ui/` — Icon, Card, Badge, CopyBlock, AccentBox, StatCard, ProgressBar
+- `app/client/components/ThemeToggle.jsx` — Dark/light toggle
+- `app/client/components/SystemMapView.jsx` — Structured system map cards
+- `app/client/components/EvidenceGapsView.jsx` — Auto-computed gaps
+- `app/client/components/AddContextView.jsx` — Field note prompt generator
+- `app/client/components/ActionsView.jsx` — Decision summary + synthesis prompt
+- `app/client/components/FileBrowser.jsx` — Split-panel file browser
+
+**Architecture changes:**
+- View registry pattern in app.jsx (declarative, auto-generates sidebar)
+- Decision state lifted to App (insightDecisions, conflictDecisions)
+- CSS architecture: tokens → base → components (3 files, no preprocessor)
+- Server: express.json() for POST body parsing, `/api/raw` for binary files, `/api/open` for system app launch
+
+**BACKLOG impact:**
+- BL-33: Phase 2 IMPLEMENTED (v4.16.0)
+
+</details>
+
 ## [4.15.0] — 2026-02-21
 
 ### Highlights

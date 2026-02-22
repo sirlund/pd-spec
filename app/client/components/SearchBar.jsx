@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Icon from './ui/Icon.jsx';
+import { StatusBadge, IdBadge } from './ui/Badge.jsx';
 
 export default function SearchBar({ value, onChange, onNavigate }) {
   const [focused, setFocused] = useState(false);
@@ -7,11 +9,9 @@ export default function SearchBar({ value, onChange, onNavigate }) {
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
-  // Search across all API data
   const doSearch = useCallback(async (query) => {
     if (!query || query.length < 2) { setResults([]); return; }
 
-    // Check for direct ID references first
     const idMatch = query.match(/\b(IG-[A-Z0-9-]+|CF-\d+)\b/gi);
     if (idMatch) {
       setResults(idMatch.map(m => ({
@@ -22,7 +22,6 @@ export default function SearchBar({ value, onChange, onNavigate }) {
       return;
     }
 
-    // Full-text search across insights and conflicts
     setSearching(true);
     try {
       const [insightsRes, conflictsRes] = await Promise.all([
@@ -33,32 +32,20 @@ export default function SearchBar({ value, onChange, onNavigate }) {
       const q = query.toLowerCase();
       const matches = [];
 
-      // Search insights
       for (const ig of (insightsRes.insights || [])) {
         const searchable = [ig.id, ig.title, ig.concept, ig.narrative, ig.category, ig.voice]
           .filter(Boolean).join(' ').toLowerCase();
         if (searchable.includes(q)) {
-          matches.push({
-            id: ig.id,
-            type: 'insight',
-            text: ig.title || ig.concept || ig.id,
-            status: ig.status,
-          });
+          matches.push({ id: ig.id, type: 'insight', text: ig.title || ig.concept || ig.id, status: ig.status });
         }
         if (matches.length >= 8) break;
       }
 
-      // Search conflicts
       for (const cf of (conflictsRes.conflicts || [])) {
         const searchable = [cf.id, cf.title, cf.description, cf.claims?.join(' ')]
           .filter(Boolean).join(' ').toLowerCase();
         if (searchable.includes(q)) {
-          matches.push({
-            id: cf.id,
-            type: 'conflict',
-            text: cf.title || cf.description || cf.id,
-            status: cf.status,
-          });
+          matches.push({ id: cf.id, type: 'conflict', text: cf.title || cf.description || cf.id, status: cf.status });
         }
         if (matches.length >= 10) break;
       }
@@ -71,7 +58,6 @@ export default function SearchBar({ value, onChange, onNavigate }) {
     }
   }, []);
 
-  // Debounced search
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => doSearch(value), 200);
@@ -91,19 +77,19 @@ export default function SearchBar({ value, onChange, onNavigate }) {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="search-container">
       <div style={{ position: 'relative' }}>
         <span style={{
           position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)',
-          fontSize: '0.85rem', color: 'var(--color-text-muted)',
+          color: 'var(--text-muted)', display: 'flex',
         }}>
-          {searching ? '...' : '⌕'}
+          <Icon name="search" size={14} />
         </span>
         <input
           ref={inputRef}
           type="text"
           className="search-input"
-          placeholder="Search insights, conflicts, or type [IG-XX]..."
+          placeholder="Search insights, conflicts..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
@@ -113,37 +99,21 @@ export default function SearchBar({ value, onChange, onNavigate }) {
       </div>
 
       {focused && results.length > 0 && (
-        <div style={{
-          position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
-          background: 'var(--color-surface)', border: '1px solid var(--color-border)',
-          borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10,
-          padding: 4, maxHeight: 300, overflowY: 'auto',
-        }}>
+        <div className="search-dropdown">
           {results.map(r => (
             <div
               key={r.id}
-              style={{
-                padding: '6px 10px', cursor: 'pointer', borderRadius: 4,
-                fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6,
-              }}
+              className="search-result"
               onMouseDown={() => { onNavigate(r.id); onChange(''); }}
-              onMouseOver={(e) => e.currentTarget.style.background = 'var(--color-bg)'}
-              onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
             >
-              <span className={`badge ${r.type === 'insight' ? 'badge-insight' : 'badge-conflict'}`}>
-                {r.id}
-              </span>
+              <IdBadge id={r.id} />
               <span style={{
-                color: 'var(--color-text-secondary)', flex: 1,
+                color: 'var(--text-muted)', flex: 1,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {r.text}
               </span>
-              {r.status && (
-                <span className={`badge badge-${r.status.toLowerCase()}`} style={{ fontSize: '0.6rem' }}>
-                  {r.status}
-                </span>
-              )}
+              {r.status && <StatusBadge status={r.status} />}
             </div>
           ))}
         </div>

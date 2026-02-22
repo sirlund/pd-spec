@@ -1,24 +1,32 @@
 import React, { useState, useCallback } from 'react';
 import { useLiveData, useWebSocket } from './hooks.js';
+import Icon from './components/ui/Icon.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import InsightsView from './components/InsightsView.jsx';
 import ConflictsView from './components/ConflictsView.jsx';
-import SourceBrowser from './components/SourceBrowser.jsx';
 import MarkdownView from './components/MarkdownView.jsx';
-import OutputLauncher from './components/OutputLauncher.jsx';
+import SystemMapView from './components/SystemMapView.jsx';
+import EvidenceGapsView from './components/EvidenceGapsView.jsx';
+import AddContextView from './components/AddContextView.jsx';
+import ActionsView from './components/ActionsView.jsx';
+import FileBrowser from './components/FileBrowser.jsx';
 import SearchBar from './components/SearchBar.jsx';
 
-const VIEWS = {
-  dashboard: { label: 'Dashboard', icon: '◉' },
-  insights: { label: 'Insights', icon: '◆' },
-  conflicts: { label: 'Conflicts', icon: '⚡' },
-  extractions: { label: 'Extractions', icon: '▤' },
-  sources: { label: 'Sources', icon: '◫' },
-  'system-map': { label: 'System Map', icon: '⬡' },
-  brief: { label: 'Research Brief', icon: '▧' },
-  outputs: { label: 'Outputs', icon: '◳' },
-};
+export const VIEW_REGISTRY = [
+  { id: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', section: 'research' },
+  { id: 'insights', label: 'Insights', icon: 'diamond', section: 'research', countKey: 'insights' },
+  { id: 'conflicts', label: 'Conflicts', icon: 'bolt', section: 'research', countKey: 'conflicts' },
+  { id: 'extractions', label: 'Extractions', icon: 'list-details', section: 'research' },
+  { id: 'evidence-gaps', label: 'Evidence Gaps', icon: 'alert-triangle', section: 'research', countKey: 'gaps' },
+  { id: 'system-map', label: 'System Map', icon: 'sitemap', section: 'structure' },
+  { id: 'brief', label: 'Research Brief', icon: 'file-text', section: 'structure' },
+  { id: 'add-context', label: 'Add Context', icon: 'pencil-plus', section: 'tools' },
+  { id: 'actions', label: 'Actions', icon: 'send', section: 'tools' },
+  { id: 'sources', label: 'Sources', icon: 'folders', section: 'deliverables' },
+  { id: 'outputs', label: 'Outputs', icon: 'file-export', section: 'deliverables' },
+];
 
 export default function App() {
   const [view, setView] = useState('dashboard');
@@ -26,16 +34,17 @@ export default function App() {
   const [connected, setConnected] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
 
+  // Decision state (ephemeral — lost on refresh)
+  const [insightDecisions, setInsightDecisions] = useState({});
+  const [conflictDecisions, setConflictDecisions] = useState({});
+
   const project = useLiveData('/project', ['PROJECT.md']);
   const dashboard = useLiveData('/dashboard', ['02_Work/']);
 
-  // Global WebSocket for connection status
-  useWebSocket(useCallback(() => {
-    setConnected(true);
-  }, []));
+  useWebSocket(useCallback(() => { setConnected(true); }, []));
 
-  // Navigate to a specific insight/conflict by ID
   const navigateTo = useCallback((id) => {
+    if (!id) return;
     if (id.startsWith('IG-')) {
       setView('insights');
       setHighlightId(id);
@@ -45,80 +54,118 @@ export default function App() {
     }
   }, []);
 
-  // Counts for sidebar
   const counts = dashboard.data ? {
     insights: dashboard.data.pipeline.insights,
     conflicts: dashboard.data.pipeline.conflicts,
-    claims: dashboard.data.pipeline.claims,
-    sources: dashboard.data.pipeline.sources,
+    gaps: dashboard.data.evidence_gap_count || 0,
   } : {};
+
+  const decisionCount = Object.keys(insightDecisions).length + Object.keys(conflictDecisions).length;
+
+  const handleInsightDecision = useCallback((id, decision) => {
+    setInsightDecisions(prev => {
+      if (prev[id] === decision) {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return { ...prev, [id]: decision };
+    });
+  }, []);
+
+  const handleConflictDecision = useCallback((id, decision) => {
+    setConflictDecisions(prev => ({ ...prev, [id]: decision }));
+  }, []);
+
+  const renderView = () => {
+    switch (view) {
+      case 'dashboard':
+        return <Dashboard data={dashboard.data} loading={dashboard.loading} onNavigate={navigateTo} setView={setView} />;
+      case 'insights':
+        return (
+          <InsightsView
+            highlightId={highlightId}
+            onHighlightClear={() => setHighlightId(null)}
+            onNavigate={navigateTo}
+            decisions={insightDecisions}
+            onDecision={handleInsightDecision}
+          />
+        );
+      case 'conflicts':
+        return (
+          <ConflictsView
+            highlightId={highlightId}
+            onHighlightClear={() => setHighlightId(null)}
+            onNavigate={navigateTo}
+            decisions={conflictDecisions}
+            onDecision={handleConflictDecision}
+          />
+        );
+      case 'extractions':
+        return <MarkdownView path="/extractions" title="Extractions" parsed onNavigate={navigateTo} />;
+      case 'evidence-gaps':
+        return <EvidenceGapsView onNavigate={navigateTo} />;
+      case 'system-map':
+        return <SystemMapView onNavigate={navigateTo} />;
+      case 'brief':
+        return <MarkdownView path="/file/02_Work/RESEARCH_BRIEF.md" title="Research Brief" onNavigate={navigateTo} />;
+      case 'add-context':
+        return <AddContextView projectName={project.data?.name} />;
+      case 'actions':
+        return (
+          <ActionsView
+            insightDecisions={insightDecisions}
+            conflictDecisions={conflictDecisions}
+            decisionCount={decisionCount}
+          />
+        );
+      case 'sources':
+        return <FileBrowser root="01_Sources" title="Sources" />;
+      case 'outputs':
+        return <FileBrowser root="03_Outputs" title="Outputs" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="app-layout">
       <header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontWeight: 700, fontSize: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>
             {project.data?.name || 'PD-Spec'}
           </span>
           {project.data?.version && (
-            <span className="badge" style={{ background: '#F0F0F0', color: '#666' }}>
+            <span className="badge badge-id" style={{ cursor: 'default' }}>
               {project.data.version}
             </span>
           )}
           <div className="live-dot" title="Live — watching for changes" />
+          <ThemeToggle />
+          {decisionCount > 0 && (
+            <span
+              className="badge badge-id"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setView('actions')}
+              title={`${decisionCount} decisions — click to generate prompt`}
+            >
+              {decisionCount} decisions
+            </span>
+          )}
         </div>
         <SearchBar value={searchQuery} onChange={setSearchQuery} onNavigate={navigateTo} />
       </header>
 
       <Sidebar
-        views={VIEWS}
+        views={VIEW_REGISTRY}
         activeView={view}
         onNavigate={setView}
         counts={counts}
+        decisionCount={decisionCount}
       />
 
       <main className="app-main">
-        {view === 'dashboard' && (
-          <Dashboard data={dashboard.data} loading={dashboard.loading} onNavigate={navigateTo} />
-        )}
-        {view === 'insights' && (
-          <InsightsView
-            highlightId={highlightId}
-            onHighlightClear={() => setHighlightId(null)}
-            onNavigate={navigateTo}
-          />
-        )}
-        {view === 'conflicts' && (
-          <ConflictsView
-            highlightId={highlightId}
-            onHighlightClear={() => setHighlightId(null)}
-            onNavigate={navigateTo}
-          />
-        )}
-        {view === 'extractions' && (
-          <MarkdownView
-            path="/extractions"
-            title="Extractions"
-            parsed
-            onNavigate={navigateTo}
-          />
-        )}
-        {view === 'sources' && <SourceBrowser />}
-        {view === 'system-map' && (
-          <MarkdownView
-            path="/file/02_Work/SYSTEM_MAP.md"
-            title="System Map"
-            onNavigate={navigateTo}
-          />
-        )}
-        {view === 'brief' && (
-          <MarkdownView
-            path="/file/02_Work/RESEARCH_BRIEF.md"
-            title="Research Brief"
-            onNavigate={navigateTo}
-          />
-        )}
-        {view === 'outputs' && <OutputLauncher />}
+        {renderView()}
       </main>
     </div>
   );

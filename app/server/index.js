@@ -42,6 +42,9 @@ function broadcast(data) {
   }
 }
 
+// JSON body parsing for POST endpoints
+app.use(express.json());
+
 // API routes
 app.use('/api', createApi(projectRoot));
 

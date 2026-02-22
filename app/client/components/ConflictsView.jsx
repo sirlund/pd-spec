@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLiveData } from '../hooks.js';
 import ConflictCard from './ConflictCard.jsx';
+import Icon from './ui/Icon.jsx';
 
-export default function ConflictsView({ highlightId, onHighlightClear, onNavigate }) {
+export default function ConflictsView({ highlightId, onHighlightClear, onNavigate, decisions, onDecision }) {
   const { data, loading } = useLiveData('/conflicts', ['CONFLICTS']);
   const [statusFilter, setStatusFilter] = useState('all');
   const highlightRef = useRef(null);
@@ -22,7 +23,7 @@ export default function ConflictsView({ highlightId, onHighlightClear, onNavigat
   if (data.conflicts.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-state-icon">⚡</div>
+        <Icon name="bolt" size={48} className="empty-state-icon" />
         <div className="empty-state-title">No conflicts detected</div>
         <div className="empty-state-text">
           Run <code>/analyze</code> to detect contradictions and ambiguities in your sources.
@@ -42,7 +43,7 @@ export default function ConflictsView({ highlightId, onHighlightClear, onNavigat
         <h1 className="section-title">
           Conflicts ({data.conflicts.length})
           {data.summary.resolved > 0 && (
-            <span style={{ fontSize: '0.85rem', fontWeight: 400, color: 'var(--color-text-muted)', marginLeft: 8 }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 400, color: 'var(--text-muted)', marginLeft: 8 }}>
               {data.summary.resolved} resolved
             </span>
           )}
@@ -67,11 +68,16 @@ export default function ConflictsView({ highlightId, onHighlightClear, onNavigat
           ref={highlightId === conflict.id ? highlightRef : null}
           style={{
             transition: 'box-shadow 0.3s',
-            boxShadow: highlightId === conflict.id ? '0 0 0 2px var(--color-conflict)' : 'none',
-            borderRadius: 8,
+            boxShadow: highlightId === conflict.id ? '0 0 0 2px var(--conflict-fg)' : 'none',
+            borderRadius: 'var(--radius)',
           }}
         >
-          <ConflictCard conflict={conflict} onNavigate={onNavigate} />
+          <ConflictCard
+            conflict={conflict}
+            onNavigate={onNavigate}
+            decision={decisions?.[conflict.id]}
+            onDecision={onDecision}
+          />
         </div>
       ))}
     </div>

@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLiveData } from '../hooks.js';
 import InsightCard from './InsightCard.jsx';
+import Icon from './ui/Icon.jsx';
 
-export default function InsightsView({ highlightId, onHighlightClear, onNavigate }) {
+export default function InsightsView({ highlightId, onHighlightClear, onNavigate, decisions, onDecision }) {
   const { data, loading } = useLiveData('/insights', ['INSIGHTS_GRAPH']);
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const highlightRef = useRef(null);
 
-  // Scroll to highlighted insight
   useEffect(() => {
     if (highlightId && highlightRef.current) {
       highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Clear highlight after animation
       const timer = setTimeout(() => onHighlightClear?.(), 3000);
       return () => clearTimeout(timer);
     }
@@ -25,7 +24,7 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
   if (data.insights.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-state-icon">◆</div>
+        <Icon name="diamond" size={48} className="empty-state-icon" />
         <div className="empty-state-title">No insights yet</div>
         <div className="empty-state-text">
           Run <code>/extract</code> then <code>/analyze</code> to generate insights.
@@ -49,20 +48,12 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
         <h1 className="section-title">Insights ({data.insights.length})</h1>
       </div>
 
-      {/* Filters */}
       <div className="filter-bar">
-        <button
-          className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setStatusFilter('all')}
-        >
+        <button className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`} onClick={() => setStatusFilter('all')}>
           All
         </button>
         {statuses.map(s => (
-          <button
-            key={s}
-            className={`filter-btn ${statusFilter === s ? 'active' : ''}`}
-            onClick={() => setStatusFilter(s)}
-          >
+          <button key={s} className={`filter-btn ${statusFilter === s ? 'active' : ''}`} onClick={() => setStatusFilter(s)}>
             {s}
           </button>
         ))}
@@ -70,37 +61,33 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
 
       {categories.length > 1 && (
         <div className="filter-bar">
-          <button
-            className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`}
-            onClick={() => setCategoryFilter('all')}
-          >
+          <button className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} onClick={() => setCategoryFilter('all')}>
             All categories
           </button>
           {categories.map(c => (
-            <button
-              key={c}
-              className={`filter-btn ${categoryFilter === c ? 'active' : ''}`}
-              onClick={() => setCategoryFilter(c)}
-              title={c}
-            >
+            <button key={c} className={`filter-btn ${categoryFilter === c ? 'active' : ''}`} onClick={() => setCategoryFilter(c)} title={c}>
               {c.length > 30 ? c.slice(0, 30) + '...' : c}
             </button>
           ))}
         </div>
       )}
 
-      {/* Cards */}
       {filtered.map(insight => (
         <div
           key={insight.id}
           ref={highlightId === insight.id ? highlightRef : null}
           style={{
             transition: 'box-shadow 0.3s',
-            boxShadow: highlightId === insight.id ? '0 0 0 2px var(--color-accent)' : 'none',
-            borderRadius: 8,
+            boxShadow: highlightId === insight.id ? '0 0 0 2px var(--accent-cyan)' : 'none',
+            borderRadius: 'var(--radius)',
           }}
         >
-          <InsightCard insight={insight} onNavigate={onNavigate} />
+          <InsightCard
+            insight={insight}
+            onNavigate={onNavigate}
+            decision={decisions?.[insight.id]}
+            onDecision={onDecision}
+          />
         </div>
       ))}
 
