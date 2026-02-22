@@ -10,6 +10,11 @@
 **Proposed:** Add mandatory no-skip rule to extract/SKILL.md.
 -->
 
+### [BUG] — Live Research App muestra engine_version desactualizado
+**Context:** La app lee `engine_version` de `PROJECT.md`, pero ese campo está protegido por `merge=ours` en project branches — nunca se actualiza con merges de main. El header muestra v4.7.0 cuando el engine real es v4.16.0.
+**Proposed:** La app debería leer la versión real del engine desde un archivo engine-managed (ej. `docs/CHANGELOG.md` parseando el header más reciente, o un `VERSION` file en el repo). `PROJECT.md` es data del proyecto, no del engine.
+**Ref:** `qa` — screenshot sesión 2026-02-22, header "TIMining | V4.7.0"
+
 ### [IDEA] — Workbench mode para trabajo fuera del pipeline
 `PARKED` — El pipeline no obliga a usarlo. Trabajo ad-hoc ya funciona, loguear a MEMORY es manual pero suficiente. Esperar segundo caso de uso.
 
