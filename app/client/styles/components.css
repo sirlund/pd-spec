@@ -558,6 +558,14 @@
 .output-card:hover { border-color: var(--accent-cyan); }
 
 /* ── File Browser (Dropbox-style split panel) ── */
+.file-browser-view {
+  display: flex;
+  flex-direction: column;
+  /* Fill app-main minus header (~41px) and main padding (48px) */
+  height: calc(100vh - 96px);
+  overflow: hidden;
+}
+
 .file-browser {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -565,13 +573,15 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   overflow: hidden;
-  min-height: 500px;
+  flex: 1;
+  min-height: 0;
   background: var(--card-bg);
 }
 
 .file-tree {
   border-right: 1px solid var(--border-color);
   overflow-y: auto;
+  min-height: 0;
   background: var(--surface-sunken);
 }
 
@@ -648,6 +658,7 @@
 .file-preview {
   padding: 24px;
   overflow-y: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
