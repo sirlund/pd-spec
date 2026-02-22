@@ -62,6 +62,15 @@ function connectWs() {
   ws = socket;
 }
 
+// Debug surface for QA observability (Playwright MCP) — stripped in production builds
+if (import.meta.env.DEV) {
+  window.__pdDebug = {
+    get wsState() { return ws?.readyState ?? -1; },
+    get wsUrl() { return ws?.url ?? null; },
+    get subscriberCount() { return subscribers.size; },
+  };
+}
+
 function subscribe(fn) {
   subscribers.add(fn);
   if (!ws && !reconnectTimer) connectWs();

@@ -109,6 +109,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `03_Outputs/LEAN_CANVAS.html` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
 | `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
+| `docs/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
 | `docs/qa/*` | QA plans and findings | Reference only |
 
@@ -175,6 +176,7 @@ The folder name provides context that individual files inherit. The agent valida
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
+│   ├── DECISIONS.md           Cross-cutting architectural decisions (DEC-## format)
 │   ├── FRAMEWORK.md           Full methodology documentation
 │   ├── PD_BUILD_NOTES.md     PD-Build architecture & design notes
 │   └── qa/                    QA plans and findings (formalized process)
