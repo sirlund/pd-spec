@@ -73,11 +73,15 @@ export function createApi(projectRoot) {
       const name = content.match(/\*\*project_name:\*\*\s*(.+)/)?.[1]?.trim() || 'Unknown';
       const language = content.match(/\*\*output_language:\*\*\s*(\w+)/)?.[1] || 'en';
       const one_liner = content.match(/\*\*one_liner:\*\*\s*(.+)/)?.[1]?.trim() || '';
-      const version = content.match(/\*\*engine_version:\*\*\s*(.+)/)?.[1]?.trim() || '';
       const maturity = content.match(/\*\*Maturity:\*\*\s*(.+)/)?.[1]?.trim() || '';
       const status = content.match(/\*\*Status:\*\*\s*(.+)/)?.[1]?.trim() || '';
       const insights_count = parseInt(content.match(/\*\*Insights count:\*\*\s*(\d+)/)?.[1] || '0');
       const conflicts_count = parseInt(content.match(/\*\*Conflicts count:\*\*\s*(\d+)/)?.[1] || '0');
+
+      // Engine version from CHANGELOG.md (PROJECT.md's engine_version is stale in project branches — merge=ours)
+      const version = await readAndParse('docs/CHANGELOG.md', (c) =>
+        c?.match(/^## \[(.+?)\]/m)?.[1] || ''
+      ) || content.match(/\*\*engine_version:\*\*\s*(.+)/)?.[1]?.trim() || '';
 
       res.json({ name, language, one_liner, version, maturity, status, insights_count, conflicts_count });
     } catch (err) {
