@@ -10,9 +10,9 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority: P1 → P2 → P3 → Low.
 
-### [BL-33] Live Research App — From Static Dashboard to Interactive Web App — v4.15.0
+### [BL-33] Live Research App — From Static Dashboard to Interactive Web App — v4.16.0
 
-**Status:** IMPLEMENTED (Phase 1 MVP)
+**Status:** IMPLEMENTED (Phase 1 + Phase 2)
 **Priority:** P1
 **Origin:** QA v3 (2026-02-16), expanded QA v4 (2026-02-20). Evidence: every pipeline run requires manual `/ship status` to regenerate the dashboard (~5 min + tokens). During stakeholder meetings (e.g., IDEMAX sessions with Camila), showing live research state requires exporting HTML per output — unacceptable for real-time collaboration and impossible for non-technical users.
 **Absorbs:** BL-42 (Work Layer Viewer)
