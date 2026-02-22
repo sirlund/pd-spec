@@ -1,5 +1,50 @@
 # Changelog
 
+## [4.17.0] — 2026-02-22
+
+### Highlights
+
+**Fan noise eliminated.** A single file change used to trigger ~72 parse operations through a cascade of redundant WebSocket connections, parallel refetches, and uncached parsing. Now it triggers 1. Three fixes: singleton WebSocket (1 connection instead of 4-5), debounced refetch (300ms collapse window), and server-side mtime-validated parse cache. Leave the app open during agent work — zero CPU at idle, brief spikes on changes.
+
+**Mechanical pipeline operations now use scripts.** Counting insights, computing hashes, generating dashboard JSON — deterministic tasks are explicitly marked "script-eligible" in skill instructions. The agent uses inline Bash/Python instead of LLM reasoning, eliminating counting errors (QA v4's BUG-04) and saving tokens.
+
+**Three pipeline bugs fixed.** Engine version in the Live Research App was permanently stale in project branches (merge=ours on PROJECT.md). Oversized-line transcripts stayed oversized after preprocessing. Batch checkpoints in /extract Pass 2 were missing entirely.
+
+### Changes
+
+- **Performance — Singleton WebSocket.** Module-level WS with subscriber pattern replaces per-hook connections. Auto-reconnect on disconnect (2s retry). (`app/client/hooks.js`)
+- **Performance — Debounced refetch.** 300ms debounce timer collapses rapid file changes into a single API call per endpoint. (`app/client/hooks.js`)
+- **Performance — Server-side parse cache.** `readAndParse()` with mtime validation. Multiple endpoints sharing the same Work file (dashboard + evidence-gaps both need INSIGHTS_GRAPH.md) parse it once. Watcher proactively invalidates on file change. (`app/server/api.js`, `app/server/index.js`)
+- **BL-55 — Engine version from CHANGELOG.** `/api/project` reads version from `docs/CHANGELOG.md` (first `## [X.Y.Z]` header) instead of PROJECT.md's `engine_version` field. Fallback to PROJECT.md if CHANGELOG unavailable.
+- **BL-52 — Line-breaking after normalization.** Step 17b in /extract: sentence-boundary regex split for files flagged `oversized-lines`, with hard-break fallback at 1500 chars.
+- **BL-53 — Batch checkpoint separation.** SESSION_CHECKPOINT is now a separate numbered step in both Pass 1 (step 4) and Pass 2 (step 5) batch loops. Pass 2 was missing checkpoints entirely.
+- **BL-47 — Script-first execution guidance.** "90/10 Rule" section in CLAUDE.md with table of script-eligible operations. /analyze steps 25-26 and /extract step 13 marked as script-eligible.
+
+<details>
+<summary>Technical details</summary>
+
+**Performance cascade (before → after):**
+```
+Before: 1 file change → 4-5 WS messages → 2-3 refetches each → 4 uncached parses = ~72 ops
+After:  1 file change → 1 WS message → 1 debounced refetch → 1 re-parse (cache hits) = ~1 op
+```
+
+**Files changed:**
+- `app/client/hooks.js` — Singleton WS + debounced refetch
+- `app/server/api.js` — `readAndParse()` cache + BL-55 version source
+- `app/server/index.js` — Cache invalidation wiring
+- `CLAUDE.md` — Script-First Execution section
+- `.claude/skills/extract/SKILL.md` — BL-52 step 17b, BL-53 checkpoint steps, BL-47 step 13
+- `.claude/skills/analyze/SKILL.md` — BL-47 steps 25-26
+
+**BACKLOG impact:**
+- BL-47: IMPLEMENTED (v4.17.0)
+- BL-52: IMPLEMENTED (v4.17.0)
+- BL-53: IMPLEMENTED (v4.17.0)
+- BL-55: IMPLEMENTED (v4.17.0)
+
+</details>
+
 ## [4.16.0] — 2026-02-22
 
 ### Highlights
