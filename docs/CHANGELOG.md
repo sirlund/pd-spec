@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.17.1] — 2026-02-22
+
+**Live updates actually work now.** A spread-order bug in the WebSocket broadcast meant file changes never reached the client — the chokidar event's `type: 'change'` silently overwrote the required `type: 'file-change'`. One-line fix, caught by QA v6.
+
+- **Fix — WS broadcast spread order (BUG-02).** `broadcast({ type: 'file-change', ...event })` → `broadcast({ ...event, type: 'file-change' })`. (`app/server/index.js:75`)
+- **New anti-pattern rule.** "Never put override properties BEFORE spread" added to Engine Development Anti-Patterns table.
+
 ## [4.17.0] — 2026-02-22
 
 ### Highlights
