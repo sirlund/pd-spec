@@ -117,7 +117,7 @@ export default function FileBrowser({ root, title }) {
   }
 
   return (
-    <div>
+    <div className="file-browser-view">
       <div className="section-header">
         <h1 className="section-title">{title} ({totalFiles})</h1>
         {isSources && (
