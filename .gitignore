@@ -20,6 +20,9 @@ Thumbs.db
 03_Outputs/*.docx
 03_Outputs/*.pdf
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
 # App build artifacts
 app/node_modules/
 app/dist/
