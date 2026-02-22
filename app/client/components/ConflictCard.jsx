@@ -1,29 +1,38 @@
 import React, { useState } from 'react';
+import Card from './ui/Card.jsx';
+import { StatusBadge, IdBadge, SubtleBadge } from './ui/Badge.jsx';
+import Icon from './ui/Icon.jsx';
 
-export default function ConflictCard({ conflict, onNavigate }) {
+const CONFLICT_OPTIONS = [
+  { id: 'flag', label: 'Flag for discussion' },
+  { id: 'research', label: 'Needs more research' },
+  { id: 'context', label: 'I have context' },
+];
+
+export default function ConflictCard({ conflict, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
+  const [contextText, setContextText] = useState('');
+
+  const statusAccent = conflict.status === 'RESOLVED' ? 'verified' : 'conflict';
+
+  const handleOption = (optionId) => {
+    if (optionId === 'context') {
+      onDecision?.(conflict.id, { type: 'context', text: contextText });
+    } else {
+      onDecision?.(conflict.id, { type: optionId });
+    }
+  };
+
+  const currentType = decision?.type;
 
   return (
-    <div className="card">
+    <Card accent={statusAccent}>
       <div className="card-header">
-        <span className="badge badge-conflict" style={{ cursor: 'default' }}>
-          {conflict.id}
-        </span>
-        <span className={`badge badge-${conflict.status.toLowerCase()}`}>
-          {conflict.status}
-        </span>
-        {conflict.type && (
-          <span className="badge" style={{ background: '#F0F0F0', color: '#666' }}>
-            {conflict.type}
-          </span>
-        )}
+        <IdBadge id={conflict.id} />
+        <StatusBadge status={conflict.status} />
+        {conflict.type && <SubtleBadge>{conflict.type}</SubtleBadge>}
         {conflict.priority && (
-          <span className="badge" style={{
-            background: conflict.priority === 'Critical' ? 'var(--color-blocked-bg)' :
-                         conflict.priority === 'High' ? 'var(--color-pending-bg)' : '#F0F0F0',
-            color: conflict.priority === 'Critical' ? 'var(--color-blocked-fg)' :
-                   conflict.priority === 'High' ? 'var(--color-pending-fg)' : '#666',
-          }}>
+          <span className={`badge ${conflict.priority === 'Critical' ? 'badge-critical' : conflict.priority === 'High' ? 'badge-pending' : 'badge-subtle'}`}>
             {conflict.priority}
           </span>
         )}
@@ -33,38 +42,23 @@ export default function ConflictCard({ conflict, onNavigate }) {
         {conflict.title && `${conflict.title} — `}{conflict.description}
       </div>
 
-      {/* Related insights */}
       {conflict.related_insights.length > 0 && (
-        <div style={{ marginBottom: 8 }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Related: </span>
+        <div style={{ marginBottom: 8, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Related: </span>
           {conflict.related_insights.map(ref => (
-            <span
-              key={ref}
-              className="badge badge-insight"
-              onClick={() => onNavigate?.(ref)}
-              style={{ marginRight: 4, cursor: 'pointer' }}
-            >
-              {ref}
-            </span>
+            <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
           ))}
         </div>
       )}
 
-      {/* Source claims */}
       {conflict.claims.length > 0 && (
         <div style={{ marginBottom: 8 }}>
-          <button
-            onClick={() => setExpanded(!expanded)}
-            style={{
-              background: 'none', border: 'none', color: 'var(--color-accent)',
-              cursor: 'pointer', fontSize: '0.8rem', padding: 0, fontFamily: 'Inter, sans-serif',
-            }}
-          >
+          <button className="btn btn-sm btn-ghost" onClick={() => setExpanded(!expanded)}>
+            <Icon name="chevron-down" size={14} />
             {expanded ? 'Hide' : 'Show'} source claims ({conflict.claims.length})
           </button>
-
           {expanded && (
-            <ul style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', paddingLeft: 16, marginTop: 6 }}>
+            <ul style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 16, marginTop: 6 }}>
               {conflict.claims.map((claim, i) => (
                 <li key={i} style={{ marginBottom: 4 }}>{claim}</li>
               ))}
@@ -73,25 +67,47 @@ export default function ConflictCard({ conflict, onNavigate }) {
         </div>
       )}
 
-      {/* Resolution */}
       {conflict.resolution && (
-        <div style={{
-          marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-border-light)',
-          fontSize: '0.85rem', color: 'var(--color-text-secondary)',
-        }}>
-          <strong style={{ color: 'var(--color-verified-fg)' }}>Resolution:</strong> {conflict.resolution}
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-subtle)', fontSize: '0.82rem' }}>
+          <strong style={{ color: 'var(--verified-fg)' }}>Resolution:</strong>{' '}
+          <span style={{ color: 'var(--text-muted)' }}>{conflict.resolution}</span>
         </div>
       )}
 
-      {/* Action needed */}
       {conflict.action && (
-        <div style={{
-          marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--color-border-light)',
-          fontSize: '0.85rem', color: 'var(--color-text-secondary)',
-        }}>
-          <strong style={{ color: 'var(--color-pending-fg)' }}>Action needed:</strong> {conflict.action}
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-subtle)', fontSize: '0.82rem' }}>
+          <strong style={{ color: 'var(--pending-fg)' }}>Action needed:</strong>{' '}
+          <span style={{ color: 'var(--text-muted)' }}>{conflict.action}</span>
         </div>
       )}
-    </div>
+
+      {/* Decision radio options for unresolved conflicts */}
+      {conflict.status !== 'RESOLVED' && onDecision && (
+        <div className="radio-group">
+          {CONFLICT_OPTIONS.map(opt => (
+            <div key={opt.id}>
+              <div
+                className={`radio-option ${currentType === opt.id ? 'selected' : ''}`}
+                onClick={() => handleOption(opt.id)}
+              >
+                <span className="radio-dot" />
+                <span>{opt.label}</span>
+              </div>
+              {opt.id === 'context' && currentType === 'context' && (
+                <textarea
+                  className="context-textarea"
+                  placeholder="Add your context here..."
+                  value={contextText}
+                  onChange={(e) => {
+                    setContextText(e.target.value);
+                    onDecision?.(conflict.id, { type: 'context', text: e.target.value });
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
   );
 }
