@@ -48,7 +48,7 @@ Recommendation: Python approach (editable > screenshots) but needs generalizatio
 
 **Status:** Proposed
 **Priority:** P3
-**Origin:** QA v4 (2026-02-20), QA4-OBS-09. Evidence: AI source contributed 18/59 to convergence ratios, indistinguishable from stakeholder sources in dashboard display.
+**Origin:** QA v4 (2026-02-20), QA4-OBS-04. Evidence: AI source contributed 18/59 to convergence ratios, indistinguishable from stakeholder sources in dashboard display.
 
 **Problem:** After BL-37, AI-generated sources enter the pipeline with `voice: ai` and `authority: hypothesis` metadata. However, convergence ratios (e.g., `18/59`) don't surface this distinction. A dashboard consumer sees `18/59` and assumes 18 independent stakeholder data points — but 1 of those 59 sources is AI-generated.
 
