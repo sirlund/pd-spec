@@ -423,6 +423,7 @@ Things that have caused real bugs. Do NOT:
 | **Never treat all preprocessing as one mechanical step** | Pass C (sentence repair) requires LLM reasoning, not regex | QA v5 BUG-01 |
 | **Never amend after pre-commit hook failure** | The commit didn't happen — amend modifies the PREVIOUS commit | Git safety |
 | **Never implement a BL without evidenced problem** | Homer's Car: if no `[IG-XX]` or QA finding justifies it, challenge it | BL-22 RAG (still unjustified) |
+| **Never put override properties BEFORE spread** | `{ type: 'x', ...obj }` — obj's own `type` overwrites yours silently. Always: `{ ...obj, type: 'x' }` | QA v6 BUG-02: WS live updates broken |
 
 ## Script-First Execution (90/10 Rule)
 

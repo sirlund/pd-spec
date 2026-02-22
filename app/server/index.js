@@ -72,7 +72,7 @@ if (existsSync(distDir)) {
 // File watcher → cache invalidation + WebSocket broadcast
 createWatcher(projectRoot, (event) => {
   parseCache.delete(event.path);
-  broadcast({ type: 'file-change', ...event });
+  broadcast({ ...event, type: 'file-change' });
 });
 
 server.listen(PORT, () => {
