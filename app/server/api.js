@@ -27,6 +27,7 @@ const MIME_TYPES = {
 
 export function createApi(projectRoot) {
   const router = Router();
+  const parseCache = new Map();
 
   // Helper: read a file safely
   async function readSafe(relativePath) {
@@ -35,6 +36,24 @@ export function createApi(projectRoot) {
     } catch {
       return null;
     }
+  }
+
+  // Helper: read + parse with mtime-validated cache
+  async function readAndParse(relativePath, parseFn) {
+    const fullPath = resolve(projectRoot, relativePath);
+    let stats;
+    try {
+      stats = await stat(fullPath);
+    } catch {
+      return parseFn(null);
+    }
+    const cached = parseCache.get(relativePath);
+    if (cached && cached.mtimeMs === stats.mtimeMs) return cached.result;
+
+    const content = await readFile(fullPath, 'utf-8');
+    const result = parseFn(content);
+    parseCache.set(relativePath, { result, mtimeMs: stats.mtimeMs });
+    return result;
   }
 
   // Helper: validate path (security)
@@ -69,8 +88,7 @@ export function createApi(projectRoot) {
   // GET /api/insights — parsed INSIGHTS_GRAPH.md
   router.get('/insights', async (req, res) => {
     try {
-      const content = await readSafe('02_Work/INSIGHTS_GRAPH.md');
-      res.json(parseInsights(content));
+      res.json(await readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -79,8 +97,7 @@ export function createApi(projectRoot) {
   // GET /api/conflicts — parsed CONFLICTS.md
   router.get('/conflicts', async (req, res) => {
     try {
-      const content = await readSafe('02_Work/CONFLICTS.md');
-      res.json(parseConflicts(content));
+      res.json(await readAndParse('02_Work/CONFLICTS.md', parseConflicts));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -89,8 +106,7 @@ export function createApi(projectRoot) {
   // GET /api/sources — parsed SOURCE_MAP.md
   router.get('/sources', async (req, res) => {
     try {
-      const content = await readSafe('02_Work/SOURCE_MAP.md');
-      res.json(parseSourceMap(content));
+      res.json(await readAndParse('02_Work/SOURCE_MAP.md', parseSourceMap));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -99,8 +115,7 @@ export function createApi(projectRoot) {
   // GET /api/system-map — parsed SYSTEM_MAP.md
   router.get('/system-map', async (req, res) => {
     try {
-      const content = await readSafe('02_Work/SYSTEM_MAP.md');
-      res.json(parseSystemMap(content));
+      res.json(await readAndParse('02_Work/SYSTEM_MAP.md', parseSystemMap));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -109,8 +124,7 @@ export function createApi(projectRoot) {
   // GET /api/extractions — parsed EXTRACTIONS.md
   router.get('/extractions', async (req, res) => {
     try {
-      const content = await readSafe('02_Work/EXTRACTIONS.md');
-      res.json(parseExtractions(content));
+      res.json(await readAndParse('02_Work/EXTRACTIONS.md', parseExtractions));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -254,13 +268,10 @@ export function createApi(projectRoot) {
   // GET /api/evidence-gaps — auto-computed evidence gaps
   router.get('/evidence-gaps', async (req, res) => {
     try {
-      const [insightsContent, sourceMapContent] = await Promise.all([
-        readSafe('02_Work/INSIGHTS_GRAPH.md'),
-        readSafe('02_Work/SOURCE_MAP.md'),
+      const [insights, sourceMap] = await Promise.all([
+        readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
+        readAndParse('02_Work/SOURCE_MAP.md', parseSourceMap),
       ]);
-
-      const insights = parseInsights(insightsContent);
-      const sourceMap = parseSourceMap(sourceMapContent);
       const gaps = [];
 
       // Claim-level gaps: insights with convergence 1/N (single source support)
@@ -316,18 +327,12 @@ export function createApi(projectRoot) {
   // GET /api/dashboard — aggregated dashboard data
   router.get('/dashboard', async (req, res) => {
     try {
-      const [insightsContent, conflictsContent, sourceMapContent, extractionsContent] =
-        await Promise.all([
-          readSafe('02_Work/INSIGHTS_GRAPH.md'),
-          readSafe('02_Work/CONFLICTS.md'),
-          readSafe('02_Work/SOURCE_MAP.md'),
-          readSafe('02_Work/EXTRACTIONS.md'),
-        ]);
-
-      const insights = parseInsights(insightsContent);
-      const conflicts = parseConflicts(conflictsContent);
-      const sourceMap = parseSourceMap(sourceMapContent);
-      const extractions = parseExtractions(extractionsContent);
+      const [insights, conflicts, sourceMap, extractions] = await Promise.all([
+        readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
+        readAndParse('02_Work/CONFLICTS.md', parseConflicts),
+        readAndParse('02_Work/SOURCE_MAP.md', parseSourceMap),
+        readAndParse('02_Work/EXTRACTIONS.md', parseExtractions),
+      ]);
 
       // Authority distribution
       const authorityDist = {};
@@ -380,7 +385,7 @@ export function createApi(projectRoot) {
     }
   });
 
-  return router;
+  return { router, parseCache };
 }
 
 function inferOutputType(filename) {

@@ -46,7 +46,8 @@ function broadcast(data) {
 app.use(express.json());
 
 // API routes
-app.use('/api', createApi(projectRoot));
+const { router, parseCache } = createApi(projectRoot);
+app.use('/api', router);
 
 // Serve output files (for "Open in new tab")
 app.use('/outputs', express.static(resolve(projectRoot, '03_Outputs'), {
@@ -68,8 +69,9 @@ if (existsSync(distDir)) {
   });
 }
 
-// File watcher → WebSocket broadcast
+// File watcher → cache invalidation + WebSocket broadcast
 createWatcher(projectRoot, (event) => {
+  parseCache.delete(event.path);
   broadcast({ type: 'file-change', ...event });
 });
 
