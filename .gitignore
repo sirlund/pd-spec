@@ -1,22 +1,29 @@
-# OS
+# Dependencies
+node_modules/
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Editors
+# IDE
+.idea/
+.vscode/
 *.swp
 *.swo
-*~
-.vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
 
-# Temp files
-*.tmp
-*.bak
-*.orig
+# Logs
+*.log
+npm-debug.log*
 
 # Generated outputs
 03_Outputs/*.docx
 03_Outputs/*.pdf
 .vercel
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# App build artifacts
+app/node_modules/
+app/dist/
+app/package-lock.json

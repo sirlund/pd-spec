@@ -28,7 +28,7 @@ Manual edits to this folder will be detected and flagged by the agent at the sta
 
 | Directory | Purpose |
 |---|---|
-| `_temp/` | Ephemeral workspace — session checkpoints, intermediate indexes, format conversions. Auto-managed by the agent; contents may be deleted between sessions. |
+| `_temp/` | Ephemeral workspace — session checkpoints, intermediate indexes, format conversions, preprocessed source files. Auto-managed by the agent; contents may be deleted between sessions. |
 | `_assets/` | External materials intake — logos, brand guides, competitor screenshots, reference files that are **not** knowledge sources. `/extract` ignores this folder. |
 | `_assets/_INTAKE.md` | Asset log — tracks every file placed in `_assets/`. |
 
@@ -43,8 +43,19 @@ Manual edits to this folder will be detected and flagged by the agent at the sta
 
 ### SESSION_CHECKPOINT.md template
 
+Primary recovery file — the agent reads this first at session start for single-read resume (~2K tokens).
+
 ```markdown
 # Session Checkpoint
+
+## Quantitative Snapshot
+<!-- Updated after every skill execution -->
+- **Sources:** X files in 01_Sources/
+- **Extractions:** X claims in EXTRACTIONS.md
+- **Insights:** X total (Y verified, Z pending) in INSIGHTS_GRAPH.md
+- **Conflicts:** X total (Y pending, Z resolved) in CONFLICTS.md
+- **Outputs:** [list of generated files in 03_Outputs/]
+- **Last skill:** /skill — YYYY-MM-DDTHH:MM
 
 ## Project Context
 <!-- One-liner: what project, what phase -->
@@ -60,4 +71,20 @@ Manual edits to this folder will be detected and flagged by the agent at the sta
 
 ## Pending
 <!-- What remains to be done -->
+```
+
+### STRUCTURE_INDEX.md template
+
+Created by the agent when normalizing a monolithic artifact (see Artifact Normalization in CLAUDE.md). Maps sections to files and line ranges for targeted offset/limit reads.
+
+```markdown
+# Structure Index — [artifact name]
+
+> Auto-maintained by agent. Do not edit manually.
+
+| Section | File | Lines | Size |
+|---|---|---|---|
+| Cover | sections/00-cover.html | 1-45 | 1.2KB |
+| Slide 1 — Title | sections/01-intro.html | 1-38 | 0.9KB |
+| Slide 2 — Problem | sections/02-problem.html | 1-52 | 1.4KB |
 ```

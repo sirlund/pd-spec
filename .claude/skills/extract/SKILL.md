@@ -59,7 +59,9 @@ EVERY file discovered in Phase 1 MUST be:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
-   - **AI-generated detection** — Check `_CONTEXT.md` for `Source Type: ai-generated`. If found, mark the entire folder as AI-generated. All files in this folder will be tagged during extraction (see Phase 2 AI tagging rule).
+   - **Authority detection** — Check `_CONTEXT.md` for `Authority:` field. Valid values: `primary` (default), `internal`, `ai-generated`. This sets the folder-level authority. Individual files can override via frontmatter `Authority:` field.
+   - **Backwards compatibility:** If `_CONTEXT.md` has `Source Type: ai-generated` (old format), map to `Authority: ai-generated` and treat Source Type as the actual format. Log: `⚠️ Migrated 'Source Type: ai-generated' → 'Authority: ai-generated' for {folder}`
+   - Files without an Authority field (in frontmatter or folder _CONTEXT.md) default to `primary`.
 
 3. **Validate source organization** — For each source file, check:
    - Does the file's metadata (type, date, context) match the folder it's in?
@@ -84,6 +86,15 @@ EVERY file discovered in Phase 1 MUST be:
    - **Heavy-only mode:** Read SOURCE_MAP.md, select ONLY files with status `pending-heavy`. If no pending-heavy files found, report "No heavy files pending — run /extract first" and stop.
    - **Full mode:** Process all files (no filtering).
 
+5b. **Oversized line detection** — For each file in the processing queue:
+   - Check: `file_size / line_count > 2000` chars/line (approximate via `wc -l` and `wc -c`)
+   - If detected: flag file as `oversized-lines` in working memory
+   - These files MUST be read using Bash byte-range reads (`head -c 8000`, `tail -c +8001 | head -c 8000`)
+     instead of the Read tool. Each chunk ≤8000 chars ensures it fits within tool response limits.
+   - Note: if Phase 1.5 preprocessing normalizes the file, the normalized version will have
+     proper line breaks and the oversized-lines flag is cleared for that file.
+   - Log: `⚠️ Oversized lines detected: {filename} ({avg_chars_per_line} chars/line) — using byte-range reads`
+
 6. **Batch detection (MANDATORY for >40 files in processing queue):**
    - Count files remaining in queue after mode filtering
    - **If count ≤ 40:** Process all files in single pass (standard mode)
@@ -96,6 +107,18 @@ EVERY file discovered in Phase 1 MUST be:
      - Log: "  Pass 2: {heavy_count} heavy files (processing 1 at a time)"
      - Set batching flag for Phase 2
      - **CRITICAL: Process files DIRECTLY in main context (NO Task agents, NO parallelization)**
+
+7. **Cost gate — preventive checkpoint:**
+   IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing candidates detected:
+     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
+     - Phase completed: Phase 1 (discovery)
+     - Files in queue: [list with sizes]
+     - Mode: [express/full/heavy]
+     - Preprocessing candidates: [list or "none"]
+     - Resume instruction: "If recovering from compaction, skip Phase 1, read this checkpoint, continue from Phase 1.5 (or Phase 2 if no preprocessing)"
+   ELSE (≤10 files, small, no preprocessing):
+     Skip mid-skill checkpoints (task is small enough to complete safely)
+   Log: `💾 Preventive checkpoint written (${file_count} files, ${est_size}KB)`
 
 ### Phase 1b: Compute Delta (Incremental Extraction)
 
@@ -154,6 +177,152 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
 **REMOVED:** Large Project Strategy moved to mandatory batch detection (step 5)
 
+### Phase 1.5: Smart Source Preprocessing
+
+**Purpose:** Detect noisy sources (transcripts from STT tools like Granola, Otter, Fireflies) and normalize them before extraction. This improves claim quality by fixing speaker attribution, phonetic errors, and broken sentences using accumulated project context. v1 scope: transcript preprocessing only.
+
+**When to activate:** Phase 1.5 runs only if preprocessing candidates are detected. If no candidates are found, skip directly to Phase 2.
+
+13. **Detect preprocessing candidates** — Scan files in the processing queue for two signals:
+
+   **Metadata signal:** Check `_CONTEXT.md` or file frontmatter for `Source Type: transcript` (or `ocr`, `chat-log` — future v2). If found, the file is a candidate.
+
+   **Content heuristic:** For files without explicit metadata, scan the first 50 lines for STT patterns:
+   - **Pseudo-metadata block:** Lines like `Meeting Title:`, `Date:`, `Meeting participants:`, `Transcript:` — common in STT exports (Granola, Otter, Fireflies). Often preceded by an AI-generated summary paragraph.
+   - **Speaker labels with timestamps:** `[00:12:34]`, `Speaker 1:`, `Me:`, `Them:`, `John:`
+   - **Filler word density:** `um`, `uh`, `like`, `you know`, `o sea`, `¿cachái?` at high frequency
+   - **Sentence fragments** without punctuation or capitalization
+   - **Phonetically plausible but contextually wrong words**
+
+   If either signal matches, add the file to the preprocessing queue. If no candidates are found, log `ℹ️ No preprocessing candidates detected` and skip to Phase 2.
+
+14. **Gather project context** — Build a contextual glossary in working memory (no file written). Read from two layers:
+
+   **External context (Work layer + metadata):**
+   - `PROJECT.md` — project name, domain, key terms
+   - Folder `_CONTEXT.md` files — participant names, session context, dates
+   - `02_Work/EXTRACTIONS.md` headers — previously extracted source metadata (participants, types)
+   - `02_Work/INSIGHTS_GRAPH.md` — domain-specific terms, proper nouns, acronyms already established
+
+   **Embedded context (from the transcript itself):**
+   - **AI-generated summary** — STT tools often prepend an AI summary paragraph before the transcript. Extract domain terms, participant roles, and topic keywords from it.
+   - **Pseudo-metadata** — `Meeting Title:`, `Date:`, `Meeting participants:` lines. Extract participant names and use them as speaker identification candidates.
+   - These embedded signals are high-value: they come from the same session and often contain correctly-spelled versions of terms that are garbled in the transcript body.
+
+   This combined context enables language-aware fuzzy matching for phonetic corrections without a persistent glossary file.
+
+15. **Phase 1.5a — Mechanical Preprocessing (Passes A + B):**
+
+   For each transcript candidate, apply two mechanical normalization passes.
+   These passes CAN use sed, awk, regex, Python regex/re module, or any scripting approach.
+
+   **Pass A — Speaker Detection (3-step):**
+   1. **Segment:** Identify speaker turn boundaries using timestamps, indentation, labels, or dialogue patterns.
+      - **Unsegmented multi-speaker detection:** If the participant list (from `_CONTEXT.md` or file metadata) lists >1 participant BUT the transcript has no per-line speaker labels or turn markers (e.g., Granola collapsing all speakers into one `Me:` block):
+        a. Gather **speaker priors** from Work layer: known roles (CEO, CTO, consultant), topics per speaker (from existing insights in `INSIGHTS_GRAPH.md`), vocabulary patterns
+        b. **Content-based segmentation:** Identify speaker changes by topic shifts, role-specific vocabulary ("yo eliminé" = implementer, "pricing model" = business), temporal markers ("cuando Philippe se fue"), self-references to role
+        c. Insert speaker boundaries: `[SPEAKER: Name (confidence)]` at each detected transition
+        d. Log: `🔍 Unsegmented transcript — content-based segmentation applied ({N} speaker changes detected)`
+   2. **Identify:** Match speaker segments to known participants (from `_CONTEXT.md`, file metadata, or project context). Use contextual clues: role references ("as CFO I think..."), name mentions ("like Maria said..."), speaking style consistency.
+   3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low/uncertain` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
+      - For content-based segmentation (step 1 unsegmented path): most attributions will be `medium` or `low/uncertain`. This is expected — the clarification loop in /analyze handles corrections.
+
+   **Pass B — Phonetic Correction:**
+   - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
+   - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
+   - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
+   - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
+
+   After Passes A+B, write the mechanically-corrected file to `02_Work/_temp/{filename}_mechanical.md`.
+   Log: `✓ Passes A+B complete: {filename} ({speakers} speakers, {corrections} phonetic corrections)`
+
+15b. **Phase 1.5b — Semantic Preprocessing (Pass C — Sentence Repair):**
+
+   **⛔ STOP.** Do NOT continue from the mechanical script. This is a SEPARATE step.
+   Read the mechanically-corrected file (`02_Work/_temp/{filename}_mechanical.md`) back using the Read tool.
+   Pass C requires LLM reasoning — it CANNOT be bundled with the mechanical Passes A+B.
+
+   **Only runs when:** the user approved full preprocessing (not "Solo phonetics" or similar partial option).
+   If the user chose phonetics-only, skip this step entirely and use the `_mechanical.md` file as the final normalized output.
+
+   **Prohibited tools for Pass C:** sed, awk, grep, regex, Python re module, any mechanical text processing.
+   Pass C MUST be performed as an LLM analysis pass — read the content, reason about semantic boundaries, and write the repaired version.
+
+   **Pass C — Sentence Repair:**
+   - **Incomplete sentences:** Mark with `[incomplete]` if a thought is clearly cut off mid-sentence.
+   - **Crosstalk:** Mark overlapping speech with `[crosstalk]` and attempt to separate speakers.
+   - **Unintelligible:** Mark passages that can't be recovered with `[unintelligible]`.
+   - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
+   - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
+
+   **Verification (mandatory):** After applying Pass C, confirm that the output contains at least one
+   `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker. If the transcript is genuinely clean
+   and no repairs are needed, log: `Pass C: no repairs needed — transcript is clean` (this is acceptable
+   but must be an explicit decision, not a silent skip).
+
+16. **Quality report & user approval (MANDATORY propose-before-execute):**
+
+   Present the preprocessing results for each candidate file:
+
+   ```
+   ## Preprocessing: [folder/filename.ext]
+
+   ### Speaker Table
+   | Speaker | Identified As | Confidence | Turns | Method |
+   |---|---|---|---|---|
+   | Speaker 1 | María López (Project Lead) | high | 23 | label |
+   | Speaker 2 | [Speaker 2] | low | 8 | content-based |
+
+   ⚠️ Content-based segmentation applied (no speaker labels in source).
+   Attributions marked "content-based" may need correction in /analyze.
+
+   ### Corrections (top 15)
+   | Original | Corrected | Context | Confidence |
+   |---|---|---|---|
+   | ciefo | CFO | "el ciefo dijo que..." | high |
+   | tim mining | TIMining | project name | high |
+   | usabilida | usabilidad | "la usabilida del sistema" | high |
+
+   ### Sentence Repairs
+   - 12 incomplete sentences marked [incomplete]
+   - 3 crosstalk passages marked [crosstalk]
+   - 2 unintelligible sections marked [unintelligible]
+   - 8 run-on sentences split
+
+   Total corrections: N
+   ```
+
+   **User options:**
+   - **Approve** — write normalized version and proceed
+   - **Review individually** — show full diff for the file, user can accept/reject individual corrections
+   - **Skip** — skip preprocessing for this file, extract from raw source
+
+   Wait for user response before proceeding.
+
+17. **Write normalized files** — For each approved file:
+   - If Pass C ran: write the sentence-repaired content to `02_Work/_temp/{filename}_normalized.md`
+   - If phonetics-only: rename/copy `_mechanical.md` to `02_Work/_temp/{filename}_normalized.md`
+   - Clean up intermediate `_mechanical.md` file (delete after `_normalized.md` is written)
+   - Build redirect map in working memory: `{original_path → normalized_path}`
+   - The original file in `01_Sources/` is NEVER modified (read-only layer)
+   - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections, Pass C: {yes/skipped})`
+
+17b. **Line-breaking for oversized files** — For each normalized file whose original was flagged `oversized-lines` in step 5b:
+   - Run a line-breaking pass on the `_normalized.md` file (mechanical — regex is fine):
+     ```bash
+     python3 -c "
+     import re, sys
+     text = open(sys.argv[1]).read()
+     # Break at sentence boundaries: '. ', '? ', '! ' followed by uppercase or newline
+     text = re.sub(r'([.?!])\s+(?=[A-ZÁÉÍÓÚÑÜ])', r'\1\n', text)
+     open(sys.argv[1], 'w').write(text)
+     " "02_Work/_temp/{filename}_normalized.md"
+     ```
+   - Verify: `wc -L "02_Work/_temp/{filename}_normalized.md"` — longest line must be < 2000 chars
+   - If still oversized after sentence-boundary splitting, apply a hard break at 1500 chars on remaining long lines (split at last space before 1500)
+   - Clear the `oversized-lines` flag for this file in working memory
+   - Log: `✓ Line-breaking applied: {filename} (max line: {max_chars} chars)`
+
 ### Phase 2: Read & Extract
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
@@ -163,6 +332,11 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 When processing a document, apply these criteria for claim extraction:
 
 1. **Read full content** — Don't skip pages, sections, or files based on assumed redundancy
+   **If file is flagged `oversized-lines` (from step 5b):**
+   - Do NOT use the Read tool (it will fail on lines >10K chars)
+   - Use Bash byte-range reads: `head -c 8000 {filepath}`, then `tail -c +8001 {filepath} | head -c 8000`, etc.
+   - Concatenate chunks in working memory, then extract claims as normal
+   - For files >50KB, read first 25KB + last 10KB (sufficient for extraction signal)
 2. **Extract claims meeting these criteria:**
    - User needs, pain points, behaviors (direct quotes preferred)
    - Business constraints, success metrics, strategic decisions
@@ -178,13 +352,37 @@ When processing a document, apply these criteria for claim extraction:
 
 **This is NOT an excuse to skip files.** Extract strategic signal from ALL processed files. If a file appears to have low information density, still process it and extract what's available. Report actual claim counts, not zero because "nothing valuable found."
 
-**AI-Generated Source Tagging:**
+**Authority-Based Claim Tagging:**
 
-When processing a file from a folder marked as `ai-generated` (detected in Phase 1, step 2):
-- **Section header:** Add warning tag: `## [folder/file.md] ⚠️ AI-GENERATED`
-- **Each claim:** Append `[AI-SOURCE]` suffix to the claim text
-- **Log:** `⚠️ AI-generated source — claims tagged for verification`
-- Also check individual markdown files for `source_type: ai-generated` in their frontmatter metadata. Apply the same tagging if found, even if the folder's `_CONTEXT.md` doesn't flag it.
+Determine each file's authority level (from file frontmatter > folder `_CONTEXT.md` > default `primary`). Tag claims based on authority:
+
+**`primary` (default):** No tag. Standard extraction.
+- Section header: `## [folder/file.md]`
+
+**`internal`:** Tag all claims `[INTERNAL]`.
+- Section header: `## [folder/file.md] 🏢 INTERNAL`
+- Each claim: append `[INTERNAL]` suffix
+- **Action items separation:** Internal sources often contain operational content (action items, agreements, delivery decisions). Separate these from product observations:
+  ```
+  ### Raw Claims
+  1. "El UX de Figma es superior para este caso" [INTERNAL]
+  2. "Operadores necesitan responsivo en tablets de campo" [INTERNAL]
+
+  ### Action Items (reference only — not forwarded to /analyze)
+  - Nicolas traspasa mockups a presentación principal
+  - Workshop jueves 10-12 presencial
+  ```
+  Action Items stay in EXTRACTIONS.md as context but are NOT processed by /analyze.
+- Log: `🏢 Internal source — claims tagged [INTERNAL], action items separated`
+
+**`ai-generated`:** Tag all claims `[AI-SOURCE]`.
+- Section header: `## [folder/file.md] ⚠️ AI-GENERATED`
+- Each claim: append `[AI-SOURCE]` suffix
+- Log: `⚠️ AI-generated source — claims tagged [AI-SOURCE]`
+
+**Combined authority:** A file can carry both tags (e.g., AI summary of internal session → `Authority: ai-generated` with `[INTERNAL]` context from folder). In this case, apply both: `[INTERNAL][AI-SOURCE]`. Lowest authority wins during /analyze.
+
+**Backwards compatibility:** Check individual markdown files for `source_type: ai-generated` in frontmatter (old format). Map to `Authority: ai-generated` and apply AI-SOURCE tagging.
 
 **Batch Processing Logic (MANDATORY for >40 files):**
 
@@ -201,12 +399,20 @@ For each Light batch (batch size = 10 files):
   2. **Process batch directly** — For each of the 10 files in this batch:
      - Read and extract claims (step 12 logic below)
      - Accumulate extracted sections in memory
-  3. **Write checkpoint after batch** — After all 10 files processed:
+  3. **Write batch results** — After all 10 files processed:
      - Append all 10 sections to EXTRACTIONS.md (single Edit operation)
      - Update SOURCE_MAP.md (10 rows via Edit tool)
      - Clean temp: `rm -rf 02_Work/_temp/*`
      - Log: "✓ Batch X/Y: 10 files, Z claims"
-  4. **Continue to next Light batch** — Repeat until all Light files complete
+  4. **IMMEDIATELY write SESSION_CHECKPOINT** (if mid-skill checkpoints are active — i.e., step 7 wrote a preventive checkpoint):
+     Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md` with:
+     - Phase: "Phase 2 — Pass 1, batch {N}/{total}"
+     - Files processed so far: [count and list]
+     - Files remaining: [count and list]
+     - Claims extracted so far: [total count]
+     - Resume instruction: "Continue from file {next_file} in batch {N+1}"
+     This is a SEPARATE step — do NOT bundle it with the EXTRACTIONS/SOURCE_MAP write above.
+  5. **Continue to next Light batch** — Repeat until all Light files complete
 
 **PASS 2: Heavy Files (pdf, DOCX/PPTX, files ≥ 5MB)**
 
@@ -224,7 +430,14 @@ For each Heavy file (one at a time):
      - Update SOURCE_MAP.md (single row via Edit tool)
      - Clean temp: `rm -f 02_Work/_temp/*`
      - Log: "✓ [filename] → Z claims (X/N)"
-  5. **Continue to next Heavy file** — Repeat until all Heavy files complete
+  5. **IMMEDIATELY write SESSION_CHECKPOINT** (if mid-skill checkpoints are active):
+     Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md` with:
+     - Phase: "Phase 2 — Pass 2, heavy file {X}/{total}"
+     - Files processed so far: [count and list]
+     - Files remaining: [count and list]
+     - Claims extracted so far: [total count]
+     - Resume instruction: "Continue from heavy file {next_file}"
+  6. **Continue to next Heavy file** — Repeat until all Heavy files complete
 
 **Why per-file writes for Heavy files:**
 - Prevents context accumulation from large file reads
@@ -237,6 +450,8 @@ For each Heavy file (one at a time):
 Process all files in single pass (step 12 below)
 
 12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
+
+   **Preprocessing redirect:** Before reading a source file, check if Phase 1.5 created a normalized version in `02_Work/_temp/{filename}_normalized.md`. If a redirect exists, read from the `_temp/` path instead of the original. The section header (`## [folder/file.ext]`) must still reference the original `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
 
    **If Phase 1b was skipped** (--full flag or SOURCE_MAP missing), process all files from Phase 1.
 
@@ -387,6 +602,7 @@ Process all files in single pass (step 12 below)
    - Type: [from metadata or _CONTEXT.md]
    - Date: [from metadata]
    - Participants: [if applicable]
+   - Preprocessed: [yes — only if Phase 1.5 normalized this file]
    - Extracted: [YYYY-MM-DDTHH:MM timestamp when this section was processed]
 
    ### Raw Claims
@@ -403,12 +619,13 @@ Process all files in single pass (step 12 below)
 
 ### Phase 4: Report (Validation First)
 
-13. **Validate against disk BEFORE reporting:**
+13. **Validate against disk BEFORE reporting:** ⚙️ SCRIPT-ELIGIBLE
 
-   BEFORE reporting numbers to the user:
-   1. Re-read `02_Work/EXTRACTIONS.md` from disk
-   2. Count sections: use Grep to count lines matching `^## \[` pattern
-   3. Count claims: use Grep to count lines matching `^[0-9]+\.` pattern
+   BEFORE reporting numbers to the user, use Bash one-liners (not LLM counting):
+   ```bash
+   grep -c '^## \[' 02_Work/EXTRACTIONS.md     # section count
+   grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md  # claim count
+   ```
    4. Build list of processed files from section headers
    5. Compare against Phase 1 discovery list (Glob results stored in memory)
    6. Identify discrepancies:
@@ -478,13 +695,15 @@ Process all files in single pass (step 12 below)
 
 ### Phase 4c: Cleanup
 
-15. **Clean temporary directory:**
+15. **Clean temporary conversion files** (preserve checkpoint and preprocessed files):
    ```bash
-   rm -rf 02_Work/_temp
+   # Remove converted files but preserve SESSION_CHECKPOINT.md and preprocessed sources
+   find 02_Work/_temp -type f ! -name 'SESSION_CHECKPOINT.md' ! -name '*_normalized.md' -delete 2>/dev/null
    ```
-   - Removes all converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - Removes converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - **Preserves** `SESSION_CHECKPOINT.md` (primary recovery mechanism)
+   - **Preserves** `*_normalized.md` (preprocessed sources for Phase 2 redirect)
    - Only runs after all batches complete (or single pass completes)
-   - Prevents repo bloat with temporary conversion files
 
 ### Phase 5: Write to MEMORY.md
 
@@ -498,5 +717,6 @@ Process all files in single pass (step 12 below)
      - `[folder-name]/`: N files, X claims
      - `[folder-name]/`: N files, X claims
      - **Total:** Y files processed, Z claims extracted
+   - **Preprocessing:** N files (M speakers, P corrections) — or "none"
    - **Snapshot:** X source files · Y claims extracted · Z organization issues
    ```

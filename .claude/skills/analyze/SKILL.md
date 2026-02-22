@@ -53,6 +53,18 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 7. **Format normalization check** — Scan existing insights for format consistency. If older insights use a different format than the current spec (e.g., missing temporal tags, missing key quotes, bold status instead of plain text, three-digit zero-padded IDs like `IG-001`), report the inconsistencies to the user before adding new ones. Do NOT auto-migrate — just flag: "Found N existing insights in old format (missing temporal tags, key quotes). Recommend running `/analyze` with `--normalize` in a future pass." New insights must always follow the current format regardless of what exists.
 
+7b. **Cost gate — preventive checkpoint:**
+   IF section_count > 15 OR total_claims > 300:
+     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
+     - Phase completed: Phase 1 (load extractions)
+     - Mode: [incremental/full]
+     - Sections to process: count + list
+     - Total claims: count
+     - Resume instruction: "If recovering, skip Phase 1, load checkpoint, continue from Phase 2"
+   ELSE:
+     Skip mid-skill checkpoints
+   Log: `💾 Preventive checkpoint written (${section_count} sections, ${claim_count} claims)`
+
 ### Phase 1b: Express Mode Detection
 
 8. **Detect project size** — Count total source files (from EXTRACTIONS.md section headers) and total claims (from raw claim lines):
@@ -105,7 +117,17 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - `hypothesis` — someone proposes something unvalidated ("we think X", "users probably Y")
      - `vision` — aspirational statement about the future ("in 2040 we will...", "the goal is...")
      - `fact` — verifiable data point (metric, date, technical spec, contractual term)
-   - **AI-source rule:** Claims tagged `[AI-SOURCE]` in EXTRACTIONS.md MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one non-AI source (`user`, `stakeholder`, `document`, or `researcher`).
+   - **Authority-based rules (verification gates):**
+
+     **`[AI-SOURCE]` claims:** MUST use `voice: ai` and `authority: hypothesis`. They can NEVER be assigned `authority: fact` or `authority: direct-quote` — AI content is inherently unverified. An insight supported ONLY by `voice: ai` sources cannot reach `VERIFIED` status; it requires corroboration from at least one primary source (`user`, `stakeholder`, `document`, or `researcher`).
+
+     **`[INTERNAL]` claims:** Use the actual voice of the speaker (e.g., `researcher`, `stakeholder`) but the insight carries reduced weight. An insight supported ONLY by `[INTERNAL]` sources cannot reach `VERIFIED` status; it requires corroboration from at least one `primary` authority source. Internal observations inform the analysis but don't constitute independent evidence.
+
+     **`[INTERNAL][AI-SOURCE]` claims (combined):** Lowest authority wins — treat as `[AI-SOURCE]` rules (voice: ai, authority: hypothesis). Both corroboration requirements apply.
+
+     **Action Items from internal sources** (marked `### Action Items` in EXTRACTIONS.md): Skip entirely during /analyze. These are operational references, not product claims.
+
+     **Conflict handling:** When an internal/ai claim contradicts a primary claim, log the conflict but note the authority imbalance in the conflict description: `Note: [INTERNAL] vs primary source — primary takes precedence unless internal evidence is compelling.`
    - **Status: always `PENDING`.** Write the status as plain text `PENDING`, not bold (`**PENDING**`), not in backticks. Same for all status labels.
    - **Temporal tag** — When the insight describes something that exists today vs. something desired for the future, tag it:
      - `(current)` — describes the present state ("users currently do X", "the system has Y limitation")
@@ -172,6 +194,14 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    Calculate a **diversity score**: number of source types present out of 6 (e.g., `3/6`). This is a simple health indicator, not a quality judgment — a 6/6 project with shallow sources is worse than a 3/6 project with deep ones.
 
    **e. Single-source fragility flags** — After insights are prepared (step 10), review them for source diversity at the insight level. Flag any insight whose supporting evidence comes from only one source type. These insights are more fragile — they lack cross-type corroboration. In the report (Phase 5), list fragile insights with a note like: `[IG-05] supported only by user research — would benefit from technical or business corroboration`.
+
+**Write analysis checkpoint** — Before proceeding to Phase 3/4:
+   Update `02_Work/_temp/SESSION_CHECKPOINT.md` (if mid-skill checkpoints are active) with:
+   - Phase: "Phase 2 complete — analysis draft ready"
+   - New insights drafted: count + IDs
+   - New conflicts found: count + IDs
+   - Ambiguities: count
+   - Resume instruction: "If recovering, read INSIGHTS_GRAPH.md + CONFLICTS.md for current state, skip to Phase 3/4"
 
 ### 🆕 Phase 3: SYNTHESIS (Observation → Insight Consolidation)
 
@@ -310,6 +340,36 @@ BEFORE writing to files, present synthesis findings:
 [List from step 18 — missing validations]
 ```
 
+**19a. Speaker clarification loop** (only when uncertain attributions exist):
+
+Scan the proposed insights for uncertain speaker attribution. Sources of uncertainty:
+- Claims from content-based segmentation (Phase 1.5 Pass A, confidence `low/uncertain`)
+- Claims from unsegmented transcripts that skipped preprocessing
+- Claims where the speaker attribution seems inconsistent with the content (e.g., implementation detail attributed to CEO)
+
+**If uncertain attributions found:**
+
+Group them by transcript/source and present targeted correction questions via AskUserQuestion:
+
+```
+Speaker attribution review — {N} insights have uncertain speakers:
+
+From [sesion-gerencia/transcript.md]:
+  IG-03: "yo eliminé la navegación temporal" — attributed to CEO (uncertain)
+    → Sounds like an implementer (CTO?). Who said this?
+  IG-07: "el pricing tiene que ser por usuario" — attributed to CEO (uncertain)
+    → Business decision. Could be CEO or CFO. Who said this?
+```
+
+Options per group:
+- **Correct in batch** — user provides the actual speaker, correction propagates to all insights from the same transcript segment
+- **Accept as-is** — keep current attribution (user confirms it's correct despite low confidence)
+- **Skip** — leave uncertain, mark for later review
+
+**Propagation rule:** When the user corrects a speaker for one segment, apply the same correction to ALL insights extracted from that segment (same speaker, same transcript section).
+
+**If no uncertain attributions:** Skip this step silently.
+
 **19b. Use AskUserQuestion for structured approval** (no free-text prompt):
 
 Invoke AskUserQuestion with 2 questions. Write question text and option labels in `output_language`. Substitute actual counts for N and M.
@@ -379,7 +439,17 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
     - Append the conflict as `PENDING` with a description of the tension.
     - **Both sides must reference `[IG-XX]` IDs** — a conflict without insight refs on both sides is just an observation. Each side of the tension must point to the specific insight(s) that support it.
 
-25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`.
+
+    **IMPORTANT: Count from files, not from memory.** ⚙️ SCRIPT-ELIGIBLE — use Bash one-liners:
+    ```bash
+    grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md   # total insights
+    grep -c '### \[CF-' 02_Work/CONFLICTS.md          # total conflicts
+    grep -c 'Status: VERIFIED' 02_Work/INSIGHTS_GRAPH.md
+    grep -c 'Status: PENDING' 02_Work/INSIGHTS_GRAPH.md
+    ```
+    Do NOT rely on in-memory tallies — they may miss synthesized insights or convergence-created entries.
+
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze [--full]
     - **Request:** /analyze [incremental|full]
@@ -391,8 +461,8 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
       - Convergence updated: M existing insights
       - Ambiguities logged: [AMB-XX] count
       - Conflicts detected: K
-    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED) · C conflicts/ambiguities PENDING
-    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED) · C conflicts PENDING · O outputs
+    - **Result:** Total insights: T (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts/ambiguities PENDING
+    - **Snapshot:** T insights (V VERIFIED, P PENDING, S MERGED, I INVALIDATED) · C conflicts PENDING · O outputs
     ```
 
 ### Phase 4b: Research Brief
@@ -445,7 +515,9 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 
 After writing files, generate STATUS.html automatically so the user can review insights and conflicts without running a separate command.
 
-26. **Build JSON data** from the analysis results already in memory:
+26. **Build JSON data** ⚙️ SCRIPT-ELIGIBLE — use an inline Python script to parse Work files and build the JSON. Do NOT build >10KB JSON in-context via LLM reasoning (causes compaction loops, see anti-patterns). Write a Python script that reads INSIGHTS_GRAPH.md, CONFLICTS.md, SOURCE_MAP.md, SYSTEM_MAP.md, parses headers/fields, and outputs valid JSON. Validate the JSON before injecting.
+
+   Build JSON from the Work layer files:
 
    ```json
    {

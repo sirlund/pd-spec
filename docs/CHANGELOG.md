@@ -1,5 +1,318 @@
 # Changelog
 
+## [4.17.1] — 2026-02-22
+
+**Live updates actually work now.** A spread-order bug in the WebSocket broadcast meant file changes never reached the client — the chokidar event's `type: 'change'` silently overwrote the required `type: 'file-change'`. One-line fix, caught by QA v6.
+
+- **Fix — WS broadcast spread order (BUG-02).** `broadcast({ type: 'file-change', ...event })` → `broadcast({ ...event, type: 'file-change' })`. (`app/server/index.js:75`)
+- **New anti-pattern rule.** "Never put override properties BEFORE spread" added to Engine Development Anti-Patterns table.
+
+## [4.17.0] — 2026-02-22
+
+### Highlights
+
+**Fan noise eliminated.** A single file change used to trigger ~72 parse operations through a cascade of redundant WebSocket connections, parallel refetches, and uncached parsing. Now it triggers 1. Three fixes: singleton WebSocket (1 connection instead of 4-5), debounced refetch (300ms collapse window), and server-side mtime-validated parse cache. Leave the app open during agent work — zero CPU at idle, brief spikes on changes.
+
+**Mechanical pipeline operations now use scripts.** Counting insights, computing hashes, generating dashboard JSON — deterministic tasks are explicitly marked "script-eligible" in skill instructions. The agent uses inline Bash/Python instead of LLM reasoning, eliminating counting errors (QA v4's BUG-04) and saving tokens.
+
+**Three pipeline bugs fixed.** Engine version in the Live Research App was permanently stale in project branches (merge=ours on PROJECT.md). Oversized-line transcripts stayed oversized after preprocessing. Batch checkpoints in /extract Pass 2 were missing entirely.
+
+### Changes
+
+- **Performance — Singleton WebSocket.** Module-level WS with subscriber pattern replaces per-hook connections. Auto-reconnect on disconnect (2s retry). (`app/client/hooks.js`)
+- **Performance — Debounced refetch.** 300ms debounce timer collapses rapid file changes into a single API call per endpoint. (`app/client/hooks.js`)
+- **Performance — Server-side parse cache.** `readAndParse()` with mtime validation. Multiple endpoints sharing the same Work file (dashboard + evidence-gaps both need INSIGHTS_GRAPH.md) parse it once. Watcher proactively invalidates on file change. (`app/server/api.js`, `app/server/index.js`)
+- **BL-55 — Engine version from CHANGELOG.** `/api/project` reads version from `docs/CHANGELOG.md` (first `## [X.Y.Z]` header) instead of PROJECT.md's `engine_version` field. Fallback to PROJECT.md if CHANGELOG unavailable.
+- **BL-52 — Line-breaking after normalization.** Step 17b in /extract: sentence-boundary regex split for files flagged `oversized-lines`, with hard-break fallback at 1500 chars.
+- **BL-53 — Batch checkpoint separation.** SESSION_CHECKPOINT is now a separate numbered step in both Pass 1 (step 4) and Pass 2 (step 5) batch loops. Pass 2 was missing checkpoints entirely.
+- **BL-47 — Script-first execution guidance.** "90/10 Rule" section in CLAUDE.md with table of script-eligible operations. /analyze steps 25-26 and /extract step 13 marked as script-eligible.
+
+<details>
+<summary>Technical details</summary>
+
+**Performance cascade (before → after):**
+```
+Before: 1 file change → 4-5 WS messages → 2-3 refetches each → 4 uncached parses = ~72 ops
+After:  1 file change → 1 WS message → 1 debounced refetch → 1 re-parse (cache hits) = ~1 op
+```
+
+**Files changed:**
+- `app/client/hooks.js` — Singleton WS + debounced refetch
+- `app/server/api.js` — `readAndParse()` cache + BL-55 version source
+- `app/server/index.js` — Cache invalidation wiring
+- `CLAUDE.md` — Script-First Execution section
+- `.claude/skills/extract/SKILL.md` — BL-52 step 17b, BL-53 checkpoint steps, BL-47 step 13
+- `.claude/skills/analyze/SKILL.md` — BL-47 steps 25-26
+
+**BACKLOG impact:**
+- BL-47: IMPLEMENTED (v4.17.0)
+- BL-52: IMPLEMENTED (v4.17.0)
+- BL-53: IMPLEMENTED (v4.17.0)
+- BL-55: IMPLEMENTED (v4.17.0)
+
+</details>
+
+## [4.16.0] — 2026-02-22
+
+### Highlights
+
+**The Live Research App now has its own design system.** Dark-first theme with a light mode toggle, PD-Spec's accent-cyan palette, animated card hover borders, JetBrains Mono for code, Tabler icon sprite for consistent iconography. The previous generic light theme is gone — the app now has a distinct visual identity that works in both dark and light environments.
+
+**Files are now browsable, not just listed.** Sources and Outputs have a Dropbox-style split panel — folder tree on the left, context-aware preview on the right. Click a markdown file to see it rendered inline, click an image to preview it, click a PDF or DOCX to open it with your system app. No more staring at a flat list of filenames.
+
+**Decision tracking turns passive viewing into active research.** Approve or reject pending insights, choose conflict resolution options, add context notes — all accumulated as ephemeral decisions. When ready, the Actions view generates a complete `/synthesis` prompt capturing every decision for your agent session.
+
+**The status dashboard is now the Live Research App.** Everything the static `STATUS.html` had — maturity bar, authority distribution, evidence gaps — is now live and interactive. Plus new features: auto-computed evidence gaps, source diversity grid, structured system map cards with vision/modules/principles/questions, and an Add Context prompt generator for field observations.
+
+### Changes
+
+- **BL-33 Phase 2 — Visual redesign.** Dark-first design system with CSS custom properties. 3-file CSS architecture (tokens/base/components) replacing Tailwind. Tabler SVG sprite (20 icons). Shared UI primitives (Card, Badge, CopyBlock, AccentBox, StatCard, ProgressBar). Theme toggle with localStorage persistence and anti-flash script.
+- **BL-33 Phase 2 — System Map view.** Structured cards for vision (accent-box), modules (status badges, refs, implications, blockers), design principles (numbered with refs), open questions (with conflict cross-refs). Replaces raw markdown rendering.
+- **BL-33 Phase 2 — Evidence Gaps.** Auto-computed from insight data: claim-level (single-source support), category gaps (underrepresented categories), source diversity (missing source types). Canary-level detection for structural weaknesses.
+- **BL-33 Phase 2 — Dashboard enhancements.** Segmented research maturity bar, authority distribution tiers, source diversity grid, insight categories, action item quick links.
+- **BL-33 Phase 2 — Decision tracking.** Approve/reject for PENDING insights, radio options for conflicts (flag/research/context with textarea). Ephemeral state lost on refresh (intentional).
+- **BL-33 Phase 2 — Add Context + Actions.** Field note prompt generator and `/synthesis` prompt builder from accumulated decisions.
+- **BL-33 Phase 2 — File Browser.** Split-panel replacing SourceBrowser + OutputLauncher. Collapsible folder tree, status dots, type-aware preview (MD rendered, images inline, HTML/binary open externally). New API endpoints: `/api/raw/*`, `POST /api/open`, `/api/evidence-gaps`.
+
+<details>
+<summary>Technical details</summary>
+
+**Removed:** Tailwind CSS, PostCSS, Autoprefixer, OutputLauncher.jsx, SourceBrowser.jsx, app.css
+
+**New files:**
+- `app/client/styles/tokens.css` — Design tokens (dark/light)
+- `app/client/styles/base.css` — Layout and typography
+- `app/client/styles/components.css` — All reusable component styles
+- `app/client/public/icons/sprite.svg` — Tabler SVG sprite (20 icons)
+- `app/client/components/ui/` — Icon, Card, Badge, CopyBlock, AccentBox, StatCard, ProgressBar
+- `app/client/components/ThemeToggle.jsx` — Dark/light toggle
+- `app/client/components/SystemMapView.jsx` — Structured system map cards
+- `app/client/components/EvidenceGapsView.jsx` — Auto-computed gaps
+- `app/client/components/AddContextView.jsx` — Field note prompt generator
+- `app/client/components/ActionsView.jsx` — Decision summary + synthesis prompt
+- `app/client/components/FileBrowser.jsx` — Split-panel file browser
+
+**Architecture changes:**
+- View registry pattern in app.jsx (declarative, auto-generates sidebar)
+- Decision state lifted to App (insightDecisions, conflictDecisions)
+- CSS architecture: tokens → base → components (3 files, no preprocessor)
+- Server: express.json() for POST body parsing, `/api/raw` for binary files, `/api/open` for system app launch
+
+**BACKLOG impact:**
+- BL-33: Phase 2 IMPLEMENTED (v4.16.0)
+
+</details>
+
+## [4.15.0] — 2026-02-21
+
+### Highlights
+
+**Your research is now a live web app.** Run `/view` and PD-Spec opens a local browser application showing your Work layer data — insights, conflicts, sources, extractions — all updating in real time as the agent works. No more regenerating static dashboards or reading raw markdown files.
+
+**Built for stakeholder meetings.** The Live Research App shows pipeline progress, insight cards with status badges and convergence bars, conflict cards with resolution tracking, a source file browser with extraction status, and an output launcher that opens deliverables in new tabs. PD-Spec semantic rendering turns `[IG-XX]` and `[CF-XX]` references into clickable navigation badges.
+
+### Changes
+
+- **BL-33 Phase 1 — Live Research App.** Express server with chokidar file watcher and WebSocket push for live updates. Five markdown parsers (insights, conflicts, source map, system map, extractions). React frontend with Vite: dashboard with pipeline stats, filterable insight/conflict views, source browser, markdown renderer with PD-Spec extensions, output launcher. New `/view` skill starts the server and opens the browser.
+- **BL-42 absorbed** into BL-33 (Work Layer Viewer functionality included in the app).
+
+<details>
+<summary>Technical details</summary>
+
+**New files:**
+- `app/` — Complete Node.js + React application (server, parsers, components, styles)
+- `app/server/parsers/` — INSIGHTS_GRAPH, CONFLICTS, SOURCE_MAP, SYSTEM_MAP, EXTRACTIONS markdown → JSON
+- `app/client/components/` — Dashboard, InsightCard, ConflictCard, MarkdownView, SourceBrowser, OutputLauncher, SearchBar, Sidebar
+- `.claude/skills/view/SKILL.md` — New `/view` skill
+
+**Files changed:**
+- `CLAUDE.md` — Skills table (added /view), folder structure (added app/)
+- `.gitignore` — Added app/node_modules/ and app/dist/
+
+**Architecture:**
+- Backend: Express + chokidar + WebSocket (ws)
+- Frontend: React 19 + Vite 6 + Tailwind CSS 4
+- App reads Work layer files (read-only), never writes
+- Live updates: file watcher → WebSocket push → frontend refetch
+- Outputs opened in new tabs (not embedded) to preserve their self-contained CSS/JS
+
+**BACKLOG impact:**
+- BL-33: Phase 1 IMPLEMENTED (Phase 2 = BL-33a JSON Work layer, future)
+- BL-42: ABSORBED by BL-33
+
+</details>
+
+## [4.14.0] — 2026-02-21
+
+### Highlights
+
+**Sources now carry authority, not just format.** New `Authority` metadata field separates *what a source is* (transcript, document, OCR) from *how much weight it carries* (primary, internal, ai-generated). Consultant brainstorming sessions, internal alignment meetings, and AI summaries now get proper reduced authority without contaminating stakeholder evidence. Action items from internal sources are automatically separated and excluded from analysis.
+
+**Pass C finally works as a separate step.** Phase 1.5 is now two sub-phases: 1.5a (mechanical Passes A+B, scripting allowed) writes an intermediate `_mechanical.md` file, then 1.5b (semantic Pass C) forces the agent to stop, read it back, and apply sentence repair as an LLM reasoning task. Python regex explicitly prohibited for Pass C. Mandatory verification confirms markers exist or logs "no repairs needed."
+
+**Unsegmented transcripts get speaker attribution.** When a multi-speaker transcript has no per-line speaker labels (e.g., Granola collapsing everyone into `Me:`), Phase 1.5 now attempts content-based segmentation using Work layer speaker priors — roles, known topics, vocabulary patterns. After analysis, a clarification loop presents uncertain attributions for quick user correction with batch propagation.
+
+### Changes
+
+- **BL-51 — Pass C enforcement fix.** Restructured Phase 1.5 into Phase 1.5a (mechanical, writes `_mechanical.md`) and Phase 1.5b (semantic, LLM-only). Hard gate between them. Python regex added to prohibited tools list for Pass C. Verification step mandatory.
+- **BL-44 — Source authority layer.** New `Authority` field in `_SOURCE_TEMPLATE.md` and `_CONTEXT_TEMPLATE.md` (primary/internal/ai-generated). Extract tags claims `[INTERNAL]` or `[AI-SOURCE]`. Analyze applies verification gate: non-primary insights can't reach VERIFIED without primary corroboration. Internal sources get action items separated. Backwards compatible with `Source Type: ai-generated`.
+- **BL-46 — Smart speaker attribution.** Extract Phase 1.5 Pass A extended with content-based segmentation for unsegmented multi-speaker transcripts. Analyze step 19a adds speaker clarification loop with targeted questions and batch propagation.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 1.5 split into 1.5a+1.5b, authority detection in step 2, authority-based claim tagging in Phase 2, unsegmented multi-speaker segmentation in Pass A, quality report Method column
+- `.claude/skills/analyze/SKILL.md` — Authority-based rules (verification gates for INTERNAL and AI-SOURCE), action items skip rule, conflict authority imbalance notes, speaker clarification loop (step 19a)
+- `01_Sources/_SOURCE_TEMPLATE.md` — Authority field added
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Authority field added, Source Type cleaned (ai-generated removed), Authority documentation in comments
+
+**BACKLOG impact:**
+- BL-51: IMPLEMENTED (fixes BL-50 enforcement gap from QA v5)
+- BL-44: IMPLEMENTED (refactors BL-37 ai-generated into proper authority axis)
+- BL-46: IMPLEMENTED (addresses QA4-OBS-07/08 speaker misattribution)
+- BL-54: IMPLEMENTED (QA pipeline formalization)
+
+</details>
+
+## [4.13.0] — 2026-02-21
+
+### Highlights
+
+**Oversized transcript lines no longer crash extraction.** Granola exports with 10K-character lines (no line breaks within speaker turns) now get detected early and read via byte-range chunking instead of the Read tool. Phase 1.5 preprocessing clears the flag when it normalizes the file — so you only hit the fallback when preprocessing is skipped.
+
+**Pass C (sentence repair) now actually runs.** In v4.12.0, the `sed` pipeline handled speaker detection and phonetic corrections but silently skipped sentence repair. The skill now explicitly requires an LLM pass for Pass C — detecting incomplete sentences, crosstalk, unintelligible passages, and run-on speech that regex can't handle.
+
+**Long operations survive context compaction.** Heavy `/extract` and `/analyze` runs now write preventive checkpoints before starting expensive phases. If the context window compacts mid-skill, the agent reads the checkpoint and resumes from where it left off instead of losing all in-memory state. Small tasks (<10 files) skip checkpoints entirely — zero overhead.
+
+**QA artifacts have a home.** All QA plans and findings now live in `docs/qa/` with formalized naming conventions and templates.
+
+### Changes
+
+- **BL-49 — Oversized line detection.** New step 5b in `/extract` Phase 1: checks file_size/line_count ratio > 2000 chars/line. Flagged files use Bash `head -c` / `tail -c` byte-range reads instead of the Read tool. Phase 2 conditional routes oversized files automatically.
+- **BL-50 — Pass C enforcement.** Explicit implementation constraint in Phase 1.5: sentence repair requires LLM reasoning, not mechanical substitution. Runs as a dedicated pass after sed-based Passes A+B.
+- **BL-45 — Mid-skill preventive checkpoints.** Cost gate after Phase 1 in `/extract` and `/analyze`: writes SESSION_CHECKPOINT with file queue, mode, and resume instructions when task is large. Batch-boundary checkpoints in `/extract` Phase 2 update checkpoint after every 10-file batch. Analysis checkpoint after Phase 2 draft. Small tasks skip entirely.
+- **QA folder structure.** `docs/qa/` with README (process + templates), formalized QA_V4_PLAN, QA_V4_FINDINGS, QA_V5_PLAN.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Step 5b (oversized detection), Phase 2 conditional (byte-range reads), Pass C enforcement instruction, cost gate after Phase 1, batch-boundary checkpoint in Phase 2
+- `.claude/skills/analyze/SKILL.md` — Cost gate after Phase 1 (step 7b), analysis checkpoint before Phase 3
+- `CLAUDE.md` — Sources of Truth table (docs/qa/ entry), Folder Structure (docs/qa/), Documentation Guidelines (QA findings path update)
+- `docs/qa/README.md` — QA process, naming conventions, plan + findings templates
+- `docs/qa/QA_V4_PLAN.md` — Formalized from memory (47 tests + 10 regressions)
+- `docs/qa/QA_V4_FINDINGS.md` — Copied from QA worktree (29 PASS, 3 PARTIAL, 1 FAIL)
+- `docs/qa/QA_V5_PLAN.md` — New plan for v4.13.0 validation (12 tests + 4 regressions)
+- `docs/qa/QA_V2_FINDINGS.md` — Moved from docs/
+- `docs/qa/QA_V3_FINDINGS.md` — Moved from docs/
+
+**BACKLOG impact:**
+- BL-49: IMPLEMENTED
+- BL-50: IMPLEMENTED
+- BL-45: IMPLEMENTED
+
+</details>
+
+---
+
+## [4.12.0] — 2026-02-20
+
+### Highlights
+
+**Messy transcripts now get cleaned up before extraction.** Drop a Granola, Otter, or Fireflies transcript into `01_Sources/` and `/extract` detects it, identifies speakers, fixes phonetic errors ("ciefo" → "CFO"), repairs broken sentences, and presents all corrections for your approval — before a single claim is extracted. The original file stays untouched in `01_Sources/`.
+
+### Changes
+
+- **BL-43 — Smart Source Preprocessing.** New Phase 1.5 in `/extract` between source discovery and claim extraction. Detects transcript candidates (via `Source Type: transcript` metadata or content heuristics), gathers project context from Work layer files as an in-memory glossary, and normalizes with 3 passes: speaker detection (segment → identify → assign confidence), phonetic correction against project terms, and sentence repair (`[incomplete]`, `[crosstalk]`, `[unintelligible]` markers). Mandatory propose-before-execute with speaker table + corrections table. Normalized files written to `02_Work/_temp/`, read via redirect in Phase 2. v1: transcripts only.
+- **Source type metadata** — `_CONTEXT_TEMPLATE.md` and `_SOURCE_TEMPLATE.md` now support `transcript`, `ocr`, and `chat-log` types (ocr/chat-log reserved for future v2 preprocessing).
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `.claude/skills/extract/SKILL.md` — Phase 1.5 (steps 13-17), Phase 2 preprocessing redirect, Phase 3 Preprocessed metadata line, Phase 5 preprocessing stats in MEMORY entry
+- `01_Sources/_CONTEXT_TEMPLATE.md` — Extended Source Type values + descriptions for transcript/ocr/chat-log
+- `01_Sources/_SOURCE_TEMPLATE.md` — Optional Source Type field
+- `02_Work/_README.md` — _temp/ description includes preprocessed source files
+
+**Design decisions (simplifications from original BL-43 proposal):**
+- No glossary file — agent reads Work layer files into context (no persistence needed)
+- No preprocessor registry — instructions inline in Phase 1.5, future types added as subsections
+- No language-specific rules — LLM handles fuzzy matching natively
+- No new SOURCE_MAP statuses — preprocessing is transparent via redirect map + Preprocessed metadata
+
+**BACKLOG impact:**
+- BL-43: IMPLEMENTED
+
+</details>
+
+---
+
+## [4.11.0] — 2026-02-20
+
+### Highlights
+
+**Post-compaction recovery now costs 1 read instead of 6.** The agent reads a single checkpoint file (~2K tokens) to resume where it left off — down from ~11K tokens across 5-6 scattered file reads. MEMORY.md auto-compacts at 80 lines, and the session checkpoint now works for all sessions (pipeline and freemode), not just freemode.
+
+### Changes
+
+- **BL-41 — State Management.** SESSION_CHECKPOINT becomes the primary recovery mechanism. MEMORY.md compacted at 80 lines (historical summary + 3 most recent entries in full). Session protocol rewritten with single-read recovery order. Quantitative Snapshot added to checkpoint format (source/insight/conflict counts for instant integrity checks). `/reset` now cleans `02_Work/_temp/` ephemeral workspace.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — Sources of Truth table (MEMORY + CHECKPOINT rows), Session Protocol (full rewrite: 3 subsections → 5), Freemode Protocol (checkpoint scoping), Documentation Guidelines (MEMORY.md row)
+- `02_Work/MEMORY.md` — New template with Historical Summary section and Snapshot entry format
+- `02_Work/_README.md` — Enriched SESSION_CHECKPOINT template with Quantitative Snapshot section
+- `.claude/skills/reset/SKILL.md` — Synced inline MEMORY template, added step 5 (_temp/ cleanup), renumbered steps
+
+**BACKLOG impact:**
+- BL-41: IMPLEMENTED
+
+</details>
+
+---
+
+## [4.10.1] — 2026-02-20
+
+### Highlights
+
+**Session checkpoints can now hold 3x more context.** The limit on `SESSION_CHECKPOINT.md` increased from 50 to 150 lines, so intensive freemode sessions no longer lose critical state during compaction. Token cost: ~1% of context window — negligible.
+
+### Changes
+
+- **BL-40 — Session Checkpoint limit increase.** `CLAUDE.md` Freemode Protocol: `50 lines max` → `150 lines max`.
+
+---
+
+## [4.10.0] — 2026-02-18
+
+### Highlights
+
+**Monolithic imports no longer eat your token budget.** When you drop a 100KB Gemini-generated HTML file into `_assets/`, PD-Spec now detects it and proposes splitting it into 2-5KB section files with shared CSS/JS and an index loader. Edit one slide without reading 23 others. Renumber all slides by changing one JS variable instead of touching every file.
+
+### Changes
+
+- **BL-39 — Artifact Normalization.** New subsection in CLAUDE.md Freemode Protocol. Detection threshold: >30KB with multiple sections. Agent proposes split plan before executing. Dynamic counters via JS (no hardcoded `Slide N / Total`). Visual parity required — normalized output must render identically to the original.
+- **Structural index** — `02_Work/_temp/STRUCTURE_INDEX.md` maps sections → files → line ranges, enabling precise offset/limit reads for targeted edits.
+
+<details>
+<summary>Technical details</summary>
+
+**Files changed:**
+- `CLAUDE.md` — New "Artifact Normalization" subsection in Freemode Protocol (7 rules)
+- `02_Work/_README.md` — `STRUCTURE_INDEX.md` template and documentation
+
+**BACKLOG impact:**
+- BL-39: IMPLEMENTED
+
+</details>
+
+---
+
 ## [4.9.0] — 2026-02-18
 
 ### Highlights

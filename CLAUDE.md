@@ -74,6 +74,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
+| View | `/view` | Start the Live Research App — local web viewer for Work layer data |
 
 ## Maturity Levels
 
@@ -96,8 +97,8 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
-| `02_Work/MEMORY.md` | Session log & state tracker | Yes (via all skills, append-only) |
-| `02_Work/_temp/SESSION_CHECKPOINT.md` | Freemode session state (compaction recovery) | Yes (ephemeral, auto-managed) |
+| `02_Work/MEMORY.md` | Session log & state tracker (compacted at 80 lines) | Yes (via all skills) |
+| `02_Work/_temp/SESSION_CHECKPOINT.md` | Session state & compaction recovery (all sessions) | Yes (ephemeral, auto-managed) |
 | `02_Work/_assets/_INTAKE.md` | Asset intake log | Yes (via freemode protocol) |
 | `03_Outputs/_custom/*` | Non-pipeline deliverables | Yes (via freemode protocol) |
 | `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
@@ -108,7 +109,9 @@ The folder name provides context that individual files inherit. The agent valida
 | `03_Outputs/LEAN_CANVAS.html` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
 | `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
+| `docs/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
+| `docs/qa/*` | QA plans and findings | Reference only |
 
 ## Folder Structure
 
@@ -122,7 +125,11 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
 │   ├── seed/SKILL.md         /seed — generate synthetic sources
-│   └── audit/SKILL.md        /audit — quality gate before /ship
+│   ├── audit/SKILL.md        /audit — quality gate before /ship
+│   └── view/SKILL.md         /view — start Live Research App
+├── app/                       Live Research App (local web viewer)
+│   ├── server/                Express server + parsers + WebSocket
+│   └── client/                React SPA (Vite build)
 ├── 01_Sources/                Raw inputs (read-only, organized by milestone/category)
 │   ├── _SOURCE_TEMPLATE.md   Metadata template for markdown sources
 │   ├── _CONTEXT_TEMPLATE.md  Metadata template for non-markdown files
@@ -169,8 +176,11 @@ The folder name provides context that individual files inherit. The agent valida
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
+│   ├── DECISIONS.md           Cross-cutting architectural decisions (DEC-## format)
 │   ├── FRAMEWORK.md           Full methodology documentation
-│   └── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+│   ├── PD_BUILD_NOTES.md     PD-Build architecture & design notes
+│   └── qa/                    QA plans and findings (formalized process)
+│       └── README.md          QA process, naming conventions, templates
 ├── .gitattributes             Merge strategy (protects project files)
 ├── PROJECT.md                 Project settings + current state
 ├── CLAUDE.md                  This file
@@ -297,24 +307,38 @@ No git merge needed for idea flow — just filesystem reads across worktrees.
 
 ## Session Protocol
 
-At the start of every session (new conversation), the agent must:
+### Session Start (Recovery)
 
-1. **Read `02_Work/MEMORY.md`** — understand the last known state, recent actions, and current snapshot.
-2. **Integrity check** — compare the MEMORY snapshot against the actual state of `02_Work/` files. Look for:
-   - Insights, conflicts, or system map entries not logged in MEMORY (possible manual edits).
-   - Unexpected files in `02_Work/` or `03_Outputs/` (user may have added files directly).
-   - Any discrepancies are reported to the user before proceeding.
-3. **Resume context** — use MEMORY to continue where the last session left off, without requiring the user to re-explain.
+At the start of every session (new conversation), the agent recovers state with minimal reads:
 
-After every skill execution, the agent appends an entry to `02_Work/MEMORY.md` with: request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
+1. **Read `02_Work/_temp/SESSION_CHECKPOINT.md`** (~2K tokens, single read).
+   - If the checkpoint exists and its Quantitative Snapshot is **fresh** (counts match a quick header scan of INSIGHTS_GRAPH.md and CONFLICTS.md) → resume immediately from checkpoint context. No further reads needed.
+   - If the checkpoint is **stale** (snapshot counts diverge from actual file headers) or **absent** → read `02_Work/MEMORY.md` (compacted, ~2K tokens) and rebuild context from there.
+2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and system map entries. Report discrepancies to the user before proceeding.
+3. **Resume context** — use checkpoint (preferred) or MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
-**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged, including:
-- Insight status changes outside `/synthesis` (e.g., user asks to verify specific insights in conversation)
-- Manual edits to CONFLICTS.md, SYSTEM_MAP.md, or INSIGHTS_GRAPH.md
-- Direct insight injection (e.g., from STATUS.html Add Context flow)
-- Batch operations (approve/reject multiple insights)
+### After Every Skill Execution
 
-If context compaction occurs mid-operation, the agent must re-check MEMORY.md after compaction and log any state changes that were not yet recorded.
+The agent performs two writes:
+
+1. **Append to `02_Work/MEMORY.md`** — request, actions, result, and a state snapshot. **Timestamp format must be ISO: `YYYY-MM-DDTHH:MM`** (e.g., `2026-02-14T15:30`). No other formats.
+2. **Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md`** — full checkpoint with updated Quantitative Snapshot reflecting current state.
+
+**Ad-hoc state changes** — MEMORY logging is not limited to formal skill runs. Any action that modifies Work layer files must be logged (insight status changes, manual edits, direct injection, batch operations). The checkpoint must also be updated.
+
+### MEMORY Compaction
+
+When `02_Work/MEMORY.md` exceeds 80 lines, the agent compacts it:
+
+1. Summarize all entries except the 3 most recent into a `## Historical Summary` section at the top.
+2. Keep the 3 most recent entries in full detail below the summary.
+3. The compacted file must stay under 80 lines.
+
+This ensures MEMORY.md remains a fast fallback read (~2K tokens) when the checkpoint is unavailable.
+
+### Post-Compaction Behavior
+
+If context compaction occurs mid-operation, the agent re-reads `02_Work/_temp/SESSION_CHECKPOINT.md` (not MEMORY.md) to recover state. The checkpoint is the primary recovery mechanism; MEMORY.md is the fallback.
 
 ## Freemode Protocol
 
@@ -329,10 +353,10 @@ Before reading raw sources, the agent checks `02_Work/` for existing knowledge:
 
 ### Session Checkpoint
 
-For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (50 lines max) that survives context compaction:
-- **What:** Project context, session goals, key decisions made, files modified, pending work.
-- **When:** Write after every significant milestone (draft approved, section completed, direction change). Re-read immediately after context compaction.
-- **Lifecycle:** Ephemeral — deleted or overwritten at the start of each new freemode session.
+The agent maintains `02_Work/_temp/SESSION_CHECKPOINT.md` — a compact state file (150 lines max) that serves as the **primary recovery mechanism** for all sessions (pipeline and freemode):
+- **What:** Project context, quantitative snapshot (sources, extractions, insights, conflicts, outputs, last skill), session goals, key decisions made, files modified, pending work.
+- **When:** Overwritten after every skill execution or significant milestone. Re-read immediately after context compaction.
+- **Lifecycle:** Ephemeral — overwritten after every skill. Deleted at the start of each new session if no longer relevant.
 
 ### Cost Awareness
 
@@ -340,6 +364,18 @@ For multi-turn freemode work, the agent maintains `02_Work/_temp/SESSION_CHECKPO
 - **Warn before large reads** — if a source file exceeds 20KB, warn the user and suggest targeted reads (offset/limit) or reference existing extractions.
 - **Asset intake** — external materials (logos, brand guides, competitor screenshots) that are not knowledge sources go in `02_Work/_assets/`, logged in `_INTAKE.md`. The `/extract` skill ignores `_assets/` (it only scans `01_Sources/`).
 - **Custom outputs** — non-pipeline deliverables go in `03_Outputs/_custom/`. The agent proposes a file organization before the first write. `/reset --output` does NOT delete `_custom/`.
+
+### Artifact Normalization
+
+External tools (Gemini, ChatGPT, Figma exports) often produce monolithic files — single HTML with inline CSS/JS and all content. These are expensive for agent iteration: full reads for small edits, O(n) changes for O(1) operations (e.g., renumbering 23 slides to change a counter).
+
+- **Detection** — when the user places a file >30KB with multiple sections in `02_Work/_assets/`, the agent flags it as a normalization candidate during intake.
+- **Propose before splitting** — the agent presents a split plan (section files + shared CSS/JS + index loader) for user approval before modifying anything.
+- **Target granularity** — individual section files should be 2-5KB (one slide, one chapter, one card). Enough for a single targeted read/edit.
+- **Dynamic counters** — navigation and counters (e.g., `Slide 3 / 23`) must use JS, not hardcoded values in each section file. Renumbering = change one variable, not edit every file.
+- **Visual parity** — the normalized output must render identically to the original in the browser. If it doesn't, the normalization failed.
+- **Structure** — index file goes in `03_Outputs/_custom/`, section files alongside it. The original stays in `_assets/` as reference.
+- **Structural index** — the agent creates and maintains `02_Work/_temp/STRUCTURE_INDEX.md` mapping sections → files → line ranges, enabling offset/limit reads for precise edits without loading the full artifact.
 
 ## Documentation Guidelines
 
@@ -349,8 +385,8 @@ PD-Spec maintains multiple documentation files. Each has a specific purpose and 
 |---|---|---|---|
 | **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
 | **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
-| **QA findings** (`docs/QA_*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
-| **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (session resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Append-only. Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
+| **QA findings** (`docs/qa/QA_V*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
+| **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (fallback resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Compacted at 80 lines (historical summary + recent entries). Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
 | **README.md** | Project overview and onboarding. | New users, contributors | What PD-Spec is, how to get started, quick examples, architecture overview. |
 
 ### Content Flow Example
@@ -371,6 +407,63 @@ When a bug is discovered during formal QA:
 - **BACKLOG:** Technical, implementation-focused. "Add Bash to allowed-tools. Fallback: textutil → zipfile."
 - **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
 - **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
+
+## Engine Development Anti-Patterns
+
+Things that have caused real bugs. Do NOT:
+
+| Rule | Why | Evidence |
+|---|---|---|
+| **Never edit engine files in project branches** | Causes merge conflicts, breaks all worktrees | Pre-v4.2 incidents |
+| **Never `git add .` or `git add -A` on main** | Main must never contain 01_Sources/, 02_Work/, or generated outputs | Architecture rule |
+| **Never edit files without explicit user request** | Especially during QA — observe, don't fix | User preference, QA v5 |
+| **Never push ideas to BACKLOG without consolidation** | Keep a session list, validate with Homer's Car gate first | User preference |
+| **Never build large JSON in-context** | >10KB JSON causes compaction loops. Use external Python/Bash scripts | QA v5 OBS-07: dashboard 31KB JSON |
+| **Never let the executing agent write QA findings** | Grading own test = objectivity gap. Observer writes findings | QA v5 OBS-05 |
+| **Never treat all preprocessing as one mechanical step** | Pass C (sentence repair) requires LLM reasoning, not regex | QA v5 BUG-01 |
+| **Never amend after pre-commit hook failure** | The commit didn't happen — amend modifies the PREVIOUS commit | Git safety |
+| **Never implement a BL without evidenced problem** | Homer's Car: if no `[IG-XX]` or QA finding justifies it, challenge it | BL-22 RAG (still unjustified) |
+| **Never put override properties BEFORE spread** | `{ type: 'x', ...obj }` — obj's own `type` overwrites yours silently. Always: `{ ...obj, type: 'x' }` | QA v6 BUG-02: WS live updates broken |
+
+## Script-First Execution (90/10 Rule)
+
+Mechanical operations (counting, JSON generation, hash computation, denominator updates) should use inline scripts, not LLM reasoning. Scripts are deterministic, faster, and token-free. The agent supervises output and intervenes manually for the 10% exceptions.
+
+**When to script:** The operation has a deterministic input→output mapping. A regex or parser can produce the correct answer without judgment.
+
+**When NOT to script:** The operation requires semantic understanding (e.g., Pass C sentence repair, insight categorization, conflict detection).
+
+**Script-eligible operations:**
+
+| Operation | Tool | Pattern |
+|---|---|---|
+| Count `[IG-XX]` headers | Bash | `grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md` |
+| Count `[CF-XX]` headers | Bash | `grep -c '### \[CF-' 02_Work/CONFLICTS.md` |
+| Count extraction sections | Bash | `grep -c '^## \[' 02_Work/EXTRACTIONS.md` |
+| Count claims | Bash | `grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md` |
+| MEMORY.md line count | Bash | `wc -l < 02_Work/MEMORY.md` |
+| File hash (md5) | Bash | `md5 -q "path/to/file"` |
+| Convergence denominator update | Bash/Python | Regex `X/N` → `X/(N+1)` across file |
+| STATUS.html JSON generation | Python | Parse Work files → build JSON → inject into template |
+
+**Validation rule:** After any script produces output, sanity-check before writing:
+- Counts must be > 0 (unless the file is genuinely empty)
+- JSON must parse (`python3 -c "import json; json.load(open('file'))"`)
+- No data loss: output entity count ≥ input entity count
+
+**Anti-pattern:** Never use LLM reasoning to count things, compute hashes, or generate mechanical JSON. These are the operations that caused BUG-04 (agent miscounted SYNTH insights).
+
+## Pre-Commit Verification
+
+Before committing engine changes, verify:
+
+1. **Version consistency** — `engine_version` in PROJECT.md template matches latest CHANGELOG.md header
+2. **BACKLOG consistency** — BL items referenced in commit message exist in BACKLOG.md. Implemented items have version and date.
+3. **Skill integrity** — Changed skill files have valid YAML frontmatter (`name`, `description`, `user-invocable`, `allowed-tools`)
+4. **No generated content on main** — `git status` shows no files in 01_Sources/, 02_Work/, or 03_Outputs/*.html
+5. **CHANGELOG format** — New entries use highlights-first format with `<details>` for technical notes. Framed for PD-Spec consumers, not developers.
+
+Use `/verify` to automate these checks.
 
 ## Current State → PROJECT.md
 
