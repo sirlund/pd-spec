@@ -422,6 +422,34 @@ Things that have caused real bugs. Do NOT:
 | **Never amend after pre-commit hook failure** | The commit didn't happen — amend modifies the PREVIOUS commit | Git safety |
 | **Never implement a BL without evidenced problem** | Homer's Car: if no `[IG-XX]` or QA finding justifies it, challenge it | BL-22 RAG (still unjustified) |
 
+## Script-First Execution (90/10 Rule)
+
+Mechanical operations (counting, JSON generation, hash computation, denominator updates) should use inline scripts, not LLM reasoning. Scripts are deterministic, faster, and token-free. The agent supervises output and intervenes manually for the 10% exceptions.
+
+**When to script:** The operation has a deterministic input→output mapping. A regex or parser can produce the correct answer without judgment.
+
+**When NOT to script:** The operation requires semantic understanding (e.g., Pass C sentence repair, insight categorization, conflict detection).
+
+**Script-eligible operations:**
+
+| Operation | Tool | Pattern |
+|---|---|---|
+| Count `[IG-XX]` headers | Bash | `grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md` |
+| Count `[CF-XX]` headers | Bash | `grep -c '### \[CF-' 02_Work/CONFLICTS.md` |
+| Count extraction sections | Bash | `grep -c '^## \[' 02_Work/EXTRACTIONS.md` |
+| Count claims | Bash | `grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md` |
+| MEMORY.md line count | Bash | `wc -l < 02_Work/MEMORY.md` |
+| File hash (md5) | Bash | `md5 -q "path/to/file"` |
+| Convergence denominator update | Bash/Python | Regex `X/N` → `X/(N+1)` across file |
+| STATUS.html JSON generation | Python | Parse Work files → build JSON → inject into template |
+
+**Validation rule:** After any script produces output, sanity-check before writing:
+- Counts must be > 0 (unless the file is genuinely empty)
+- JSON must parse (`python3 -c "import json; json.load(open('file'))"`)
+- No data loss: output entity count ≥ input entity count
+
+**Anti-pattern:** Never use LLM reasoning to count things, compute hashes, or generate mechanical JSON. These are the operations that caused BUG-04 (agent miscounted SYNTH insights).
+
 ## Pre-Commit Verification
 
 Before committing engine changes, verify:
