@@ -119,7 +119,7 @@ export function createApi(projectRoot) {
   // GET /api/file/:path — render any markdown file as HTML
   router.get('/file/{*filePath}', async (req, res) => {
     try {
-      const filePath = req.params.filePath;
+      const filePath = [].concat(req.params.filePath).join('/');
       if (!isValidPath(filePath)) {
         return res.status(403).json({ error: 'Invalid path' });
       }
@@ -140,7 +140,7 @@ export function createApi(projectRoot) {
   // GET /api/raw/:path — serve raw binary files with correct MIME type
   router.get('/raw/{*filePath}', async (req, res) => {
     try {
-      const filePath = req.params.filePath;
+      const filePath = [].concat(req.params.filePath).join('/');
       if (!isValidPath(filePath)) {
         return res.status(403).json({ error: 'Invalid path' });
       }

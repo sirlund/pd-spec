@@ -25,7 +25,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 Local web app that reads `02_Work/` files directly — no generation step, always live.
 
-**Tech stack:** React + shadcn/ui frontend, Node/Express backend. In local, bundle size is irrelevant (no network, no CDN) — React's ecosystem (component libraries, state management, routing) pays for itself in development speed. shadcn provides accessible, well-designed components without custom CSS.
+**Tech stack:** React frontend with custom CSS design system (dark-first, no component library), Node/Express backend. In local, bundle size is irrelevant (no network, no CDN) — React's ecosystem pays for itself in development speed. Custom 3-file CSS architecture (tokens/base/components) with Tabler SVG sprite for icons — zero runtime dependencies for styling.
 
 **Shared server architecture:** The Node server is dual-purpose infrastructure — it serves the webapp AND provides export endpoints. This amortizes the dependency cost:
 
@@ -184,38 +184,54 @@ Two approaches tested in TIMining deliverables:
 
 **Recommendation for BL-33 Phase 1 export:** Python approach (editable > screenshots) but needs generalization. The TIMining script is a proof-of-concept — a generic version would parse PD-Spec template conventions (cards, badges, tables) instead of hardcoded slide types. The Node/Playwright approach is a viable fallback for "quick and dirty" exports of any HTML output.
 
-Acceptance criteria (Phase 1):
-- [ ] Local web app reads `02_Work/` and `03_Outputs/` directly (no JSON generation step)
-- [ ] Export dropdown: MD→DOCX, HTML→PPTX, HTML→PDF (at least one format working)
-- [ ] Auto-refreshes when files change on disk (file watcher + WebSocket)
-- [ ] Renders all Work layer MDs with PD-Spec semantics (badges, cross-refs, sortable tables)
-- [ ] Pipeline progress indicator derived from MEMORY.md
-- [ ] Authority breakdown visible in sources and insights sections
-- [ ] Open questions and evidence gaps as prominent sections
-- [ ] Clickable cross-references between insights and conflicts
-- [ ] `/view [file]` skill starts server + opens browser (absorbs BL-42)
-- [ ] Works during meetings — stakeholder can see live state while researcher runs skills in CLI
+Acceptance criteria (Phase 1 — v4.15.0):
+- [x] Local web app reads `02_Work/` and `03_Outputs/` directly (no JSON generation step)
+- [ ] Export dropdown: MD→DOCX, HTML→PPTX, HTML→PDF (at least one format working) — **deferred to Phase 3**
+- [x] Auto-refreshes when files change on disk (file watcher + WebSocket)
+- [x] Renders all Work layer MDs with PD-Spec semantics (badges, cross-refs)
+- [x] Pipeline progress indicator in dashboard
+- [x] Authority breakdown visible in dashboard
+- [x] Open questions and evidence gaps as prominent sections
+- [x] Clickable cross-references between insights and conflicts
+- [x] `/view` skill starts server + opens browser (absorbs BL-42)
+- [x] Works during meetings — stakeholder can see live state while researcher runs skills in CLI
 
-**Phase 2 — MDP: Interactive Actions**
+**Phase 2 — Visual Redesign + Feature Parity + Interactive Actions (v4.16.0)**
 
-The app goes from read-only to interactive. Two options for skill execution, to be validated via experimentation:
+The app gets its own design system, closes the feature gap with the static status dashboard, and adds decision tracking with prompt generation (Option A from original plan).
 
-**Option A (baseline):** Action buttons generate prompts that the user copies to Claude Code. Example: user clicks "Run /analyze" → clipboard gets `/analyze` → user pastes in terminal. Simple, zero infra, but context-switching.
+**Design system:** Dark-first theme with light mode toggle. Custom CSS custom properties (no Tailwind, no component library). Tabler SVG sprite for icons. Shared UI primitives (Card, Badge, CopyBlock, AccentBox, StatCard, ProgressBar). Anti-flash theme script prevents white flash on load.
 
-**Option B (target, requires validation):** MCP bridge between the web app and a running Claude Code instance. User clicks "Run /analyze" → MCP server forwards to Claude Code → results stream back to dashboard. Seamless but depends on MCP supporting this pattern.
+**Feature parity with status dashboard:**
+- SystemMapView — structured cards for vision, modules (status/refs/implications/blockers), design principles, open questions
+- EvidenceGapsView — auto-computed gaps (claim-level single-source, category gaps, source diversity)
+- Dashboard enhancements — segmented research maturity bar, authority distribution, source diversity grid, quick links
+- Decision tracking — approve/reject PENDING insights, radio options for conflicts (flag/research/context with textarea)
 
-Strategy: ship Phase 2 with Option A. Run MCP experiments in parallel. If Option B proves viable, upgrade. If not, Option A is good enough.
+**Interactive actions (Option A):**
+- AddContextView — field note prompt generator (topic/observation/confidence/trigger → copyable prompt)
+- ActionsView — generates `/synthesis` prompt from accumulated decisions (insight approvals, conflict choices, context notes)
+- Decision state is ephemeral (lost on refresh, intentional — matches status dashboard behavior)
 
-Additional Phase 2 features:
-- Approval flows — propose-before-execute proposals rendered in dashboard, user approves/rejects inline
-- Source browser — navigate `01_Sources/` with metadata, extraction status, preprocessing info
-- Skill history — timeline of executions from MEMORY.md with expandable details
+**File browser:**
+- Dropbox-style split panel replacing SourceBrowser + OutputLauncher
+- Left panel: collapsible folder tree with status dots and type icons
+- Right panel: context-aware preview (MD rendered, images inline, HTML opens in browser, PDF/DOCX/PPTX open with system app via `POST /api/open`)
+- Works for both `01_Sources/` and `03_Outputs/`
 
-Acceptance criteria (Phase 2):
-- [ ] Action buttons for core skills (/extract, /analyze, /synthesis, /ship)
-- [ ] At minimum Option A (prompt generation to clipboard)
-- [ ] MCP bridge experiment documented with results (viable / not viable / conditions)
-- [ ] Proposal approval flow rendered in dashboard (not just terminal)
+**View registry pattern:** Declarative array in app.jsx auto-generates sidebar. Adding a new view = one object + one component file.
+
+Acceptance criteria (Phase 2 — v4.16.0):
+- [x] Dark-first design system with light mode toggle and persistence
+- [x] Structured SystemMapView (replaces raw markdown)
+- [x] Auto-computed evidence gaps
+- [x] Dashboard: maturity bar, authority distribution, source diversity, quick links
+- [x] Decision tracking: approve/reject insights, conflict radio options
+- [x] Option A prompt generation (AddContext + Actions → copyable prompt)
+- [x] Dropbox-style file browser with split-panel preview (MD, images, system app open)
+- [x] Source browser with extraction status and file type preview
+
+**Option B (MCP bridge)** — deferred. Requires MCP supporting bidirectional communication with a running Claude Code instance. To be evaluated in a future phase when MCP capabilities mature.
 
 **Phase 3+ — Future: Standalone App**
 
