@@ -441,10 +441,14 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
 
 25. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`.
 
-    **IMPORTANT: Count from files, not from memory.** Before writing the snapshot, verify counts by scanning the actual files:
-    - Insights: count `### [IG-` headers in `INSIGHTS_GRAPH.md` (includes SYNTH, atomic, and all statuses)
-    - Conflicts: count `### [CF-` headers in `CONFLICTS.md`
-    - Do NOT rely on in-memory tallies — they may miss synthesized insights or convergence-created entries.
+    **IMPORTANT: Count from files, not from memory.** ⚙️ SCRIPT-ELIGIBLE — use Bash one-liners:
+    ```bash
+    grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md   # total insights
+    grep -c '### \[CF-' 02_Work/CONFLICTS.md          # total conflicts
+    grep -c 'Status: VERIFIED' 02_Work/INSIGHTS_GRAPH.md
+    grep -c 'Status: PENDING' 02_Work/INSIGHTS_GRAPH.md
+    ```
+    Do NOT rely on in-memory tallies — they may miss synthesized insights or convergence-created entries.
 
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /analyze [--full]
@@ -511,7 +515,9 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 
 After writing files, generate STATUS.html automatically so the user can review insights and conflicts without running a separate command.
 
-26. **Build JSON data** from the analysis results already in memory:
+26. **Build JSON data** ⚙️ SCRIPT-ELIGIBLE — use an inline Python script to parse Work files and build the JSON. Do NOT build >10KB JSON in-context via LLM reasoning (causes compaction loops, see anti-patterns). Write a Python script that reads INSIGHTS_GRAPH.md, CONFLICTS.md, SOURCE_MAP.md, SYSTEM_MAP.md, parses headers/fields, and outputs valid JSON. Validate the JSON before injecting.
+
+   Build JSON from the Work layer files:
 
    ```json
    {

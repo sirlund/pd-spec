@@ -307,6 +307,22 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - The original file in `01_Sources/` is NEVER modified (read-only layer)
    - Log: `✓ Preprocessed: {filename} ({speakers} speakers, {corrections} corrections, Pass C: {yes/skipped})`
 
+17b. **Line-breaking for oversized files** — For each normalized file whose original was flagged `oversized-lines` in step 5b:
+   - Run a line-breaking pass on the `_normalized.md` file (mechanical — regex is fine):
+     ```bash
+     python3 -c "
+     import re, sys
+     text = open(sys.argv[1]).read()
+     # Break at sentence boundaries: '. ', '? ', '! ' followed by uppercase or newline
+     text = re.sub(r'([.?!])\s+(?=[A-ZÁÉÍÓÚÑÜ])', r'\1\n', text)
+     open(sys.argv[1], 'w').write(text)
+     " "02_Work/_temp/{filename}_normalized.md"
+     ```
+   - Verify: `wc -L "02_Work/_temp/{filename}_normalized.md"` — longest line must be < 2000 chars
+   - If still oversized after sentence-boundary splitting, apply a hard break at 1500 chars on remaining long lines (split at last space before 1500)
+   - Clear the `oversized-lines` flag for this file in working memory
+   - Log: `✓ Line-breaking applied: {filename} (max line: {max_chars} chars)`
+
 ### Phase 2: Read & Extract
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
@@ -383,18 +399,20 @@ For each Light batch (batch size = 10 files):
   2. **Process batch directly** — For each of the 10 files in this batch:
      - Read and extract claims (step 12 logic below)
      - Accumulate extracted sections in memory
-  3. **Write checkpoint after batch** — After all 10 files processed:
+  3. **Write batch results** — After all 10 files processed:
      - Append all 10 sections to EXTRACTIONS.md (single Edit operation)
      - Update SOURCE_MAP.md (10 rows via Edit tool)
      - Clean temp: `rm -rf 02_Work/_temp/*`
-     - **Update SESSION_CHECKPOINT** (if mid-skill checkpoints are active):
-       - Phase: "Phase 2 — batch {N}/{total}"
-       - Files processed so far: [list]
-       - Files remaining: [list]
-       - Claims extracted so far: count
-       - Resume instruction: "Continue from file {next_file} in batch {N+1}"
      - Log: "✓ Batch X/Y: 10 files, Z claims"
-  4. **Continue to next Light batch** — Repeat until all Light files complete
+  4. **IMMEDIATELY write SESSION_CHECKPOINT** (if mid-skill checkpoints are active — i.e., step 7 wrote a preventive checkpoint):
+     Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md` with:
+     - Phase: "Phase 2 — Pass 1, batch {N}/{total}"
+     - Files processed so far: [count and list]
+     - Files remaining: [count and list]
+     - Claims extracted so far: [total count]
+     - Resume instruction: "Continue from file {next_file} in batch {N+1}"
+     This is a SEPARATE step — do NOT bundle it with the EXTRACTIONS/SOURCE_MAP write above.
+  5. **Continue to next Light batch** — Repeat until all Light files complete
 
 **PASS 2: Heavy Files (pdf, DOCX/PPTX, files ≥ 5MB)**
 
@@ -412,7 +430,14 @@ For each Heavy file (one at a time):
      - Update SOURCE_MAP.md (single row via Edit tool)
      - Clean temp: `rm -f 02_Work/_temp/*`
      - Log: "✓ [filename] → Z claims (X/N)"
-  5. **Continue to next Heavy file** — Repeat until all Heavy files complete
+  5. **IMMEDIATELY write SESSION_CHECKPOINT** (if mid-skill checkpoints are active):
+     Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md` with:
+     - Phase: "Phase 2 — Pass 2, heavy file {X}/{total}"
+     - Files processed so far: [count and list]
+     - Files remaining: [count and list]
+     - Claims extracted so far: [total count]
+     - Resume instruction: "Continue from heavy file {next_file}"
+  6. **Continue to next Heavy file** — Repeat until all Heavy files complete
 
 **Why per-file writes for Heavy files:**
 - Prevents context accumulation from large file reads
@@ -594,12 +619,13 @@ Process all files in single pass (step 12 below)
 
 ### Phase 4: Report (Validation First)
 
-13. **Validate against disk BEFORE reporting:**
+13. **Validate against disk BEFORE reporting:** ⚙️ SCRIPT-ELIGIBLE
 
-   BEFORE reporting numbers to the user:
-   1. Re-read `02_Work/EXTRACTIONS.md` from disk
-   2. Count sections: use Grep to count lines matching `^## \[` pattern
-   3. Count claims: use Grep to count lines matching `^[0-9]+\.` pattern
+   BEFORE reporting numbers to the user, use Bash one-liners (not LLM counting):
+   ```bash
+   grep -c '^## \[' 02_Work/EXTRACTIONS.md     # section count
+   grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md  # claim count
+   ```
    4. Build list of processed files from section headers
    5. Compare against Phase 1 discovery list (Glob results stored in memory)
    6. Identify discrepancies:

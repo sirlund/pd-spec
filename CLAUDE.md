@@ -109,6 +109,7 @@ The folder name provides context that individual files inherit. The agent valida
 | `03_Outputs/LEAN_CANVAS.html` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
 | `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
+| `docs/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
 | `docs/qa/*` | QA plans and findings | Reference only |
 
@@ -175,6 +176,7 @@ The folder name provides context that individual files inherit. The agent valida
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
+│   ├── DECISIONS.md           Cross-cutting architectural decisions (DEC-## format)
 │   ├── FRAMEWORK.md           Full methodology documentation
 │   ├── PD_BUILD_NOTES.md     PD-Build architecture & design notes
 │   └── qa/                    QA plans and findings (formalized process)
@@ -421,6 +423,34 @@ Things that have caused real bugs. Do NOT:
 | **Never treat all preprocessing as one mechanical step** | Pass C (sentence repair) requires LLM reasoning, not regex | QA v5 BUG-01 |
 | **Never amend after pre-commit hook failure** | The commit didn't happen — amend modifies the PREVIOUS commit | Git safety |
 | **Never implement a BL without evidenced problem** | Homer's Car: if no `[IG-XX]` or QA finding justifies it, challenge it | BL-22 RAG (still unjustified) |
+
+## Script-First Execution (90/10 Rule)
+
+Mechanical operations (counting, JSON generation, hash computation, denominator updates) should use inline scripts, not LLM reasoning. Scripts are deterministic, faster, and token-free. The agent supervises output and intervenes manually for the 10% exceptions.
+
+**When to script:** The operation has a deterministic input→output mapping. A regex or parser can produce the correct answer without judgment.
+
+**When NOT to script:** The operation requires semantic understanding (e.g., Pass C sentence repair, insight categorization, conflict detection).
+
+**Script-eligible operations:**
+
+| Operation | Tool | Pattern |
+|---|---|---|
+| Count `[IG-XX]` headers | Bash | `grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md` |
+| Count `[CF-XX]` headers | Bash | `grep -c '### \[CF-' 02_Work/CONFLICTS.md` |
+| Count extraction sections | Bash | `grep -c '^## \[' 02_Work/EXTRACTIONS.md` |
+| Count claims | Bash | `grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md` |
+| MEMORY.md line count | Bash | `wc -l < 02_Work/MEMORY.md` |
+| File hash (md5) | Bash | `md5 -q "path/to/file"` |
+| Convergence denominator update | Bash/Python | Regex `X/N` → `X/(N+1)` across file |
+| STATUS.html JSON generation | Python | Parse Work files → build JSON → inject into template |
+
+**Validation rule:** After any script produces output, sanity-check before writing:
+- Counts must be > 0 (unless the file is genuinely empty)
+- JSON must parse (`python3 -c "import json; json.load(open('file'))"`)
+- No data loss: output entity count ≥ input entity count
+
+**Anti-pattern:** Never use LLM reasoning to count things, compute hashes, or generate mechanical JSON. These are the operations that caused BUG-04 (agent miscounted SYNTH insights).
 
 ## Pre-Commit Verification
 
