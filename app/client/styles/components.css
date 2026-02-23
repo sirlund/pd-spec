@@ -664,6 +664,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--font-mono);
 }
 
 .file-item-meta {
