@@ -87,11 +87,6 @@ export default function Dashboard({ data, loading, onNavigate, setView }) {
           </span>
         </div>
         <ProgressBar segments={[{ value: extractionPct, color: 'var(--accent-cyan)' }, { value: 100 - extractionPct, color: 'transparent' }]} />
-        {pipeline.untracked > 0 && (
-          <div style={{ marginTop: 6, fontSize: '0.78rem', color: 'var(--warning-fg, var(--accent-yellow))' }}>
-            {pipeline.untracked} new source{pipeline.untracked !== 1 ? 's' : ''} pending extraction — run <code>/extract</code>
-          </div>
-        )}
       </Card>
 
       {/* Authority Distribution */}
