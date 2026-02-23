@@ -1,5 +1,44 @@
 # Changelog
 
+## [4.18.0] — 2026-02-23
+
+### Highlights
+
+**19 fixes from QA v7.** Full bugfix blitz across the Live Research App — 8 bugs and 11 UX observations addressed in one session. Cache staleness, broken markdown rendering, missing file badges, phantom folders, hidden metadata files, clipped search results, and more. Verified against the TIMining dataset (54 sources, 24 insights, 11 conflicts).
+
+**Work layer now browseable.** New "Work" section in the sidebar lets you inspect normalized transcripts, session memory, and captured ideas without leaving the app. Speaker attributions, phonetic corrections, and sentence repairs are visible in-context.
+
+**Sidebar reorganized.** "Deliverables" section renamed to "Browse" with three file browsers: Sources, Work, and Outputs. Root-level files appear flat (no more "(root)" pseudo-folder). Folder icons show open/closed state.
+
+### Changes
+
+- **BUG-06 — parseCache stale after /synthesis.** Switched from per-path `delete()` to `clear()` on any file change. Path normalization added to watcher. (`app/server/watcher.js`, `app/server/index.js`)
+- **BUG-02 — Bold markdown in list items.** Added `renderer.strong` and `renderer.em` to the marked.js chain, plus regex post-processing fallback for `<li><p>` edge cases. (`app/server/parsers/markdown.js`)
+- **BUG-07 — Touchpoint missing "processed" badge.** NFC Unicode normalization + trim on both SOURCE_MAP and filesystem paths before comparison. (`app/client/components/FileBrowser.jsx`)
+- **BUG-08 — Preview panel persists across views.** React `key` prop on FileBrowser forces remount on view switch. (`app/client/app.jsx`)
+- **BUG-05 — /analyze offered STATUS.html (legacy).** Removed Phase 5 (auto-generate dashboard) from /analyze skill. (`.claude/skills/analyze/SKILL.md`)
+- **OBS-01+02 — Dashboard shows 100% with untracked sources.** Filesystem scan of `01_Sources/` cross-referenced against SOURCE_MAP. Amber warning when untracked files exist. (`app/server/api.js`, `app/client/components/Dashboard.jsx`)
+- **OBS-04+08 — "(root)" pseudo-folder.** Root files (`folder: null`) rendered flat before folder groups in Sources, Work, and Outputs. (`app/server/api.js`, `app/client/components/FileBrowser.jsx`)
+- **OBS-05+06 — Dotfiles visible, metadata hidden.** Targeted exclusion: dotfiles and TEMPLATE files hidden; `_CONTEXT.md` and `_FIELD_NOTES.md` visible. (`app/server/api.js`)
+- **OBS-07 — Outputs only showed .html.** Removed file-type restriction from outputs endpoint. All files visible (templates and schemas still excluded). (`app/server/api.js`)
+- **OBS-37 — Search dropdown clips titles.** Input widened to 500px, dropdown to `min(600px, 90vw)`. Flex layout prevents title truncation. (`app/client/styles/components.css`, `app/client/components/SearchBar.jsx`)
+- **OBS-38 — Insight/conflict refs not clickable.** Added `.badge-insight` (teal) and `.badge-conflict` (red) CSS with hover effects. Multi-ref brackets `[IG-01, CF-02]` now parse correctly. (`app/client/styles/components.css`, `app/server/parsers/markdown.js`)
+- **OBS-35 — Evidence Gaps badge mismatch.** Gap count now includes all types (claim-level + category + source-diversity), not just claim-level. (`app/server/api.js`)
+- **OBS-36 — Duplicate heading in Research Brief.** First `<h1>` stripped when it matches view title. (`app/client/components/MarkdownView.jsx`)
+- **OBS-14 — Decision counter duplicated.** Removed from System Map header; kept in footer only. (`app/client/app.jsx`)
+- **OBS-19 — Misleading convergence bar for single-source insights.** Amber indicator for 1/1 convergence with "single source" warning. (`app/client/components/InsightCard.jsx`)
+- **OBS-20 — Long ref paths.** Compact chips (folder + filename), collapsed behind "+N more" when >3 refs. (`app/client/components/InsightCard.jsx`)
+- **OBS-21 — Category filter pills truncated.** Full text shown with wrapping, tooltip on hover. (`app/client/components/InsightsView.jsx`)
+- **OBS-22 — Folder icons static.** `folder` → `folder-open` icon on expand. (`app/client/components/FileBrowser.jsx`)
+- **NEW — Work layer file browser.** `/api/work-files` endpoint + sidebar "Work" view for normalized transcripts, MEMORY.md, IDEAS.md. (`app/server/api.js`, `app/client/app.jsx`)
+
+<details>
+<summary>Backlog updates</summary>
+
+- **BL-57 PROPOSED** — Moved Source Detection: hash-based path reconciliation in /extract when files are moved after extraction.
+
+</details>
+
 ## [4.17.1] — 2026-02-22
 
 **Live updates actually work now.** A spread-order bug in the WebSocket broadcast meant file changes never reached the client — the chokidar event's `type: 'change'` silently overwrote the required `type: 'file-change'`. One-line fix, caught by QA v6.

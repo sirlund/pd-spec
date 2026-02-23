@@ -44,6 +44,32 @@ Recommendation: Python approach (editable > screenshots) but needs generalizatio
 
 ---
 
+### [BL-57] Moved Source Detection — Hash-Based Path Reconciliation in /extract
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7 (2026-02-23). TIMining: Touchpoint file moved from `sesiones-idemax/` to `Touchpoint 1/` after extraction. SOURCE_MAP retained old path → file appeared as "untracked" despite being fully extracted with 134KB normalized transcript in `_temp/`.
+
+**Problem:** When a user moves or renames source files after `/extract`, SOURCE_MAP becomes stale. The file shows as untracked (new) and its extractions/insights lose traceability. Re-extracting wastes tokens on already-processed content.
+
+**Solution:** In `/extract`, before processing untracked files:
+1. Compute hash for each untracked file
+2. Cross-reference against existing SOURCE_MAP hashes
+3. If hash matches an entry with a different path → **moved file** → propose path update
+4. Update SOURCE_MAP path, EXTRACTIONS.md source header, and `_temp/*_normalized.md` filename
+5. Present to user: "Touchpoint_TIMining... moved from sesiones-idemax/ to Touchpoint 1/. Update path?"
+
+**Acceptance criteria:**
+- [ ] Moved files detected by hash match before extraction begins
+- [ ] User approves path updates (propose-before-execute)
+- [ ] SOURCE_MAP, EXTRACTIONS.md, and _temp/ normalized files updated consistently
+- [ ] No re-extraction needed for moved files (tokens saved)
+
+**User story:**
+> As a researcher reorganizing my source folders, I can move files freely and `/extract` detects the move and updates paths, without losing my existing extractions.
+
+---
+
 ### [BL-48] AI Convergence Breakdown — Show Authority Distribution in Convergence Ratios
 
 **Status:** Proposed
