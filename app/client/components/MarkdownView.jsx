@@ -76,13 +76,15 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
 
   // Rendered markdown view
   if (data?.html) {
+    // Strip duplicate h1 if it matches the view title
+    const html = data.html.replace(/^<h1[^>]*>.*?<\/h1>\s*/, '');
     return (
       <div>
         <div className="section-header">
           <h1 className="section-title">{title}</h1>
         </div>
         <Card>
-          <div className="md-content" onClick={handleClick} dangerouslySetInnerHTML={{ __html: data.html }} />
+          <div className="md-content" onClick={handleClick} dangerouslySetInnerHTML={{ __html: html }} />
         </Card>
       </div>
     );
