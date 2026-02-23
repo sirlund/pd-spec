@@ -87,6 +87,16 @@ export default function Dashboard({ data, loading, onNavigate, setView }) {
           </span>
         </div>
         <ProgressBar segments={[{ value: extractionPct, color: 'var(--accent-cyan)' }, { value: 100 - extractionPct, color: 'transparent' }]} />
+        {pipeline.untracked > 0 && (
+          <div style={{
+            marginTop: 8, padding: '6px 10px', borderRadius: 'var(--radius)',
+            background: 'var(--pending-bg)', fontSize: '0.78rem', color: 'var(--pending-fg)',
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            <Icon name="alert-triangle" size={14} />
+            {pipeline.untracked} new source{pipeline.untracked !== 1 ? 's' : ''} not yet extracted — run <code>/extract</code>
+          </div>
+        )}
       </Card>
 
       {/* Authority Distribution */}

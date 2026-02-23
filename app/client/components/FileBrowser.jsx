@@ -7,12 +7,19 @@ const FORMAT_ICONS = {
   md: 'file-text', pdf: 'file', docx: 'file', pptx: 'file', xlsx: 'file',
   png: 'photo', jpg: 'photo', jpeg: 'photo', heic: 'photo', gif: 'photo', webp: 'photo',
   svg: 'photo', txt: 'file', csv: 'file', mp4: 'file', mov: 'file',
-  html: 'file-export',
+  html: 'file-export', css: 'file', js: 'file', json: 'file',
 };
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'heic', 'gif', 'webp', 'svg']);
 const MD_EXTS = new Set(['md', 'txt', 'csv']);
 const OPENABLE_EXTS = new Set(['html']);
+
+// Map root prop to API path prefix
+const ROOT_PREFIX = {
+  '01_Sources': '01_Sources/',
+  '02_Work': '02_Work/',
+  '03_Outputs': '',
+};
 
 export default function FileBrowser({ root, title }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,30 +27,45 @@ export default function FileBrowser({ root, title }) {
   const [preview, setPreview] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  // Different data sources for Sources vs Outputs
   const isSources = root === '01_Sources';
-  const files = useLiveData(
-    isSources ? '/source-files' : '/outputs',
-    [isSources ? '01_Sources/' : '03_Outputs/']
-  );
+  const isWork = root === '02_Work';
+  const isOutputs = root === '03_Outputs';
+
+  const apiEndpoint = isSources ? '/source-files' : isWork ? '/work-files' : '/outputs';
+  const watchKey = isSources ? '01_Sources/' : isWork ? '02_Work/' : '03_Outputs/';
+
+  const files = useLiveData(apiEndpoint, [watchKey]);
   const sourceMap = useLiveData('/sources', ['SOURCE_MAP']);
 
-  // Build status lookup
+  // Build status lookup (normalized paths for matching)
   const statusMap = {};
   if (isSources && sourceMap.data?.sources) {
     for (const s of sourceMap.data.sources) {
-      statusMap[s.path] = s;
+      statusMap[s.path.normalize('NFC').trim()] = s;
     }
   }
 
-  // Build folder tree
+  // Build folder tree — separate root files (folder=null) from real folders
+  const rootFiles = [];
   const folders = {};
-  const fileList = isSources ? files.data?.files : files.data?.outputs;
+  const fileList = isSources ? files.data?.files : isWork ? files.data?.files : files.data?.outputs;
   if (fileList) {
     for (const f of fileList) {
-      const folder = isSources ? (f.folder || '(root)') : (f.path.includes('/') ? f.path.split('/').slice(1, -1).join('/') || '(root)' : '(root)');
-      if (!folders[folder]) folders[folder] = [];
-      folders[folder].push(f);
+      let folder;
+      if (isOutputs) {
+        // For outputs, derive folder from path (strip 03_Outputs/ prefix)
+        const parts = f.path.replace('03_Outputs/', '').split('/');
+        folder = parts.length > 1 ? parts.slice(0, -1).join('/') : null;
+      } else {
+        folder = f.folder;
+      }
+
+      if (folder === null || folder === undefined) {
+        rootFiles.push(f);
+      } else {
+        if (!folders[folder]) folders[folder] = [];
+        folders[folder].push(f);
+      }
     }
   }
 
@@ -51,8 +73,14 @@ export default function FileBrowser({ root, title }) {
     setCollapsedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
   };
 
+  const getFilePath = useCallback((file) => {
+    if (isOutputs) return file.path;
+    const prefix = isSources ? '01_Sources/' : '02_Work/';
+    return `${prefix}${file.path}`;
+  }, [isSources, isOutputs]);
+
   const handleFileClick = useCallback(async (file) => {
-    const path = isSources ? `01_Sources/${file.path}` : file.path;
+    const path = getFilePath(file);
     const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
 
     setSelectedFile(path);
@@ -67,8 +95,7 @@ export default function FileBrowser({ root, title }) {
       } else if (IMAGE_EXTS.has(ext)) {
         setPreview({ type: 'image', path: `/api/raw/${path}` });
       } else if (OPENABLE_EXTS.has(ext)) {
-        // For outputs, use the existing /outputs route
-        if (!isSources) {
+        if (isOutputs) {
           const url = '/' + file.path.replace('03_Outputs/', 'outputs/');
           setPreview({ type: 'external', url, name: file.name });
         } else {
@@ -82,7 +109,7 @@ export default function FileBrowser({ root, title }) {
     } finally {
       setPreviewLoading(false);
     }
-  }, [isSources]);
+  }, [getFilePath, isOutputs]);
 
   const handleOpenExternal = async (path) => {
     try {
@@ -102,19 +129,45 @@ export default function FileBrowser({ root, title }) {
   }
 
   if (totalFiles === 0) {
+    const emptyMsg = isSources
+      ? <>Add research files to <code>01_Sources/</code> to begin.</>
+      : isWork
+        ? <>Run <code>/extract</code> to generate work layer files.</>
+        : <>Run <code>/ship [type]</code> to generate deliverables.</>;
+
     return (
       <div className="empty-state">
-        <Icon name={isSources ? 'folders' : 'file-export'} size={48} className="empty-state-icon" />
-        <div className="empty-state-title">No {isSources ? 'source' : 'output'} files</div>
-        <div className="empty-state-text">
-          {isSources
-            ? <>Add research files to <code>01_Sources/</code> to begin.</>
-            : <>Run <code>/ship [type]</code> to generate deliverables.</>
-          }
-        </div>
+        <Icon name={isSources ? 'folders' : isWork ? 'flask' : 'file-export'} size={48} className="empty-state-icon" />
+        <div className="empty-state-title">No {isSources ? 'source' : isWork ? 'work' : 'output'} files</div>
+        <div className="empty-state-text">{emptyMsg}</div>
       </div>
     );
   }
+
+  // Render a single file row
+  const renderFileRow = (file) => {
+    const path = getFilePath(file);
+    const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
+    const normalizedPath = file.path.normalize('NFC').trim();
+    const mapEntry = isSources ? statusMap[normalizedPath] : null;
+    const status = mapEntry?.status || '';
+    const statusClass = status === 'processed' ? 'processed' :
+      status.startsWith('pending') ? 'pending' : 'unsupported';
+    const iconName = FORMAT_ICONS[ext] || 'file';
+
+    return (
+      <div
+        key={path}
+        className={`file-item ${selectedFile === path ? 'active' : ''}`}
+        onClick={() => handleFileClick(file)}
+      >
+        {isSources && <span className={`file-status-dot ${statusClass}`} title={status} />}
+        <Icon name={iconName} size={14} />
+        <span className="file-item-name">{file.name}</span>
+        <span className="file-item-meta">{ext}</span>
+      </div>
+    );
+  };
 
   return (
     <div className="file-browser-view">
@@ -135,6 +188,10 @@ export default function FileBrowser({ root, title }) {
             {root}
           </div>
 
+          {/* Root-level files (flat, no collapsible container) */}
+          {rootFiles.map(renderFileRow)}
+
+          {/* Sorted folder groups */}
           {Object.entries(folders).sort(([a], [b]) => a.localeCompare(b)).map(([folder, folderFiles]) => {
             const isCollapsed = collapsedFolders[folder];
             return (
@@ -144,35 +201,14 @@ export default function FileBrowser({ root, title }) {
                   onClick={() => toggleFolder(folder)}
                 >
                   <Icon name="chevron-down" size={14} />
-                  <Icon name="folder" size={14} />
+                  <Icon name={isCollapsed ? 'folder' : 'folder-open'} size={14} />
                   <span style={{ flex: 1 }}>{folder}</span>
                   <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                     {folderFiles.length}
                   </span>
                 </div>
 
-                {!isCollapsed && folderFiles.map((file) => {
-                  const path = isSources ? `01_Sources/${file.path}` : file.path;
-                  const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
-                  const mapEntry = isSources ? statusMap[file.path] : null;
-                  const status = mapEntry?.status || '';
-                  const statusClass = status === 'processed' ? 'processed' :
-                    status.startsWith('pending') ? 'pending' : 'unsupported';
-                  const iconName = FORMAT_ICONS[ext] || 'file';
-
-                  return (
-                    <div
-                      key={path}
-                      className={`file-item ${selectedFile === path ? 'active' : ''}`}
-                      onClick={() => handleFileClick(file)}
-                    >
-                      {isSources && <span className={`file-status-dot ${statusClass}`} title={status} />}
-                      <Icon name={iconName} size={14} />
-                      <span className="file-item-name">{file.name}</span>
-                      <span className="file-item-meta">{ext}</span>
-                    </div>
-                  );
-                })}
+                {!isCollapsed && folderFiles.map(renderFileRow)}
               </div>
             );
           })}

@@ -108,7 +108,7 @@ export default function SearchBar({ value, onChange, onNavigate }) {
             >
               <IdBadge id={r.id} />
               <span style={{
-                color: 'var(--text-muted)', flex: 1,
+                color: 'var(--text-muted)', flex: 1, minWidth: 0,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {r.text}

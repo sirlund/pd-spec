@@ -202,20 +202,22 @@ export function createApi(projectRoot) {
         try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
 
         for (const entry of entries) {
+          if (entry.name.startsWith('.')) continue;
+          if (entry.name === '_templates' || entry.name === '_schemas' || entry.name === '_README.md') continue;
+
           const fullPath = join(dir, entry.name);
           const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
-          if (entry.name === '_templates' || entry.name === '_schemas' || entry.name === '_README.md') continue;
-
           if (entry.isDirectory()) {
             await scanDir(fullPath, relativePath);
-          } else if (entry.name.endsWith('.html')) {
+          } else {
             const stats = await stat(fullPath);
+            const ext = extname(entry.name).replace('.', '') || 'unknown';
             outputs.push({
               path: `03_Outputs/${relativePath}`,
               name: entry.name,
-              folder: prefix || '(root)',
-              format: 'html',
+              folder: prefix || null,
+              format: ext,
               size: stats.size,
               modified: stats.mtime.toISOString(),
               type: inferOutputType(entry.name),
@@ -242,18 +244,20 @@ export function createApi(projectRoot) {
         try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
 
         for (const entry of entries) {
-          if (entry.name.startsWith('_')) continue;
+          if (entry.name.startsWith('.')) continue;
+          if (entry.name.includes('TEMPLATE') || entry.name === '_README.md') continue;
           const fullPath = join(dir, entry.name);
           const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
           if (entry.isDirectory()) {
+            if (entry.name.startsWith('_')) continue;
             await scanDir(fullPath, relativePath);
           } else {
             const stats = await stat(fullPath);
             files.push({
               path: relativePath,
               name: entry.name,
-              folder: prefix || '(root)',
+              folder: prefix || null,
               format: extname(entry.name).replace('.', '') || 'unknown',
               size: stats.size,
               modified: stats.mtime.toISOString(),
@@ -263,6 +267,57 @@ export function createApi(projectRoot) {
       }
 
       await scanDir(sourceDir);
+      res.json({ files });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/work-files — list browseable files in 02_Work/
+  router.get('/work-files', async (req, res) => {
+    try {
+      const workDir = resolve(projectRoot, '02_Work');
+      const files = [];
+      // Files with dedicated views — exclude from browser
+      const DEDICATED_VIEW_FILES = new Set([
+        'INSIGHTS_GRAPH.md', 'CONFLICTS.md', 'SYSTEM_MAP.md',
+        'RESEARCH_BRIEF.md', 'EXTRACTIONS.md', 'SOURCE_MAP.md',
+      ]);
+      const HIDDEN_FILES = new Set(['_README.md', '.gitkeep', 'status_data.json']);
+
+      async function scanDir(dir, prefix = '') {
+        let entries;
+        try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
+
+        for (const entry of entries) {
+          if (entry.name.startsWith('.')) continue;
+          if (!prefix && DEDICATED_VIEW_FILES.has(entry.name)) continue;
+          if (HIDDEN_FILES.has(entry.name)) continue;
+          // Skip _assets dir (intake, not knowledge)
+          if (!prefix && entry.name === '_assets') continue;
+
+          const fullPath = join(dir, entry.name);
+          const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+
+          if (entry.isDirectory()) {
+            await scanDir(fullPath, relativePath);
+          } else {
+            // In _temp/, only show normalized transcripts — skip SESSION_CHECKPOINT.md
+            if (prefix.startsWith('_temp') && entry.name === 'SESSION_CHECKPOINT.md') continue;
+            const stats = await stat(fullPath);
+            files.push({
+              path: relativePath,
+              name: entry.name,
+              folder: prefix || null,
+              format: extname(entry.name).replace('.', '') || 'unknown',
+              size: stats.size,
+              modified: stats.mtime.toISOString(),
+            });
+          }
+        }
+      }
+
+      await scanDir(workDir);
       res.json({ files });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -328,14 +383,41 @@ export function createApi(projectRoot) {
     }
   });
 
+  // Helper: scan 01_Sources/ filesystem for actual file count
+  async function scanSourceFiles() {
+    const sourceDir = resolve(projectRoot, '01_Sources');
+    const HIDDEN = new Set(['_SOURCE_TEMPLATE.md', '_CONTEXT_TEMPLATE.md', '_README.md']);
+    const paths = [];
+
+    async function walk(dir, prefix = '') {
+      let entries;
+      try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
+      for (const entry of entries) {
+        if (entry.name.startsWith('.')) continue;
+        if (HIDDEN.has(entry.name)) continue;
+        const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+          if (entry.name.startsWith('_')) continue;
+          await walk(join(dir, entry.name), rel);
+        } else {
+          paths.push(rel);
+        }
+      }
+    }
+
+    await walk(sourceDir);
+    return paths;
+  }
+
   // GET /api/dashboard — aggregated dashboard data
   router.get('/dashboard', async (req, res) => {
     try {
-      const [insights, conflicts, sourceMap, extractions] = await Promise.all([
+      const [insights, conflicts, sourceMap, extractions, fsSourcePaths] = await Promise.all([
         readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
         readAndParse('02_Work/CONFLICTS.md', parseConflicts),
         readAndParse('02_Work/SOURCE_MAP.md', parseSourceMap),
         readAndParse('02_Work/EXTRACTIONS.md', parseExtractions),
+        scanSourceFiles(),
       ]);
 
       // Authority distribution
@@ -351,27 +433,53 @@ export function createApi(projectRoot) {
         statusDist[ig.status] = (statusDist[ig.status] || 0) + 1;
       }
 
-      // Pipeline progress
+      // Cross-reference filesystem vs SOURCE_MAP (normalize for comparison)
+      const mapPaths = new Set((sourceMap.sources || []).map(s => s.path.normalize('NFC').trim()));
+      const untracked = fsSourcePaths.filter(p => !mapPaths.has(p.normalize('NFC').trim())).length;
+
+      // Pipeline progress — use real filesystem count for total sources
       const pipeline = {
-        sources: sourceMap.summary.total || 0,
+        sources: fsSourcePaths.length,
         extracted: sourceMap.summary.processed || 0,
         claims: extractions.total_claims || 0,
         insights: insights.insights.length,
         conflicts: conflicts.conflicts.length,
         conflicts_resolved: conflicts.summary.resolved || 0,
+        untracked,
       };
 
       // Source folder names for diversity display
       const sourceFolders = [...new Set(
-        (sourceMap.sources || [])
-          .map(s => s.path.split('/')[0])
+        fsSourcePaths
+          .map(p => p.split('/')[0])
           .filter(Boolean)
       )];
 
-      // Compute evidence gap count
+      // Compute evidence gap count (all types, not just claim-level)
       let gapCount = 0;
+      // Claim-level: single-source insights
       for (const ig of insights.insights) {
         if (ig.convergence_ratio && ig.convergence_ratio.matched === 1 && ig.convergence_ratio.total > 1) {
+          gapCount++;
+        }
+      }
+      // Category gaps: categories with < 2 verified insights
+      const catCounts = {};
+      for (const ig of insights.insights) {
+        if (ig.status === 'VERIFIED' && ig.category_group) {
+          catCounts[ig.category_group] = (catCounts[ig.category_group] || 0) + 1;
+        }
+      }
+      for (const count of Object.values(catCounts)) {
+        if (count < 2) gapCount++;
+      }
+      // Source diversity gaps
+      const uniqueFolders = [...new Set(
+        (sourceMap.sources || []).map(s => s.path.split('/')[0]?.toLowerCase() || '')
+      )];
+      const expectedTypes = ['entrevista', 'workshop', 'benchmark', 'analytic', 'documento', 'financier'];
+      for (const expected of expectedTypes) {
+        if (!uniqueFolders.some(f => f.includes(expected)) && sourceMap.sources?.length > 0) {
           gapCount++;
         }
       }
