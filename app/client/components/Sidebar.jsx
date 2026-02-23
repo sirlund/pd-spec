@@ -5,10 +5,10 @@ const SECTION_LABELS = {
   research: 'Research',
   structure: 'Structure',
   tools: 'Tools',
-  deliverables: 'Deliverables',
+  browse: 'Browse',
 };
 
-const SECTION_ORDER = ['research', 'structure', 'tools', 'deliverables'];
+const SECTION_ORDER = ['research', 'structure', 'tools', 'browse'];
 
 export default function Sidebar({ views, activeView, onNavigate, counts, decisionCount }) {
   const grouped = {};

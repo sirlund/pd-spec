@@ -6,6 +6,7 @@ import ProgressBar from './ui/ProgressBar.jsx';
 
 export default function InsightCard({ insight, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
+  const [refsExpanded, setRefsExpanded] = useState(false);
 
   const statusAccent = {
     VERIFIED: 'verified',
@@ -38,9 +39,17 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       {insight.convergence_ratio && (
         <div style={{ marginBottom: 8 }}>
           <ProgressBar segments={[
-            { value: insight.convergence_ratio.matched, color: 'var(--accent-cyan)' },
+            {
+              value: insight.convergence_ratio.matched,
+              color: insight.convergence_ratio.total <= 1 ? 'var(--pending-fg)' : 'var(--accent-cyan)',
+            },
             { value: insight.convergence_ratio.total - insight.convergence_ratio.matched, color: 'transparent' },
           ]} />
+          {insight.convergence_ratio.total <= 1 && (
+            <div style={{ fontSize: '0.7rem', color: 'var(--pending-fg)', marginTop: 2 }}>
+              Single source — consider cross-referencing
+            </div>
+          )}
         </div>
       )}
 
@@ -74,8 +83,26 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       )}
 
       {insight.refs.length > 0 && (
-        <div style={{ marginTop: 8, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          Ref: {insight.refs.join(', ')}
+        <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+          {(refsExpanded ? insight.refs : insight.refs.slice(0, 3)).map((ref, i) => {
+            const filename = ref.split('/').pop();
+            const folder = ref.includes('/') ? ref.split('/')[0] : null;
+            return (
+              <span key={i} className="badge badge-subtle" style={{ fontSize: '0.65rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }} title={ref}>
+                {folder && <span style={{ opacity: 0.6 }}>{folder}/</span>}{filename}
+              </span>
+            );
+          })}
+          {!refsExpanded && insight.refs.length > 3 && (
+            <button className="btn-ghost btn-sm" onClick={() => setRefsExpanded(true)} style={{ fontSize: '0.65rem' }}>
+              +{insight.refs.length - 3} more
+            </button>
+          )}
+          {refsExpanded && insight.refs.length > 3 && (
+            <button className="btn-ghost btn-sm" onClick={() => setRefsExpanded(false)} style={{ fontSize: '0.65rem' }}>
+              show less
+            </button>
+          )}
         </div>
       )}
 

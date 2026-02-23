@@ -511,61 +511,11 @@ After writing insights and conflicts, generate a Research Brief — a short exec
 [list of gaps with suggestions]
 ```
 
-### Phase 5: Auto-Generate Dashboard
+### Phase 5: Report
 
-After writing files, generate STATUS.html automatically so the user can review insights and conflicts without running a separate command.
-
-26. **Build JSON data** ⚙️ SCRIPT-ELIGIBLE — use an inline Python script to parse Work files and build the JSON. Do NOT build >10KB JSON in-context via LLM reasoning (causes compaction loops, see anti-patterns). Write a Python script that reads INSIGHTS_GRAPH.md, CONFLICTS.md, SOURCE_MAP.md, SYSTEM_MAP.md, parses headers/fields, and outputs valid JSON. Validate the JSON before injecting.
-
-   Build JSON from the Work layer files:
-
-   ```json
-   {
-     "meta": {
-       "type": "status",
-       "generated": "YYYY-MM-DD",
-       "language": "[output_language]",
-       "last_session": "YYYY-MM-DDTHH:MM"
-     },
-     "title": "[project_name] — Dashboard",
-     "cards": [
-       {"count": N, "label": "Insights", "breakdown": "V verified, P pending", "style": "ok|warn"},
-       {"count": C, "label": "Conflicts", "breakdown": "P pending, R resolved", "style": "ok|warn"},
-       {"count": S, "label": "Sources", "style": "ok"},
-       {"count": G, "label": "Evidence Gaps", "style": "ok|warn"}
-     ],
-     "insights": [...],
-     "conflicts": [...],
-     "sources": [...],
-     "source_diversity": [...],
-     "source_issues": [...],
-     "evidence_gaps": [...],
-     "system_map": {...}
-   }
-   ```
-
-   - **insights:** All `[IG-XX]` entries from INSIGHTS_GRAPH.md (just written). Fields: id, status, category, temporal, claim, source, quote.
-   - **conflicts:** All `[CF-XX]` entries from CONFLICTS.md (just written). Fields: id, status, title, refs, tension, sides, flag_label ("Flag for stakeholder review"), research_label ("Validate with additional research"). Use generic labels — no inference. **Intermediate states:** When parsing CONFLICTS.md, detect `Status: PENDING — Flagged (context)` or `Status: PENDING — Research (context)` syntax. If found, emit `intermediate_status: "flagged"` or `"research"` and `intermediate_note: "context"` fields in the conflict JSON. These render as distinct badges in the dashboard.
-   - **sources:** Glob `01_Sources/` to list folders with file counts and types.
-   - **source_diversity:** Check which types are present: Interviews, Benchmarks, Analytics, Workshops, Surveys.
-   - **evidence_gaps:** Insights with Convergence < 2 sources → add as claim-level gap. Missing source types → add as source-diversity gap.
-   - **system_map:** Read `02_Work/SYSTEM_MAP.md` if it exists; use empty object if not.
-   - **Card styles:** "warn" when pending conflicts or evidence gaps > 0, otherwise "ok".
-
-27. **Read template** — `03_Outputs/_templates/status.html`.
-
-28. **Inject JSON** — Replace the contents of `<script id="pd-data" type="application/json">` with the generated JSON.
-
-29. **Write** — `03_Outputs/STATUS.html`.
-
-30. **Self-check** — Re-read `03_Outputs/STATUS.html` and verify it contains `<script id="pd-data" type="application/json">` with valid JSON inside. If missing, retry the injection. **CRITICAL: Never write STATUS.html as monolithic inline HTML/CSS/JS. Always use the template.**
-
-### Phase 6: Report
-
-31. **Compact output** — After writing STATUS.html, output ONLY:
+26. **Compact output** — output ONLY:
    ```
    ✓ Analysis complete: [N insights, C conflicts, G evidence gaps]
-   ✓ Dashboard: 03_Outputs/STATUS.html
    Mode: [INCREMENTAL: processed X sections, skipped Y | FULL: processed all Z sections]
    ```
 
@@ -575,7 +525,7 @@ After writing files, generate STATUS.html automatically so the user can review i
    - Research gaps suggested (count)
 
    Do NOT show:
-   - Full insight or conflict lists (those are in STATUS.html)
+   - Full insight or conflict lists (visible in the Live Research App via `/view`)
    - Source matrix table (visible in dashboard)
    - Verbose deduplication logs
-   - Reminder to run `/status` (dashboard already auto-generated)
+   - Suggestions to generate STATUS.html (replaced by Live Research App)

@@ -65,8 +65,8 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
             All categories
           </button>
           {categories.map(c => (
-            <button key={c} className={`filter-btn ${categoryFilter === c ? 'active' : ''}`} onClick={() => setCategoryFilter(c)} title={c}>
-              {c.length > 30 ? c.slice(0, 30) + '...' : c}
+            <button key={c} className={`filter-btn ${categoryFilter === c ? 'active' : ''}`} onClick={() => setCategoryFilter(c)} title={c} style={{ whiteSpace: 'normal', textAlign: 'left' }}>
+              {c}
             </button>
           ))}
         </div>

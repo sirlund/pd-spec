@@ -4,7 +4,7 @@
  */
 
 import chokidar from 'chokidar';
-import { resolve } from 'path';
+import { resolve, normalize } from 'path';
 
 export function createWatcher(projectRoot, onChange) {
   const watchPaths = [
@@ -28,19 +28,20 @@ export function createWatcher(projectRoot, onChange) {
     },
   });
 
+  function toRelative(filePath) {
+    return normalize(filePath).replace(normalize(projectRoot) + '/', '');
+  }
+
   watcher.on('change', (filePath) => {
-    const relative = filePath.replace(projectRoot + '/', '');
-    onChange({ type: 'change', path: relative });
+    onChange({ type: 'change', path: toRelative(filePath) });
   });
 
   watcher.on('add', (filePath) => {
-    const relative = filePath.replace(projectRoot + '/', '');
-    onChange({ type: 'add', path: relative });
+    onChange({ type: 'add', path: toRelative(filePath) });
   });
 
   watcher.on('unlink', (filePath) => {
-    const relative = filePath.replace(projectRoot + '/', '');
-    onChange({ type: 'unlink', path: relative });
+    onChange({ type: 'unlink', path: toRelative(filePath) });
   });
 
   return watcher;

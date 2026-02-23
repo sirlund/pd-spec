@@ -24,8 +24,9 @@ export const VIEW_REGISTRY = [
   { id: 'brief', label: 'Research Brief', icon: 'file-text', section: 'structure' },
   { id: 'add-context', label: 'Add Context', icon: 'pencil-plus', section: 'tools' },
   { id: 'actions', label: 'Actions', icon: 'send', section: 'tools' },
-  { id: 'sources', label: 'Sources', icon: 'folders', section: 'deliverables' },
-  { id: 'outputs', label: 'Outputs', icon: 'file-export', section: 'deliverables' },
+  { id: 'sources', label: 'Sources', icon: 'folders', section: 'browse' },
+  { id: 'work', label: 'Work', icon: 'flask', section: 'browse' },
+  { id: 'outputs', label: 'Outputs', icon: 'file-export', section: 'browse' },
 ];
 
 export default function App() {
@@ -120,9 +121,11 @@ export default function App() {
           />
         );
       case 'sources':
-        return <FileBrowser root="01_Sources" title="Sources" />;
+        return <FileBrowser key="sources" root="01_Sources" title="Sources" />;
+      case 'work':
+        return <FileBrowser key="work" root="02_Work" title="Work" />;
       case 'outputs':
-        return <FileBrowser root="03_Outputs" title="Outputs" />;
+        return <FileBrowser key="outputs" root="03_Outputs" title="Outputs" />;
       default:
         return null;
     }
@@ -142,16 +145,6 @@ export default function App() {
           )}
           <div className="live-dot" title="Live — watching for changes" />
           <ThemeToggle />
-          {decisionCount > 0 && (
-            <span
-              className="badge badge-id"
-              style={{ cursor: 'pointer' }}
-              onClick={() => setView('actions')}
-              title={`${decisionCount} decisions — click to generate prompt`}
-            >
-              {decisionCount} decisions
-            </span>
-          )}
         </div>
         <SearchBar value={searchQuery} onChange={setSearchQuery} onNavigate={navigateTo} />
       </header>
