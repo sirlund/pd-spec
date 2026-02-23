@@ -728,43 +728,109 @@ participants:
 **Evidence:** The page title shows "Research Brief" (from the view component heading) AND the markdown content starts with `# Research Brief` (from the file itself). Both render, creating a duplicate heading.
 **Fix direction:** Either strip the first `# heading` from the markdown content when it matches the view title, or remove the component-level heading for this view.
 
+### BUG-12: Search input stays ~197px — max-width doesn't expand
+
+**Severity:** Low
+**Where:** Live Research App → header search input
+**Evidence:** Despite `max-width: 500px` in CSS, the input renders at ~197px. `max-width` only limits, doesn't force width. The flex container (`app-header`) compresses the search container.
+**Fix direction:** Add `min-width` or `width` to `.search-container` or `.search-input` to ensure it expands. Or use `flex: 1` on the search container within the header flex.
+
+### OBS-40: Convergence bar semantics unclear — visual contradicts reality
+
+**Severity:** Medium (UX)
+**Where:** Live Research App → Insights view → convergence progress bar
+**Evidence:** 1/1 bar shows full (100%) suggesting strong evidence — but it's single-source (weakest). 3/54 bar shows nearly empty — but 3 independent sources is reasonable. Empty bar = unclear (0? error?). The bar communicates nothing useful without context.
+**Fix direction:** Rethink the visual. Options: (a) bar shows matched/total with label explaining what "good" looks like, (b) replace bar with text-only indicator ("3 sources" with color), (c) bar denominator = fixed scale (e.g., 5 sources = full), not total project sources.
+
+### OBS-41: Insight ref chips show folder paths — unnecessary noise
+
+**Severity:** Low (UX)
+**Where:** Live Research App → Insights view → ref chips on cards
+**Evidence:** Chips show `Antecedentes/filename.pdf` — the folder path adds noise. Filename alone is sufficient. Chips should be clickable → navigate to file in Sources view.
+**Fix direction:** Show filename only. Make clickable → Sources file browser with file selected.
+
+### OBS-42: File type badge not monospaced
+
+**Severity:** Low (UX polish)
+**Where:** Live Research App → FileBrowser → file type label (md, pdf, docx, etc.)
+**Evidence:** Type labels use sans-serif font. Should use `var(--font-mono)` (JetBrains Mono) for consistency with other technical labels.
+
+### OBS-43: Preview header "Open with System App" redundant — show extraction status instead
+
+**Severity:** Medium (UX)
+**Where:** Live Research App → Sources → file preview header
+**Evidence:** "Open with System App" button appears in both preview header AND preview body for binary files. Header space better used for extraction status badge (dot + text: "Processed — 71 claims" or "Not extracted"). Keep "Open with System App" only in body for non-previewable files.
+
+### OBS-44: Badge styling inconsistent across components
+
+**Severity:** Medium (UX polish)
+**Where:** Live Research App → all views
+**Evidence:** Badges vary in font-family, size, padding across views. Status badges (VERIFIED, READY, BLOCKED), ID badges (IG-XX), and UI badges (file counts) use different type styles. All should use `var(--font-mono)` (JetBrains Mono). Size variants should be explicit classes (`badge-sm`, `badge-lg`) not ad-hoc inline styles.
+
+### OBS-45: Folder file count not monospaced
+
+**Severity:** Low (UX polish)
+**Where:** Live Research App → FileBrowser → folder row file count (6, 33, etc.)
+**Evidence:** Count number uses sans-serif. Should use `var(--font-mono)` for consistency with other numeric labels.
+
+### OBS-46: "Decisions pending" footer not actionable
+
+**Severity:** Medium (UX)
+**Where:** Live Research App → sidebar footer → "N decisions pending"
+**Evidence:** Shows count but clicking does nothing. Should navigate to Actions view where the user can generate the /synthesis prompt with their decisions.
+
+### OBS-47: System Map module cards — visual hierarchy unclear
+
+**Severity:** Medium (UX)
+**Where:** Live Research App → System Map → module cards (light mode screenshot)
+**Evidence:** (1) READY/BLOCKED badges are grey — don't use status colors (green/red). (2) Left border has color but meaning unclear. (3) Blocker alert at bottom competes with grey badges above. No clear visual hierarchy.
+**Fix direction:** Status badge = colored (READY=green, BLOCKED=red). Left border = matches status. IG-XX badges stay teal. Hierarchy: status → refs → content → blockers.
+
+### OBS-48: Open Questions buried in System Map — should be more prominent
+
+**Severity:** Medium (UX / Information Architecture)
+**Where:** Live Research App → System Map → Open Questions section (bottom)
+**Evidence:** Open Questions are actionable research items but buried at the bottom of System Map below modules and principles. Their location in System Map is unintuitive — research gaps ≠ product architecture. Related to OBS-15 (modules vs principles unclear) and OBS-17 (abstraction inconsistent).
+**Fix direction:** Options: (a) Surface Open Questions in Dashboard as actionable items, (b) Separate view or dedicated section, (c) Rethink System Map organization entirely — what belongs here vs elsewhere. System Map may need a content/structure redesign.
+
 ## Summary
 
 | ID | Type | Severity | Status |
 |---|---|---|---|
-| **BUG-06** | **Stale parseCache — dashboard wrong** | **High** | **Open — CRITICAL** |
-| BUG-07 | Touchpoint missing "processed" badge | Medium | Open |
-| BUG-08 | Preview persists across views | Low | Open |
-| BUG-05 | /synthesis offers STATUS.html (legacy) | Low | Open |
-| BUG-09 | Search dropdown overflows right edge of viewport | Medium | Open |
-| **BUG-10** | **Missing icons (flask + folder-open)** | **Medium** | **Fixed** |
-| BUG-11 | Light mode badge colors too dark/indistinguishable | Medium | Open |
-| BUG-02 | Bold markdown not rendered in list items | Medium | Open |
+| **BUG-06** | **Stale parseCache — dashboard wrong** | **High** | **Fixed v4.18.0** |
+| BUG-07 | Touchpoint missing "processed" badge | Medium | **Fixed v4.18.0** |
+| BUG-08 | Preview persists across views | Low | **Fixed v4.18.0** |
+| BUG-05 | /synthesis offers STATUS.html (legacy) | Low | **Fixed v4.18.0** |
+| BUG-09 | Search dropdown overflows right edge of viewport | Medium | **Fixed v4.18.0** |
+| BUG-10 | Missing icons (flask + folder-open) | Medium | **Fixed v4.18.0** |
+| BUG-11 | Light mode badge colors too dark/indistinguishable | Medium | **Fixed v4.18.0** |
+| BUG-02 | Bold markdown not rendered in list items | Medium | **Fixed v4.18.0** |
+| BUG-12 | Search input stays ~197px | Low | Open |
 | BUG-01 | Premature fix for OBS-01 | Medium | Reverted |
-| ~~BUG-04~~ | ~~Show more does nothing~~ | ~~Medium~~ | **CANNOT REPRODUCE** — works in Playwright retest |
-| ~~BUG-03~~ | ~~Agent hallucinated extraction status~~ | ~~High~~ | **RETRACTED** — user error (wrong worktree) |
-| OBS-01 | Dashboard shows 100% when new sources exist | Medium | Open — fix direction defined |
-| OBS-02 | Data accuracy (extraction counts) | Medium | Open |
+| ~~BUG-04~~ | ~~Show more does nothing~~ | ~~Medium~~ | **CANNOT REPRODUCE** |
+| ~~BUG-03~~ | ~~Agent hallucinated extraction status~~ | ~~High~~ | **RETRACTED** |
+| OBS-01 | Dashboard shows 100% when new sources exist | Medium | **Fixed v4.18.0** |
+| OBS-02 | Data accuracy (extraction counts) | Medium | **Fixed v4.18.0** (NFC normalization) |
 | OBS-03 | Process violation (observe-don't-fix) | Process | Noted |
-| OBS-04 | UX — root grouping (sources) | Low | Open |
-| OBS-05 | UX — dotfiles shown | Low | Open |
-| OBS-06 | UX — metadata files hidden | Medium | Open |
-| OBS-07 | UX — outputs only shows .html | High | Open |
-| OBS-08 | UX — root grouping (outputs) | Low | Open |
+| OBS-04 | UX — root grouping (sources) | Low | **Fixed v4.18.0** |
+| OBS-05 | UX — dotfiles shown | Low | **Fixed v4.18.0** |
+| OBS-06 | UX — metadata files hidden | Medium | **Fixed v4.18.0** |
+| OBS-07 | UX — outputs only shows .html | High | **Fixed v4.18.0** |
+| OBS-08 | UX — root grouping (outputs) | Low | **Fixed v4.18.0** |
 | OBS-09 | Evidence Gaps confusing/low-value | High | Open |
 | OBS-10 | Extractions needs collapse/expand | Medium | Open |
 | OBS-11 | Search limited to insights+conflicts | Medium | Open |
 | OBS-12 | Missing Source Coverage summary | Medium | Open |
 | OBS-13 | System Map needs collapse + mini-dashboard | Medium | Open |
-| OBS-14 | Decision counter duplicated header/footer | Low | Open |
+| OBS-14 | Decision counter duplicated header/footer | Low | **Fixed v4.18.0** |
 | OBS-15 | Modules vs Principles not self-explanatory | Medium | Open |
 | OBS-16 | No cross-navigation between badges and views | High | Open |
 | OBS-17 | Module abstraction level inconsistent | Medium | Open |
 | OBS-18 | Mixed IG-XX vs IG-SYNTH-XX ID conventions | High | Open |
-| OBS-19 | Convergence bar misleading for 1/1 | Low | Open |
-| OBS-20 | Ref paths long and unreadable | Low | Open |
-| OBS-21 | Category pills truncated | Low | Open |
-| OBS-22 | Folder icons rotate instead of open/closed | Low | Open |
+| OBS-19 | Convergence bar misleading for 1/1 | Low | **Fixed v4.18.0** (amber bar) |
+| OBS-20 | Ref paths long and unreadable | Low | **Fixed v4.18.0** (chips) |
+| OBS-21 | Category pills truncated | Low | **Fixed v4.18.0** |
+| OBS-22 | Folder icons rotate instead of open/closed | Low | **Fixed v4.18.0** |
 | OBS-23 | Binary files (PDF/DOCX/PPTX) lack preview | Medium | Open |
 | OBS-24 | Pass C injects "No es fuente" header | Medium | Open |
 | OBS-25 | Pass A corrupts metadata block | Medium | Open |
@@ -777,8 +843,17 @@ participants:
 | OBS-32 | No way to challenge VERIFIED insight | High | Open — architecture vision |
 | OBS-33 | No warning when decisions invalidate conflicts | High | Open |
 | OBS-34 | Insight reject/approve needs reason note | Medium | Open |
-| OBS-35 | Evidence Gaps badge discrepancy (4 vs 8) | Low | Open |
-| OBS-36 | Research Brief duplicate heading | Low | Open |
-| OBS-37 | Search dropdown clips titles | Medium | Open |
-| OBS-38 | Research Brief refs not visually clickable | Medium | Open |
+| OBS-35 | Evidence Gaps badge discrepancy (4 vs 8) | Low | **Fixed v4.18.0** |
+| OBS-36 | Research Brief duplicate heading | Low | **Fixed v4.18.0** |
+| OBS-37 | Search dropdown clips titles | Medium | **Fixed v4.18.0** |
+| OBS-38 | Research Brief refs not visually clickable | Medium | **Fixed v4.18.0** |
 | OBS-39 | Playwright snapshots consume context tokens | Medium | Open — use Sonnet subagent |
+| OBS-40 | Convergence bar semantics unclear | Medium | Open |
+| OBS-41 | Insight ref chips show folder paths | Low | Open |
+| OBS-42 | File type badge not monospaced | Low | Open |
+| OBS-43 | Preview header — show extraction status instead | Medium | Open |
+| OBS-44 | Badge styling inconsistent across components | Medium | Open |
+| OBS-45 | Folder file count not monospaced | Low | Open |
+| OBS-46 | "Decisions pending" footer not actionable | Medium | Open |
+| OBS-47 | System Map module cards — unclear hierarchy | Medium | Open |
+| OBS-48 | Open Questions buried in System Map | Medium | Open |

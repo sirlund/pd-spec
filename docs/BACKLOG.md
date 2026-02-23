@@ -138,6 +138,367 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
+### [BL-58] Cross-Navigation — Clickable [IG-XX] / [CF-XX] Badges Everywhere
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-16. Core value proposition of PD-Spec is traceability. The data chain exists (System Map → Insight → Claims → Source) but is not navigable in the UI.
+
+**Problem:** `[IG-SYNTH-07]` badge in System Map is not clickable. Insights view doesn't link to specific claims in Extractions. No "referenced by" reverse links. Traceability chain is invisible in the UI.
+
+**Solution:**
+1. All `[IG-XX]` and `[CF-XX]` badges clickable across all views → navigate to detail view
+2. Add "Referenced by" section in insight detail (which System Map modules cite it)
+3. Claims in Extractions linkable from insight evidence trail
+
+**Acceptance criteria:**
+- [ ] Badges in System Map, Research Brief, and Extractions navigate to detail views
+- [ ] Insight detail shows which modules reference it
+- [ ] Works across all rendered markdown content
+
+**User story:**
+> As a researcher reviewing the System Map, I can click any [IG-XX] badge to see its full evidence chain — sources, claims, convergence — without manually searching.
+
+---
+
+### [BL-59] Convergence Indicator Redesign
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-40 + OBS-19. The progress bar visual contradicts reality: 1/1 = full bar (looks strong, is weakest), 3/54 = nearly empty (looks weak, is reasonable).
+
+**Problem:** Convergence bar semantics are unclear. No user can tell what "good" looks like without explanation. The denominator (total project sources) makes every insight look poorly evidenced.
+
+**Solution:** Replace progress bar with a clearer indicator. Options:
+- Text-only: "3 sources" with color scale (1=amber, 2-3=neutral, 4+=green)
+- Fixed-scale bar: denominator = 5 (not total sources). 3/5 looks reasonable.
+- Chip list: show source count + authority breakdown inline
+
+**Acceptance criteria:**
+- [ ] Visual communicates evidence strength intuitively (more sources = better, visually)
+- [ ] Single-source insights clearly flagged as weak
+- [ ] No misleading "full bar" for 1/1
+
+---
+
+### [BL-60] Insight Ref Chips — Filename Only + Clickable
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-41 + OBS-20. Ref chips show folder paths (`Antecedentes/filename.pdf`) — unnecessary noise. Filename alone is sufficient.
+
+**Problem:** Long paths overflow, add visual noise, distract from the insight content.
+
+**Solution:** Show filename only in chips. Click → navigate to Sources file browser with file selected and preview open.
+
+**Acceptance criteria:**
+- [ ] Ref chips show filename only (no folder path)
+- [ ] Clicking a chip navigates to Sources → selects file → shows preview
+- [ ] Tooltip shows full path on hover
+
+---
+
+### [BL-61] Typography Consistency — Mono Font for All Technical Labels
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-42 + OBS-44 + OBS-45. Badges, file type labels, folder counts use inconsistent fonts. Some sans-serif, some mono, different sizes.
+
+**Problem:** Visual inconsistency erodes polish. Technical labels (IDs, counts, file types, status badges) should all use the same monospace font.
+
+**Solution:**
+1. All `.badge` variants use `var(--font-mono)` (JetBrains Mono)
+2. File type labels (md, pdf, docx) use `var(--font-mono)`
+3. Folder file counts use `var(--font-mono)`
+4. Explicit size variants: `badge-sm`, `badge-lg` classes instead of ad-hoc inline styles
+
+**Acceptance criteria:**
+- [ ] All badges, file types, and counts render in JetBrains Mono
+- [ ] Badge sizes standardized via CSS classes
+
+---
+
+### [BL-62] Preview Header — Extraction Status Badge
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-43. Preview header repeats "Open with System App" button that already exists in the preview body. Wasted space.
+
+**Problem:** Header could show useful information (extraction status) instead of redundant action.
+
+**Solution:** Replace header "Open with System App" button with extraction status badge: dot + text ("Processed — 71 claims" / "Pending" / "Not extracted"). Keep "Open with System App" in body only for non-previewable binary files.
+
+**Acceptance criteria:**
+- [ ] Preview header shows extraction status badge (dot + text) for Sources view
+- [ ] Claim count shown for processed files
+- [ ] "Open with System App" removed from header, kept in body for binary files
+
+---
+
+### [BL-63] Decisions Pending Footer — Clickable Navigation to Actions
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-46. Sidebar footer "N decisions pending" is informational only. Should navigate to Actions view.
+
+**Solution:** Make the footer text clickable → `navigateTo('actions')`.
+
+**Acceptance criteria:**
+- [ ] Click "N decisions pending" → navigates to Actions view
+
+---
+
+### [BL-64] System Map Cards — Status Color Hierarchy
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-47 + OBS-13. Module cards use grey badges for all statuses (READY, BLOCKED). Left border has color but meaning unclear. No visual hierarchy.
+
+**Problem:** User can't scan cards to see which modules are ready vs blocked without reading text. The color system already exists for badges (green/red) but isn't applied here.
+
+**Solution:**
+1. Status badge uses status color: READY=green, BLOCKED=red
+2. Left border matches status color
+3. IG-XX badges stay teal
+4. Blocker alert stays at bottom with red background
+5. Cards collapsible (show title + status when collapsed)
+
+**Acceptance criteria:**
+- [ ] READY badge green, BLOCKED badge red
+- [ ] Left border reflects status
+- [ ] Cards collapse/expand (title + status visible when collapsed)
+
+---
+
+### [BL-65] Open Questions — Actionable Research Items
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-48. Open Questions buried at bottom of System Map. Not prominent, not actionable. Research gaps deserve visibility — they drive what the team should do next.
+
+**Problem:** Open Questions are passive text in an unintuitive location. A researcher can't quickly see "what do we still need to find out?" without scrolling through product architecture.
+
+**Solution:**
+1. Surface Open Questions in Dashboard as actionable items (card or section)
+2. Each question shows: text, related insights/conflicts, suggested action
+3. Future: suggested actions with priority ("Urgente: workshop de alineación", "Entrevista con usuario final para validar IG-07")
+
+**Acceptance criteria:**
+- [ ] Open Questions visible in Dashboard (not buried in System Map)
+- [ ] Each question shows related refs
+- [ ] Optional: suggested methodology/action per question
+
+**User story:**
+> As a research lead reviewing project state, I can see open questions prominently and understand what actions to take next, without digging through the System Map.
+
+---
+
+### [BL-66] Extractions Collapse/Expand per Source
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-10. 1200+ claims fully expanded is inutilizable. User feedback: "extractions está buenísimo" but needs navigability.
+
+**Problem:** All claims shown expanded. Scrolling through 54 source sections with 1200+ claims is impractical.
+
+**Solution:** Show first 3-5 claims per source collapsed, with "Show N more" expand button. Source header always visible with file name + claim count.
+
+**Acceptance criteria:**
+- [ ] Claims collapsed by default (3-5 visible per source)
+- [ ] "Show N more" button expands full list
+- [ ] Source headers always visible with claim count
+
+---
+
+### [BL-67] Consistent Insight ID Convention in /analyze
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-18. TIMining has mixed `IG-SYNTH-XX` and `IG-XX` IDs from different /analyze runs. Confuses users and breaks cross-referencing.
+
+**Problem:** /analyze doesn't detect existing ID conventions. Each run can introduce a different naming pattern. Mixed IDs in the same project make the System Map references inconsistent.
+
+**Solution:** /analyze detects existing ID prefix in INSIGHTS_GRAPH.md and continues the series. If `IG-SYNTH-01` exists, new insights get `IG-SYNTH-22`, not `IG-01`.
+
+**Acceptance criteria:**
+- [ ] /analyze scans existing IDs before creating new ones
+- [ ] New IDs continue the existing series (prefix + next number)
+- [ ] No mixed conventions in a single project
+
+---
+
+### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-24 + OBS-25. Two bugs in /extract preprocessing:
+
+**Bug 1 (OBS-25):** Pass A applies speaker normalization regex to the entire file including metadata block. Result: title, date, attendees all get `[SPEAKER: ...]` prefix.
+**Bug 2 (OBS-24):** Pass C injects editorial comment "No es fuente para /extract" into normalized file header. Risk: agent re-reading file may self-skip.
+
+**Solution:**
+1. Pass A: detect `Transcript:` boundary, only apply speaker substitution below it
+2. Pass C: normalize content only — no editorial comments. Descriptive metadata belongs in `_CONTEXT.md`
+
+**Acceptance criteria:**
+- [ ] Pass A preserves metadata block above `Transcript:` unchanged
+- [ ] Pass C output contains no editorial commentary
+- [ ] Normalized files contain only normalized content + speaker labels
+
+---
+
+### [BL-69] Search Input Width Fix + Dropdown Alignment
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, BUG-12 + BUG-09. Search input stays ~197px despite `max-width: 500px`. Dropdown anchored to right but input doesn't expand.
+
+**Solution:** Give `.search-container` `flex: 1` or `min-width` in the header flex layout so the input actually fills available space.
+
+**Acceptance criteria:**
+- [ ] Search input expands to at least 350px on standard viewport
+- [ ] Dropdown stays within viewport bounds
+
+---
+
+### [BL-70] Evidence Gaps Redesign
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-09. Hardcoded checklist with naive folder-name matching. "financier" not valid Spanish. Low-value output that confuses users.
+
+**Solution:** Either elevate to match STATUS.html quality (parse insights for weak convergence, cross-reference conflicts, read `_CONTEXT.md` for source types) or simplify to just show low-convergence insights. Remove hardcoded expected types.
+
+**Acceptance criteria:**
+- [ ] No hardcoded source type checklist
+- [ ] Gaps derived from actual data (low convergence, uncovered categories)
+- [ ] Actionable output (what to do about each gap)
+
+---
+
+### [BL-71] Global Search — Extractions, System Map, Sources
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-11. Search only covers insights + conflicts. Extractions, sources, system map not searchable.
+
+**Solution:** Extend search to query all data types. Results grouped by type (insight, conflict, claim, source, module). Maintain current simple UX.
+
+**Acceptance criteria:**
+- [ ] Search returns results from all views
+- [ ] Results grouped by type with clear labels
+
+---
+
+### [BL-72] Source Coverage Summary View
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-12. Regression from STATUS.html — no per-folder overview of extraction state, claim counts, format badges.
+
+**Solution:** Aggregate SOURCE_MAP + EXTRACTIONS data by folder. Could be a section at top of Extractions view or per-folder badges in Sources.
+
+**Acceptance criteria:**
+- [ ] Per-folder summary: file count, extraction status, claim count, format badges
+- [ ] Visible without drilling into individual files
+
+---
+
+### [BL-73] System Map — Module vs Principles Clarity
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-15 + OBS-17. "Modules" and "Design Principles" not self-explanatory. Module abstraction levels inconsistent (subsystem vs capability vs feature).
+
+**Solution:** Add brief intro under each section header explaining what it represents. Consider allowing hierarchy levels in modules. Partly a /synthesis skill issue (what granularity to target), partly UI.
+
+**Acceptance criteria:**
+- [ ] Each section has a one-line description
+- [ ] Module abstraction level documented or enforced by /synthesis
+
+---
+
+### [BL-74] Binary File Preview — PDF + Office Thumbnails
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-23. PDF/DOCX/PPTX show no preview — only "Open with System App" button.
+
+**Solution:** PDF via `<iframe>` (browser-native). PPTX/DOCX via embedded thumbnail extraction (`docProps/thumbnail.jpeg` inside ZIP). Fallback: file metadata + format icon.
+
+**Acceptance criteria:**
+- [ ] PDF renders first page in preview pane
+- [ ] Office files show embedded thumbnail if available
+- [ ] Graceful fallback for files without thumbnail
+
+---
+
+### [BL-75] QA Tooling — Automated File Watcher + Sonnet Subagent
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-27 + OBS-39. Manual polling during QA is tedious. Playwright snapshots consume main agent context.
+
+**Solution:**
+1. File watcher script for QA observer: configurable polling, change detection, stability signal
+2. Playwright verification delegated to Sonnet subagent: compact pass/fail results, no full snapshots in main context
+
+**Acceptance criteria:**
+- [ ] QA watcher script available as utility
+- [ ] Playwright verification returns structured results (not raw snapshots)
+
+---
+
+### [BL-76] Structured Execution Logging
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-28. No machine-readable log of agent execution (files read, written, decisions, timing). MEMORY.md is narrative, not parseable.
+
+**Solution:** JSONL or markdown table at `02_Work/_temp/EXECUTION_LOG.md`. Each skill emits entries: timestamp, phase, action, target, duration. Future: Activity view in Live App consuming WS events.
+
+**Acceptance criteria:**
+- [ ] Skills emit structured log entries
+- [ ] Log format parseable (JSONL or structured markdown)
+
+---
+
+### [BL-77] Preprocessing Review + Project Glossary
+
+**Status:** PARKED — Needs architecture design
+**Priority:** P2 (high value, high effort)
+**Origin:** QA v7, OBS-26 + OBS-29 + OBS-30 + OBS-31. No UI to review speaker attributions or phonetic corrections. No persistent glossary. No STT correction loop.
+
+**Problem:** Three interconnected gaps: (1) preprocessing decisions are fire-and-forget, (2) no persistent phonetic/terminology map, (3) corrections don't propagate. A glossary system would solve all three.
+
+**Vision:** `02_Work/GLOSSARY.md` accumulating across extractions:
+- **People**: speaker identity + role
+- **Terms**: domain vocabulary
+- **Phonetic map**: STT corrections (cirios ante aras → silos entre áreas)
+
+Each `/extract` proposes new entries → user approves → approved entries auto-apply in future extractions. Corrections propagate through pipeline.
+
+**Depends on:** Second project to validate the pattern. TIMining provides evidence but a single project isn't enough for this scale of infrastructure.
+
+---
+
+### [BL-78] Insight Challenge + Feedback Loop
+
+**Status:** PARKED — Needs architecture design
+**Priority:** P2 (high value, high effort)
+**Origin:** QA v7, OBS-32 + OBS-33 + OBS-34. No way to challenge a VERIFIED insight from the app. No warning when decisions invalidate conflicts. No reason notes on approve/reject.
+
+**Problem:** Pipeline flows forward only (sources → claims → insights). No efficient backward flow (new evidence → challenge → re-evaluate). Field notes require full pipeline round-trip for a single correction.
+
+**Vision:**
+1. "Challenge" action on any insight → creates conflict with counter-evidence
+2. App detects when insight decisions make conflicts stale → banner warning
+3. Approve/reject includes optional reason note → stored in INSIGHTS_GRAPH.md + included in /synthesis prompt
+
+**Depends on:** Clearer understanding of how Actions → /synthesis flow works in practice across projects.
+
+---
+
 ### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
 
 **Status:** PARKED
