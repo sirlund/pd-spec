@@ -229,11 +229,33 @@ export default function FileBrowser({ root, title }) {
             <div className="file-preview-empty">Loading preview...</div>
           )}
 
-          {preview && !previewLoading && (
+          {preview && !previewLoading && (() => {
+            // Lookup extraction status for current file
+            const selNorm = selectedFile?.replace('01_Sources/', '').normalize('NFC').trim();
+            const mapEntry = isSources && selNorm ? statusMap[selNorm] : null;
+            return (
             <>
               <div className="file-preview-header">
                 <span className="file-preview-title">{selectedFile?.split('/').pop()}</span>
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  {isSources && mapEntry?.status === 'processed' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--verified-fg)' }}>
+                      <span className="file-status-dot processed" />
+                      Processed — {mapEntry.claims || 0} claim{mapEntry.claims !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {isSources && !mapEntry && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span className="file-status-dot unsupported" />
+                      Not extracted
+                    </span>
+                  )}
+                  {isSources && mapEntry && mapEntry.status !== 'processed' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--pending-fg)' }}>
+                      <span className="file-status-dot pending" />
+                      {mapEntry.status}
+                    </span>
+                  )}
                   {preview.type === 'external' && (
                     <a
                       href={preview.url}
@@ -243,14 +265,6 @@ export default function FileBrowser({ root, title }) {
                     >
                       <Icon name="external-link" size={14} /> Open in Browser
                     </a>
-                  )}
-                  {preview.type === 'binary' && (
-                    <button
-                      className="btn btn-sm"
-                      onClick={() => handleOpenExternal(preview.path)}
-                    >
-                      <Icon name="external-link" size={14} /> Open with System App
-                    </button>
                   )}
                 </div>
               </div>
@@ -307,7 +321,8 @@ export default function FileBrowser({ root, title }) {
                 </div>
               )}
             </>
-          )}
+          );
+          })()}
         </div>
       </div>
     </div>
