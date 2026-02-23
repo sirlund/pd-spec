@@ -36,6 +36,12 @@
   --resolved-bg: #0d3320;
   --resolved-fg: #4ade80;
 
+  /* Vivid accents — stay bright in both themes (dots, bars, indicators) */
+  --vivid-green: #4ade80;
+  --vivid-yellow: #fbbf24;
+  --vivid-red: #f87171;
+  --vivid-blue: #38bdf8;
+
   --radius: 6px;
 }
 
@@ -53,16 +59,22 @@
   --surface-active: #e4f0f8;
   --border-subtle: #dde0e5;
 
-  --verified-bg: #d4edda;
-  --verified-fg: #155724;
-  --pending-bg: #fef3cd;
-  --pending-fg: #856404;
-  --conflict-bg: #fdecea;
-  --conflict-fg: #d93025;
-  --merged-bg: #d1ecf1;
-  --merged-fg: #0c5460;
-  --invalidated-bg: #f5f5f5;
-  --invalidated-fg: #999999;
-  --resolved-bg: #d4edda;
-  --resolved-fg: #155724;
+  --verified-bg: #dcfce7;
+  --verified-fg: #16a34a;
+  --pending-bg: #fef9c3;
+  --pending-fg: #ca8a04;
+  --conflict-bg: #fee2e2;
+  --conflict-fg: #dc2626;
+  --merged-bg: #dbeafe;
+  --merged-fg: #2563eb;
+  --invalidated-bg: #f3f4f6;
+  --invalidated-fg: #9ca3af;
+  --resolved-bg: #dcfce7;
+  --resolved-fg: #16a34a;
+
+  /* Vivid accents — keep bright for visual indicators in light mode */
+  --vivid-green: #22c55e;
+  --vivid-yellow: #f59e0b;
+  --vivid-red: #ef4444;
+  --vivid-blue: #0ea5e9;
 }

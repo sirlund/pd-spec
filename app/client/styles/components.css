@@ -364,7 +364,7 @@
 .search-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   min-width: min(600px, 90vw);
   margin-top: 4px;
   background: var(--card-bg);
@@ -643,8 +643,8 @@
   transition: background 0.1s;
 }
 .file-folder-name:hover { background: var(--surface-elevated); }
-.file-folder-name .icon { transition: transform 0.2s; }
-.file-folder-name.collapsed .icon { transform: rotate(-90deg); }
+.file-folder-name .icon:first-child { transition: transform 0.2s; }
+.file-folder-name.collapsed .icon:first-child { transform: rotate(-90deg); }
 
 .file-item {
   display: flex;
@@ -679,8 +679,8 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.file-status-dot.processed { background: var(--verified-fg); }
-.file-status-dot.pending { background: var(--pending-fg); }
+.file-status-dot.processed { background: var(--vivid-green); }
+.file-status-dot.pending { background: var(--vivid-yellow); }
 .file-status-dot.unsupported { background: var(--text-muted); }
 
 .file-preview {

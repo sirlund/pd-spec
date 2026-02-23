@@ -41,12 +41,12 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
           <ProgressBar segments={[
             {
               value: insight.convergence_ratio.matched,
-              color: insight.convergence_ratio.total <= 1 ? 'var(--pending-fg)' : 'var(--accent-cyan)',
+              color: insight.convergence_ratio.total <= 1 ? 'var(--vivid-yellow)' : 'var(--accent-cyan)',
             },
             { value: insight.convergence_ratio.total - insight.convergence_ratio.matched, color: 'transparent' },
           ]} />
           {insight.convergence_ratio.total <= 1 && (
-            <div style={{ fontSize: '0.7rem', color: 'var(--pending-fg)', marginTop: 2 }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--vivid-yellow)', marginTop: 2 }}>
               Single source — consider cross-referencing
             </div>
           )}
