@@ -29,6 +29,30 @@ export function createApi(projectRoot) {
   const router = Router();
   const parseCache = new Map();
 
+  // Helper: scan 01_Sources/ for all files (excluding _ prefixed)
+  async function scanSourceFiles() {
+    const sourceDir = resolve(projectRoot, '01_Sources');
+    const paths = [];
+
+    async function walk(dir, prefix = '') {
+      let entries;
+      try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
+      for (const entry of entries) {
+        if (entry.name.startsWith('_')) continue;
+        const fullPath = join(dir, entry.name);
+        const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+          await walk(fullPath, relativePath);
+        } else {
+          paths.push(relativePath);
+        }
+      }
+    }
+
+    await walk(sourceDir);
+    return paths;
+  }
+
   // Helper: read a file safely
   async function readSafe(relativePath) {
     try {
@@ -331,11 +355,12 @@ export function createApi(projectRoot) {
   // GET /api/dashboard — aggregated dashboard data
   router.get('/dashboard', async (req, res) => {
     try {
-      const [insights, conflicts, sourceMap, extractions] = await Promise.all([
+      const [insights, conflicts, sourceMap, extractions, fsFiles] = await Promise.all([
         readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
         readAndParse('02_Work/CONFLICTS.md', parseConflicts),
         readAndParse('02_Work/SOURCE_MAP.md', parseSourceMap),
         readAndParse('02_Work/EXTRACTIONS.md', parseExtractions),
+        scanSourceFiles(),
       ]);
 
       // Authority distribution
@@ -351,10 +376,15 @@ export function createApi(projectRoot) {
         statusDist[ig.status] = (statusDist[ig.status] || 0) + 1;
       }
 
-      // Pipeline progress
+      // Detect untracked source files (in filesystem but not in SOURCE_MAP)
+      const trackedPaths = new Set((sourceMap.sources || []).map(s => s.path));
+      const untracked = fsFiles.filter(f => !trackedPaths.has(f));
+
+      // Pipeline progress — use filesystem total as real denominator
       const pipeline = {
-        sources: sourceMap.summary.total || 0,
+        sources: fsFiles.length,
         extracted: sourceMap.summary.processed || 0,
+        untracked: untracked.length,
         claims: extractions.total_claims || 0,
         insights: insights.insights.length,
         conflicts: conflicts.conflicts.length,
