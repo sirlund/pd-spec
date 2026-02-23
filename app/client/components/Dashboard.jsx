@@ -69,9 +69,9 @@ export default function Dashboard({ data, loading, onNavigate, setView }) {
           <ProgressBar
             legend
             segments={[
-              { value: status_distribution.VERIFIED || 0, color: 'var(--verified-fg)', label: 'Verified' },
-              { value: status_distribution.PENDING || 0, color: 'var(--pending-fg)', label: 'Pending' },
-              { value: status_distribution.MERGED || 0, color: 'var(--merged-fg)', label: 'Merged' },
+              { value: status_distribution.VERIFIED || 0, color: 'var(--vivid-green)', label: 'Verified' },
+              { value: status_distribution.PENDING || 0, color: 'var(--vivid-yellow)', label: 'Pending' },
+              { value: status_distribution.MERGED || 0, color: 'var(--vivid-blue)', label: 'Merged' },
               { value: status_distribution.INVALIDATED || 0, color: 'var(--invalidated-fg)', label: 'Invalidated' },
             ]}
           />
