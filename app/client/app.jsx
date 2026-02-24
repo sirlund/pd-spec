@@ -52,6 +52,8 @@ export default function App() {
     } else if (id.startsWith('CF-')) {
       setView('conflicts');
       setHighlightId(id);
+    } else if (VIEW_REGISTRY.some(v => v.id === id)) {
+      setView(id);
     }
   }, []);
 
