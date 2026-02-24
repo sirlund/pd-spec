@@ -353,17 +353,34 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-76] Structured Execution Logging
+### [BL-76] Structured Execution Logging + Session History
 
 **Status:** Proposed
-**Priority:** P4
-**Origin:** QA v7, OBS-28. No machine-readable log of agent execution (files read, written, decisions, timing). MEMORY.md is narrative, not parseable.
+**Priority:** P3 (upgraded from P4 — MEMORY proven unreliable)
+**Origin:** QA v7, OBS-28 + OBS-57 + OBS-58. TIMining IDEAS.md: "Session history como archivo estructurado."
 
-**Solution:** JSONL or markdown table at `02_Work/_temp/EXECUTION_LOG.md`. Each skill emits entries: timestamp, phase, action, target, duration. Future: Activity view in Live App consuming WS events.
+**Problem:** MEMORY.md is narrative, not parseable, and proven unreliable:
+- **OBS-57:** Agent fabricated neat hourly timestamps (14:00, 15:00, ...) for a 24-min batch execution. Timestamps are fiction.
+- **OBS-58:** Agent left MEMORY at 79 lines (1 below threshold) without proactive compaction — literal threshold interpretation.
+- **OBS-56:** Duplicate entry (PRESENTATION logged twice) — no deduplication guard.
+- **OBS-60:** REPORT.md missing entirely from MEMORY — invisible work.
+- **IDEAS.md:** TIMining maintained a separate HISTORY file (450+ lines) with reasoning and decision context — "mucho más útil que MEMORY.md para recovery post-compaction."
+
+MEMORY.md tries to be both audit trail and recovery mechanism. It fails at both when agents fabricate timestamps, skip entries, or approach the line limit without compacting.
+
+**Solution:** Two complementary mechanisms:
+1. **Structured execution log** — `02_Work/_temp/EXECUTION_LOG.md` (JSONL or markdown table). Each skill emits entries: timestamp (actual wall-clock), phase, action, target file, duration, token count. Machine-parseable. Not subject to compaction. Future: Activity view in Live App consuming WS events.
+2. **MEMORY.md protocol hardening** — Fix the rules that allowed OBS-56/57/58/60:
+   - Timestamps: "use actual wall-clock time or omit — never estimate"
+   - Compaction: trigger at 60 lines (not 80) — proactive, not emergency
+   - Deduplication: check last entry before appending
+   - Coordinator responsibility: when using subagents, verify all outputs logged
 
 **Acceptance criteria:**
-- [ ] Skills emit structured log entries
+- [ ] Skills emit structured log entries with actual timestamps
 - [ ] Log format parseable (JSONL or structured markdown)
+- [ ] MEMORY.md protocol updated: proactive compaction, dedup guard, timestamp rule
+- [ ] Subagent coordinator validates all outputs logged before closing
 
 ---
 
@@ -617,6 +634,8 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 **Risk:** Presentation (Reveal.js) may need special handling — could use `---` slide separators or stay as HTML export.
 
+**Cleanup observation:** Legacy status artifacts (`status_data.json`, `STATUS.html`, `/status` skill references) still exist in project worktrees and possibly in code/docs. A sweep to clear all status references would prevent confusion. Scope: `_temp/*.json` artifacts in projects, any remaining `/status` mentions in skills or docs.
+
 **Acceptance criteria:**
 - [ ] `/ship prd` generates `PRD.md` (not `PRD.html`)
 - [ ] PRD.md renders in Live Research App with styled headings, tables, badges
@@ -696,6 +715,159 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 **User story:**
 > As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.
+
+---
+
+### [BL-88] `/ship all` + `/ship update` — Output Dependency Graph & Batch Generation
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** TIMining IDEAS.md (`/ship update`, "Pending changes" vista) + QA v7 OBS-54, OBS-55. Second use case confirmed by QA observation.
+
+**Problem:** When a user requests all 10 `/ship` types, the agent reasons ad-hoc about generation order. Some outputs depend on others (User Stories references Personas, Strategy references Audit), but `/ship` has no concept of inter-output dependencies. Results:
+- **OBS-54:** Agent improvised dependency order — correct but not codified.
+- **OBS-55:** Sequential generation in one session risks context compaction. Output #9 has degraded quality vs. Output #1 because the agent has accumulated 8 large documents in context.
+- **IDEAS.md `/ship update`:** After /synthesis, no way to detect which existing outputs are stale vs. current. Manual scan required.
+- **IDEAS.md "Pending changes":** The gap between "what the knowledge base knows" and "what outputs reflect" is invisible.
+
+**Solution:** Three capabilities:
+
+1. **Dependency graph** — Codified in `/ship` SKILL.md:
+   ```
+   Layer 1 (parallel):  PERSONAS, LEAN_CANVAS
+   Layer 2 (parallel):  JOURNEY_MAP, USER_STORIES, BENCHMARK_UX
+   Layer 3 (sequential): REPORT → AUDIT → STRATEGY → PRESENTATION
+   ```
+   Each layer reads from disk (not from prior context). Layer N waits for Layer N-1 to complete.
+
+2. **`/ship all`** — Generate all output types in dependency order using subagents:
+   - Coordinator launches subagents per layer (parallel within layer, sequential between layers)
+   - Each subagent starts with fresh context → output quality is uniform
+   - Coordinator verifies all outputs generated and logs to MEMORY
+
+3. **`/ship update`** — Detect stale outputs and sync:
+   - Scan `03_Outputs/` for existing files
+   - Diff each output's `[IG-XX]` refs against current INSIGHTS_GRAPH + SYSTEM_MAP
+   - Report debt: "PRD.md missing IG-03, IG-08 · PERSONAS.md up to date"
+   - Update stale outputs with user approval (propose-before-execute)
+
+**Evidence from TIMining:**
+- 9 outputs generated via subagents in ~24 min (coordinator + 3 parallel layers). Quality uniform.
+- After /synthesis (7 new insights, 2 resolved conflicts), PRD.md required 12 manual edits. `/ship update` would have detected and proposed them automatically.
+- "Pending changes" plan (`_temp/PLAN_cambios-touchpoint-2026-02-19.md`) is exactly the artifact `/ship update` should generate.
+
+**Acceptance criteria:**
+- [ ] Dependency graph codified in SKILL.md
+- [ ] `/ship all` generates all types in dependency order using subagents
+- [ ] Each subagent starts with fresh context (no accumulated documents)
+- [ ] `/ship update` scans existing outputs and reports stale refs
+- [ ] `/ship update` proposes specific edits for user approval
+- [ ] Coordinator logs all outputs to MEMORY (no OBS-60 missing entries)
+
+**User story:**
+> As a researcher who just completed /synthesis with 7 new insights, I can run `/ship update` and see which outputs need refreshing, then approve the updates — instead of manually checking each document for missing refs.
+
+---
+
+### [BL-89] Truth-Level Labeling in Output Deliverables
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** TIMining IDEAS.md ("Niveles de veracidad para Cómo Aplica") + QA v7 OBS-61 + OBS-59. Hallucination risk in prescriptive content.
+
+**Problem:** `/ship` outputs mix three types of content without distinguishing them:
+1. **Diagnosis** — evidence-based claims traceable to `[IG-XX]` (e.g., "9 VERIFIED insights have convergence 1/57")
+2. **Recommendation** — reasoned suggestions grounded in the knowledge base but not directly in sources (e.g., "prioritize Jefe de Turno interviews")
+3. **Hypothesis** — predictions about future outcomes with no evidence (e.g., "2 interviews will resolve CF-13 in one round")
+
+Currently all three render identically in prose. The reader can't tell which statements are facts, which are expert opinion, and which are guesses. This is the root cause of OBS-61 (STRATEGY and AUDIT prescribing interview methodology as if it were a conclusion) and the fabricated resolution claims in SESSION_CHECKPOINT.
+
+**Evidence:**
+- **OBS-61:** STRATEGY.md and AUDIT.md both contain "Etapa 2" research roadmaps with specific interview questions, sample sizes, and resolution predictions — presented as conclusions, not hypotheses.
+- **OBS-59:** BENCHMARK_UX has 16 referents without web verification — the anti-hallucination rule exists but wasn't enforced. Truth-level labels would make unverified claims visible.
+- **IDEAS.md "Niveles de veracidad":** TIMining team already identified this pattern: benchmark "Cómo Aplica" sections oscillate between verified, projection, and aspirational without labels.
+
+**Solution:** Define three truth levels and require `/ship` to label content explicitly:
+
+| Level | Label | Meaning | Visual in app |
+|---|---|---|---|
+| **Verified** | `[VERIFIED]` or `[IG-XX]` ref | Traceable to source evidence | Default (no special marker) |
+| **Projected** | `> **[PROJECTED]** — rationale` | Logical inference from evidence, not directly sourced | Blockquote with amber marker |
+| **Hypothetical** | `> **[HYPOTHESIS]** — rationale` | Prediction or assumption, needs validation | Blockquote with red marker |
+
+Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` get explicit boundaries:
+- "Diagnose gaps and state validation needs → VERIFIED"
+- "Recommend next steps with rationale → PROJECTED"
+- "Predict outcomes or prescribe methodology → HYPOTHESIS (flag explicitly)"
+- "Never present HYPOTHESIS as VERIFIED"
+
+**Acceptance criteria:**
+- [ ] Three truth levels defined in `/ship` SKILL.md
+- [ ] `audit` and `strategy` skills include diagnostic-vs-prescriptive boundary
+- [ ] HYPOTHESIS content uses blockquote with explicit label
+- [ ] `benchmark-ux` anti-hallucination rule enforced: unverified referents labeled
+- [ ] Live Research App renders truth-level blockquotes with distinct visual treatment
+
+**User story:**
+> As a consultant presenting a Strategy document to a client, I can clearly see which statements are backed by evidence, which are logical recommendations, and which are hypotheses that need validation — so I can modulate my confidence when presenting each one.
+
+---
+
+### [BL-90] Navigation History Stack — Back Navigation + View State Preservation
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v7, BUG-13. Cross-navigation (BL-58) is broken in practice — users can follow a badge but can't return.
+
+**Problem:** The app uses a single `useState('dashboard')` for navigation. Every `setView()` unmounts the current view, destroying all component-local state (selected file, folder collapse state, preview, scroll position). No `pushState()` — browser back exits the app. Users navigating from Outputs preview → Insights are stranded.
+
+**Solution (two layers):**
+
+1. **View history stack** — `app.jsx` maintains `viewHistory: [{ view, context }]`. Each `navigateTo()` pushes to stack. Browser back (`popstate`) or a Back button pops the stack and restores view + context. `history.pushState()` on each navigation so browser back works.
+
+2. **State preservation** — Lift FileBrowser state (`selectedFile`, `collapsedFolders`) to App level so it survives unmount/remount. Pass as props + callbacks. Same pattern for InsightsView filters, ConflictsView filters, etc.
+
+**Acceptance criteria:**
+- [ ] Browser back button navigates to previous in-app view (not out of app)
+- [ ] Returning to Outputs after badge click restores: selected file, folder state, preview, scroll position
+- [ ] Works for all cross-nav paths (Outputs→Insights, Extractions→Insights, SystemMap→Insights, etc.)
+- [ ] No URL fragments leak (app remains single-page)
+
+**User story:**
+> As a researcher reviewing PERSONAS.md in Outputs, I can click an [IG-XX] badge to check the insight details, then press browser back to return exactly where I was — same file selected, same scroll position.
+
+---
+
+### [BL-91] `/analyze` — Deprecate Express Mode + Add `design-framework` Category
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v7, OBS-62. `/analyze` dropped 8 design-framework claims (Touchpoint claims 30-37) because they don't fit any of the 4 categories. Express mode then over-consolidated 85→7 (12:1 ratio). Downstream: `/ship benchmark-ux` bypassed verified KB and fabricated a SKILL.md citation.
+
+**Problem (two overlapping gaps):**
+
+1. **Missing category.** `/analyze` defines 4 insight categories: `user-need`, `technical`, `business`, `constraint`. Claims that define design principles, UX patterns, product pillars, or naming conventions don't fit any of them. A literal agent discards them as "not insights."
+
+2. **Express mode over-consolidation.** Express mode (small/medium projects) skips Phase 3 (synthesis) and should produce atomic insights. In practice, the agent consolidates aggressively anyway — 85 claims → 7 insights (12:1 ratio) when atomic mode should never exceed ~3:1 without explicit dedup justification per claim.
+
+**Solution:**
+
+1. Add 5th category `design-framework` — covers design principles, UX patterns, naming conventions, product pillars, design language definitions.
+2. Deprecate express mode entirely — Phase 3 (synthesis) always runs regardless of project size. The `--full` flag remains for incremental vs full extraction processing.
+
+**Evidence:**
+- QA v7 OBS-62: Full pipeline chain analysis showing claims 30-37 orphaned
+- TIMining: 4 design pillars (Quiet UI, Clear Path, Time Sight, Omni Sense) existed in freemode but 3/4 never entered SYSTEM_MAP because `/analyze` dropped the claims
+- The `/ship` agent compensated by reaching past the KB — correct content, wrong provenance
+
+**Acceptance criteria:**
+- [ ] `/analyze` SKILL.md has `design-framework` as 5th category with description and examples
+- [ ] Express mode removed — Phase 3 always runs, no size-based skip
+- [ ] `--full` flag still works for incremental override (unrelated to express)
+- [ ] Running `/analyze` on claims that define design principles produces `design-framework` insights
+
+**User story:**
+> As a researcher who defined design pillars in a workshop, when I extract and analyze the transcript, `/analyze` captures the pillar definitions as `design-framework` insights — so `/synthesis` can propagate them to SYSTEM_MAP and `/ship` uses the verified framework.
 
 ---
 
