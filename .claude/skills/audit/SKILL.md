@@ -15,7 +15,7 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 ## When to use
 
 - Before `/ship` — to verify the knowledge base is solid enough for deliverables.
-- After `/synthesis` — to confirm that conflict resolution improved quality.
+- After `/resolve` — to confirm that conflict resolution improved quality.
 - Anytime — as a health check on research progress.
 
 ## Instructions
@@ -141,12 +141,12 @@ Mix of `(current)` vs `(aspirational)` insights.
    ```
 
 5. **For each failing check**, provide a specific remediation action:
-   - Traceability: "Add `[IG-XX]` references to untraced modules in SYSTEM_MAP.md. Run `/synthesis` to update."
+   - Traceability: "Add `[IG-XX]` references to untraced modules in SYSTEM_MAP.md. Run `/resolve` to update."
    - Insight Coverage: "Missing [category] insights. Run `/extract` on sources that cover [category], then `/analyze`."
-   - Conflict Resolution: "N conflicts still PENDING. Run `/synthesis` to resolve them."
+   - Conflict Resolution: "N conflicts still PENDING. Run `/resolve` to resolve them."
    - Source Backing: "N insights rely on a single source. Add more sources covering these topics and re-run `/extract` + `/analyze`."
-   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/synthesis` to discuss them."
-   - System Map Completeness: "Missing: [list]. Run `/synthesis` to fill in the system map."
+   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/resolve` to discuss them."
+   - System Map Completeness: "Missing: [list]. Run `/resolve` to fill in the system map."
    - Temporal Balance: "All insights are [current/aspirational]. Add sources that cover [the missing perspective]."
 
 6. **Closing note:**

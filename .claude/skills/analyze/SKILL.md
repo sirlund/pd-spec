@@ -3,7 +3,7 @@ name: analyze
 description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first. Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write, AskUserQuestion
-argument-hint: "[--full]"
+argument-hint: "[--full | --file <section>...]"
 ---
 
 # /analyze — Insight Extraction & Cross-Referencing
@@ -24,11 +24,16 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### Phase 1: Load Extractions (with Incremental Support)
 
-1. **Check for --full flag** — If user passed `/analyze --full`, force FULL mode (skip incremental logic, process all extractions).
+1. **Check flags:**
+   - `/analyze --full` → FULL mode (skip incremental logic, process all extractions)
+   - `/analyze --file <section> [section2 ...]` → FILE mode (process only the named extraction sections, ignore timestamps). Section names match the `## [filename]` headers in EXTRACTIONS.md. Useful for re-analyzing specific sources after a skill fix without waiting for full reprocess.
+   - `/analyze` (no flags) → INCREMENTAL mode (default — only new/modified sections)
 
 2. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
 3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+
+3b. **FILE mode filter** — If `--file` flag was passed, find the matching `## [section]` headers in EXTRACTIONS.md. If a section name is not found, warn the user and skip it. Build the filtered list from matched sections only. Skip steps 4-6 (incremental/full detection) and jump to step 7. Log: `File mode: processing N specified sections`.
 
 4. **Incremental mode detection:**
    - Read `02_Work/MEMORY.md` to find last `/analyze` execution
@@ -65,24 +70,9 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      Skip mid-skill checkpoints
    Log: `💾 Preventive checkpoint written (${section_count} sections, ${claim_count} claims)`
 
-### Phase 1b: Express Mode Detection
+### Phase 1b: Project Size Logging
 
-8. **Detect project size** — Count total source files (from EXTRACTIONS.md section headers) and total claims (from raw claim lines):
-
-   | Size | Threshold | Synthesis behavior |
-   |---|---|---|
-   | **Small** | < 30 files OR < 500 claims | Skip Phase 3 (synthesis) — create atomic insights directly |
-   | **Medium** | 30-50 files OR 500-1000 claims | Skip synthesis + suggest `--full` |
-   | **Large** | > 50 files OR > 1000 claims | Full synthesis (Phase 3 runs) |
-
-   - `--full` flag overrides: always run full synthesis regardless of project size
-   - Log: `⚡ Express: N files, M claims → atomic insights (no synthesis). Use /analyze --full for deeper analysis.` (small/medium) or `Full analysis: N files, M claims → synthesis enabled.` (large)
-
-**Express mode effects:**
-- **Phase 2:** Runs normally (dedup, new insights, cross-reference, gap detection)
-- **Phase 3 SKIPPED:** No thematic clustering, no convergence weighting, no narrative synthesis
-- **Phase 4:** Write atomic insights directly (step 22 path). Still detect and log conflicts.
-- **AskUserQuestion (Phase 4):** Simplified — only Question 1 with options A ("Approve all as PENDING") and B ("Approve all as VERIFIED"). No ambiguity handling question (ambiguities auto-saved for /synthesis).
+8. **Log project size** — Count total source files (from EXTRACTIONS.md section headers) and total claims (from raw claim lines). Log: `Analysis: N files, M claims → synthesis enabled.` Phase 3 (synthesis) always runs regardless of project size.
 
 ### Phase 2: Analysis (Draft — Incremental-Aware)
 
@@ -102,7 +92,8 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
-   - Categorize as one of: `user-need`, `technical`, `business`, `constraint`.
+   - Categorize as one of: `user-need`, `technical`, `business`, `constraint`, `design-framework`.
+     - `design-framework` — design principles, UX patterns, naming conventions, product pillars, design language definitions. Example: "Quiet UI absorbs visual complexity", "D→A→R is the interaction skeleton", "4 design pillars: X, Y, Z, W". These claims define *how* the product should feel/work, not *what* users need or *what* the system does.
    - Reference the specific source file it came from.
    - **Key quote** — Include 1-2 sentences from the source that best support the claim. This is the evidence trail — without it, the insight is an assertion without proof.
    - **Voice** — Who is the source of this claim? Preserve from EXTRACTIONS.md metadata (Participants field). Use one of:
@@ -205,8 +196,6 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### 🆕 Phase 3: SYNTHESIS (Observation → Insight Consolidation)
 
-**Skip condition:** If express mode is active (small/medium project, no `--full` flag), skip this entire phase. Jump to Phase 4, step 22 (write atomic insights directly). Ambiguities are auto-saved as PENDING conflicts.
-
 **Goal:** Consolidate atomic observations into strategic insights with narrative, detect ambiguities, suggest research gaps.
 
 **Target:** 15-25 real insights (5-8 for small projects <20 sources, 10-15 medium, 15-25 large >50 sources)
@@ -232,7 +221,7 @@ For each cluster with ≥2 atomic observations:
 - **Narrative:** 2-3 sentences explaining the insight with context — problem + evidence trail + impact
 - **Consolidates:** List which [IG-XX] atomic insights this synthesizes
 - **Convergence:** Sum unique sources across consolidated insights
-- **Category:** user-need, technical, business, constraint (include temporal tag: current vs aspirational)
+- **Category:** user-need, technical, business, constraint, design-framework (include temporal tag: current vs aspirational)
 - **Voice/Authority weighting:** Prioritize user direct-quotes > stakeholder observations > hypotheses
 
 **Output format for synthesized insights:**
@@ -377,12 +366,12 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
 - **Question 1** (header: "Synthesis", multiSelect: false):
   - Question text: "What to do with N synthesized insights?" (in output_language)
   - Option A: "Approve all as PENDING" — recommended. Write N insights as PENDING for dashboard review.
-  - Option B: "Approve all as VERIFIED" — express. Write N insights as VERIFIED, skip individual review.
+  - Option B: "Approve all as VERIFIED" — Write N insights as VERIFIED, skip individual review.
   - Option C: "Review one by one" — present each insight for individual terminal approval (slow, for small projects only).
 
 - **Question 2** (header: "Ambiguities", multiSelect: false):
   - Question text: "How to handle M ambiguities detected?" (in output_language)
-  - Option A: "Save for /synthesis" — recommended. Write as PENDING conflicts, resolve later with dashboard.
+  - Option A: "Save for /resolve" — recommended. Write as PENDING conflicts, resolve later with dashboard.
   - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
 
 **Proceed to Phase 4 based on user selections.**
@@ -404,7 +393,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    ```
    Keep atomic observations in file for traceability, but mark them as merged.
 
-**Path B — "Approve all as VERIFIED"** (express mode):
+**Path B — "Approve all as VERIFIED"**:
 
 20b. **Write synthesized insights as VERIFIED** — Same as Path A but with `Status: VERIFIED`.
 
@@ -431,7 +420,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
 23. **Handle ambiguities** — Based on AskUserQuestion response to Question 2:
-    - **"Save for /synthesis":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
+    - **"Save for /resolve":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
     - **"Resolve now":** Present each ambiguity in terminal with its options (A/B/C from step 16). For each, ask user to choose. Write resolved ones to CONFLICTS.md with status RESOLVED + chosen option. Write unresolved ones as PENDING.
 
 24. **Log conflicts** — For each detected contradiction (from step 11 cross-reference):

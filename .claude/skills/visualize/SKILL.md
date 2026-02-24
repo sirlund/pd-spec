@@ -30,7 +30,7 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
 
 2. **Load knowledge base** — Read the relevant `02_Work/` files for the target diagram(s).
 
-3. **Validate content** — If the target file is empty or has no entries, report this to the user and suggest running `/analyze` or `/synthesis` first.
+3. **Validate content** — If the target file is empty or has no entries, report this to the user and suggest running `/analyze` or `/resolve` first.
 
 ### Phase 2: Propose (User Approval)
 

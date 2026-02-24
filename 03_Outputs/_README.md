@@ -27,7 +27,7 @@ Other generators:
 
 ## How to change outputs
 
-1. Update the source of truth: add sources to `01_Sources/`, run `/extract`, `/analyze`, and `/synthesis`.
+1. Update the source of truth: add sources to `01_Sources/`, run `/extract`, `/analyze`, and `/resolve`.
 2. Run `/audit` to check readiness.
 3. Run `/ship [type]` to generate documents, or `/visualize` to generate diagrams.
 

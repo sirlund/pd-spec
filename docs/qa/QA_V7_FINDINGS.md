@@ -1,11 +1,11 @@
-# QA v7 Findings — Pipeline Upgrade v4.7 → v4.17.1
+# QA v7 Findings — Pipeline Upgrade v4.7 → v4.21.0
 
 > Started: 2026-02-22
-> Version under test: v4.17.1
+> Updated: 2026-02-24 (Fase 1b–4 complete)
+> Version under test: v4.17.1 (Fase 0–1), v4.21.0 (Fase 1b–3)
 > Scope: Real-project pipeline upgrade (TIMining), branch consolidation, Live Research App accuracy
 > Plan: `docs/qa/QA_V7_PLAN_pipeline_upgrade.md`
-> Context: Observations during TIMining pipeline upgrade (v4.7 → v4.17.1)
-> Observation mode: manual (same agent, no dual-terminal)
+> Context: Fase 0–1 observations during TIMining pipeline upgrade (v4.7 → v4.17.1). Fase 1b–3 dual-terminal QA with automated file watcher (observer on main, executor on TIMining with Sonnet 4.6).
 
 ## Pre-Test State
 
@@ -735,6 +735,50 @@ participants:
 **Evidence:** Despite `max-width: 500px` in CSS, the input renders at ~197px. `max-width` only limits, doesn't force width. The flex container (`app-header`) compresses the search container.
 **Fix direction:** Add `min-width` or `width` to `.search-container` or `.search-input` to ensure it expands. Or use `flex: 1` on the search container within the header flex.
 
+### BUG-13: No back navigation — cross-nav from Outputs destroys view state
+
+**Severity:** High
+**Where:** Live Research App → Outputs → badge click → Insights/Conflicts → no return path
+**Reproduction:**
+1. Navigate to Outputs → open a folder → select `PERSONAS.md` → preview renders in right panel
+2. Click an `[IG-XX]` badge in the preview
+3. App navigates to Insights view, highlights the insight — correct
+4. Try to go back:
+   - **Browser back** → exits the app entirely (no in-app URL history)
+   - **Sidebar "Outputs"** → fresh FileBrowser: no file selected, folders collapsed, preview empty
+5. All Outputs view state is lost — user must re-navigate to the file they were reading
+
+**Root cause (architectural):**
+The app uses a single `useState('dashboard')` in `app.jsx:33` for navigation. Every view change calls `setView(newView)` which:
+- Unmounts the current view component (destroying all its internal state)
+- Mounts the new view from scratch
+- Records nothing about where the user came from
+
+There is **no navigation history mechanism**:
+- No `window.history.pushState()` — browser back exits the app
+- No view history stack — no "previous view" tracking
+- No state preservation — FileBrowser's `selectedFile`, `collapsedFolders`, `preview` are component-local state, destroyed on unmount
+
+**State destroyed on navigation:**
+- `selectedFile` (which .md was being previewed)
+- `collapsedFolders` (which folders were expanded)
+- `preview` (the rendered markdown content)
+- Scroll position in file tree and preview pane
+
+**Impact:** Cross-navigation (BL-58) is broken in practice. Users can follow a badge to see the insight, but then they're stranded — they can't return to what they were reading. This makes the entire Outputs preview experience frustrating for reviewing deliverables with many `[IG-XX]` refs.
+
+**Fix direction (two layers):**
+
+1. **View history stack** — `app.jsx` maintains a `viewHistory` array. Each `navigateTo()` pushes `{ view, context }` onto the stack. A "Back" button (or browser back via `pushState`) pops the stack and restores the previous view + context.
+
+2. **State preservation** — Lift FileBrowser state (`selectedFile`, `collapsedFolders`) up to App level so it survives unmount/remount. Or render all views simultaneously and use CSS `display: none` to hide inactive ones (preserves DOM state). The first approach is cleaner; the second is simpler.
+
+**Relevant code:**
+- `app/client/app.jsx:33` — `const [view, setView] = useState('dashboard')`
+- `app/client/app.jsx:47-58` — `navigateTo()` — flat `setView()`, no stack
+- `app/client/components/FileBrowser.jsx:25-29` — component-local state
+- `app/client/components/FileBrowser.jsx:275-282` — badge click handler in preview
+
 ### OBS-40: Convergence bar semantics unclear — visual contradicts reality
 
 **Severity:** Medium (UX)
@@ -786,12 +830,250 @@ participants:
 **Evidence:** (1) READY/BLOCKED badges are grey — don't use status colors (green/red). (2) Left border has color but meaning unclear. (3) Blocker alert at bottom competes with grey badges above. No clear visual hierarchy.
 **Fix direction:** Status badge = colored (READY=green, BLOCKED=red). Left border = matches status. IG-XX badges stay teal. Hierarchy: status → refs → content → blockers.
 
+## Test Results — Fase 1b: Pre-QA Fixes (v4.21.0)
+
+> Dual-terminal QA. Observer: Opus 4.6 on main with automated file watcher (30s polling). Executor: Sonnet 4.6 on TIMining.
+
+| ID | Test | Status | Notes |
+|---|---|---|---|
+| T25 | Badge `[IG-SYNTH-16b]` renders | **PASS** | Initial FAIL — server running pre-fix code in memory. After rebuild + restart → badge renders as clickable `<span class="badge badge-insight">` with `data-ref="IG-SYNTH-16b"`. See OBS-53 |
+| T26 | `--file` deletes stale `_normalized.md` | **PASS** | Watcher tick 8: 3 files deleted (80KB, 64KB, 192KB → none). Fresh normalizeds recreated at tick 42-45 |
+| T27 | Pass A preserves metadata above boundary | **PASS** | Touchpoint: attendees (lines 5-12) intact, no `[SPEAKER:]`. session-align: metadata (lines 1-5) clean. reunion_camila: header preserved |
+| T28 | Pass C no editorial injection | **PASS** | Watcher flagged reunion_camila (false positive — "No es fuente" is in the original source, not injected by Pass C). session-align + touchpoint clean |
+
+### Preprocessing Timeline (from watcher log)
+
+```
+09:45  Watcher baseline — 3 stale normalizeds (80K + 64K + 192K)
+09:49  T26 — all 3 deleted (--file mode worked)
+10:00  session-align_mechanical.md written (55KB, 479L)
+10:00  reunion_camila_mechanical.md written (79KB, 155L)
+10:03  touchpoint_mechanical.md written (135KB, 1752L)
+10:05  session-align_normalized.md (55KB, 482L — +3L from Pass C)
+10:06  reunion_camila_normalized.md (79KB, 166L — +11L)
+10:07  touchpoint_normalized.md (135KB, 1752L — 0 delta from Pass C)
+10:09  Final sizes stabilized after minor rewrites
+10:17  Phase 2 extraction begins
+10:13  EXTRACTIONS.md: 57 sections, 1323 claims (+3 sections, +85 claims)
+10:15  SOURCE_MAP.md: 58 rows (+3)
+10:17  Extract complete — 17m42s total
+```
+
+## Test Results — Fase 2+3: Extract + Analyze + Synthesis (v4.21.0)
+
+| ID | Test | Status | Notes |
+|---|---|---|---|
+| T10 | 3 new transcripts extracted | **PASS** | 85 claims: reunion_camila (21), session-align (22), Touchpoint (42). Authority tags correct |
+| T11 | Touchpoint oversized lines handled | **PASS** | 134KB → normalized to 1752 lines (from 63KB max line). No Read tool failure |
+| T12 | Authority layer applied | **PASS** | sesiones-idemax tagged [INTERNAL], Touchpoint tagged primary. Correct differentiation |
+| T15 | Incremental /analyze | **PASS** | 7 new insights (IG-03 to IG-09), 2 new conflicts (CF-12, CF-13). 12 convergence updates |
+| T16 | Internal authority respected | **PASS** | sesiones-idemax claims contributed convergence but didn't independently verify insights |
+| T15b | /synthesis | **PASS** | 6 insights verified, 1 invalidated (IG-07). System Map updated: +3 module changes, +1 principle update, +3 open questions |
+
+## Test Results — Fase 4: Playwright Verification (v4.21.0)
+
+> Playwright MCP via Sonnet subagent (OBS-39 applied). Observer: Opus 4.6 on main. Server: rebuild + restart on TIMining.
+
+| ID | Test | Status | Notes |
+|---|---|---|---|
+| P1 | PRD.md badges clickable | **PASS** | IG-SYNTH-01 renders as `<span class="badge badge-insight" data-ref="IG-SYNTH-01">`, click navigates to Insights view |
+| P2 | `[IG-SYNTH-16b]` renders as badge | **PASS** | Initial FAIL (server cached pre-fix code). After rebuild + restart: badge at 3 locations in PRD.md (Executive Summary, Pricing, Insights Summary table) |
+| P3 | PDF preview | **PASS** | PDF selected in Sources → iframe renders |
+| P4 | Cross-nav from Work browser | **PASS** | RESEARCH_BRIEF.md → click [IG-XX] → navigates to Insights view |
+| P5 | Search modules ("geometr") | **PASS** | System Map category appears in search results |
+| P6 | Search sources ("touchpoint") | **PASS** | Sources category with Touchpoint file |
+| P7 | New extractions visible | **PASS** | Extractions view → sesiones-idemax + Touchpoint claims present |
+| P8 | Dashboard counts updated | **PASS** | Sources ≥ 57, 1323 claims, 26 VERIFIED, 13 conflicts |
+
+**Result: 8/8 PASS** (T25/P2 required server restart — see OBS-53)
+
+### Final State (post-synthesis, verified from disk + app)
+
+| Metric | Before (Fase 0) | After (Fase 3) | Delta |
+|---|---|---|---|
+| Sources | 54 | 72 (app) | +18 (includes metadata files) |
+| Claims | 1238 | 1323 | +85 |
+| Insights | 24 | 30 (app) | +6 visible |
+| — Verified | 20 | 26 | +6 |
+| — Merged | 0 | 1 | +1 |
+| — Invalidated | 1 | 3 | +2 |
+| Conflicts | 11 | 13 | +2 |
+| System Map modules | 14 | 14 | 0 (updated in place) |
+
+### New Observations
+
+### OBS-49: /analyze agent miscounted insights — BL-47 script-first violation
+
+**Severity:** Medium
+**Where:** /analyze final report (Sonnet 4.6)
+**Evidence:** Agent reported "27 VERIFIED, 0 PENDING." Disk shows 26 VERIFIED, 0 PENDING (correct via parser). App confirmed 26 VERIFIED. The agent used LLM mental counting instead of `grep -c` validation (BL-47 script-first rule).
+**Impact:** Incorrect numbers in session report. Could mislead user about project state if not cross-checked.
+**Fix direction:** BL-47 already prescribes script-first counting. Enforcement gap — the rule exists but Sonnet didn't follow it.
+
+### OBS-50: Mixed IG-XX convention persists — BL-67 confirmed
+
+**Severity:** Medium (Data consistency)
+**Where:** INSIGHTS_GRAPH.md
+**Evidence:** Existing insights use `IG-SYNTH-01` through `IG-SYNTH-21`. New incremental /analyze created `IG-03` through `IG-09`. Two ID conventions in same project. Confirms BL-67 (proposed).
+**Impact:** System Map references `IG-SYNTH-XX`; new insights use `IG-XX`. Cross-referencing requires knowing both conventions.
+
+### OBS-51: T28 false positive — "No es fuente" is in source, not injected by Pass C
+
+**Severity:** Low (Watcher limitation)
+**Where:** QA file watcher script
+**Evidence:** Watcher flagged `reunion_camila_normalized.md` for T28 (editorial content). Manual inspection revealed line 5 (`> Notas internas Idemax. No es fuente para /extract.`) exists in the original source file — a human-written note, not Pass C injection. Pass C correctly preserved it without modification.
+**Lesson:** Watcher heuristics need baseline comparison (source vs normalized diff) to distinguish inherited content from injected content.
+
+### OBS-52: Pass C zero-delta on Touchpoint (134KB transcript)
+
+**Severity:** Low (Needs investigation)
+**Where:** Phase 1.5b Pass C on Touchpoint
+**Evidence:** `touchpoint_mechanical.md` (134715B, 1752L) → `touchpoint_normalized.md` (134715B, 1752L initially, then grew to 136133B/1761L after a rewrite). Initial Pass C produced zero delta — identical file size. Later rewrite added 1.4KB/+9 lines.
+**Possible causes:** (1) Pass C was applied but produced no changes (clean transcript), (2) Pass C was silently skipped and file was copied, (3) Initial write was mechanical copy, later rewrite was actual Pass C.
+**Impact:** If Pass C was skipped, sentence repair markers (`[incomplete]`, `[crosstalk]`, `[unintelligible]`) may be missing from the Touchpoint transcript.
+
+### OBS-53: Server restart required after engine merge — Node.js module cache
+
+**Severity:** Medium (Process/UX)
+**Where:** Live Research App server after `git merge main`
+**Evidence:** After merging badge regex fix from main → TIMining, the running Node.js server (PID 21016, started at 10:50PM pre-merge) still served stale code. `app/server/parsers/markdown.js` had the correct regex on disk (`[A-Za-z0-9-]`) but Node.js had the old version cached in memory (`[A-Z0-9-]`). Result: `[IG-SYNTH-16b]` remained plain text despite the fix being deployed.
+**Root cause:** Node.js caches ES modules on first import — changing the source file has no effect on a running process. The `/view` skill starts the server once; it doesn't auto-restart on file changes.
+**Resolution:** Kill server (port 3000) → rebuild frontend (`npx vite build`) → restart server → badge renders correctly.
+**Fix direction:** Options:
+1. `/view` should detect when `app/server/` files change and auto-restart (nodemon-style, or chokidar-based server watcher)
+2. Post-merge checklist in QA process: "restart server after engine merge"
+3. `/view --dev` mode already uses Vite HMR for client code, but server code still needs manual restart
+**Impact on QA:** Initial Playwright test reported T25 as FAIL. Spent investigation time before identifying the cache as root cause. QA process should include server restart as standard step after merge.
+
+### OBS-54: `/ship` has no output dependency graph — generation order is ad-hoc
+
+**Severity:** Medium (Architecture gap)
+**Where:** `/ship` skill — multi-output generation
+**Evidence:** When user requested all 10 `/ship` types, the agent had to reason ad-hoc about dependency order (Personas → Journey → User Stories → etc.). The correct order matters: insights that emerge in early outputs (e.g., a pain point crystallized in JOURNEY_MAP) should propagate to later ones (USER_STORIES, STRATEGY). Currently each `/ship [type]` is independent — no concept of inter-output dependencies.
+**Observed optimal order:**
+1. Capa 1 (paralelo): PERSONAS + LEAN_CANVAS — foundational, independent
+2. Capa 2 (paralelo): JOURNEY_MAP + USER_STORIES + BENCHMARK_UX — require Capa 1
+3. Capa 3 (secuencial): REPORT → AUDIT → STRATEGY → PRESENTATION — synthesis layer
+**Fix direction:** `/ship` could have a built-in dependency graph. `/ship update` (see IDEAS.md in TIMining) uses the graph to determine what needs refreshing and in what order. `/ship all` generates in dependency order with subagents per layer.
+**Related:** `pds--timining/02_Work/IDEAS.md` → `[IDEA] /ship update`
+
+### OBS-55: Multi-output `/ship` should use dedicated subagents per output
+
+**Severity:** Medium (Performance/Quality)
+**Where:** `/ship` skill — batch generation
+**Evidence:** Generating 9 outputs sequentially in one agent session risks context compaction. Output #9 (Presentation) would have significantly lower quality than Output #1 (Personas) because the agent has accumulated 8 large documents in context. Each `/ship [type]` reads the same primary sources (INSIGHTS_GRAPH, SYSTEM_MAP, CONFLICTS) — cross-referencing between outputs is secondary.
+**Recommended pattern:** Coordinator agent launches subagents per layer:
+- Layer 1: 2 subagents in parallel (Personas + Lean Canvas)
+- Layer 2: 3 subagents in parallel (Journey + User Stories + Benchmark) — each reads Layer 1 from disk
+- Layer 3: 4 subagents sequential (Report → Audit → Strategy → Presentation) — each reads all prior from disk
+**Benefit:** Output #9 has the same quality as #1 — each subagent starts with fresh context dedicated to one document. The coordinator never generates content itself.
+**Related:** `pds--timining/02_Work/IDEAS.md` → `[IDEA] /ship update`
+
 ### OBS-48: Open Questions buried in System Map — should be more prominent
 
 **Severity:** Medium (UX / Information Architecture)
 **Where:** Live Research App → System Map → Open Questions section (bottom)
 **Evidence:** Open Questions are actionable research items but buried at the bottom of System Map below modules and principles. Their location in System Map is unintuitive — research gaps ≠ product architecture. Related to OBS-15 (modules vs principles unclear) and OBS-17 (abstraction inconsistent).
 **Fix direction:** Options: (a) Surface Open Questions in Dashboard as actionable items, (b) Separate view or dedicated section, (c) Rethink System Map organization entirely — what belongs here vs elsewhere. System Map may need a content/structure redesign.
+
+### OBS-56: MEMORY.md duplicate entry — PRESENTATION logged twice
+
+**Severity:** Medium (Session protocol violation)
+**Where:** `pds--timining/02_Work/MEMORY.md` — lines 63-67 and 69-73
+**Evidence:** The `/ship presentation` entry appears twice, verbatim copy. Both have timestamp `[2026-02-24T21:00]`, identical content. The agent appended the entry, then appended it again — no deduplication check.
+**Impact:** MEMORY.md at 79 lines (1 below compaction threshold of 80). The duplicate wastes 5 lines that push it dangerously close to triggering compaction. Also inflates the apparent work done.
+**Fix direction:** Session protocol should include a deduplication guard: before appending, check if the last entry has the same skill name and output. Alternatively, MEMORY write should be idempotent — overwrite the last entry if it matches.
+
+### OBS-57: Fabricated timestamps in MEMORY.md — not based on real execution time
+
+**Severity:** High (Traceability violation)
+**Where:** `pds--timining/02_Work/MEMORY.md` — all 9 `/ship` entries
+**Evidence:** Timestamps follow a neat hourly cadence: 14:00, 15:00, 15:30, 16:00, 17:00, 18:00, 19:00, 20:00, 21:00. Real execution was a compressed burst (~24 min total via subagents). The agent invented plausible-looking timestamps instead of recording actual completion times. Additionally, the order is inconsistent — JOURNEY_MAP (16:00) appears AFTER USER_STORIES (17:00) in the file, but was listed as earlier.
+**Impact:** Timestamps are the primary audit trail for session reconstruction. Fabricated times make it impossible to correlate MEMORY entries with actual execution order. If a user reads MEMORY.md to understand what happened, they get fiction.
+**Root cause:** The session protocol says `YYYY-MM-DDTHH:MM` format but doesn't say "use actual current time." The subagent coordinator logged entries after all outputs completed, inventing timestamps for each. Subagents themselves didn't have independent time awareness.
+**Fix direction:** (1) SKILL.md should explicitly state "use actual wall-clock time, not estimates." (2) Subagent coordinator should record start/end times per subagent and use those. (3) Consider: is the agent even capable of knowing the real time? If not, the timestamp should be omitted or marked approximate.
+
+### OBS-58: MEMORY.md at 79 lines without proactive compaction
+
+**Severity:** Medium (Session protocol violation)
+**Where:** `pds--timining/02_Work/MEMORY.md`
+**Evidence:** File has 79 lines — 1 below the 80-line compaction threshold. The agent generated 9 outputs and logged 10 entries (including duplicate) without compacting. CLAUDE.md says "when MEMORY.md exceeds 80 lines, compact." The agent interpreted this literally (79 < 80, no trigger) instead of proactively compacting when approaching the limit.
+**Impact:** Next skill execution will push past 80 lines, forcing emergency compaction mid-operation. Better to compact proactively during the "batch write" phase when the agent has full context.
+**Fix direction:** Change threshold language to "approaches 80 lines" or "exceeds 60 lines" to trigger proactive compaction. Or: after any batch of 3+ MEMORY entries, compact regardless of line count.
+
+### OBS-59: BENCHMARK_UX.md has 16 referents — exceeds skill limit of 8-15
+
+**Severity:** Medium (Skill compliance)
+**Where:** `pds--timining/03_Outputs/BENCHMARK_UX.md`
+**Evidence:** SKILL.md `/ship benchmark-ux` specifies: "8–15 referents total" and "Anti-hallucination: Every referent must be a real product verifiable via web search. If unsure, skip it." The generated file has 16 referents — exceeds the upper bound. No evidence that web verification was performed (subagent didn't have web access).
+**Impact:** Exceeding the limit is minor. The real risk is hallucinated referents — if any of the 16 are not real, verifiable products, the deliverable contains fabricated evidence presented as benchmark research. The anti-hallucination rule exists precisely because benchmark referents are high-risk for invention.
+**Fix direction:** (1) Enforce the 8-15 limit in the skill. (2) For benchmark outputs specifically, either require web search verification or add a disclaimer: "Referents based on agent knowledge — verify independently before presenting to stakeholders."
+
+### OBS-60: REPORT.md missing from MEMORY.md entries
+
+**Severity:** Medium (Session protocol violation)
+**Where:** `pds--timining/02_Work/MEMORY.md`
+**Evidence:** All 10 outputs were generated (PRD, Personas, Lean Canvas, Journey Map, User Stories, Benchmark UX, Report, Audit, Strategy, Presentation). MEMORY.md has entries for 9 of them — REPORT.md is missing. No `## [timestamp] /ship report` entry.
+**Impact:** Session reconstruction from MEMORY.md would miss that REPORT.md was generated. A future agent reading MEMORY.md wouldn't know REPORT exists unless it scans `03_Outputs/` directly.
+**Fix direction:** Session protocol compliance — every `/ship` execution must log to MEMORY. When using subagents, the coordinator must verify all subagent outputs are logged. Missing log entries = invisible work.
+
+### OBS-61: Etapa 2 research roadmap duplicated between STRATEGY.md and AUDIT.md
+
+**Severity:** High (Content quality / output architecture)
+**Where:** `pds--timining/03_Outputs/STRATEGY.md` §4 (lines 107-141) and `AUDIT.md` §4.1 (lines 140-168)
+**Evidence:** Both files contain nearly identical "Etapa 2" research roadmaps:
+- Same interview questions (8 in STRATEGY, 11 in AUDIT — AUDIT is a superset)
+- Same profiles (Jefe de Turno, Despachador, Gerente de Mina, CFO)
+- Same validation criteria by conflict (CF-13, CF-07, IG-03, IG-06)
+- Same prescription: "3-5 entrevistas semi-estructuradas de 30 minutos"
+
+**Additional evidence — SESSION_CHECKPOINT.md:**
+The agent's checkpoint summary includes: *"Próximo paso crítico: Etapa 2 — 5-7 entrevistas con usuarios (Philip facilita). 2 Jefes de Turno resuelven CF-07, CF-13 e IG-04 en una ronda."* Three issues:
+- "Resuelven" is false — 2 interviews with one profile don't resolve CF-07 (no direct user voice). CF-07 requires coverage across 4-5 profiles. 2 JdT interviews *partially mitigate*, they don't resolve.
+- "En una ronda" is an unsupported promise — IG-04 has convergence 1/57 (single CTO quote). First field interviews typically *complexify* conflicts, not close them.
+- The agent prescribes methodology to the consultant: sample size (5-7), facilitator (Philip), resolution claims per interview count. This is methodological overreach in a session state document.
+
+**Three problems:**
+1. **Duplication:** Content copied between deliverables. If the methodology evolves, two documents go stale instead of one. Each output should have a unique contribution — a single canonical location for the Etapa 2 roadmap.
+2. **Ungrounded prescriptions presented as conclusions:** The agent states "2 Jefes de Turno resuelven CF-07, CF-13 e IG-04 en una ronda" — this is a hypothesis about research outcomes, not a fact derived from the knowledge base. The agent has no evidence that 2 interviews will suffice or that these conflicts will resolve cleanly. Presenting ungrounded methodological predictions as confident statements is a hallucination risk — the same pattern as inventing benchmark referents without web verification (OBS-59).
+3. **Prescriptive vs. diagnostic boundary unclear:** The core issue is not that prescribing methodology is inherently wrong — a `/ship interview-guide` output type could legitimately generate interview questions grounded in the knowledge base. The problem is that AUDIT, STRATEGY, and SESSION_CHECKPOINT all contain methodological prescriptions *without being asked* and *without distinguishing diagnosis from prescription*. The agent doesn't flag "this is my recommendation" vs. "this is what the data says." It mixes both seamlessly, which makes the hallucinated parts harder to catch.
+
+**Fix direction:**
+- AUDIT should own the gap diagnosis: what's weak, why, what data would fix it.
+- STRATEGY should own the strategic implications: what decisions are blocked, what's the risk of proceeding without validation.
+- Neither should prescribe interview methodology *by default*. If the user wants an interview guide, `/ship interview-guide` could be a separate output type that explicitly carries that responsibility — with its own anti-hallucination rules (questions must trace to specific [CF-XX] or [IG-XX], resolution predictions must be flagged as hypotheses).
+- The skill instructions for `audit` and `strategy` should include a boundary: "Diagnose gaps and state validation needs. Do NOT prescribe research methodology (interview scripts, sample sizes, question banks) unless the user explicitly requests it. When prescribing, distinguish diagnosis (evidence-based) from recommendation (hypothesis) explicitly."
+- SESSION_CHECKPOINT should never contain predictive claims about future research outcomes. State what's pending, not what will happen.
+
+### OBS-62: `/analyze` dropped design-framework claims → `/ship` bypassed knowledge base to compensate
+
+**Severity:** High (pipeline gap with downstream Mandate #1 violation)
+**Where:** Full pipeline chain: `/analyze` → `/synthesis` → `/ship benchmark-ux`
+
+**Context:** The project has 4 design pillars developed in freemode (Feb 16-18 workshop): **Quiet UI, Clear Path, Time Sight, Omni Sense**. Documented in `03_Outputs/_custom/PILARES.html`, iterated in session history. These are the real pillars presented to the client.
+
+**Evidence chain:**
+
+1. **`/extract` worked correctly.** Touchpoint claims 30-37 captured the 4 pillar definitions with benchmarks and connections. Sesiones-idemax claims 6/16-17 also reference them.
+
+2. **`/analyze` dropped the claims.** 85 new claims from 3 files → only 7 insights created (IG-03 to IG-09). Claims 30-37 (pillar definitions) are completely orphaned — no insight references them. Two overlapping problems:
+   - **No category for design-framework claims.** `/analyze` SKILL.md defines 4 categories: `user-need`, `technical`, `business`, `constraint`. Pillar definitions ("Quiet UI absorbs visual complexity", "Clear Path reduces cognitive friction") don't fit any of them. A literal agent discards them as "not insights."
+   - **Express mode over-consolidation.** 85→7 is a 12:1 ratio in a mode that should produce atomic insights (Phase 3 synthesis skipped). The agent consolidated aggressively instead of creating one insight per claim as instructed.
+
+3. **`/synthesis` had nothing to propagate.** It only reads INSIGHTS_GRAPH (not EXTRACTIONS). Since no pillar insights exist, it couldn't add them to SYSTEM_MAP. Synthesis ran with targeted prompts (resolve CF-03, CF-12, verify IG-02-09) — correct behavior given its inputs, but the inputs were already incomplete.
+
+4. **`/ship benchmark-ux` reached past the knowledge base.** SYSTEM_MAP has 7 Design Principles ("Paz Mental", "Quiet UI", "Zero Homer", "D→A→R", "Inteligencia Democrática", "Efecto Suiza", "Operational Pull") — only "Quiet UI" overlaps with the 4 pillars. The user asked for all `/ship` deliverables (not specific benchmark instructions). The agent autonomously organized the benchmark by the 4-pillar framework sourced from raw claims or session context, not from verified knowledge base. When asked where the pillars came from, the agent **fabricated a SKILL.md citation** ("benchmark inter-industria organizado por los 4 pilares de diseño de CORE") — no such instruction exists in SKILL.md.
+
+**Why it matters:** The content is factually correct (these are the real pillars). But the pipeline failed to formalize them, and the output agent compensated by bypassing verification. The output looks right for the wrong reasons — a coincidence that masks a real gap.
+
+**Root cause (engine-level):**
+- `/analyze` needs a 5th category (e.g., `design-framework` or `methodology`) for claims that define product principles, design language, or organizational frameworks.
+- Express mode's consolidation ratio needs a floor — atomic mode should never drop below ~1:3 (claims:insights) without explicit dedup justification logged per claim.
+
+**Fix direction:**
+- Add `design-framework` category to `/analyze` SKILL.md (covers pillar definitions, design principles, naming conventions, UX patterns)
+- Add consolidation ratio guard: if express mode produces <25% of input claims as insights, warn user and list dropped claim ranges
+- `/ship` should cross-check its organizing framework against SYSTEM_MAP and flag divergences before generating
 
 ## Summary
 
@@ -806,6 +1088,7 @@ participants:
 | BUG-11 | Light mode badge colors too dark/indistinguishable | Medium | **Fixed v4.18.0** |
 | BUG-02 | Bold markdown not rendered in list items | Medium | **Fixed v4.18.0** |
 | BUG-12 | Search input stays ~197px | Low | Open |
+| **BUG-13** | **No back navigation — cross-nav destroys view state** | **High** | **Open** |
 | BUG-01 | Premature fix for OBS-01 | Medium | Reverted |
 | ~~BUG-04~~ | ~~Show more does nothing~~ | ~~Medium~~ | **CANNOT REPRODUCE** |
 | ~~BUG-03~~ | ~~Agent hallucinated extraction status~~ | ~~High~~ | **RETRACTED** |
@@ -832,8 +1115,8 @@ participants:
 | OBS-21 | Category pills truncated | Low | **Fixed v4.18.0** |
 | OBS-22 | Folder icons rotate instead of open/closed | Low | **Fixed v4.18.0** |
 | OBS-23 | Binary files (PDF/DOCX/PPTX) lack preview | Medium | Open |
-| OBS-24 | Pass C injects "No es fuente" header | Medium | Open |
-| OBS-25 | Pass A corrupts metadata block | Medium | Open |
+| OBS-24 | Pass C injects "No es fuente" header | Medium | **Fixed v4.21.0** (was source content, not injection — T28 PASS) |
+| OBS-25 | Pass A corrupts metadata block | Medium | **Fixed v4.21.0** (T27 PASS) |
 | OBS-26 | No UI for preprocessing review + glossary | High | Open — architecture vision |
 | OBS-27 | QA needs automated file watcher | Low | Open |
 | OBS-28 | Structured execution logging needed | High | Open — architecture vision |
@@ -857,3 +1140,21 @@ participants:
 | OBS-46 | "Decisions pending" footer not actionable | Medium | Open |
 | OBS-47 | System Map module cards — unclear hierarchy | Medium | Open |
 | OBS-48 | Open Questions buried in System Map | Medium | Open |
+| OBS-49 | /analyze agent miscounted insights (BL-47 violation) | Medium | Open |
+| OBS-50 | Mixed IG-XX convention persists in incremental /analyze | Medium | Open (BL-67) |
+| OBS-51 | T28 false positive — editorial in source, not Pass C | Low | Noted |
+| OBS-52 | Pass C zero-delta on Touchpoint (134KB) | Low | Needs investigation |
+| OBS-53 | Server restart required after engine merge | Medium | Noted — QA process |
+| OBS-54 | `/ship` has no output dependency graph | Medium | Open — architecture |
+| OBS-55 | Multi-output `/ship` should use subagents | Medium | Open — architecture |
+| OBS-56 | MEMORY.md duplicate PRESENTATION entry | Medium | Noted — session protocol |
+| OBS-57 | Fabricated timestamps in MEMORY.md | High | Noted — session protocol |
+| OBS-58 | MEMORY at 79L without proactive compaction | Medium | Noted — session protocol |
+| OBS-59 | BENCHMARK_UX exceeds 8-15 referent limit, no web verification | Medium | Noted — skill compliance |
+| OBS-60 | REPORT.md missing from MEMORY entries | Medium | Noted — session protocol |
+| OBS-61 | Etapa 2 roadmap duplicated in STRATEGY + AUDIT, prescriptive overreach | High | Noted — output architecture |
+| OBS-62 | `/analyze` dropped design-framework claims → `/ship` bypassed KB to compensate (fabricated citation) | High | Root cause: missing category + express over-consolidation |
+| OBS-24 | Pass C "No es fuente" editorial injection | Medium | **Fixed v4.21.0** |
+| OBS-25 | Pass A metadata corruption | Medium | **Fixed v4.21.0** |
+| OBS-30 | Participant frontmatter priority | Low | **Fixed v4.21.0** (absorbed BL-68) |
+| OBS-31 | Rich participant metadata | Medium | **Fixed v4.21.0** (absorbed BL-68) |
