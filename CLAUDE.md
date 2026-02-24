@@ -258,11 +258,53 @@ All agent commits include `Co-Authored-By: Claude <model> <noreply@anthropic.com
 After `feat`/`fix` commits, wrap up the session with a single `docs` commit:
 
 1. `docs/BACKLOG.md` — mark BL item(s) as IMPLEMENTED with version and date
-2. `docs/CHANGELOG.md` — add version entry (highlights-first format, see Documentation Guidelines)
+2. `docs/CHANGELOG.md` — add version entry (see CHANGELOG Entry Format below)
 3. `PROJECT.md` template — bump `engine_version`
 4. Commit all three together: `docs: release vX.Y.Z — [summary]`
 
 The `feat:`/`fix:` commits carry code changes; the `docs: release` commit carries the bookkeeping.
+
+### CHANGELOG Entry Format
+
+Inspired by [Antigravity changelog](https://antigravity.google/changelog). Each entry follows this structure:
+
+```markdown
+## [X.Y.Z] — YYYY-MM-DD — Release Title
+
+One-liner description of what this release brings. Benefit-focused, not technical.
+
+<details>
+<summary>Features (N)</summary>
+
+- **Feature name (BL-XX)** — What it does, benefit to user
+- ...
+
+</details>
+
+<details>
+<summary>Fixes (N)</summary>
+
+- **Bug name (BUG-XX)** — What was broken, what's fixed
+- ...
+
+</details>
+
+<details>
+<summary>Patches (N)</summary>
+
+- **Patch description** — Minor tweak or cosmetic change
+- ...
+
+</details>
+```
+
+**Rules:**
+- **Release title** — short, catchy name (e.g., "Cross-Navigation & Markdown Outputs", "Demo Polish")
+- **One-liner** — one sentence, benefit-focused, no BL references
+- **Categories** — `Features` (new capabilities), `Fixes` (bugs), `Patches` (cosmetic, docs, config). Always show all three with counts, even if `(0)`
+- **Items** — one bullet per change. BL/BUG reference in parentheses. Brief description.
+- Empty categories: show `No [features/fixes/patches] in this release.` inside the `<details>` block
+- Historical entries (pre-v4.21) keep their original format — do not retroactively migrate
 
 ### Idea Flow: Project → Main
 
@@ -376,7 +418,7 @@ PD-Spec maintains multiple documentation files. Each has a specific purpose and 
 
 | File | Purpose | Audience | Content Type |
 |---|---|---|---|
-| **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
+| **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Antigravity-style entries: version + date + release title, one-liner description, categorized collapsible sections (Features, Fixes, Patches) with item counts. Framed commercially ("Now you can..."). See CHANGELOG Entry Format below. |
 | **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
 | **QA findings** (`docs/qa/QA_V*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
 | **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (fallback resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Compacted at 80 lines (historical summary + recent entries). Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
@@ -396,7 +438,7 @@ When a bug is discovered during formal QA:
 
 ### Writing Style
 
-- **CHANGELOG:** Conversational, benefit-focused. "You can now extract Office files without dependencies."
+- **CHANGELOG:** Conversational, benefit-focused. "You can now extract Office files without dependencies." Each entry has a release title, one-liner, and categorized items (Features/Fixes/Patches) in collapsible `<details>` blocks with counts.
 - **BACKLOG:** Technical, implementation-focused. "Add Bash to allowed-tools. Fallback: textutil → zipfile."
 - **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
 - **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
@@ -454,7 +496,7 @@ Before committing engine changes, verify:
 2. **BACKLOG consistency** — BL items referenced in commit message exist in BACKLOG.md. Implemented items have version and date.
 3. **Skill integrity** — Changed skill files have valid YAML frontmatter (`name`, `description`, `user-invocable`, `allowed-tools`)
 4. **No generated content on main** — `git status` shows no files in 01_Sources/, 02_Work/, or 03_Outputs/*.html
-5. **CHANGELOG format** — New entries use highlights-first format with `<details>` for technical notes. Framed for PD-Spec consumers, not developers.
+5. **CHANGELOG format** — New entries use Antigravity-style format: release title + one-liner + categorized `<details>` (Features/Fixes/Patches with counts). Framed for PD-Spec consumers, not developers.
 
 Use `/verify` to automate these checks.
 
