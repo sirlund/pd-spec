@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.21.0] — 2026-02-24
+
+### Highlights
+
+**Pre-QA pipeline fixes.** Three fixes that unblock the QA v7 pipeline run on TIMining.
+
+**Badge regex fix.** Insight IDs with lowercase suffixes (e.g., `[IG-SYNTH-16b]`) now render as clickable badges instead of plain text. Fixed across all 7 app files (11 occurrences).
+
+**Preprocessing bug fixes (BL-68).** Pass A now respects a metadata boundary — speaker normalization only applies below the `Transcript:` marker, preserving title/date/attendees. Pass C no longer injects editorial comments ("No es fuente") into normalized files. Participant lists prioritized over calendar invitees for speaker attribution.
+
+**`--file` mode for /extract.** New `/extract --file path1 [path2 ...]` mode: skips discovery and delta, deletes stale `_normalized.md`, forces fresh preprocessing for specific files. Ideal for re-extracting after a bug fix or adding a single new source.
+
+### Changes
+
+- **Badge regex** — `[A-Z0-9-]` → `[A-Za-z0-9-]` in `markdown.js`, `insights.js`, `conflicts.js`, `system-map.js`, `MarkdownView.jsx`, `SearchBar.jsx`, `SystemMapView.jsx`
+- **BL-68** — Metadata boundary protection (OBS-25), no-editorial-content rule (OBS-24), participant priority (OBS-30/31) in `/extract` SKILL.md
+- **`--file` mode** — New extraction mode in SKILL.md: skip Phase 1/1b, delete stale normalizeds, process specific files only
+- **Backlog** — BL-85 (STT glossary), BL-86 (UI styling), BL-87 (insight actions) created. BL-68 priority → P1
+- **QA v7 plan** — Fase 1b added with test cases T25-T28
+
 ## [4.20.0] — 2026-02-23
 
 ### Highlights

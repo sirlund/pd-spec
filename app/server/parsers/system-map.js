@@ -78,7 +78,7 @@ export function parseSystemMap(content) {
 
         const refs = line.match(/^\*\*Refs:\*\*\s*(.+)/);
         if (refs) {
-          currentModule.refs = (refs[1].match(/\[IG-[A-Z0-9-]+\]/g) || []).map(r => r.replace(/[\[\]]/g, ''));
+          currentModule.refs = (refs[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || []).map(r => r.replace(/[\[\]]/g, ''));
           continue;
         }
 
@@ -113,7 +113,7 @@ export function parseSystemMap(content) {
       if (currentPrinciple) {
         const refs = line.match(/^\*\*Refs:\*\*\s*(.+)/);
         if (refs) {
-          currentPrinciple.refs = (refs[1].match(/\[IG-[A-Z0-9-]+\]/g) || []).map(r => r.replace(/[\[\]]/g, ''));
+          currentPrinciple.refs = (refs[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || []).map(r => r.replace(/[\[\]]/g, ''));
           continue;
         }
         if (line.trim()) currentPrinciple.description += line + '\n';

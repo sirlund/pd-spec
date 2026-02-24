@@ -242,23 +242,26 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection
+### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection + Participant Metadata
 
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7, OBS-24 + OBS-25. Two bugs in /extract preprocessing:
+**Status:** IMPLEMENTED (v4.21.0, 2026-02-24)
+**Priority:** P1 (blocks QA pipeline — can't extract without this)
+**Origin:** QA v7, OBS-24 + OBS-25 + OBS-30 + OBS-31. Three bugs/gaps in /extract preprocessing:
 
 **Bug 1 (OBS-25):** Pass A applies speaker normalization regex to the entire file including metadata block. Result: title, date, attendees all get `[SPEAKER: ...]` prefix.
 **Bug 2 (OBS-24):** Pass C injects editorial comment "No es fuente para /extract" into normalized file header. Risk: agent re-reading file may self-skip.
+**Gap (OBS-30/31):** Participant frontmatter not prioritized over calendar invitee lists. `participants` field (who actually spoke) should take precedence over `invitees` (who was invited).
 
 **Solution:**
 1. Pass A: detect `Transcript:` boundary, only apply speaker substitution below it
 2. Pass C: normalize content only — no editorial comments. Descriptive metadata belongs in `_CONTEXT.md`
+3. Pass A: prioritize `participants` field over `invitees` for speaker attribution
 
 **Acceptance criteria:**
 - [ ] Pass A preserves metadata block above `Transcript:` unchanged
 - [ ] Pass C output contains no editorial commentary
 - [ ] Normalized files contain only normalized content + speaker labels
+- [ ] `participants` field prioritized over `invitees` for speaker detection
 
 ---
 
@@ -400,6 +403,189 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 ---
 
+### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
+
+**Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
+
+**Solution:** Embed an LLM API in the Live Research App backend. Actions in the UI (approve, reject, challenge, ask) trigger server-side LLM calls that modify Work layer files directly.
+
+**Architecture:**
+1. BYOK model: user provides their own API key (Claude, Gemini, GPT) via settings UI
+2. `/api/llm/action` endpoint: receives action type + context, calls LLM, writes to Work files
+3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
+4. Alternatively: platform-provided tokens with usage billing
+
+**Scope:**
+- Phase 1: Text input → LLM response (Q&A about project state)
+- Phase 2: Structured actions (approve insight, resolve conflict, add field note)
+- Phase 3: Skill execution from UI (run /extract, /analyze from browser)
+
+**Evidence:**
+- Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
+- Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
+- Hugo: *"Le metería un LLM, eso sí"*
+- Hugo offered to create API key and contribute credits for testing
+
+**Acceptance criteria:**
+- [ ] Settings UI for API key input (BYOK)
+- [ ] At least one provider working (Claude API recommended)
+- [ ] Q&A mode: user asks question about project → LLM answers using Work layer context
+- [ ] Action mode: approve/reject insight from UI → INSIGHTS_GRAPH.md updated
+- [ ] WebSocket broadcasts changes after LLM action
+
+**User story:**
+> As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
+
+---
+
+### [BL-81] Google Drive Integration — Cloud Source Provider
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Hugo sync (2026-02-23). Hugo suggested directly: "¿Y si podéis conectarle un drive?"
+
+**Problem:** Current workflow requires users to manually copy files into `01_Sources/` on their local machine. This is friction for onboarding, makes collaboration difficult, and doesn't match how teams already organize research (Google Drive, Dropbox, etc.).
+
+**Solution:** Google Drive API or MCP integration that syncs a Drive folder → `01_Sources/`. User selects a Drive folder in the app, files are pulled locally for processing.
+
+**Architecture options:**
+- A) **MCP approach**: Use Google Drive MCP server, list/download files on demand
+- B) **Sync approach**: Background process watches a Drive folder, pulls new/changed files
+- C) **Hybrid**: Browse Drive in app, user selects files to import → copied to `01_Sources/`
+
+**Evidence:**
+- Hugo: *"¿Y si podéis conectarle un drive mejor?"*
+- Hugo: *"Ahí no tendría que subir archivo, pero subí al drive"*
+- Nico confirmed it was already on his mental roadmap
+
+**Acceptance criteria:**
+- [ ] User can connect a Google Drive account from the app
+- [ ] Browse Drive folders and select files to import
+- [ ] Selected files copied to `01_Sources/` with metadata preserved
+- [ ] Subsequent `/extract` processes them normally
+
+**User story:**
+> As a consultant with research documents in Google Drive, I can connect my Drive to the app and select folders to import, without manually copying files to a local directory.
+
+---
+
+### [BL-82] AI Output Audit Mode — Cross-Tool Verification
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** Hugo sync (2026-02-23). Evidence: TIMining project where Nico audited Gemini outputs and found hallucinations.
+
+**Problem:** Teams use multiple AI tools (Gemini, ChatGPT, NotebookLM) for research, and the outputs often hallucinate without anyone noticing. There's no systematic way to verify AI-generated claims against primary sources.
+
+**Solution:** An audit mode where users submit AI-generated outputs (from any tool) and PD-Spec verifies each claim against the project's source base. Output: report showing what's verified, what's unverified, what's fabricated.
+
+**Evidence from TIMining:**
+- Gemini generated a "strategic master document" with invented concepts: *"La gobernanza de datos automáticas, esto lo inventó totalmente"*
+- Gemini inflated case counts and fabricated business metrics
+- Claude analysis produced a structured comparison: *"Lo que hizo bien... Dónde está inflado y no es verificable... Inventó"*
+- Hugo confirmed he'd seen the comparison: *"Hizo como una evaluación del resultado de Gemini versus lo que detectaba él"*
+
+**Acceptance criteria:**
+- [ ] User can upload or paste an AI-generated document as "audit target"
+- [ ] System cross-references claims against existing INSIGHTS_GRAPH and EXTRACTIONS
+- [ ] Output report: verified claims (with [IG-XX] refs), unverified claims, fabricated claims
+- [ ] Report includes confidence level and source attribution
+
+**User story:**
+> As a consultant who used Gemini to generate a strategy document, I can run it through PD-Spec's audit mode and get a report showing which claims are backed by real evidence and which were hallucinated.
+
+---
+
+### [BL-83] Hosted/SaaS Architecture Planning
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Hugo sync (2026-02-23). Hugo asked directly: "¿Lo podrías publicar? ¿Subí arriba?"
+
+**Problem:** The Live Research App runs on localhost only. This limits adoption to users who can run a terminal and clone a git repo. For consulting teams and non-technical users, this is a hard blocker.
+
+**Solution:** Architecture plan (not implementation) for a hosted version. Document the minimum viable infrastructure: auth, file upload, multi-tenant isolation, billing, and deployment.
+
+**Scope (planning only — no implementation):**
+1. Auth: OAuth (Google) or magic link
+2. File storage: S3-compatible bucket per tenant (replaces local `01_Sources/`)
+3. Multi-tenancy: isolated Work layers per project
+4. LLM integration: ties into BL-80 (BYOK or platform credits)
+5. Deployment: single Node.js app (Express + React, already exists) behind reverse proxy
+6. Billing: usage-based (LLM tokens) or flat subscription
+
+**Evidence:**
+- Hugo: *"¿Y esto es un localhost? ¿Lo podrías publicar?"*
+- Nico: *"Puede tener un login, puedo pagar, puedo cobrar un fee"*
+- Hugo: *"Sí, o sea, es que por lo que..."* — confirmed demand
+- Market signal: multiple people in Two Brains/Acid Labs ecosystem interested
+
+**Acceptance criteria:**
+- [ ] Architecture document with component diagram
+- [ ] Tech stack decisions documented (auth, storage, deployment)
+- [ ] Cost estimate (infrastructure + LLM tokens per project)
+- [ ] Migration path from localhost to hosted (what changes, what stays)
+- [ ] Decision on MVP scope (what's in v1 hosted, what's deferred)
+
+**User story:**
+> As the PD-Spec maintainer planning a go-to-market, I have a clear architecture document for the hosted version so I can estimate effort and make build-vs-buy decisions.
+
+---
+
+### [BL-84] Nested Subfolders in File Browser — Recursive Tree with Max Depth
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** Hugo sync (2026-02-23). Observation during TIMining demo: projects with organized source structures (e.g., `sesiones-idemax/round-1/`, `Touchpoint 1/fotos/`) show subfolder paths as flat strings in the file tree instead of a navigable nested tree.
+
+**Problem:** The FileBrowser component groups files by their `folder` string (e.g., `"entrevistas/round-1"`), rendering each unique path as a single collapsible row. There is no visual nesting — `entrevistas/round-1` and `entrevistas/round-2` appear as two independent top-level folders, not as children of `entrevistas`. This breaks the mental model of a file explorer and makes deep folder structures hard to navigate.
+
+**Current behavior:**
+```
+▾ 📁 entrevistas/round-1    (3)
+    file-01.md
+    file-02.md
+▾ 📁 entrevistas/round-2    (2)
+    file-03.md
+▾ 📁 workshop/fotos         (5)
+    whiteboard-1.png
+```
+
+**Expected behavior:**
+```
+▾ 📁 entrevistas            (5)
+  ▾ 📁 round-1              (3)
+      file-01.md
+      file-02.md
+  ▸ 📁 round-2              (2)
+▾ 📁 workshop               (5)
+  ▸ 📁 fotos                (5)
+```
+
+**Solution:**
+1. **Frontend (FileBrowser.jsx):** Build a recursive tree structure from the flat `folder` strings. Split each `folder` by `/` and construct nested nodes. Render with indentation per level.
+2. **Max depth:** Define a configurable max nesting depth (recommended: 3 levels). Folders beyond max depth collapse into a flat string for the remaining segments.
+3. **Aggregated counts:** Parent folders show total file count across all descendants.
+4. **Collapse state:** Each tree node independently collapsible. Root folders expanded by default, deeper levels collapsed.
+5. **No API changes needed:** The `scanDir` functions already return full relative paths. Tree building is purely a frontend concern.
+
+**Acceptance criteria:**
+- [ ] Subfolders render as nested, indented tree nodes (not flat strings)
+- [ ] Max depth defined (default: 3 levels)
+- [ ] Parent folders show aggregated file count
+- [ ] Each folder node independently collapsible
+- [ ] Works for Sources, Work, and Outputs views
+- [ ] No API changes required
+
+**User story:**
+> As a researcher browsing a project with organized source folders (by milestone, by category), I can navigate nested subfolders visually, just like a desktop file explorer, instead of seeing flattened path strings.
+
+---
+
 ### [BL-79] Markdown-First Outputs — /ship Generates .md, HTML/DOCX Become Export Formats
 
 **Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
@@ -440,6 +626,76 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 **User story:**
 > As a researcher, I can `/ship prd` and get a human-readable Markdown document that renders beautifully in the app, is editable in any text editor, and has all insight references automatically clickable.
+
+---
+
+### [BL-85] STT Correction Loop — Persistent Glossary
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-29. Phonetic corrections in /extract are session-local — the glossary built during preprocessing is discarded after the session. Recurring domain terms (e.g., "TIMining", "IDEMAX", "CFO") must be re-corrected every time a new transcript is processed.
+
+**Problem:** Each `/extract` session builds a context glossary from scratch by reading PROJECT.md, _CONTEXT.md, and existing insights. This works but wastes tokens re-discovering the same corrections. For projects with many transcripts, the same STT errors appear repeatedly.
+
+**Solution:** Persistent `02_Work/GLOSSARY.md` that accumulates corrections across extractions:
+- Each `/extract` proposes new glossary entries from phonetic corrections
+- User approves → entries persisted
+- Future extractions auto-apply approved entries before LLM processing
+- Format: `| Original | Corrected | Confidence | Source | Date |`
+
+**Acceptance criteria:**
+- [ ] Glossary file created/updated after each preprocessing session
+- [ ] Approved corrections auto-applied in future extractions
+- [ ] User approves new entries (propose-before-execute)
+- [ ] Glossary readable in Live Research App
+
+**User story:**
+> As a researcher processing multiple interview transcripts, I want phonetic corrections from previous sessions to be remembered, so I don't re-approve the same corrections every time.
+
+---
+
+### [BL-86] UI Styling Consistency — Mono Badges, Chips, Counts
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-41/42/43/44/45. Multiple minor styling inconsistencies across the Live Research App: badge fonts not uniformly mono, count chips inconsistent between views, category headers use different weight/size conventions.
+
+**Problem:** Each component was built independently; styling conventions drifted. Not a functional bug, but creates a "homemade" feel that undermines credibility during stakeholder demos.
+
+**Solution:** Audit all badge/chip/count/header components and unify:
+- All badges: `var(--font-mono)`, consistent padding/border-radius
+- Count chips: same size/color across Sidebar, headers, and cards
+- Category headers: consistent `text-transform`, `font-weight`, `letter-spacing`
+- Create shared CSS custom properties for common patterns
+
+**Acceptance criteria:**
+- [ ] All badges use `var(--font-mono)` consistently
+- [ ] Count chips uniform across views
+- [ ] No visual regressions (Playwright snapshots)
+
+---
+
+### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-32/33/34/46. No way to challenge a VERIFIED insight, reject with a reason note, or detect when a conflict becomes stale after an insight decision.
+
+**Problem:** The pipeline only flows forward (sources → claims → insights). Field discoveries that contradict VERIFIED insights require a full pipeline round-trip. Reject actions lose context (no reason stored). Stale conflicts silently persist.
+
+**Solution:**
+1. "Challenge" button on VERIFIED insights → creates a new conflict entry with counter-evidence
+2. Reject action includes optional reason note → stored in INSIGHTS_GRAPH.md
+3. App detects when insight status changes make existing conflicts stale → banner warning
+
+**Acceptance criteria:**
+- [ ] Challenge action creates a conflict entry linked to the insight
+- [ ] Reject includes optional reason note persisted in INSIGHTS_GRAPH.md
+- [ ] Stale conflict detection and visual warning
+- [ ] All actions follow propose-before-execute
+
+**User story:**
+> As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.
 
 ---
 
@@ -822,4 +1078,4 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md`, `QA_V3_FINDINGS.md`, `QA_V4_FINDINGS.md`, and `QA_V5_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-22 (v4.17.0)
+Last updated: 2026-02-24 (v4.21.0)

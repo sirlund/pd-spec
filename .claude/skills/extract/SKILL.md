@@ -3,7 +3,7 @@ name: extract
 description: Read and extract raw claims from source files in 01_Sources/. Writes structured extractions to 02_Work/EXTRACTIONS.md for /analyze to process.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash
-argument-hint: "[folder-name] [--full | --express | --heavy]"
+argument-hint: "[folder-name] [--full | --express | --heavy | --file path1 [path2 ...]]"
 ---
 
 # /extract — Source Reading & Claim Extraction
@@ -29,6 +29,22 @@ Detect extraction mode from flags:
 | (none) or `--express` | **Express** | Process only light files, skip heavy files (mark as `pending-heavy` in SOURCE_MAP) |
 | `--full` | **Full** | Process all files (current behavior, uses two-pass for >40 files) |
 | `--heavy` | **Heavy-only** | Process only files with `pending-heavy` status in SOURCE_MAP |
+| `--file` | **File** | Process specific file(s) only. Skips discovery + delta. Forces re-preprocessing. |
+
+**`--file` mode behavior:**
+1. **Skip Phase 1 discovery** — no scan of `01_Sources/`
+2. **Skip Phase 1b delta** — no SOURCE_MAP hash check
+3. **Delete existing `_normalized.md`** for the specified file(s) — forces fresh preprocessing
+4. **Run Phase 1.5 + Phase 2** only for those files
+5. **Write/replace** only the corresponding sections in EXTRACTIONS.md + SOURCE_MAP
+
+Argument format — paths relative to `01_Sources/`:
+```
+/extract --file sesiones-idemax/reunion_camila_2026-02-17.md
+/extract --file file1.md file2.md "Touchpoint 1/transcript.md"
+```
+
+Use cases: re-preprocess after bug fix, extract a single new file, iterate on a problematic transcript.
 
 **Classification:**
 - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
@@ -227,6 +243,10 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    3. **Assign confidence:** Each speaker attribution gets `high` (explicit label or self-identification), `medium` (contextual inference from role/content), or `low/uncertain` (pattern-based guess). Unknown speakers remain as `[Speaker X]`.
       - For content-based segmentation (step 1 unsegmented path): most attributions will be `medium` or `low/uncertain`. This is expected — the clarification loop in /analyze handles corrections.
 
+   **Metadata boundary protection:** Speaker normalization (label replacement, `[SPEAKER:]` injection) MUST only apply after the transcript content begins. Detect the boundary by looking for markers like `Transcript:`, `---`, or the first timestamped line. Everything above this boundary (title, date, location, participants/attendees list) passes through unchanged. If no clear boundary exists, treat the first speaker-labeled line as the start.
+
+   **Participant priority:** If `_CONTEXT.md` or source frontmatter includes a `participants` field (distinct from `invitees`), prioritize `participants` for speaker attribution. Calendar invitee lists often include people who didn't speak. Declared participants = `high` confidence baseline.
+
    **Pass B — Phonetic Correction:**
    - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
    - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
@@ -254,6 +274,7 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **Unintelligible:** Mark passages that can't be recovered with `[unintelligible]`.
    - **Run-on speech:** Add sentence boundaries where STT merged multiple thoughts into one block.
    - Do NOT invent content. Repair means adding structure and markers, not filling gaps.
+   - **No editorial content:** Pass C output must contain ONLY the normalized transcript content plus structural markers (`[incomplete]`, `[crosstalk]`, `[unintelligible]`). Do NOT inject processing notes, file descriptions, headers like "No es fuente", skip directives, or any commentary about the file's nature. Metadata about preprocessing belongs in SOURCE_MAP.md, not in the normalized file.
 
    **Verification (mandatory):** After applying Pass C, confirm that the output contains at least one
    `[incomplete]`, `[crosstalk]`, or `[unintelligible]` marker. If the transcript is genuinely clean
