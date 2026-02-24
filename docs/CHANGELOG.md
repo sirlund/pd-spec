@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.19.0] — 2026-02-23
+
+### Highlights
+
+**Demo polish — 6 visual fixes in one session.** Badges now render consistently in monospace across the entire app. System Map cards show real status colors (green for Ready, red for Blocked). Source ref chips on insights show filenames only and click through to the Sources browser. The preview header tells you extraction status at a glance ("Processed — 71 claims"). Search input fills available space. The "decisions pending" footer navigates to Actions.
+
+### Changes
+
+- **BL-61 — Mono font consistency.** `font-family: var(--font-mono)` on `.badge` base class. Redundant `font-family` removed from 4 child classes. Folder names in file tree set to mono. `badge-subtle` no longer uppercases file refs. (`app/client/styles/components.css`)
+- **BL-69 — Search input width.** `.search-container` gets `flex: 1; min-width: 200px; max-width: 360px`. (`app/client/styles/components.css`)
+- **BL-63 — Decisions footer clickable.** Click "N decisions pending" → navigates to Actions view. (`app/client/components/Sidebar.jsx`)
+- **BL-64 — StatusBadge case fix.** Case-insensitive lookup with `toUpperCase()` fallback. Ready=green, Blocked=red. (`app/client/components/ui/Badge.jsx`)
+- **BL-60 — Ref chips filename-only.** Folder path removed, cursor pointer added, click → Sources view. `navigateTo` extended to accept view IDs. (`app/client/components/InsightCard.jsx`, `app/client/app.jsx`)
+- **BL-62 — Preview header status.** Shows extraction status badge (dot + text + claim count) for Sources. "Open with System App" removed from header. (`app/client/components/FileBrowser.jsx`)
+
+<details>
+<summary>Verification</summary>
+
+Playwright automated tests: 10/10 PASS against TIMining dataset (54 sources, 24 insights, 11 conflicts, 7 modules). Full 12-view visual walkthrough captured.
+
+</details>
+
 ## [4.18.0] — 2026-02-23
 
 ### Highlights
