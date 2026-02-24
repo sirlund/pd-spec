@@ -8,7 +8,7 @@
 - **one_liner:** [Set by /kickoff]
 - **team:** [Set by /kickoff]
 - **started:** [Set by /kickoff]
-- **engine_version:** v4.18.0
+- **engine_version:** v4.19.0
 
 ## Current State
 

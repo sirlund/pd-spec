@@ -181,92 +181,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-60] Insight Ref Chips — Filename Only + Clickable
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, OBS-41 + OBS-20. Ref chips show folder paths (`Antecedentes/filename.pdf`) — unnecessary noise. Filename alone is sufficient.
-
-**Problem:** Long paths overflow, add visual noise, distract from the insight content.
-
-**Solution:** Show filename only in chips. Click → navigate to Sources file browser with file selected and preview open.
-
-**Acceptance criteria:**
-- [ ] Ref chips show filename only (no folder path)
-- [ ] Clicking a chip navigates to Sources → selects file → shows preview
-- [ ] Tooltip shows full path on hover
-
----
-
-### [BL-61] Typography Consistency — Mono Font for All Technical Labels
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, OBS-42 + OBS-44 + OBS-45. Badges, file type labels, folder counts use inconsistent fonts. Some sans-serif, some mono, different sizes.
-
-**Problem:** Visual inconsistency erodes polish. Technical labels (IDs, counts, file types, status badges) should all use the same monospace font.
-
-**Solution:**
-1. All `.badge` variants use `var(--font-mono)` (JetBrains Mono)
-2. File type labels (md, pdf, docx) use `var(--font-mono)`
-3. Folder file counts use `var(--font-mono)`
-4. Explicit size variants: `badge-sm`, `badge-lg` classes instead of ad-hoc inline styles
-
-**Acceptance criteria:**
-- [ ] All badges, file types, and counts render in JetBrains Mono
-- [ ] Badge sizes standardized via CSS classes
-
----
-
-### [BL-62] Preview Header — Extraction Status Badge
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, OBS-43. Preview header repeats "Open with System App" button that already exists in the preview body. Wasted space.
-
-**Problem:** Header could show useful information (extraction status) instead of redundant action.
-
-**Solution:** Replace header "Open with System App" button with extraction status badge: dot + text ("Processed — 71 claims" / "Pending" / "Not extracted"). Keep "Open with System App" in body only for non-previewable binary files.
-
-**Acceptance criteria:**
-- [ ] Preview header shows extraction status badge (dot + text) for Sources view
-- [ ] Claim count shown for processed files
-- [ ] "Open with System App" removed from header, kept in body for binary files
-
----
-
-### [BL-63] Decisions Pending Footer — Clickable Navigation to Actions
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, OBS-46. Sidebar footer "N decisions pending" is informational only. Should navigate to Actions view.
-
-**Solution:** Make the footer text clickable → `navigateTo('actions')`.
-
-**Acceptance criteria:**
-- [ ] Click "N decisions pending" → navigates to Actions view
-
----
-
-### [BL-64] System Map Cards — Status Color Hierarchy
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, OBS-47 + OBS-13. Module cards use grey badges for all statuses (READY, BLOCKED). Left border has color but meaning unclear. No visual hierarchy.
-
-**Problem:** User can't scan cards to see which modules are ready vs blocked without reading text. The color system already exists for badges (green/red) but isn't applied here.
-
-**Solution:**
-1. Status badge uses status color: READY=green, BLOCKED=red
-2. Left border matches status color
-3. IG-XX badges stay teal
-4. Blocker alert stays at bottom with red background
-5. Cards collapsible (show title + status when collapsed)
-
-**Acceptance criteria:**
-- [ ] READY badge green, BLOCKED badge red
-- [ ] Left border reflects status
-- [ ] Cards collapse/expand (title + status visible when collapsed)
+### [BL-65] Open Questions — Actionable Research Items
 
 ---
 
@@ -344,20 +259,6 @@ Decision deferred — revisit when a real project hits the ceiling.
 - [ ] Pass A preserves metadata block above `Transcript:` unchanged
 - [ ] Pass C output contains no editorial commentary
 - [ ] Normalized files contain only normalized content + speaker labels
-
----
-
-### [BL-69] Search Input Width Fix + Dropdown Alignment
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** QA v7, BUG-12 + BUG-09. Search input stays ~197px despite `max-width: 500px`. Dropdown anchored to right but input doesn't expand.
-
-**Solution:** Give `.search-container` `flex: 1` or `min-width` in the header flex layout so the input actually fills available space.
-
-**Acceptance criteria:**
-- [ ] Search input expands to at least 350px on standard viewport
-- [ ] Dropdown stays within viewport bounds
 
 ---
 
@@ -517,6 +418,35 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 ---
 
 ## ✅ Implemented (Archive)
+
+<details>
+<summary><strong>BL-60 to BL-69 — v4.19.0 (Demo Polish)</strong> (click to expand)</summary>
+
+### [BL-60] Insight Ref Chips — Filename Only + Clickable — v4.19.0
+
+**Implemented:** 2026-02-23. Ref chips show filename only (no folder path). Click navigates to Sources view. Tooltip shows full path on hover. `navigateTo` extended to accept generic view IDs.
+
+### [BL-61] Typography Consistency — Mono Font for All Technical Labels — v4.19.0
+
+**Implemented:** 2026-02-23. `font-family: var(--font-mono)` added to `.badge` base class. Redundant `font-family` removed from `.badge-id`, `.badge-conflict-id`, `.badge-insight`, `.badge-conflict`. Folder names in file tree set to mono. `badge-subtle` `text-transform` set to `none` (file refs not uppercased).
+
+### [BL-62] Preview Header — Extraction Status Badge — v4.19.0
+
+**Implemented:** 2026-02-23. Preview header shows extraction status: green dot + "Processed — N claims", yellow dot + pending status, or grey dot + "Not extracted". "Open with System App" removed from header, kept in body for binary files only.
+
+### [BL-63] Decisions Pending Footer — Clickable Navigation to Actions — v4.19.0
+
+**Implemented:** 2026-02-23. Sidebar footer "N decisions pending" now clickable → navigates to Actions view via `onNavigate('actions')`.
+
+### [BL-64] System Map Cards — Status Color Hierarchy — v4.19.0
+
+**Implemented:** 2026-02-23. `StatusBadge` now does case-insensitive lookup (`status?.toUpperCase()` fallback). READY renders green, BLOCKED renders red. Cards collapsible deferred (not needed for demo).
+
+### [BL-69] Search Input Width Fix + Dropdown Alignment — v4.19.0
+
+**Implemented:** 2026-02-23. `.search-container` gets `flex: 1; min-width: 200px; max-width: 360px`. Search input fills available header space up to 360px.
+
+</details>
 
 <details>
 <summary><strong>BL-33 to BL-55 — v4.13.0 to v4.17.0</strong> (click to expand)</summary>
