@@ -400,6 +400,139 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 ---
 
+### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
+
+**Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
+
+**Solution:** Embed an LLM API in the Live Research App backend. Actions in the UI (approve, reject, challenge, ask) trigger server-side LLM calls that modify Work layer files directly.
+
+**Architecture:**
+1. BYOK model: user provides their own API key (Claude, Gemini, GPT) via settings UI
+2. `/api/llm/action` endpoint: receives action type + context, calls LLM, writes to Work files
+3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
+4. Alternatively: platform-provided tokens with usage billing
+
+**Scope:**
+- Phase 1: Text input → LLM response (Q&A about project state)
+- Phase 2: Structured actions (approve insight, resolve conflict, add field note)
+- Phase 3: Skill execution from UI (run /extract, /analyze from browser)
+
+**Evidence:**
+- Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
+- Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
+- Hugo: *"Le metería un LLM, eso sí"*
+- Hugo offered to create API key and contribute credits for testing
+
+**Acceptance criteria:**
+- [ ] Settings UI for API key input (BYOK)
+- [ ] At least one provider working (Claude API recommended)
+- [ ] Q&A mode: user asks question about project → LLM answers using Work layer context
+- [ ] Action mode: approve/reject insight from UI → INSIGHTS_GRAPH.md updated
+- [ ] WebSocket broadcasts changes after LLM action
+
+**User story:**
+> As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
+
+---
+
+### [BL-81] Google Drive Integration — Cloud Source Provider
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Hugo sync (2026-02-23). Hugo suggested directly: "¿Y si podéis conectarle un drive?"
+
+**Problem:** Current workflow requires users to manually copy files into `01_Sources/` on their local machine. This is friction for onboarding, makes collaboration difficult, and doesn't match how teams already organize research (Google Drive, Dropbox, etc.).
+
+**Solution:** Google Drive API or MCP integration that syncs a Drive folder → `01_Sources/`. User selects a Drive folder in the app, files are pulled locally for processing.
+
+**Architecture options:**
+- A) **MCP approach**: Use Google Drive MCP server, list/download files on demand
+- B) **Sync approach**: Background process watches a Drive folder, pulls new/changed files
+- C) **Hybrid**: Browse Drive in app, user selects files to import → copied to `01_Sources/`
+
+**Evidence:**
+- Hugo: *"¿Y si podéis conectarle un drive mejor?"*
+- Hugo: *"Ahí no tendría que subir archivo, pero subí al drive"*
+- Nico confirmed it was already on his mental roadmap
+
+**Acceptance criteria:**
+- [ ] User can connect a Google Drive account from the app
+- [ ] Browse Drive folders and select files to import
+- [ ] Selected files copied to `01_Sources/` with metadata preserved
+- [ ] Subsequent `/extract` processes them normally
+
+**User story:**
+> As a consultant with research documents in Google Drive, I can connect my Drive to the app and select folders to import, without manually copying files to a local directory.
+
+---
+
+### [BL-82] AI Output Audit Mode — Cross-Tool Verification
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** Hugo sync (2026-02-23). Evidence: TIMining project where Nico audited Gemini outputs and found hallucinations.
+
+**Problem:** Teams use multiple AI tools (Gemini, ChatGPT, NotebookLM) for research, and the outputs often hallucinate without anyone noticing. There's no systematic way to verify AI-generated claims against primary sources.
+
+**Solution:** An audit mode where users submit AI-generated outputs (from any tool) and PD-Spec verifies each claim against the project's source base. Output: report showing what's verified, what's unverified, what's fabricated.
+
+**Evidence from TIMining:**
+- Gemini generated a "strategic master document" with invented concepts: *"La gobernanza de datos automáticas, esto lo inventó totalmente"*
+- Gemini inflated case counts and fabricated business metrics
+- Claude analysis produced a structured comparison: *"Lo que hizo bien... Dónde está inflado y no es verificable... Inventó"*
+- Hugo confirmed he'd seen the comparison: *"Hizo como una evaluación del resultado de Gemini versus lo que detectaba él"*
+
+**Acceptance criteria:**
+- [ ] User can upload or paste an AI-generated document as "audit target"
+- [ ] System cross-references claims against existing INSIGHTS_GRAPH and EXTRACTIONS
+- [ ] Output report: verified claims (with [IG-XX] refs), unverified claims, fabricated claims
+- [ ] Report includes confidence level and source attribution
+
+**User story:**
+> As a consultant who used Gemini to generate a strategy document, I can run it through PD-Spec's audit mode and get a report showing which claims are backed by real evidence and which were hallucinated.
+
+---
+
+### [BL-83] Hosted/SaaS Architecture Planning
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Hugo sync (2026-02-23). Hugo asked directly: "¿Lo podrías publicar? ¿Subí arriba?"
+
+**Problem:** The Live Research App runs on localhost only. This limits adoption to users who can run a terminal and clone a git repo. For consulting teams and non-technical users, this is a hard blocker.
+
+**Solution:** Architecture plan (not implementation) for a hosted version. Document the minimum viable infrastructure: auth, file upload, multi-tenant isolation, billing, and deployment.
+
+**Scope (planning only — no implementation):**
+1. Auth: OAuth (Google) or magic link
+2. File storage: S3-compatible bucket per tenant (replaces local `01_Sources/`)
+3. Multi-tenancy: isolated Work layers per project
+4. LLM integration: ties into BL-80 (BYOK or platform credits)
+5. Deployment: single Node.js app (Express + React, already exists) behind reverse proxy
+6. Billing: usage-based (LLM tokens) or flat subscription
+
+**Evidence:**
+- Hugo: *"¿Y esto es un localhost? ¿Lo podrías publicar?"*
+- Nico: *"Puede tener un login, puedo pagar, puedo cobrar un fee"*
+- Hugo: *"Sí, o sea, es que por lo que..."* — confirmed demand
+- Market signal: multiple people in Two Brains/Acid Labs ecosystem interested
+
+**Acceptance criteria:**
+- [ ] Architecture document with component diagram
+- [ ] Tech stack decisions documented (auth, storage, deployment)
+- [ ] Cost estimate (infrastructure + LLM tokens per project)
+- [ ] Migration path from localhost to hosted (what changes, what stays)
+- [ ] Decision on MVP scope (what's in v1 hosted, what's deferred)
+
+**User story:**
+> As the PD-Spec maintainer planning a go-to-market, I have a clear architecture document for the hosted version so I can estimate effort and make build-vs-buy decisions.
+
+---
+
 ### [BL-79] Markdown-First Outputs — /ship Generates .md, HTML/DOCX Become Export Formats
 
 **Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
