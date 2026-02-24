@@ -140,7 +140,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-58] Cross-Navigation — Clickable [IG-XX] / [CF-XX] Badges Everywhere
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
 **Priority:** P2
 **Origin:** QA v7, OBS-16. Core value proposition of PD-Spec is traceability. The data chain exists (System Map → Insight → Claims → Source) but is not navigable in the UI.
 
@@ -279,7 +279,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-71] Global Search — Extractions, System Map, Sources
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
 **Priority:** P4
 **Origin:** QA v7, OBS-11. Search only covers insights + conflicts. Extractions, sources, system map not searchable.
 
@@ -321,7 +321,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-74] Binary File Preview — PDF + Office Thumbnails
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23) — PDF only; Office thumbnails deferred.
 **Priority:** P4
 **Origin:** QA v7, OBS-23. PDF/DOCX/PPTX show no preview — only "Open with System App" button.
 
@@ -397,6 +397,49 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 3. Approve/reject includes optional reason note → stored in INSIGHTS_GRAPH.md + included in /synthesis prompt
 
 **Depends on:** Clearer understanding of how Actions → /synthesis flow works in practice across projects.
+
+---
+
+### [BL-79] Markdown-First Outputs — /ship Generates .md, HTML/DOCX Become Export Formats
+
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
+**Priority:** P1
+**Origin:** Architecture review (2026-02-23). Evidence: TIMining project exposed JSON+HTML complexity (BL-56 export dependency, template maintenance burden, schema validation overhead).
+
+**Problem:** Current /ship pipeline is overengineered. Agent generates JSON matching a schema, injects it into HTML template with inlined CSS/JS. This is: complex to maintain (10 templates, 9 schemas, inlining step), fragile (JSON structure errors break rendering), not human-editable (JSON inside HTML), and redundant — the Live Research App already renders Markdown beautifully via `parsers/markdown.js`.
+
+**Solution:** `/ship` generates `.md` files in `03_Outputs/` (e.g., `PRD.md`, `PERSONAS.md`). The Live Research App renders them with existing MarkdownView + markdown parser. `[IG-XX]` refs automatically become clickable badges. Tables, blockquotes, headings, badges — all already styled in `.md-content` CSS.
+
+**Benefits:**
+- Agent writes Markdown (natural) instead of JSON (unnatural) — fewer tokens, fewer errors
+- Human-editable in any text editor, renders in GitHub, VS Code, the app
+- Eliminates template inlining step and JSON schema validation overhead
+- Files are smaller, diffable, mergeable
+- Absorbs BL-56 partially: Markdown → DOCX trivial via pandoc
+
+**What changes:**
+1. `/ship` SKILL.md — rewrite: generate structured Markdown, not JSON
+2. `03_Outputs/` — default files become `.md` instead of `.html`
+3. `_templates/` and `_schemas/` — demoted from primary to export-only (kept for future `/export`)
+4. CLAUDE.md — Sources of Truth table updated
+
+**What stays:**
+- All `[IG-XX]` traceability (Markdown refs work identically)
+- Document versioning (heading convention: `> vX.Y | date | snapshot`)
+- Propose-before-execute workflow
+- All 10 output types
+
+**Risk:** Presentation (Reveal.js) may need special handling — could use `---` slide separators or stay as HTML export.
+
+**Acceptance criteria:**
+- [ ] `/ship prd` generates `PRD.md` (not `PRD.html`)
+- [ ] PRD.md renders in Live Research App with styled headings, tables, badges
+- [ ] `[IG-XX]` refs in PRD.md are clickable → navigate to Insights view
+- [ ] All 10 output types generate Markdown
+- [ ] Existing HTML templates preserved for future `/export` command
+
+**User story:**
+> As a researcher, I can `/ship prd` and get a human-readable Markdown document that renders beautifully in the app, is editable in any text editor, and has all insight references automatically clickable.
 
 ---
 

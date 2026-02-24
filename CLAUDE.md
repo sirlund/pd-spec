@@ -69,7 +69,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
 | Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
 | Synthesis | `/synthesis` | Resolve conflicts, update system map |
-| Ship | `/ship [type]` | Generate deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
+| Ship | `/ship [type]` | Generate Markdown deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
@@ -101,13 +101,13 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/_temp/SESSION_CHECKPOINT.md` | Session state & compaction recovery (all sessions) | Yes (ephemeral, auto-managed) |
 | `02_Work/_assets/_INTAKE.md` | Asset intake log | Yes (via freemode protocol) |
 | `03_Outputs/_custom/*` | Non-pipeline deliverables | Yes (via freemode protocol) |
-| `03_Outputs/_templates/*` | Static HTML templates (Template+JSON) | No (engine files) |
-| `03_Outputs/_schemas/*` | JSON Schema definitions for output data | No (engine files) |
-| `03_Outputs/PRD.html` | Product Requirements Document | Yes (via `/ship`) |
-| `03_Outputs/PERSONAS.html` | User persona cards | Yes (via `/ship persona`) |
-| `03_Outputs/JOURNEY_MAP.html` | User journey map | Yes (via `/ship journey-map`) |
-| `03_Outputs/LEAN_CANVAS.html` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
-| `03_Outputs/USER_STORIES.html` | JTBD user stories | Yes (via `/ship user-stories`) |
+| `03_Outputs/_templates/*` | Static HTML templates (legacy, kept for future `/export`) | No (engine files) |
+| `03_Outputs/_schemas/*` | JSON Schema definitions (legacy, kept for future `/export`) | No (engine files) |
+| `03_Outputs/PRD.md` | Product Requirements Document | Yes (via `/ship`) |
+| `03_Outputs/PERSONAS.md` | User persona cards | Yes (via `/ship persona`) |
+| `03_Outputs/JOURNEY_MAP.md` | User journey map | Yes (via `/ship journey-map`) |
+| `03_Outputs/LEAN_CANVAS.md` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
+| `03_Outputs/USER_STORIES.md` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
 | `docs/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
 | `docs/FRAMEWORK.md` | Methodology reference | Reference only |
@@ -147,30 +147,10 @@ The folder name provides context that individual files inherit. The agent valida
 │   │   └── _INTAKE.md         Asset log (filename, origin, date, purpose)
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
-│   ├── _templates/            Static HTML templates (Template+JSON architecture)
-│   │   ├── _base.css          Shared CSS (Inter font, A4 page system, badges, print)
-│   │   ├── _base.js           Shared JS (JSON loader, section renderers, ref-link converter)
-│   │   ├── prd.html           PRD template
-│   │   ├── report.html        Report template
-│   │   ├── presentation.html  Reveal.js presentation template
-│   │   ├── benchmark-ux.html   Benchmark UX template
-│   │   ├── persona.html       Persona cards template
-│   │   ├── journey-map.html   Journey map template
-│   │   ├── lean-canvas.html   Lean Canvas template
-│   │   ├── user-stories.html  User stories template
-│   │   └── status.html        Dashboard template
-│   ├── _schemas/              JSON Schema definitions for output data
-│   │   ├── base.schema.json   Shared definitions (meta, sections, refs)
-│   │   ├── prd.schema.json    PRD data schema
-│   │   ├── report.schema.json Report data schema
-│   │   ├── benchmark-ux.schema.json Benchmark UX data schema
-│   │   ├── persona.schema.json Persona data schema
-│   │   ├── journey-map.schema.json Journey map data schema
-│   │   ├── lean-canvas.schema.json Lean Canvas data schema
-│   │   ├── user-stories.schema.json User stories data schema
-│   │   └── status.schema.json Status dashboard data schema
-│   ├── PRD.html               Product Requirements Document (template + embedded JSON)
-│   ├── PERSONAS.html          User persona cards (template + embedded JSON)
+│   ├── _templates/            Legacy HTML templates (kept for future /export)
+│   ├── _schemas/              Legacy JSON schemas (kept for future /export)
+│   ├── PRD.md                 Product Requirements Document (Markdown)
+│   ├── PERSONAS.md            User persona cards (Markdown)
 │   ├── _custom/               Non-pipeline deliverables (freemode outputs)
 │   └── _README.md            Layer rules for users
 ├── docs/
