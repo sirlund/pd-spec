@@ -383,6 +383,75 @@ export function createApi(projectRoot) {
     }
   });
 
+  // GET /api/search?q=term — cross-layer search
+  router.get('/search', async (req, res) => {
+    try {
+      const q = (req.query.q || '').trim().toLowerCase();
+      if (q.length < 2) return res.json({ insights: [], conflicts: [], modules: [], claims: [], sources: [] });
+
+      const [insights, conflicts, systemMap, extractions, sourcePaths] = await Promise.all([
+        readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
+        readAndParse('02_Work/CONFLICTS.md', parseConflicts),
+        readAndParse('02_Work/SYSTEM_MAP.md', parseSystemMap),
+        readAndParse('02_Work/EXTRACTIONS.md', parseExtractions),
+        scanSourceFiles(),
+      ]);
+
+      const LIMIT = 5;
+      const result = { insights: [], conflicts: [], modules: [], claims: [], sources: [] };
+
+      // Search insights
+      for (const ig of (insights.insights || [])) {
+        if (result.insights.length >= LIMIT) break;
+        const hay = [ig.id, ig.title, ig.concept, ig.narrative, ig.category].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(q)) {
+          result.insights.push({ id: ig.id, text: ig.title || ig.concept || ig.id, status: ig.status });
+        }
+      }
+
+      // Search conflicts
+      for (const cf of (conflicts.conflicts || [])) {
+        if (result.conflicts.length >= LIMIT) break;
+        const hay = [cf.id, cf.title, cf.description].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(q)) {
+          result.conflicts.push({ id: cf.id, text: cf.title || cf.description || cf.id, status: cf.status });
+        }
+      }
+
+      // Search system map modules
+      for (const mod of (systemMap.modules || [])) {
+        if (result.modules.length >= LIMIT) break;
+        const hay = [mod.name, mod.status, ...(mod.implications || [])].filter(Boolean).join(' ').toLowerCase();
+        if (hay.includes(q)) {
+          result.modules.push({ id: mod.name, text: mod.name + (mod.status ? ` (${mod.status})` : '') });
+        }
+      }
+
+      // Search extraction claims
+      for (const file of (extractions.files || [])) {
+        if (result.claims.length >= LIMIT) break;
+        for (const claim of file.claims) {
+          if (result.claims.length >= LIMIT) break;
+          if (claim.text.toLowerCase().includes(q)) {
+            result.claims.push({ id: `claim-${claim.number}`, text: claim.text, source: file.path });
+          }
+        }
+      }
+
+      // Search source filenames
+      for (const path of sourcePaths) {
+        if (result.sources.length >= LIMIT) break;
+        if (path.toLowerCase().includes(q)) {
+          result.sources.push({ id: path, text: path.split('/').pop(), folder: path.split('/').slice(0, -1).join('/') });
+        }
+      }
+
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Helper: scan 01_Sources/ filesystem for actual file count
   async function scanSourceFiles() {
     const sourceDir = resolve(projectRoot, '01_Sources');

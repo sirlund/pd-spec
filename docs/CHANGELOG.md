@@ -1,5 +1,33 @@
 # Changelog
 
+## [4.20.0] — 2026-02-23
+
+### Highlights
+
+**Three app features + architecture shift.** The Live Research App gets cross-navigation, global search, and PDF preview. Plus: `/ship` now generates Markdown instead of HTML+JSON — simpler, human-editable, and auto-rendered by the app.
+
+**Cross-navigation everywhere (BL-58).** `[IG-XX]` and `[CF-XX]` badges are now clickable in the FileBrowser markdown preview and Extractions parsed mode. Click any badge → jump to the Insights or Conflicts view. Works across Sources, Work, and Outputs browsers.
+
+**Global search (BL-71).** The search bar now searches across all Work layer data: insights, conflicts, system map modules, extraction claims (1200+), and source filenames. Results are organized by category with labeled headers. Server-side `/api/search` endpoint handles the heavy lifting.
+
+**PDF preview (BL-74).** PDFs now render inline via iframe in the FileBrowser — no more "can't preview" message.
+
+**Markdown-first outputs (BL-79).** `/ship` generates `.md` files instead of Template+JSON HTML. The app already renders Markdown beautifully — tables, badges, blockquotes all styled. `[IG-XX]` refs are automatically clickable. Templates and schemas demoted to legacy for future `/export` command.
+
+### Changes
+
+- **BL-74** — PDF ext detection + iframe preview in FileBrowser. (`FileBrowser.jsx`)
+- **BL-58** — Click delegation on `data-ref` badges in FileBrowser markdown preview. `InlineRefs` component for Extractions claims. `onNavigate` prop passed to all 3 FileBrowser instances. (`FileBrowser.jsx`, `MarkdownView.jsx`, `app.jsx`)
+- **BL-71** — `GET /api/search?q=` endpoint: searches insights, conflicts, system map modules, extraction claims, source filenames. Categorized results with 5-per-category limit. SearchBar rewritten with category headers. (`api.js`, `SearchBar.jsx`, `components.css`)
+- **BL-79** — `/ship` SKILL.md rewritten for Markdown generation. CLAUDE.md Sources of Truth updated (`.md` outputs). Templates/schemas demoted to legacy. (`SKILL.md`, `CLAUDE.md`, `BACKLOG.md`)
+
+<details>
+<summary>Verification</summary>
+
+Playwright automated checks against TIMining dataset: PDF preview renders in iframe (PASS), [IG-XX] badge click in Work browser navigates to Insights (PASS), search "geometry" returns Insights + System Map + Extractions categories (PASS), search "entrevista" returns source filenames (PASS).
+
+</details>
+
 ## [4.19.0] — 2026-02-23
 
 ### Highlights

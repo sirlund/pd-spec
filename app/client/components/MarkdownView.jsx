@@ -1,8 +1,24 @@
 import React, { useCallback } from 'react';
 import { useLiveData } from '../hooks.js';
 import Card from './ui/Card.jsx';
-import { WarningBadge } from './ui/Badge.jsx';
+import { WarningBadge, IdBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
+
+// Render text with inline [IG-XX] / [CF-XX] as clickable badges
+function InlineRefs({ text, onNavigate }) {
+  const parts = text.split(/(\[(?:IG-[A-Z0-9-]+|CF-\d+)\])/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = part.match(/^\[(IG-[A-Z0-9-]+|CF-\d+)\]$/);
+        if (match) {
+          return <IdBadge key={i} id={match[1]} onClick={() => onNavigate?.(match[1])} />;
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
 
 export default function MarkdownView({ path, title, parsed, onNavigate }) {
   const { data, loading } = useLiveData(path, ['02_Work/']);
@@ -61,7 +77,7 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
             <ol style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 20, margin: 0 }}>
               {file.claims.map((claim) => (
                 <li key={claim.number} value={claim.number} style={{ marginBottom: 4 }}>
-                  {claim.text}
+                  <InlineRefs text={claim.text} onNavigate={onNavigate} />
                   {claim.tags.map(t => (
                     <WarningBadge key={t}>{t}</WarningBadge>
                   ))}
