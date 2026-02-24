@@ -871,6 +871,44 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ---
 
+### [BL-92] Script-First Skill Decomposition — Replace LLM Skills with Code Where Possible
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7 session discussion. User observation: "cada vez más siento que ese paso es un script más que un skill."
+
+**Problem:** Several pipeline steps currently run as LLM agent skills (expensive, slow, non-deterministic) when they could be implemented as deterministic code with direct UI actions. The user runs `/resolve` and waits for an agent to process each conflict — when the same action could be a button click in the Live Research App that writes directly to files.
+
+**Analysis needed:** For each skill/phase, determine what percentage is:
+- **Mechanical** (counting, status changes, file writes, dedup by exact match) → script/API
+- **Semantic** (understanding claims, detecting contradictions, writing narratives) → LLM required
+- **Interactive** (user decisions, approval loops) → app UI
+
+**Candidates for decomposition:**
+
+| Skill/Phase | Mechanical | Semantic | Interactive | Candidate? |
+|---|---|---|---|---|
+| `/resolve` — status changes (PENDING→VERIFIED) | 90% | 0% | 10% (user clicks) | High — app button |
+| `/resolve` — SYSTEM_MAP update | 20% | 70% | 10% | Low — needs LLM |
+| `/analyze` Phase 2 — dedup check | 60% | 40% | 0% | Medium — hybrid |
+| `/analyze` Phase 3 — synthesis | 10% | 80% | 10% | Low — needs LLM |
+| `/extract` — file discovery + delta | 95% | 0% | 5% | High — script |
+| `/extract` — claim extraction | 10% | 85% | 5% | Low — needs LLM |
+| `/ship` — all types | 5% | 90% | 5% | Low — needs LLM |
+
+**Vision:** The app becomes the primary interface for mechanical operations. Click to verify an insight, click to resolve a conflict, click to flag for research. File writes happen via Express API endpoints. LLM skills are reserved for operations that genuinely require semantic understanding (claim extraction, narrative synthesis, deliverable generation).
+
+**Acceptance criteria:**
+- [ ] Audit of all skills with mechanical/semantic/interactive percentages
+- [ ] At least one "High" candidate converted to app action (e.g., insight verification button)
+- [ ] API endpoints for direct file mutations (verify insight, resolve conflict, flag for research)
+- [ ] Skills updated to skip steps that are now handled by app actions
+
+**User story:**
+> As a researcher reviewing insights in the Live Research App, I can click "Verify" on an insight and it immediately updates INSIGHTS_GRAPH.md — no need to run `/resolve` or wait for an agent.
+
+---
+
 ### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
 
 **Status:** PARKED
