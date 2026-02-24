@@ -242,23 +242,26 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection
+### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection + Participant Metadata
 
 **Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7, OBS-24 + OBS-25. Two bugs in /extract preprocessing:
+**Priority:** P1 (blocks QA pipeline — can't extract without this)
+**Origin:** QA v7, OBS-24 + OBS-25 + OBS-30 + OBS-31. Three bugs/gaps in /extract preprocessing:
 
 **Bug 1 (OBS-25):** Pass A applies speaker normalization regex to the entire file including metadata block. Result: title, date, attendees all get `[SPEAKER: ...]` prefix.
 **Bug 2 (OBS-24):** Pass C injects editorial comment "No es fuente para /extract" into normalized file header. Risk: agent re-reading file may self-skip.
+**Gap (OBS-30/31):** Participant frontmatter not prioritized over calendar invitee lists. `participants` field (who actually spoke) should take precedence over `invitees` (who was invited).
 
 **Solution:**
 1. Pass A: detect `Transcript:` boundary, only apply speaker substitution below it
 2. Pass C: normalize content only — no editorial comments. Descriptive metadata belongs in `_CONTEXT.md`
+3. Pass A: prioritize `participants` field over `invitees` for speaker attribution
 
 **Acceptance criteria:**
 - [ ] Pass A preserves metadata block above `Transcript:` unchanged
 - [ ] Pass C output contains no editorial commentary
 - [ ] Normalized files contain only normalized content + speaker labels
+- [ ] `participants` field prioritized over `invitees` for speaker detection
 
 ---
 
@@ -623,6 +626,76 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 **User story:**
 > As a researcher, I can `/ship prd` and get a human-readable Markdown document that renders beautifully in the app, is editable in any text editor, and has all insight references automatically clickable.
+
+---
+
+### [BL-85] STT Correction Loop — Persistent Glossary
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** QA v7, OBS-29. Phonetic corrections in /extract are session-local — the glossary built during preprocessing is discarded after the session. Recurring domain terms (e.g., "TIMining", "IDEMAX", "CFO") must be re-corrected every time a new transcript is processed.
+
+**Problem:** Each `/extract` session builds a context glossary from scratch by reading PROJECT.md, _CONTEXT.md, and existing insights. This works but wastes tokens re-discovering the same corrections. For projects with many transcripts, the same STT errors appear repeatedly.
+
+**Solution:** Persistent `02_Work/GLOSSARY.md` that accumulates corrections across extractions:
+- Each `/extract` proposes new glossary entries from phonetic corrections
+- User approves → entries persisted
+- Future extractions auto-apply approved entries before LLM processing
+- Format: `| Original | Corrected | Confidence | Source | Date |`
+
+**Acceptance criteria:**
+- [ ] Glossary file created/updated after each preprocessing session
+- [ ] Approved corrections auto-applied in future extractions
+- [ ] User approves new entries (propose-before-execute)
+- [ ] Glossary readable in Live Research App
+
+**User story:**
+> As a researcher processing multiple interview transcripts, I want phonetic corrections from previous sessions to be remembered, so I don't re-approve the same corrections every time.
+
+---
+
+### [BL-86] UI Styling Consistency — Mono Badges, Chips, Counts
+
+**Status:** Proposed
+**Priority:** P4
+**Origin:** QA v7, OBS-41/42/43/44/45. Multiple minor styling inconsistencies across the Live Research App: badge fonts not uniformly mono, count chips inconsistent between views, category headers use different weight/size conventions.
+
+**Problem:** Each component was built independently; styling conventions drifted. Not a functional bug, but creates a "homemade" feel that undermines credibility during stakeholder demos.
+
+**Solution:** Audit all badge/chip/count/header components and unify:
+- All badges: `var(--font-mono)`, consistent padding/border-radius
+- Count chips: same size/color across Sidebar, headers, and cards
+- Category headers: consistent `text-transform`, `font-weight`, `letter-spacing`
+- Create shared CSS custom properties for common patterns
+
+**Acceptance criteria:**
+- [ ] All badges use `var(--font-mono)` consistently
+- [ ] Count chips uniform across views
+- [ ] No visual regressions (Playwright snapshots)
+
+---
+
+### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7, OBS-32/33/34/46. No way to challenge a VERIFIED insight, reject with a reason note, or detect when a conflict becomes stale after an insight decision.
+
+**Problem:** The pipeline only flows forward (sources → claims → insights). Field discoveries that contradict VERIFIED insights require a full pipeline round-trip. Reject actions lose context (no reason stored). Stale conflicts silently persist.
+
+**Solution:**
+1. "Challenge" button on VERIFIED insights → creates a new conflict entry with counter-evidence
+2. Reject action includes optional reason note → stored in INSIGHTS_GRAPH.md
+3. App detects when insight status changes make existing conflicts stale → banner warning
+
+**Acceptance criteria:**
+- [ ] Challenge action creates a conflict entry linked to the insight
+- [ ] Reject includes optional reason note persisted in INSIGHTS_GRAPH.md
+- [ ] Stale conflict detection and visual warning
+- [ ] All actions follow propose-before-execute
+
+**User story:**
+> As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.
 
 ---
 
@@ -1005,4 +1078,4 @@ Typography, micro-interactions, data viz, accessibility improvements for all tem
 
 Full context for implemented items preserved in version control. For detailed evidence, see `QA_V2_FINDINGS.md`, `QA_V3_FINDINGS.md`, `QA_V4_FINDINGS.md`, and `QA_V5_FINDINGS.md`. For user-facing highlights, see [`CHANGELOG.md`](CHANGELOG.md).
 
-Last updated: 2026-02-22 (v4.17.0)
+Last updated: 2026-02-24 (v4.21.0)

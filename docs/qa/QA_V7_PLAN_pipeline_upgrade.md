@@ -1,9 +1,10 @@
-# QA v7 Plan — Pipeline Upgrade v4.7 → v4.17.1
+# QA v7 Plan — Pipeline Upgrade v4.7 → v4.21.0
 
 > Created: 2026-02-22
-> Version under test: v4.17.1
+> Updated: 2026-02-24 (Fase 1b added — pre-QA fixes)
+> Version under test: v4.21.0
 > Scope: Real-project pipeline upgrade (TIMining), branch consolidation, Live Research App accuracy
-> Context: Not a formal dual-terminal QA. Observations captured during production upgrade of TIMining project from engine v4.7 to v4.17.1.
+> Context: Not a formal dual-terminal QA. Observations captured during production upgrade of TIMining project from engine v4.7 to v4.21.0.
 
 ## Setup
 
@@ -46,6 +47,19 @@
 | T07 | File Browser shows sesiones-idemax folder | New folder visible with 3 files + `_CONTEXT.md` | Browse `01_Sources/` in the app |
 | T08 | Evidence Gaps reflects current state | Gaps identified based on 21 existing insights | Gap count > 0, meaningful suggestions |
 | T09 | Source Diversity accurate | Folder names mapped to expected research types | At least 3 types present |
+
+---
+
+## Fase 1b: Pre-QA Fixes (on main, merged to TIMining)
+
+Pre-conditions: badge regex fix, BL-68 preprocessing fixes (OBS-24/25/30/31), `--file` mode in /extract.
+
+| ID | Test | Expected | Verify |
+|---|---|---|---|
+| T25 | Badge `[IG-SYNTH-16b]` renders in PRD.md | Clickable blue badge, not plain text | Navigate Outputs → PRD.md → find badge |
+| T26 | `--file` deletes specific `_normalized.md` | File removed before preprocessing starts | Check `_temp/` before and after |
+| T27 | Pass A preserves metadata block above transcript boundary | No `[SPEAKER:]` in title/date/attendees | Read `_normalized.md` header |
+| T28 | Pass C output contains no editorial headers | No "No es fuente" or processing notes | Grep `_normalized.md` for editorial patterns |
 
 ---
 
@@ -101,14 +115,15 @@
 ## Execution Order
 
 ```
-Fase 0a → git merge (reverse direction)        ✅ Done
-Fase 0b → standardize _temp → 01_Sources        ✅ Done
-Fase 0c → copy Touchpoint from QA               ✅ Done
-Fase 0d → _CONTEXT.md + commit                  ✅ Done
-Fase 1  → /view + visual diagnostic             🔄 In progress
-Fase 2  → /extract (new + optional re-extract)  ⬜ Pending
-Fase 3  → /analyze incremental                  ⬜ Pending
-Fase 4  → /view + final verification            ⬜ Pending
+Fase 0a  → git merge (reverse direction)             ✅ Done
+Fase 0b  → standardize _temp → 01_Sources             ✅ Done
+Fase 0c  → copy Touchpoint from QA                    ✅ Done
+Fase 0d  → _CONTEXT.md + commit                       ✅ Done
+Fase 1   → /view + visual diagnostic (v4.20.0)        ✅ Done
+Fase 1b  → pre-QA fixes (badge, BL-68, --file)        ✅ Done (v4.21.0 on main, merged)
+Fase 2   → /extract --file (3 new sources)             ⬜ Pending
+Fase 3   → /analyze incremental                        ⬜ Pending
+Fase 4   → final verification + Playwright             ⬜ Pending
 ```
 
 ## Rules
