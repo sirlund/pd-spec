@@ -244,7 +244,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-68] Pass A/C Preprocessing Bugs — Metadata Corruption + Editorial Injection + Participant Metadata
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.21.0, 2026-02-24)
 **Priority:** P1 (blocks QA pipeline — can't extract without this)
 **Origin:** QA v7, OBS-24 + OBS-25 + OBS-30 + OBS-31. Three bugs/gaps in /extract preprocessing:
 
