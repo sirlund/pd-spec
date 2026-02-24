@@ -840,7 +840,7 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ### [BL-91] `/analyze` — Deprecate Express Mode + Add `design-framework` Category
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.22.0, 2026-02-24)
 **Priority:** P1
 **Origin:** QA v7, OBS-62. `/analyze` dropped 8 design-framework claims (Touchpoint claims 30-37) because they don't fit any of the 4 categories. Express mode then over-consolidated 85→7 (12:1 ratio). Downstream: `/ship benchmark-ux` bypassed verified KB and fabricated a SKILL.md citation.
 

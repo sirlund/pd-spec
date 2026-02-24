@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.22.0] — 2026-02-24
+
+### Highlights
+
+**`/analyze` fixed — design pillars can now enter the knowledge base.** Added a 5th insight category `design-framework` for design principles, UX patterns, product pillars, and naming conventions. Previously, claims like "Quiet UI absorbs visual complexity" had no category and were silently dropped. (BL-91)
+
+**Express mode deprecated.** Phase 3 (synthesis) now always runs regardless of project size. Express mode was skipping consolidation and causing aggressive over-compression (85 claims → 7 insights). Removed entirely — `--full` flag still controls incremental vs full extraction processing.
+
+**`/synthesis` renamed to `/resolve`.** The old name confused everyone: `/analyze` Phase 3 is called "Synthesis" and produces `IG-SYNTH-XX` tags, while the *skill* resolved conflicts and updated SYSTEM_MAP. Now `/resolve` does what the name says — resolve conflicts, verify insights, update system map.
+
+**`--file` flag for `/analyze`.** New surgical mode: `/analyze --file "Section Name" [section2 ...]` processes only named extraction sections. Useful for re-analyzing after source corrections without waiting for full incremental scan.
+
+### Changes
+
+- **BL-91** — `design-framework` category added to `/analyze` SKILL.md (Phase 2 categorization + Phase 3 synthesis)
+- **BL-91** — Express mode removed: Phase 1b reduced to logging, Phase 3 always runs
+- **Rename** — `/synthesis` → `/resolve` across 16 files (skill, CLAUDE.md, README, app components, all referencing skills)
+- **`--file` flag** — `/analyze --file` mode in SKILL.md: skip timestamp filter, process named sections only
+- **Backlog** — BL-92 (Script-First Skill Decomposition), BL-93 (Insight Lifecycle) proposed
+- **QA v7** — OBS-56 through OBS-62, BUG-13 documented. OBS-62 chain analysis: `/analyze` → `/ship` bypass
+
 ## [4.21.0] — 2026-02-24
 
 ### Highlights
