@@ -68,7 +68,7 @@ The folder name provides context that individual files inherit. The agent valida
 | Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
 | Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
 | Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
-| Synthesis | `/synthesis` | Resolve conflicts, update system map |
+| Resolve | `/resolve` | Resolve conflicts, update system map |
 | Ship | `/ship [type]` | Generate Markdown deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
 | Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
@@ -93,8 +93,8 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/SOURCE_MAP.md` | Per-file extraction state (hash, status, timestamp) | Yes (via `/extract`, auto-maintained) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
-| `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/synthesis`) |
-| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/synthesis`) |
+| `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/resolve`) |
+| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/resolve`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
 | `02_Work/MEMORY.md` | Session log & state tracker (compacted at 80 lines) | Yes (via all skills) |
@@ -120,7 +120,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── kickoff/SKILL.md       /kickoff — project setup wizard
 │   ├── extract/SKILL.md      /extract — read sources, extract raw claims
 │   ├── analyze/SKILL.md       /analyze — process extractions into insights
-│   ├── synthesis/SKILL.md     /synthesis — resolve conflicts
+│   ├── resolve/SKILL.md       /resolve — resolve conflicts
 │   ├── ship/SKILL.md          /ship — generate deliverables (10 output types)
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers

@@ -12,7 +12,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
   const conflictActions = Object.entries(conflictDecisions);
 
   const generate = () => {
-    const lines = ['/synthesis with these inputs:'];
+    const lines = ['/resolve with these inputs:'];
     lines.push('');
 
     if (approvals.length > 0) {
@@ -53,7 +53,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
       </div>
 
       <AccentBox>
-        Generate a <code>/synthesis</code> prompt from your accumulated decisions.
+        Generate a <code>/resolve</code> prompt from your accumulated decisions.
         This captures insight approvals, rejections, and conflict resolutions into
         a single prompt you paste into your agent session.
       </AccentBox>
@@ -95,7 +95,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
             style={decisionCount === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
           >
             <Icon name="send" size={14} />
-            Generate /synthesis Prompt
+            Generate /resolve Prompt
           </button>
         </div>
       </Card>

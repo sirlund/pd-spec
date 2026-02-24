@@ -66,7 +66,7 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
    - Are there VERIFIED insights to reference?
    - Is SYSTEM_MAP populated with traceable decisions?
    - Are there unresolved PENDING conflicts affecting the deliverable?
-   - **If insufficient**, report gaps and suggest `/analyze` or `/synthesis` first.
+   - **If insufficient**, report gaps and suggest `/analyze` or `/resolve` first.
 
 ### Phase 2: Propose (User Approval)
 

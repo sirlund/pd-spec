@@ -64,7 +64,7 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
    ```markdown
    # Conflicts Log
 
-   Contradictions detected between insights. Each conflict has a unique `[CF-XX]` ID and must be resolved through `/synthesis` before the system map can be updated.
+   Contradictions detected between insights. Each conflict has a unique `[CF-XX]` ID and must be resolved through `/resolve` before the system map can be updated.
 
    ## Status Legend
 

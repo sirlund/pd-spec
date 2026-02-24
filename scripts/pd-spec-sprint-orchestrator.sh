@@ -335,14 +335,14 @@ Changes needed:
 - Add /extract to the Skills Pipeline table (before /analyze)
 - Add extract/SKILL.md to the Folder Structure
 - Add 02_Work/EXTRACTIONS.md to Sources of Truth table
-- Update the pipeline description: /extract -> /analyze -> /synthesis -> /ship
+- Update the pipeline description: /extract -> /analyze -> /resolve -> /ship
 
 ## Constraints
 - Follow the EXACT frontmatter format used by other skills
 - Follow the EXACT phase structure pattern (Phase 0: Session Resume, Phase N: ...)
 - Use output_language for all user-facing text in EXTRACTIONS.md
 - System IDs and status labels stay in English
-- Do NOT touch /ship, /synthesis, /status, /visualize, /seed, /reset, /kickoff
+- Do NOT touch /ship, /resolve, /status, /visualize, /seed, /reset, /kickoff
 
 ## When Done
 Commit all changes with:
@@ -566,7 +566,7 @@ This is a PARTIAL update — the full dashboard redesign happens in A3. For now,
 - CSS and JS can be in separate files in _templates/ (templates link to them relatively)
 - But the FINAL output (03_Outputs/PRD.html etc.) should inline everything for portability
 - Follow existing PD-Spec patterns and mandates
-- Do NOT modify /analyze, /synthesis, /extract, /kickoff, /seed, /reset, /visualize
+- Do NOT modify /analyze, /resolve, /extract, /kickoff, /seed, /reset, /visualize
 
 ## When Done
 Commit all changes:
@@ -652,7 +652,7 @@ The dashboard should have this layout:
 
 6. **System Map** — Module list with status badges, insight refs, design implications. Open questions list.
 
-7. **Action Bar** — (bottom or floating) Prompt generator for /synthesis. Same functionality as current STATUS.html but with better UX.
+7. **Action Bar** — (bottom or floating) Prompt generator for /resolve. Same functionality as current STATUS.html but with better UX.
 
 **Design:**
 - B/W minimal, same as current STATUS.html
@@ -699,7 +699,7 @@ The template needs JS to:
 4. Insight card interactivity (approve/reject toggles)
 5. Conflict card interactivity (radio options, textarea for context)
 6. Search/filter for insights
-7. Prompt generator (collect decisions, format as /synthesis prompt, copy to clipboard)
+7. Prompt generator (collect decisions, format as /resolve prompt, copy to clipboard)
 8. Cross-referencing anchors (auto-assign IDs from data-insight/data-conflict, auto-open details on hash navigation)
 9. Decision counter (track how many decisions made, update badge)
 
@@ -708,7 +708,7 @@ The template needs JS to:
 - No external dependencies except Google Fonts (Inter)
 - Must preserve backward compatibility: STATUS.html#IG-XX links from other outputs must still work
 - Follow existing PD-Spec patterns
-- Do NOT touch /ship, /analyze, /extract, /synthesis, /kickoff, /seed, /reset, /visualize
+- Do NOT touch /ship, /analyze, /extract, /resolve, /kickoff, /seed, /reset, /visualize
 
 ## When Done
 Commit:
@@ -1007,7 +1007,7 @@ Add RESEARCH_BRIEF.md to Sources of Truth table.
 - Only edit .claude/skills/analyze/SKILL.md and create the template
 - The brief is generated automatically, no user approval needed
 - The brief supplements the insight list, it does not replace it
-- Do NOT touch /ship, /synthesis, /extract, /status
+- Do NOT touch /ship, /resolve, /extract, /status
 
 ## When Done
 ```
@@ -1088,7 +1088,7 @@ This is a prompt-based mechanism (the dashboard generates text for the user to p
 - Field notes are treated as sources — they go in 01_Sources/
 - Low friction is key: the template should be as simple as possible
 - Do NOT give field notes special priority over other sources
-- Do NOT touch /ship, /synthesis, /kickoff, /seed, /reset, /visualize
+- Do NOT touch /ship, /resolve, /kickoff, /seed, /reset, /visualize
 
 ## When Done
 ```

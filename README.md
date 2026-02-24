@@ -22,7 +22,7 @@ PD-Spec replaces that workflow with a single rule: **every claim in every delive
 |---|---|
 | Research grounded but not structured | `01_Sources/` + `/extract` + `/analyze` with explicit `[IG-XX]` refs |
 | Scattered AI conversations | `02_Work/MEMORY.md` + session continuity |
-| AI silently resolves contradictions | `CONFLICTS.md` + `/synthesis` with explicit user approval |
+| AI silently resolves contradictions | `CONFLICTS.md` + `/resolve` with explicit user approval |
 | Deliverables without traceability | `03_Outputs/` with clickable `[IG-XX]` links to STATUS dashboard |
 | "Where was that decision made?" | `MEMORY.md` + integrity check at every session start |
 
@@ -68,7 +68,7 @@ Ten Claude Code skills form the pipeline:
 /kickoff              →  Project setup — name, language (en/es), description
 /extract [folder]     →  Read sources, convert non-markdown files, write raw claims to EXTRACTIONS.md
 /analyze              →  Process extractions into insights, detect contradictions, auto-generate STATUS.html
-/synthesis            →  Resolve conflicts, update system map with design implications
+/resolve            →  Resolve conflicts, update system map with design implications
 /ship [type]          →  Generate deliverables (9 output types — see below)
 /audit                →  Quality gate — evaluate Work layer readiness before /ship
 /visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
@@ -76,13 +76,13 @@ Ten Claude Code skills form the pipeline:
 /seed [domain]        →  Generate synthetic sources for testing and onboarding
 ```
 
-The core pipeline is: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/synthesis` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
+The core pipeline is: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/resolve` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
 
 | Skill | Reads | Writes |
 |---|---|---|
 | `/extract` | `01_Sources/*` | `02_Work/EXTRACTIONS.md`, `02_Work/MEMORY.md` |
 | `/analyze` | `02_Work/EXTRACTIONS.md`, `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/RESEARCH_BRIEF.md`, `03_Outputs/STATUS.html`, `02_Work/MEMORY.md` |
-| `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
+| `/resolve` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
 | `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
 | `/audit` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md` | `02_Work/MEMORY.md` (report in conversation) |
 | `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
@@ -141,7 +141,7 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 │   ├── kickoff/SKILL.md          /kickoff — project setup wizard
 │   ├── extract/SKILL.md          /extract — read sources, extract raw claims
 │   ├── analyze/SKILL.md          /analyze — process extractions into insights
-│   ├── synthesis/SKILL.md        /synthesis — resolve conflicts, update system map
+│   ├── resolve/SKILL.md          /resolve — resolve conflicts, update system map
 │   ├── ship/SKILL.md             /ship — generate deliverables (9 output types)
 │   ├── audit/SKILL.md            /audit — quality gate before /ship
 │   ├── visualize/SKILL.md        /visualize — generate Mermaid diagrams
@@ -196,7 +196,7 @@ cd my-project
 # 4. Run the pipeline
 /extract                # Read sources, extract raw claims
 /analyze                # Process into insights, detect contradictions
-/synthesis              # Resolve conflicts, update system map
+/resolve              # Resolve conflicts, update system map
 /audit                  # (Optional) Check readiness before shipping
 /ship                   # Generate PRD
 /ship presentation      # Generate slide deck

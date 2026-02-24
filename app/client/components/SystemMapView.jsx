@@ -18,7 +18,7 @@ export default function SystemMapView({ onNavigate }) {
         <Icon name="sitemap" size={48} className="empty-state-icon" />
         <div className="empty-state-title">No system map yet</div>
         <div className="empty-state-text">
-          Run <code>/synthesis</code> to generate the product system map.
+          Run <code>/resolve</code> to generate the product system map.
         </div>
       </div>
     );

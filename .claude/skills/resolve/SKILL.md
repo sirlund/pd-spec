@@ -1,11 +1,11 @@
 ---
-name: synthesis
+name: resolve
 description: Resolve pending conflicts in 02_Work/CONFLICTS.md, update insight statuses in INSIGHTS_GRAPH.md, and refresh SYSTEM_MAP.md with verified decisions
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 ---
 
-# /synthesis — Conflict Resolution & System Map Update
+# /resolve — Conflict Resolution & System Map Update
 
 ## What this skill does
 
@@ -87,7 +87,7 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 
 11. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
-    ## [YYYY-MM-DDTHH:MM] /synthesis
+    ## [YYYY-MM-DDTHH:MM] /resolve
     - **Request:** [what the user asked]
     - **Actions:** [conflicts resolved, insights updated, system map changes]
     - **Result:** [summary of resolutions and decisions]

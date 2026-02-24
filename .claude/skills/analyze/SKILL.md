@@ -3,7 +3,7 @@ name: analyze
 description: Process raw claims from 02_Work/EXTRACTIONS.md into atomic insights, cross-reference against 02_Work/INSIGHTS_GRAPH.md, and log contradictions to 02_Work/CONFLICTS.md. Requires /extract first. Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write, AskUserQuestion
-argument-hint: "[--full]"
+argument-hint: "[--full | --file <section>...]"
 ---
 
 # /analyze — Insight Extraction & Cross-Referencing
@@ -24,11 +24,16 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### Phase 1: Load Extractions (with Incremental Support)
 
-1. **Check for --full flag** — If user passed `/analyze --full`, force FULL mode (skip incremental logic, process all extractions).
+1. **Check flags:**
+   - `/analyze --full` → FULL mode (skip incremental logic, process all extractions)
+   - `/analyze --file <section> [section2 ...]` → FILE mode (process only the named extraction sections, ignore timestamps). Section names match the `## [filename]` headers in EXTRACTIONS.md. Useful for re-analyzing specific sources after a skill fix without waiting for full reprocess.
+   - `/analyze` (no flags) → INCREMENTAL mode (default — only new/modified sections)
 
 2. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
 3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+
+3b. **FILE mode filter** — If `--file` flag was passed, find the matching `## [section]` headers in EXTRACTIONS.md. If a section name is not found, warn the user and skip it. Build the filtered list from matched sections only. Skip steps 4-6 (incremental/full detection) and jump to step 7. Log: `File mode: processing N specified sections`.
 
 4. **Incremental mode detection:**
    - Read `02_Work/MEMORY.md` to find last `/analyze` execution
@@ -366,7 +371,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
 
 - **Question 2** (header: "Ambiguities", multiSelect: false):
   - Question text: "How to handle M ambiguities detected?" (in output_language)
-  - Option A: "Save for /synthesis" — recommended. Write as PENDING conflicts, resolve later with dashboard.
+  - Option A: "Save for /resolve" — recommended. Write as PENDING conflicts, resolve later with dashboard.
   - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
 
 **Proceed to Phase 4 based on user selections.**
@@ -415,7 +420,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
 23. **Handle ambiguities** — Based on AskUserQuestion response to Question 2:
-    - **"Save for /synthesis":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
+    - **"Save for /resolve":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
     - **"Resolve now":** Present each ambiguity in terminal with its options (A/B/C from step 16). For each, ask user to choose. Write resolved ones to CONFLICTS.md with status RESOLVED + chosen option. Write unresolved ones as PENDING.
 
 24. **Log conflicts** — For each detected contradiction (from step 11 cross-reference):
