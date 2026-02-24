@@ -24,6 +24,7 @@ npm-debug.log*
 .playwright-mcp/
 
 # App build artifacts
+dist/
 app/node_modules/
 app/dist/
 app/package-lock.json
