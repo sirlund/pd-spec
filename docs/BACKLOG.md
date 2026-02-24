@@ -140,7 +140,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-58] Cross-Navigation — Clickable [IG-XX] / [CF-XX] Badges Everywhere
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
 **Priority:** P2
 **Origin:** QA v7, OBS-16. Core value proposition of PD-Spec is traceability. The data chain exists (System Map → Insight → Claims → Source) but is not navigable in the UI.
 
@@ -279,7 +279,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-71] Global Search — Extractions, System Map, Sources
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
 **Priority:** P4
 **Origin:** QA v7, OBS-11. Search only covers insights + conflicts. Extractions, sources, system map not searchable.
 
@@ -321,7 +321,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-74] Binary File Preview — PDF + Office Thumbnails
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23) — PDF only; Office thumbnails deferred.
 **Priority:** P4
 **Origin:** QA v7, OBS-23. PDF/DOCX/PPTX show no preview — only "Open with System App" button.
 
@@ -402,7 +402,7 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 ### [BL-79] Markdown-First Outputs — /ship Generates .md, HTML/DOCX Become Export Formats
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
 **Priority:** P1
 **Origin:** Architecture review (2026-02-23). Evidence: TIMining project exposed JSON+HTML complexity (BL-56 export dependency, template maintenance burden, schema validation overhead).
 
