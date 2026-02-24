@@ -840,7 +840,7 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ### [BL-91] `/analyze` — Deprecate Express Mode + Add `design-framework` Category
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.22.0, 2026-02-24)
 **Priority:** P1
 **Origin:** QA v7, OBS-62. `/analyze` dropped 8 design-framework claims (Touchpoint claims 30-37) because they don't fit any of the 4 categories. Express mode then over-consolidated 85→7 (12:1 ratio). Downstream: `/ship benchmark-ux` bypassed verified KB and fabricated a SKILL.md citation.
 
@@ -868,6 +868,77 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 **User story:**
 > As a researcher who defined design pillars in a workshop, when I extract and analyze the transcript, `/analyze` captures the pillar definitions as `design-framework` insights — so `/synthesis` can propagate them to SYSTEM_MAP and `/ship` uses the verified framework.
+
+---
+
+### [BL-93] Insight Lifecycle — Temporal Freshness, Supersession, and Human Curation
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7 session. Observation: in a multi-touchpoint project (TIMining, 10-week engagement), early insights become less relevant as the project evolves. PD-Spec has no mechanism to detect, signal, or manage this.
+
+**Problem:** Insights are atemporal. An `[IG-SYNTH-01]` verified in Week 1 has the same visual weight as one verified in Week 5. Three types of obsolescence go undetected:
+1. **Decay by irrelevance** — nobody contradicts it, but project decisions no longer depend on it
+2. **Supersession** — a newer, more specific insight replaces it (not contradiction — evolution)
+3. **Human deprioritization** — the researcher knows this insight is valid but not a needle-mover right now
+
+(Type 0, explicit contradiction, is already handled by `/analyze` conflict detection.)
+
+**Solution — 4 layers, incremental:**
+
+**Layer 1: Temporal metadata (mechanical, scripteable)**
+- Calculate `last_evidence_date` per insight (most recent source file date)
+- Calculate `age_in_sessions` (how many extract/analyze cycles since last convergence bump)
+- Auto-flag `⚠️ STALE` when `age_in_sessions > N` without new convergence
+- App shows freshness indicator per insight: 🟢 fresh / 🟡 aging / 🔴 stale
+- 100% mechanical — parser + app feature, no LLM
+
+**Layer 2: Supersession detection (semantic, LLM in /analyze)**
+- During `/analyze` Phase 2, when a new insight is created, scan existing insights for subsumption (not just dedup)
+- "Operators need alerts" superseded by "Operators need alerts with D→A→R and estimated impact time"
+- Mark old insight `SUPERSEDED → [IG-XX new]` (like MERGED but with temporal direction)
+- Old insight kept as historical evidence, new one becomes the active reference
+- Moderate effort — extends existing dedup step in `/analyze`
+
+**Layer 3: Relevance scoring (hybrid, app dashboard)**
+- Composite score: Convergence (existing) × Freshness (layer 1) × Active references (grep of `[IG-XX]` in SYSTEM_MAP + outputs) × Supersession (layer 2)
+- Simple semaphore, not false-precision numbers
+- App shows relevance ranking — stale unreferenced insights at bottom, fresh high-convergence referenced insights at top
+
+**Layer 4: Human curation with cascade protection (app action + script)**
+- User marks insight as `DEPRIORITIZED` via app action (BL-92 style — button click, not skill)
+- Before executing, system calculates cascade impact (100% mechanical — grep `[IG-XX]` across all files):
+  - Depth: Design Principle > Module > Implication > detail
+  - Breadth: count of outputs referencing this insight
+  - Dependents: other insights citing it as convergence source
+- Warning proportional to impact:
+  - LOW (≤2 references): proceed silently
+  - MEDIUM (3-5 references): show orphaned refs, ask to confirm
+  - HIGH (design principle, 5+ refs, or strategic vision element): show full cascade tree, require explicit confirmation
+- System obeys the human decision. PD-Spec is a copilot, not an autonomous car.
+- DEPRIORITIZED is not INVALIDATED — the insight is valid, just not a current needle-mover. It can be re-prioritized later.
+
+**What this does NOT do:**
+- Auto-expire insights (STALE is a visual flag, not a status change)
+- Delete anything (history is valuable — superseded insights show how understanding evolved)
+- Use fake precision ("relevance: 7.3/10") — semaphore only
+
+**Implementation order:**
+1. Layer 1 first (lowest effort, highest immediate value — parser + app)
+2. Layer 4 next (app action button, cascade calculation is mechanical)
+3. Layer 2 (extends /analyze, moderate effort)
+4. Layer 3 (dashboard integration, needs layers 1+2 data)
+
+**Acceptance criteria:**
+- [ ] Insights show freshness indicator in app (layer 1)
+- [ ] `/analyze` detects and marks superseded insights (layer 2)
+- [ ] App shows relevance ranking with sortable view (layer 3)
+- [ ] "Deprioritize" button in app with cascade warning (layer 4)
+- [ ] DEPRIORITIZED status supported in INSIGHTS_GRAPH.md
+- [ ] Cascade calculation covers SYSTEM_MAP + all outputs + dependent insights
+
+**User story:**
+> As a researcher 6 weeks into a project, I can see which insights from Week 1 are still actively driving design decisions and which have been superseded by newer evidence — so I can confidently tell stakeholders "our understanding evolved from X to Y" instead of presenting stale conclusions.
 
 ---
 
