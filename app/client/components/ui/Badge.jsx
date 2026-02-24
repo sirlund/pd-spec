@@ -13,7 +13,7 @@ const STATUS_CLASS = {
 };
 
 export function StatusBadge({ status }) {
-  const cls = STATUS_CLASS[status] || 'badge-subtle';
+  const cls = STATUS_CLASS[status] || STATUS_CLASS[status?.toUpperCase()] || 'badge-subtle';
   return <span className={`badge ${cls}`}>{status}</span>;
 }
 

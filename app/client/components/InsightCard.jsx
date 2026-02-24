@@ -86,10 +86,9 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
         <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
           {(refsExpanded ? insight.refs : insight.refs.slice(0, 3)).map((ref, i) => {
             const filename = ref.split('/').pop();
-            const folder = ref.includes('/') ? ref.split('/')[0] : null;
             return (
-              <span key={i} className="badge badge-subtle" style={{ fontSize: '0.65rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }} title={ref}>
-                {folder && <span style={{ opacity: 0.6 }}>{folder}/</span>}{filename}
+              <span key={i} className="badge badge-subtle" style={{ fontSize: '0.65rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} title={ref} onClick={() => onNavigate?.('sources')}>
+                {filename}
               </span>
             );
           })}
