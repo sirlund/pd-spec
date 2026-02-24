@@ -3,6 +3,12 @@
 > Session log and state tracker. Written by skills after each execution.
 > The agent reads this at session start to resume context and detect manual edits.
 
+## [2026-02-23T14:00] /ship persona
+- **Request:** Regenerar PERSONAS.html con 5ª persona (CFO Carlos Herrera)
+- **Actions:** Leído PERSONAS.html v1.0 (4 personas). JSON v2.0 construido (5 personas, 15621 bytes). CSS/_base.css y _base.js inlineados. Labels de secciones traducidos al español (Objetivos, Frustraciones, Contexto, Comportamientos). Archivo escrito: 03_Outputs/PERSONAS.html v2.0.
+- **Result:** PERSONAS.html v2.0 generado. 5 personas, 20 insight refs únicos, 3 items [GAP] marcados (P-02, P-04, P-05).
+- **Snapshot:** 24 insights (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED) · 4 conflicts PENDING · 6 outputs
+
 ## [2026-02-16T18:45] /extract
 - **Request:** Full extraction of all sources in 01_Sources/
 - **Actions:** Discovered 61 files across 7 folders. 54 files processed (full extraction), 7 files unsupported (video). TWO-PASS BATCHING activated (>40 files). Pass 1: 38 light files in 4 batches. Pass 2: 16 heavy files one-at-a-time. Validated 54 sections written to EXTRACTIONS.md. Fixed 2 SOURCE_MAP entries lost during context compaction.
