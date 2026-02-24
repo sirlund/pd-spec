@@ -4,29 +4,24 @@
 > Re-read immediately after context compaction.
 
 ## Last Skill
-- **Skill:** /ship persona
-- **Completed:** 2026-02-23T14:00
+- **Skill:** /ship prd (Markdown-First)
+- **Completed:** 2026-02-24T00:15
 - **Status:** COMPLETE
 
 ## Quantitative Snapshot
-- **Source files processed:** 57
-- **Claims extracted:** 1347
+- **Source files processed:** 54
+- **Claims extracted:** 1238
 - **Insights:** 24 (20 VERIFIED, 1 PENDING, 1 MERGED, 2 INVALIDATED)
 - **Conflicts:** 4 PENDING (CF-03, CF-05, CF-07, CF-08)
-- **Outputs:** 6 (PRD.html, PERSONAS.html v2.0, PILARES.html, CASOS_DE_USO.html, BENCHMARK.html, STATUS.html)
+- **Outputs:** PRD.md v1.0, PRD.html v2.0 (legacy), PERSONAS.html v2.0, + presentation/benchmark/pilares/casos
 
 ## Changes This Session
-- PERSONAS.html regenerado: v1.0 → v2.0
-  - 5ª persona añadida: P-05 Carlos Herrera (CFO/Gerente de Finanzas)
-  - Labels de secciones traducidos al español
-  - CSS/_base.css y _base.js inlineados (archivo self-contained)
-  - 3 items [GAP] marcados en P-02, P-04, P-05 referenciando IG-02
-
-## Key Insights Referenced in PERSONAS.html
-- IG-SYNTH-01 (Geometry Gap), 03 (delays), 04 (Copiloto), 06 (DAR), 07 (Quiet UI)
-- IG-SYNTH-08 (TIM Agent), 09 (Perfiles), 10 (Suite), 11 (Onboarding), 12 (Adherencia)
-- IG-SYNTH-13 (Stack), 14 (Dependencia), 15 (Efecto Gaviota), 16b (Repricing), 17 (Stickiness)
-- IG-SYNTH-18 (Geotecnia), 19 (4 Lentes), IG-02 (sin Etapa 2)
+- PRD.md v1.0 generated (Markdown-first architecture, BL-79)
+  - 20 VERIFIED insights referenced (100% coverage)
+  - 4 PENDING conflicts documented as risks
+  - IG-02 documented as active constraint
+  - Sections: Resumen, Problema, Propuesta de Valor, Perfiles, 7 Módulos, 7 Principios, Modelo de Negocio, Restricciones, Preguntas Abiertas, Resumen de Insights
+- MEMORY.md compacted: 134 → 39 lines
 
 ## Pending Conflicts (4)
 - CF-03: Confianza UX del CTO vs. realidad de uso — Flagged for stakeholder discussion
@@ -35,19 +30,19 @@
 - CF-08: Sin datos financieros detallados — Needs more research
 
 ## Pending Work
-- **Next:** Entrevistas de usuario (Etapa 2) — 5-7 entrevistas, 30 min, Felipe Zolosa + Joaquín + recomendaciones Philip
-- **After interviews:** /extract nuevas entrevistas → /analyze → /synthesis para resolver CF-07 y mejorar personas
-- **Deliverables pendientes:** Manual UX por pilar (entregable comprometido a cliente)
+- **Next:** Entrevistas de usuario (Etapa 2) — 5-7 entrevistas, 30 min
+- **After interviews:** /extract → /analyze → /synthesis para resolver CF-07
+- **Deliverables pendientes:** Manual UX por pilar
 
 ## Project Context
 - **Client:** TIMining (mining software platform)
-- **Engagement:** Idemax, week 5 of 10-week plan
+- **Engagement:** Idemax
 - **Branch:** project/timining (worktree pds--timining/)
 - **Output language:** es
-- **Presentation:** deployed at https://presentacion-tau-three.vercel.app
+- **Engine:** v4.20.0 (Markdown-first outputs via BL-79)
 - **Key files:**
+  - `03_Outputs/PRD.md` (v1.0 — Markdown-first, primary PRD)
   - `02_Work/INSIGHTS_GRAPH.md` (24 insights, 20 VERIFIED)
-  - `02_Work/CONFLICTS.md` (4 conflicts PENDING: CF-03, CF-05, CF-07, CF-08)
+  - `02_Work/CONFLICTS.md` (4 conflicts PENDING)
   - `02_Work/SYSTEM_MAP.md` (7 módulos, 7 principios)
   - `03_Outputs/PERSONAS.html` (v2.0 — 5 personas)
-  - `03_Outputs/STATUS.html` (dashboard)
