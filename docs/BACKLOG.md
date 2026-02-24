@@ -533,6 +533,56 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 ---
 
+### [BL-84] Nested Subfolders in File Browser — Recursive Tree with Max Depth
+
+**Status:** Proposed
+**Priority:** P3
+**Origin:** Hugo sync (2026-02-23). Observation during TIMining demo: projects with organized source structures (e.g., `sesiones-idemax/round-1/`, `Touchpoint 1/fotos/`) show subfolder paths as flat strings in the file tree instead of a navigable nested tree.
+
+**Problem:** The FileBrowser component groups files by their `folder` string (e.g., `"entrevistas/round-1"`), rendering each unique path as a single collapsible row. There is no visual nesting — `entrevistas/round-1` and `entrevistas/round-2` appear as two independent top-level folders, not as children of `entrevistas`. This breaks the mental model of a file explorer and makes deep folder structures hard to navigate.
+
+**Current behavior:**
+```
+▾ 📁 entrevistas/round-1    (3)
+    file-01.md
+    file-02.md
+▾ 📁 entrevistas/round-2    (2)
+    file-03.md
+▾ 📁 workshop/fotos         (5)
+    whiteboard-1.png
+```
+
+**Expected behavior:**
+```
+▾ 📁 entrevistas            (5)
+  ▾ 📁 round-1              (3)
+      file-01.md
+      file-02.md
+  ▸ 📁 round-2              (2)
+▾ 📁 workshop               (5)
+  ▸ 📁 fotos                (5)
+```
+
+**Solution:**
+1. **Frontend (FileBrowser.jsx):** Build a recursive tree structure from the flat `folder` strings. Split each `folder` by `/` and construct nested nodes. Render with indentation per level.
+2. **Max depth:** Define a configurable max nesting depth (recommended: 3 levels). Folders beyond max depth collapse into a flat string for the remaining segments.
+3. **Aggregated counts:** Parent folders show total file count across all descendants.
+4. **Collapse state:** Each tree node independently collapsible. Root folders expanded by default, deeper levels collapsed.
+5. **No API changes needed:** The `scanDir` functions already return full relative paths. Tree building is purely a frontend concern.
+
+**Acceptance criteria:**
+- [ ] Subfolders render as nested, indented tree nodes (not flat strings)
+- [ ] Max depth defined (default: 3 levels)
+- [ ] Parent folders show aggregated file count
+- [ ] Each folder node independently collapsible
+- [ ] Works for Sources, Work, and Outputs views
+- [ ] No API changes required
+
+**User story:**
+> As a researcher browsing a project with organized source folders (by milestone, by category), I can navigate nested subfolders visually, just like a desktop file explorer, instead of seeing flattened path strings.
+
+---
+
 ### [BL-79] Markdown-First Outputs — /ship Generates .md, HTML/DOCX Become Export Formats
 
 **Status:** IMPLEMENTED (v4.20.0, 2026-02-23)
