@@ -21,7 +21,7 @@ export default function SearchBar({ value, onChange, onNavigate }) {
     if (!query || query.length < 2) { setResults(null); return; }
 
     // Direct ID navigation
-    const idMatch = query.match(/\b(IG-[A-Z0-9-]+|CF-\d+)\b/gi);
+    const idMatch = query.match(/\b(IG-[A-Za-z0-9-]+|CF-\d+)\b/gi);
     if (idMatch) {
       setResults({
         insights: idMatch.filter(m => m.toUpperCase().startsWith('IG')).map(m => ({

@@ -18,7 +18,7 @@ const renderer = new marked.Renderer();
 function processPdSpecTokens(text) {
   // Bracket-format multi-refs: [IG-01, CF-02, IG-03] → individual badges
   text = text.replace(
-    /\[(((?:IG-[A-Z0-9-]+|CF-\d+)(?:\s*,\s*(?:IG-[A-Z0-9-]+|CF-\d+))+))\]/g,
+    /\[(((?:IG-[A-Za-z0-9-]+|CF-\d+)(?:\s*,\s*(?:IG-[A-Za-z0-9-]+|CF-\d+))+))\]/g,
     (_, inner) => inner.split(/\s*,\s*/).map(ref => {
       const cls = ref.startsWith('IG') ? 'badge-insight' : 'badge-conflict';
       return `<span class="badge ${cls}" data-ref="${ref}" role="link" tabindex="0">${ref}</span>`;
@@ -27,7 +27,7 @@ function processPdSpecTokens(text) {
 
   // [IG-XX] → blue badge
   text = text.replace(
-    /\[(IG-[A-Z0-9-]+)\]/g,
+    /\[(IG-[A-Za-z0-9-]+)\]/g,
     '<span class="badge badge-insight" data-ref="$1" role="link" tabindex="0">$1</span>'
   );
 

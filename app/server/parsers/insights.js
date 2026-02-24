@@ -6,7 +6,7 @@
  * followed by Narrative blockquote, Evidence trail, and Ref line.
  */
 
-const INSIGHT_ID = /^### \[(IG-[A-Z0-9-]+)\]\s*(.*)/;
+const INSIGHT_ID = /^### \[(IG-[A-Za-z0-9-]+)\]\s*(.*)/;
 
 function parseInsightHeader(line) {
   const m = line.match(INSIGHT_ID);

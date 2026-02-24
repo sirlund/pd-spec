@@ -62,7 +62,7 @@ export function parseConflicts(content) {
 
       const related = line.match(/^Related insights:\s*(.+)/);
       if (related) {
-        current.related_insights = related[1].match(/\[IG-[A-Z0-9-]+\]/g) || [];
+        current.related_insights = related[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || [];
         current.related_insights = current.related_insights.map(r => r.replace(/[\[\]]/g, ''));
         continue;
       }

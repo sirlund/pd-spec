@@ -148,11 +148,11 @@ export default function SystemMapView({ onNavigate }) {
 
 // Render text with inline [IG-XX] / [CF-XX] as clickable badges
 function RichText({ text, onNavigate }) {
-  const parts = text.split(/(\[(?:IG-[A-Z0-9-]+|CF-\d+)\])/g);
+  const parts = text.split(/(\[(?:IG-[A-Za-z0-9-]+|CF-\d+)\])/g);
   return (
     <span>
       {parts.map((part, i) => {
-        const match = part.match(/^\[(IG-[A-Z0-9-]+|CF-\d+)\]$/);
+        const match = part.match(/^\[(IG-[A-Za-z0-9-]+|CF-\d+)\]$/);
         if (match) {
           return <IdBadge key={i} id={match[1]} onClick={() => onNavigate?.(match[1])} />;
         }
