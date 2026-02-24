@@ -12,6 +12,7 @@ const FORMAT_ICONS = {
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'heic', 'gif', 'webp', 'svg']);
 const MD_EXTS = new Set(['md', 'txt', 'csv']);
+const PDF_EXTS = new Set(['pdf']);
 const OPENABLE_EXTS = new Set(['html']);
 
 // Map root prop to API path prefix
@@ -21,7 +22,7 @@ const ROOT_PREFIX = {
   '03_Outputs': '',
 };
 
-export default function FileBrowser({ root, title }) {
+export default function FileBrowser({ root, title, onNavigate }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [collapsedFolders, setCollapsedFolders] = useState({});
   const [preview, setPreview] = useState(null);
@@ -94,6 +95,8 @@ export default function FileBrowser({ root, title }) {
         setPreview({ type: 'markdown', data });
       } else if (IMAGE_EXTS.has(ext)) {
         setPreview({ type: 'image', path: `/api/raw/${path}` });
+      } else if (PDF_EXTS.has(ext)) {
+        setPreview({ type: 'pdf', path: `/api/raw/${path}` });
       } else if (OPENABLE_EXTS.has(ext)) {
         if (isOutputs) {
           const url = '/' + file.path.replace('03_Outputs/', 'outputs/');
@@ -270,7 +273,13 @@ export default function FileBrowser({ root, title }) {
               </div>
 
               {preview.type === 'markdown' && preview.data?.html && (
-                <div className="md-content" dangerouslySetInnerHTML={{ __html: preview.data.html }} />
+                <div className="md-content" onClick={(e) => {
+                  const badge = e.target.closest('[data-ref]');
+                  if (badge) {
+                    const ref = badge.getAttribute('data-ref');
+                    if (ref && onNavigate) onNavigate(ref);
+                  }
+                }} dangerouslySetInnerHTML={{ __html: preview.data.html }} />
               )}
 
               {preview.type === 'markdown' && !preview.data?.html && preview.data?.raw && (
@@ -281,6 +290,10 @@ export default function FileBrowser({ root, title }) {
 
               {preview.type === 'image' && (
                 <img src={preview.path} alt="" className="file-preview-image" />
+              )}
+
+              {preview.type === 'pdf' && (
+                <iframe src={preview.path} style={{ width: '100%', flex: 1, border: 'none', borderRadius: 'var(--radius)' }} />
               )}
 
               {preview.type === 'external' && (

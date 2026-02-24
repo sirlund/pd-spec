@@ -123,11 +123,11 @@ export default function App() {
           />
         );
       case 'sources':
-        return <FileBrowser key="sources" root="01_Sources" title="Sources" />;
+        return <FileBrowser key="sources" root="01_Sources" title="Sources" onNavigate={navigateTo} />;
       case 'work':
-        return <FileBrowser key="work" root="02_Work" title="Work" />;
+        return <FileBrowser key="work" root="02_Work" title="Work" onNavigate={navigateTo} />;
       case 'outputs':
-        return <FileBrowser key="outputs" root="03_Outputs" title="Outputs" />;
+        return <FileBrowser key="outputs" root="03_Outputs" title="Outputs" onNavigate={navigateTo} />;
       default:
         return null;
     }
