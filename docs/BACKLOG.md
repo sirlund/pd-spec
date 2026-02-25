@@ -35,45 +35,6 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
-### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
-
-**Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
-
-**Solution:** Embed an LLM API in the Live Research App backend. Actions in the UI (approve, reject, challenge, ask) trigger server-side LLM calls that modify Work layer files directly.
-
-**Architecture:**
-1. BYOK model: user provides their own API key (Claude, Gemini, GPT) via settings UI
-2. `/api/llm/action` endpoint: receives action type + context, calls LLM, writes to Work files
-3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
-4. Alternatively: platform-provided tokens with usage billing
-
-**Scope:**
-- Phase 1: Text input → LLM response (Q&A about project state)
-- Phase 2: Structured actions (approve insight, resolve conflict, add field note)
-- Phase 3: Skill execution from UI (run /extract, /analyze from browser)
-
-**Evidence:**
-- Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
-- Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
-- Hugo: *"Le metería un LLM, eso sí"*
-- Hugo offered to create API key and contribute credits for testing
-
-**Acceptance criteria:**
-- [ ] Settings UI for API key input (BYOK)
-- [ ] At least one provider working (Claude API recommended)
-- [ ] Q&A mode: user asks question about project → LLM answers using Work layer context
-- [ ] Action mode: approve/reject insight from UI → INSIGHTS_GRAPH.md updated
-- [ ] WebSocket broadcasts changes after LLM action
-
-**User story:**
-> As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
-
----
-
 ### [BL-67] Consistent Insight ID Convention in /analyze
 
 **Status:** Proposed
@@ -971,6 +932,45 @@ Before any destructive operation (`--full` re-extract, source deletion), system 
 
 **User story:**
 > As a researcher 8 weeks into a project, when I try to re-extract everything from scratch, the system shows me "this will affect 23 VERIFIED insights" and suggests running `/extract --file` on just the new sources instead — so I don't accidentally destroy weeks of verified knowledge.
+
+---
+
+### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
+
+**Status:** PARKED — Blocked until BL-92 (script-first skill decomposition) clarifies which skills are scriptable vs LLM-dependent. No point integrating LLM in the app before that cleanup.
+**Priority:** P1
+**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
+
+**Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
+
+**Solution:** Embed an LLM API in the Live Research App backend. Actions in the UI (approve, reject, challenge, ask) trigger server-side LLM calls that modify Work layer files directly.
+
+**Architecture:**
+1. BYOK model: user provides their own API key (Claude, Gemini, GPT) via settings UI
+2. `/api/llm/action` endpoint: receives action type + context, calls LLM, writes to Work files
+3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
+4. Alternatively: platform-provided tokens with usage billing
+
+**Scope:**
+- Phase 1: Text input → LLM response (Q&A about project state)
+- Phase 2: Structured actions (approve insight, resolve conflict, add field note)
+- Phase 3: Skill execution from UI (run /extract, /analyze from browser)
+
+**Evidence:**
+- Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
+- Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
+- Hugo: *"Le metería un LLM, eso sí"*
+- Hugo offered to create API key and contribute credits for testing
+
+**Acceptance criteria:**
+- [ ] Settings UI for API key input (BYOK)
+- [ ] At least one provider working (Claude API recommended)
+- [ ] Q&A mode: user asks question about project → LLM answers using Work layer context
+- [ ] Action mode: approve/reject insight from UI → INSIGHTS_GRAPH.md updated
+- [ ] WebSocket broadcasts changes after LLM action
+
+**User story:**
+> As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
 
 ---
 
