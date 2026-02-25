@@ -1,8 +1,11 @@
 # Research Brief
-> Auto-generado por /analyze el 2026-02-16
-> Basado en 21 insights sintetizados de 54 fuentes (1238 claims)
+> Actualizado por /analyze --file el 2026-02-25
+> Basado en 44 insights de 59 fuentes (1406 claims) — incluye análisis completo Touchpoint 1 (transcript + field notes + PDF deck)
+> 5 insights PENDING de revisión: IG-18 (4 dominios operativos), IG-19 (Time Scrubbing), IG-20 (CFO usuario invisible), IG-21 (manos libres en terreno), IG-22 (plan compliance vs. optimization)
 
 ## Lo que está roto
+
+**El Jefe de Turno en terreno no puede interactuar con el sistema.** Manos en volante, radio saturada con 3 solicitudes simultáneas, normativa Sernageomin en PDF en la oficina a 20 minutos de distancia. El software actual requiere pantalla y teclado — el usuario en berma no puede consultar, priorizar ni responder en paralelo [IG-21]. "No necesita un manual — necesita una respuesta directa, manos libres."
 
 **Los usuarios abandonan la herramienta porque no la entienden.** Los tiempos de actualización de datos son confusos — GPS en tiempo casi real, mapas de calor con 3 horas de desfase, indicadores cada 30 minutos, topografía cada 15 minutos — y nadie les explica por qué ven datos "viejos" [IG-SYNTH-03]. Se perdió un cliente porque las métricas de extracción estaban a 24 horas cuando los mineros evalúan por turno. El resultado es claro: "llegamos, capacitamos, se entusiasman, pero luego no le entienden, adiós."
 
@@ -32,7 +35,15 @@
 
 **El patrón Detección→Análisis→Recomendación está validado.** Las 20 láminas del workshop siguen una estructura idéntica confirmada por los propios usuarios [IG-SYNTH-06]. Este patrón es el esqueleto natural de CORE.
 
+**Las decisiones operacionales viven en WhatsApp, no en TIMining.** Carlo (CTO) reveló en el Touchpoint que "impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp" — TIMining pierde el 90% de la información si no integra ese canal [IG-03]. La brecha no es de UI sino de canal: el operador ya tomó la decisión y se fue, sin que el sistema la registrara.
+
+**Los operadores pueden resistir la herramienta.** Carlo también reveló que cuando planificación usa TIMining para auditar a operadores, estos resisten activamente [IG-04]. Si el modelo bottom-up requiere que el operador perciba el tool como ayuda propia (no herramienta de control), CORE necesita diseñarse con esta tensión en mente [CF-13].
+
 ## Tensiones clave
+
+**"Paz mental" como nombre** [CF-12] — Philip (CEO) cuestionó el nombre en el primer Touchpoint formal: "puede ser correcto pero es muy abstracto — prefiero algo relacionado con tiempo/eficiencia." El concepto es válido, el framing es debatible. Resolver en Etapa 2 con usuarios reales.
+
+**Operadores como auditados vs. como usuarios** [CF-13] — El modelo de adopción bottom-up (IG-SYNTH-17) asume que los operadores adoptan voluntariamente. La realidad revelada por Carlo (CTO) muestra resistencia cuando la herramienta se percibe como control. Resolver con entrevistas de Etapa 2.
 
 **Customización vs escalabilidad** [CF-05] — No hay definición formal de dónde termina la "configuración" (cambiar umbrales) y empieza la "customización" (desarrollar features nuevos). El mismo COO usa el término para ambas cosas. Mientras no se resuelva, el riesgo del "Auto de Homero Simpson" persiste.
 
@@ -46,7 +57,7 @@
 
 ## Brechas de evidencia
 
-1. **Sin voz directa del usuario final** [CF-07] — Todo lo que sabemos sobre usuarios viene de stakeholders internos. Las necesidades de mineros, despachadores y jefes de turno son inferidas, no observadas. **Prioridad: crítica.**
+1. **Sin voz directa del usuario final** [CF-07] — Todo lo que sabemos sobre usuarios viene de stakeholders internos. Las necesidades de mineros, despachadores y jefes de turno son inferidas, no observadas. **Prioridad: crítica. Philip tiene contactos directos y puede facilitar acceso — siguiente paso acordado en Touchpoint.**
 
 2. **Sin datos financieros detallados** [CF-08] — Las decisiones de pricing y modelo de negocio se basan en cifras anecdóticas, no en unit economics. **Prioridad: alta.**
 

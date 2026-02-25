@@ -80,7 +80,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-03] Confusión Temporal — Los tiempos del dato generan abandono
 **Consolidates:** 4 claims atómicos
-**Convergence:** 4/54 sources
+**Convergence:** 5/57 sources
 **Category:** user-need (current)
 **Voice:** user (operadores vía stakeholders), stakeholder (operaciones)
 **Authority:** direct-quote, fact
@@ -100,7 +100,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-07] Gestión por Excepción — Solo mostrar lo que importa
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 8/54 sources
+**Convergence:** 11/57 sources
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CEO, operaciones), user (workshop)
 **Authority:** direct-quote, observation
@@ -115,13 +115,13 @@ Status: VERIFIED
 - Design Brief: "Glanceable Intelligence — alertas críticas legibles en menos de 5 segundos"
 
 **Named concept origin:** "Gestión por Excepción" / "Quiet UI" / "Glanceable Intelligence" — workshop, design brief
-Ref: Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx
+Ref: Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, TIMINING_Workshop 01 _ 28 Enero 26.pptx, Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
 
 ---
 
 ### [IG-SYNTH-09] Perfiles de usuario diferenciados con necesidades distintas
 **Consolidates:** 12+ claims atómicos
-**Convergence:** 12/54 sources
+**Convergence:** 13/57 sources
 **Category:** user-need (current)
 **Voice:** user (workshop), stakeholder (COO, PM)
 **Authority:** direct-quote, observation
@@ -141,7 +141,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-11] Curva de aprendizaje y barrera de adopción
 **Consolidates:** 6+ claims atómicos
-**Convergence:** 6/54 sources
+**Convergence:** 8/57 sources
 **Category:** user-need (current)
 **Voice:** stakeholder (PM Orchestra, operaciones), user (indirecto)
 **Authority:** direct-quote, observation
@@ -155,7 +155,7 @@ Status: VERIFIED
 - Operaciones: "Barrera de entrada: el tiempo — trabajan en mina, constantemente reagendan"
 - Retro STOP: "Capacitaciones muy largas", START: "CAPACITACIÓN IN-APP CONTEXTUAL"
 
-Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Sello de Experiencia TIMINING.pptx
+Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Sello de Experiencia TIMINING.pptx, Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
 
 ---
 
@@ -205,7 +205,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Workshop 1/works
 
 ### [IG-SYNTH-06] Patrón Detección → Análisis → Recomendación
 **Consolidates:** 25+ claims atómicos (20 láminas de workshop + documentación)
-**Convergence:** 25/54 sources
+**Convergence:** 26/57 sources
 **Category:** user-need (aspirational)
 **Voice:** user (operadores en workshop), stakeholder (equipo TIMining)
 **Authority:** direct-quote, observation
@@ -266,9 +266,9 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experienci
 
 ### [IG-SYNTH-16] Paz Mental como propuesta de valor experiencial
 **Consolidates:** 5 claims atómicos (incluye IG-01 "iPhone-like")
-**Convergence:** 5/54 sources
+**Convergence:** 8/57 sources
 **Category:** user-need (aspirational)
-**Voice:** stakeholder (CEO, workshop), document (Sello)
+**Voice:** stakeholder (CEO, workshop, Touchpoint), document (Sello)
 **Authority:** direct-quote, observation
 Status: VERIFIED
 
@@ -281,7 +281,7 @@ Status: VERIFIED
 - Design Brief: "'Diseñamos para dar paz mental en entornos críticos'"
 
 **Named concept origin:** "Paz Mental" — workshop analysis, Sello de Experiencia
-Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Sello de Experiencia TIMINING.pptx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx
+Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Sello de Experiencia TIMINING.pptx, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
 
 ---
 
@@ -310,7 +310,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-10] De herramientas fragmentadas a plataforma CORE
 **Consolidates:** 9+ claims atómicos
-**Convergence:** 9/54 sources
+**Convergence:** 10/57 sources
 **Category:** business (aspirational)
 **Voice:** stakeholder (CEO, CTO), document (strategic narratives, design brief)
 **Authority:** vision, fact
@@ -331,7 +331,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 
 ### [IG-SYNTH-14] Dependencia de venta consultiva
 **Consolidates:** 3 claims atómicos
-**Convergence:** 3/54 sources
+**Convergence:** 4/57 sources
 **Category:** business (current)
 **Voice:** stakeholder (operaciones)
 **Authority:** fact
@@ -350,9 +350,9 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-16b] Oportunidad de repricing: precio vs valor
 **Consolidates:** 6 claims atómicos
-**Convergence:** 6/54 sources
+**Convergence:** 8/57 sources
 **Category:** business (aspirational)
-**Voice:** stakeholder (CEO, CTO, workshop)
+**Voice:** stakeholder (CEO, CTO, workshop, Touchpoint)
 **Authority:** fact, observation
 Status: VERIFIED
 
@@ -370,7 +370,7 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Antecedentes/31_12_
 
 ### [IG-SYNTH-17] Adopción bottom-up: "operational pull"
 **Consolidates:** 5 claims atómicos
-**Convergence:** 5/54 sources
+**Convergence:** 6/57 sources
 **Category:** business (current)
 **Voice:** stakeholder (CEO), document (strategic narrative)
 **Authority:** fact, observation
@@ -495,15 +495,403 @@ Trigger: Workshop 01
 **Voice:** researcher
 **Authority:** observation
 **Source confidence:** high
-**Convergence:** 1/1 sources
-Status: PENDING
+**Convergence:** 2/59 sources
+Status: VERIFIED
 
 > "Estamos entrando a Etapa 3 del plan Idemax (Lineamientos de diseño) sin haber completado las 6 entrevistas con usuarios clave de Etapa 2. Todas las perspectivas de usuario son indirectas (stakeholders internos). Riesgo de repetir el patrón 'Auto de Homero Simpson' (IG-SYNTH-02) a nivel de estrategia UX."
 
-Ref: field-note (Propuesta ruta/_FIELD_NOTES.md)
+**Evidence trail:**
+- field-note (Propuesta ruta/_FIELD_NOTES.md): observación del researcher sobre el gap de Etapa 2
+- Deck Touchpoint p33: "Etapa 2 PARCIAL con GAP (falta entrevistas usuarios finales)" — el deck mismo identifica el riesgo de avanzar en wireframes sin cerrar el gap
+
+Ref: field-note (Propuesta ruta/_FIELD_NOTES.md), Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
 Trigger: Revisión de avance plan de ruta Idemax
 Related: [CF-07], [IG-SYNTH-02]
 
 ---
 
 <!-- Updated by /status Add Context on 2026-02-16 -->
+
+---
+
+## Touchpoint IDEMAX × TIMining (2026-02-19) — Nuevos hallazgos primarios
+
+### [IG-03] WhatsApp como canal principal de decisiones operacionales
+**Category:** technical (current)
+**Voice:** stakeholder (CTO Carlo — primario)
+**Authority:** direct-quote
+**Convergence:** 2/57 sources
+Status: VERIFIED
+
+> "[Carlo] 'impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp' — TIMining pierde el 90% de la información si no integra ese canal. Visión: agnósticos al canal, si una mina usa full WhatsApp, se mete ahí; si usa Discord, también."
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Carlo (CTO) — direct-quote sobre WhatsApp como canal operacional
+- reunion_camila 2026-02-17: "decisiones se toman fuera del software — comunicaciones por radio no quedan registradas en sistema — pérdida de conocimiento entre jefes de turno" [INTERNAL]
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md, sesiones-idemax/reunion_camila_2026-02-17.md
+Related: [IG-SYNTH-04], [IG-SYNTH-19], [CF-12]
+
+---
+
+### [IG-04] Resistencia de operadores cuando son auditados
+**Category:** user-need (current)
+**Voice:** stakeholder (CTO Carlo — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Carlo] 'planificación usa TIMining para auditar a operadores — operadores resisten la herramienta — si no logramos vender al operador, estamos acá afuera'"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Carlo (CTO) — direct-quote sobre dinámica de adopción y resistencia
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-17], [CF-13]
+
+---
+
+### [IG-05] "Mi cliente no es tecnología — mi cliente es el Excel"
+**Category:** business (current)
+**Voice:** stakeholder (CEO Philip — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Philip] 'Mi cliente no es tecnología — mi cliente es el Excel' — la venta debe centrarse en outcomes y procesos familiares, no en capacidades técnicas"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip (CEO) — direct-quote sobre posicionamiento vs. Excel
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-10], [IG-SYNTH-16b]
+
+---
+
+### [IG-06] Desconexión mina-planta — Tercer gap operacional
+**Category:** user-need (current)
+**Voice:** stakeholder (Niklas/IDEMAX — presentado y no contradecido por Philip/Carlo)
+**Authority:** observation
+**Convergence:** 2/59 sources
+Status: VERIFIED
+
+> "[Niklas] 'Tercer gap: desconexión mina-planta — información de distintas fuentes — reporting sin valor real — operación y finanzas no se hablan como TIMining podría articular'"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: identificado en presentación de IDEMAX — Philip/Carlo no lo contradijeron
+- Deck p29-30 (Caso 8): CFO como caso de uso central de la desconexión; "4 KPIs traducidos a dinero" — valida el gap operaciones/finanzas como un caso de uso concreto
+- Deck p24-25 (Caso 6): Gerente de Mina con "respuesta repartida en 4 sistemas" — manifestación directa de la desconexión
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md, Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-SYNTH-01], [IG-SYNTH-09], [IG-20]
+
+---
+
+### [IG-07] Urgente ≠ Importante — Principio de priorización
+**Category:** user-need (current)
+**Voice:** researcher (interno IDEMAX)
+**Authority:** observation
+**Convergence:** 2/57 sources
+Status: INVALIDATED
+Reason: Rejected during review.
+
+> "Urgente vs. importante: Pedro arregla el camino (output previsible) vs. Juan manda camiones por otro camino y mitiga 30% más (impacto al plan). El software debe priorizar lo importante de cara al plan, no solo lo urgente visible."
+
+**Evidence trail:**
+- reunion_camila 2026-02-17: "urgente vs. importante como capacidad clave" [INTERNAL]
+- session-align 2026-02-18: "a veces el urgente no es lo importante — el jefe de turno debe poder distinguirlos desde la plataforma" [INTERNAL]
+
+Nota: Fuentes internas únicamente — requiere validación con usuarios finales para alcanzar VERIFIED.
+
+Ref: sesiones-idemax/reunion_camila_2026-02-17.md, sesiones-idemax/session-align-con-camila(wed18feb).md
+Related: [IG-SYNTH-07], [CF-07]
+
+---
+
+### [IG-08] 60 reglas de negocio propietarias como moat técnico
+**Category:** technical (current)
+**Voice:** stakeholder (CTO Carlo — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Carlo] '60 reglas de negocio de ifs: dispatching, cambio de turno, secuencias de salida — lógica operacional propietaria que ya existe en TIMining' — hacen que la AI no alucine y convierten AI genérica en recomendador confiable"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Carlo (CTO) — direct-quote sobre reglas propietarias como diferenciador
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-01], [IG-SYNTH-05]
+
+---
+
+### [IG-09] Sistema aprende de decisiones expertas
+**Category:** technical (aspirational)
+**Voice:** researcher (interno IDEMAX)
+**Authority:** hypothesis
+**Convergence:** 2/57 sources
+Status: VERIFIED
+
+> "Jefe de turno rechaza opciones A, B, C y elige D → sistema aprende → eventualmente sugiere D como primera opción → democratización del conocimiento experto operacional"
+
+**Evidence trail:**
+- reunion_camila 2026-02-17: descrito como capacidad futura del sistema [INTERNAL]
+- session-align 2026-02-18: confirmado como parte de NorthStar [INTERNAL]
+
+Nota: Fuentes internas únicamente — concepto también referenciado en docs AI-generados. Requiere validación primaria.
+
+Ref: sesiones-idemax/reunion_camila_2026-02-17.md, sesiones-idemax/session-align-con-camila(wed18feb).md
+Related: [IG-SYNTH-04], [IG-SYNTH-08]
+
+---
+
+## Touchpoint IDEMAX × TIMining (2026-02-19) — Análisis adicional (2026-02-24, --file mode)
+
+### [IG-10] Quiet UI requiere sistema + interfaz: ambas capas son necesarias
+**Category:** design-framework (current)
+**Voice:** stakeholder (CEO Philip, CTO Carlo — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Philip/Carlo] '¿por qué el problema de saturación de alertas lo resolvería la UI? — ese problema no lo resuelve la UI, lo resuelve el sistema' — respuesta: ambos son necesarios, se complementan"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip y Carlo cuestionan que Quiet UI sea solo una cuestión de UI — la resolución de la sesión fue que sistema + interfaz son capas complementarias, no alternativas
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-07], SYSTEM_MAP Principio #2 "Quiet UI"
+
+---
+
+### [IG-11] "¿De qué manera vendo algo de $450K?" — Valor medible por decisión como tesis de pricing
+**Category:** business (current)
+**Voice:** stakeholder (CEO Philip — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Philip] '¿de qué manera vendo algo de $450K?' — necesita demostrar valor concreto medible por decisión tomada"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip articula la pregunta central del GTM — el precio requiere demostrar valor por decisión, no por features
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [CF-08], [IG-09], [IG-SYNTH-12]
+
+---
+
+### [IG-12] Entrevistas Etapa 2: no contaminar concepto "paz mental"
+**Category:** constraint
+**Voice:** stakeholder (CEO Philip — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: INVALIDATED
+Reason: Rejected during review.
+
+> "[Philip] 'No podemos hacer inception de paz mental en entrevista — necesitamos que el usuario lo diga por sí mismo, no contaminarle el concepto'"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip establece constraint metodológico explícito para las entrevistas de validación de Etapa 2
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [CF-07], [CF-12]
+
+---
+
+### [IG-13] Custom features desarrolladas históricamente sin pricing diferencial
+**Category:** business (current)
+**Voice:** stakeholder (CEO Philip — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Philip] Clientes piden cambios custom (ej. cambiar color de camiones) — TIMining los desarrolla sin cobrar extra — nunca formalizaron pricing diferencial para desarrollo a medida"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip reconoce el problema histórico de custom sin pricing diferencial
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [CF-05], [CF-08]
+
+---
+
+### [IG-14] "Movimiento en Brasil" — Presión competitiva emergente
+**Category:** business (current)
+**Voice:** stakeholder (CTO Carlo — primario)
+**Authority:** observation
+**Convergence:** 1/57 sources
+Status: INVALIDATED
+Reason: Rejected during review.
+
+> "[Carlo] 'Movimiento en Brasil' amenazando posición de mercado de TIMining — señal de presión competitiva activa"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Carlo menciona actividad competitiva en Brasil como amenaza al posicionamiento actual
+
+Nota: Fuente única, contexto mínimo — fragile. Requiere seguimiento para determinar naturaleza y magnitud de la amenaza.
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-05]
+
+---
+
+### [IG-15] GPS degradadas — Problema de calidad de datos reconocido por TIMining
+**Category:** technical (current)
+**Voice:** stakeholder (CEO Philip — primario)
+**Authority:** direct-quote
+**Convergence:** 1/57 sources
+Status: VERIFIED
+
+> "[Philip] 'Saben que tienen problemas de datos — están decandadas las GPS' — dato calidad como problema reconocido internamente"
+
+**Evidence trail:**
+- Touchpoint 2026-02-19: Philip reconoce explícitamente que el equipo sabe que tiene problemas de calidad en los datos GPS
+
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Related: [IG-SYNTH-01], [IG-08]
+
+---
+
+## Touchpoint 1 — Field Notes (2026-02-24, --file mode)
+
+### [IG-16] Los 4 pilares forman un sistema encadenado
+**Category:** design-framework (current)
+**Voice:** researcher (Nico Lundin — IDEMAX observer)
+**Authority:** observation
+**Convergence:** 2/59 sources
+Status: VERIFIED
+
+> "Los 4 pilares forman un sistema encadenado: Quiet UI filtra → Clear Path guía → Time Sight anticipa → Omni Sense distribuye — el output de uno es input del siguiente"
+
+**Evidence trail:**
+- Touchpoint 1/_FIELD_NOTES.md: Nico Lundin documenta la relación inter-pilar como sistema encadenado, no como pilares independientes [INTERNAL]
+- Deck p06: "'Los pilares no operan aislados — forman un sistema sensorial. Cada pilar alimenta al siguiente.' — tabla formal: QUI=Oído, CP=Vista, TS=Profundidad, OS=Tacto" — fuente primaria (deck presentado a Philip/Carlo)
+
+Nota: ~~Fuente interna únicamente~~ — corroborado por fuente primaria (deck Touchpoint p06).
+
+Ref: Touchpoint 1/_FIELD_NOTES.md, Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-10], [IG-17], [IG-SYNTH-06], [IG-SYNTH-07], [IG-SYNTH-19]
+
+---
+
+### [IG-17] Pilares de diseño: "cómo se presenta" vs. "qué se presenta"
+**Category:** design-framework (current)
+**Voice:** researcher (Nico Lundin — IDEMAX observer)
+**Authority:** observation
+**Convergence:** 2/59 sources
+Status: VERIFIED
+
+> "Quiet UI y Omni Sense son capas de 'cómo se presenta'; Clear Path y Time Sight son capas de 'qué se presenta'"
+
+**Evidence trail:**
+- Touchpoint 1/_FIELD_NOTES.md: Nico Lundin documenta la distinción estructural entre pilares de presentación y pilares de contenido [INTERNAL]
+- Deck p05-06: preguntas por pilar confirman la distinción — QUI "¿Necesito prestar atención?" (cómo) / OS "¿Dónde y cómo me llega?" (cómo) vs. CP "¿Qué debo hacer?" (qué) / TS "¿Por qué pasó y qué viene?" (qué) — fuente primaria
+
+Nota: ~~Fuente interna únicamente~~ — corroborado por deck Touchpoint p05-06 (fuente primaria).
+
+Ref: Touchpoint 1/_FIELD_NOTES.md, Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-16], [IG-SYNTH-07], [IG-SYNTH-19]
+
+---
+
+<!-- Updated by /analyze --file on 2026-02-24 -->
+
+---
+
+## Touchpoint 1 — PDF Presentación IDEMAX (2026-02-25, --file mode)
+
+### [IG-18] Arquitectura de 4 Dominios Operativos — Clasificación formal de los casos de uso
+**Category:** design-framework (current)
+**Voice:** document (deck presentado a Philip/Carlo — primario)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: VERIFIED
+
+> "4 dominios operativos: A=Respuesta a Crisis (6 escenarios), B=Anticipación Operativa (4 escenarios), C=Asistencia Inteligente (5 escenarios), D=Alineación Estratégica (3 casos + 2 síntesis). Mapping pilar→dominio: Quiet UI lidera Dominio A, Time Sight lidera Dominio B, Omni Sense lidera Dominio C, multi-pilar lidera Dominio D."
+
+**Evidence trail:**
+- Deck p13: tabla de 4 dominios con mapping pilar→dominio — presentado en Touchpoint sin objeción de Philip ni Carlo
+
+**Grounded in:** [IG-SYNTH-06] (D→A→R como patrón transversal), [IG-16] (4 pilares sistema encadenado)
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-SYNTH-06], [IG-SYNTH-09], [IG-16]
+
+---
+
+### [IG-19] "Time Scrubbing" — Rebobinar hasta el momento exacto del desvío
+**Category:** design-framework (aspirational)
+**Voice:** document (deck presentado a Philip/Carlo — primario)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: VERIFIED
+
+> "Time Scrubbing: rebobinar hasta el momento exacto del primer desvío. Cadena causal: antena descalibrada → posicionamiento incorrecto autónomos → alimentación errática a planta → recuperación baja. Todo en una vista." Patrón UX específico dentro de Time Sight — forensics operacional, distinto de visibilidad temporal general. Benchmark: Tesla Fleet.
+
+**Evidence trail:**
+- Deck p25 (Caso 6): Time Scrubbing nombrado y descrito como patrón UX de causalidad
+- Deck p25 (Benchmark): "Tesla Fleet (Time Scrubbing — rebobinar incidentes para causalidad exacta)"
+
+**Grounded in:** [IG-06] (desconexión mina-planta, Caso 6), [IG-SYNTH-07] (gestión por excepción), [IG-SYNTH-01] (Geometry Gap)
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-06], [IG-SYNTH-06], [IG-16]
+
+---
+
+### [IG-20] CFO como "usuario invisible" — Necesita la respuesta en su idioma, no minería
+**Category:** user-need (aspirational)
+**Voice:** document (deck presentado a Philip/Carlo — primario)
+**Authority:** vision
+**Convergence:** 1/59 sources
+Status: VERIFIED
+
+> "'La mina puede estar generando millones o destruyéndolos — la persona que reporta al directorio es la última en enterarse.' CFO es 'usuario invisible' — caso aspiracional, no validado con usuario real. No necesita acceso a sistemas operativos — necesita la respuesta en su bolsillo, en su idioma. El software aprende a hablar finanzas, no le enseña minería al CFO."
+
+**Evidence trail:**
+- Deck p29-30 (Caso 8): CFO como perfil con necesidad específica, self-identificado como "aspiracional, no validado"
+- Origen declarado en deck: Workshop 01 (gap identificado) + Design Brief (Executive App)
+
+Nota: authority `vision` — la fuente marca el caso como aspiracional ("no validado con usuario real"), pero CEO (Philip) y CTO (Carlo) lo tienen como apuesta estratégica 2026. Confirmado en contexto externo al transcript. Requiere validación formal con CFO real — ver CF-08.
+**Grounded in:** [IG-06] (desconexión mina-planta), [IG-SYNTH-09] (perfiles diferenciados)
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-06], [IG-SYNTH-09], [CF-08]
+
+---
+
+### [IG-21] Manos libres como interfaz primaria para usuarios en terreno
+**Category:** user-need (current)
+**Voice:** document (deck presentado a Philip/Carlo — primario)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: VERIFIED
+
+> "Jefe de Turno en berma con radio saturada de 3 solicitudes simultáneas. Normativa Sernageomin en PDF en oficina a 20 min. Manos en volante y radio. 'No necesita un manual — necesita una respuesta directa, manos libres.' Entrada por voz+foto, Push-to-Talk. Edge AI en terreno: procesamiento local sin depender de conectividad de oficina."
+
+**Evidence trail:**
+- Deck p22-23 (Caso 5): escenario específico descrito con detalle; D→A→R completo en modalidad manos libres
+
+**Grounded in:** [IG-SYNTH-09] (Jefe de Turno como perfil diferenciado), [IG-03] (canal agnóstico — WhatsApp/radio)
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-SYNTH-09], [IG-03], [IG-SYNTH-15]
+
+---
+
+### [IG-22] Plan compliance vs. plan optimization — Dos propuestas de valor distintas
+**Category:** business (current)
+**Voice:** document (deck presentado a Philip/Carlo — primario)
+**Authority:** observation
+**Convergence:** 1/59 sources
+Status: VERIFIED
+
+> "Casos 1-6 = CUMPLIR EL PLAN (D→A→R en incidentes de turno + anticipación + asistencia). La base. Sin esto, no hay plataforma. Casos 7-8 = OPTIMIZAR EL PLAN (D→A→R en decisiones estratégicas). 'CORE ya existe y funciona. La pregunta es: ¿qué más puedo hacer con esto?' Son proposiciones de valor distintas con diferentes audiencias y criterios de compra."
+
+**Evidence trail:**
+- Deck p26: distinción explícita entre los dos niveles, formulada como framing estratégico del producto
+
+**Grounded in:** [IG-SYNTH-12] (adherencia al plan como métrica), [IG-SYNTH-04] (copiloto estratégico)
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Related: [IG-SYNTH-12], [IG-SYNTH-04], [IG-SYNTH-06]
+
+---
+
+<!-- Updated by /analyze --file on 2026-02-25 -->

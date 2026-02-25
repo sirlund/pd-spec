@@ -42,7 +42,7 @@ Related insights: [IG-SYNTH-07], [IG-SYNTH-19]
 ---
 
 ### [CF-03] Conflicto de perspectiva — Confianza UX del CTO vs realidad de uso
-Status: PENDING — Flagged for stakeholder discussion
+Status: RESOLVED
 Type: AMB-03 (Perspective conflict)
 Related insights: [IG-SYNTH-03], [IG-SYNTH-11]
 
@@ -51,7 +51,7 @@ Related insights: [IG-SYNTH-03], [IG-SYNTH-11]
 - **Source claim C:** "Usuarios abandonan cuando no entienden" — entrevistas operaciones/reunion_operaciones (27-01-2026).md
 - **Source claim D:** "Se perdió un cliente por métricas a 24 horas" — entrevistas operaciones/analisis reu con operaciones.md
 
-**Action:** Benchmark UX externo con CTO y equipo de producto para objetivar la conversación. Ambas perspectivas pueden coexistir (mejor que competencia minera, pero debajo de estándares modernos de UX), pero necesitan datos externos para alinear.
+**Resolution:** El benchmark de UX presentado en el Touchpoint del 19-feb fue el punto de inflexión. Carlo (CTO) lo recibió positivamente y mostró apertura real a discutir sobre UI. La tensión entre su confianza inicial ("por sobre la vara") y la evidencia de uso (30% Orchestra, abandono, cliente perdido) puede ahora abordarse directamente con el equipo de producto. Ambas perspectivas pueden coexistir — mejor que la competencia minera, pero debajo de estándares modernos de UX — y ya hay disposición para comparar. Próximo paso: agendar sesión formal de benchmark UX con Carlo.
 
 ---
 
@@ -68,7 +68,7 @@ Related insights: [IG-SYNTH-10]
 ---
 
 ### [CF-05] Definición ambigua — Customización vs configuración
-Status: PENDING — Needs more research
+Status: PENDING — Flagged (pendiente discusión con equipo de producto y desarrollo: definir framework formal configuración vs. extensión vs. customización a medida)
 Type: AMB-05 (Definition gap)
 Related insights: [IG-SYNTH-02], [IG-SYNTH-10]
 
@@ -97,20 +97,20 @@ Related insights: [IG-SYNTH-10], [IG-SYNTH-01]
 ## Research Gaps
 
 ### [CF-07] Research Gap — Sin investigación directa con usuarios finales
-Status: PENDING — Flagged for stakeholder discussion
+Status: PENDING — Research (más investigación primaria necesaria antes de resolver; 1 entrevista con usuario externo ya efectuada; más planificadas con apoyo de Philip — prioridad: jefes de turno y despachadores para CF-13 / planificadores y gerentes para CF-07)
 Type: RESEARCH-GAP
-Related insights: [IG-SYNTH-03], [IG-SYNTH-09], [IG-SYNTH-11]
+Related insights: [IG-SYNTH-03], [IG-SYNTH-09], [IG-SYNTH-11], [IG-02]
 
 - **Gap:** Todas las perspectivas de usuario provienen de stakeholders internos (COO, PMs, equipo TIMining). No hay entrevistas directas con mineros, despachadores, jefes de turno, ni tests de usabilidad.
 - **Risk:** Las necesidades de usuario son suposiciones de stakeholders, no evidencia directa. Los insights user-need pueden ser incorrectos.
 
-**Action:** Planificar entrevistas directas con usuarios finales en mina. Sugerencia: 6-8 entrevistas en contexto + test de usabilidad con prototipos de CORE.
+**Action:** Completar plan de entrevistas. 1 entrevista con usuario externo a TIMining ya efectuada. Philip facilita acceso a usuarios en faenas activas. Objetivo: 5-7 entrevistas adicionales, 30 min cada una, para resolver CF-07, CF-12, CF-13 con datos primarios.
 - **Priority:** Crítica — fundamento de toda la estrategia UX
 
 ---
 
 ### [CF-08] Research Gap — Sin datos financieros detallados
-Status: PENDING — Needs more research
+Status: PENDING — Research (solicitar financial model, unit economics, CAC/LTV al equipo TIMining/CFO; validar metodología de demostración de valor por decisión [IG-11] como fundamento del ticket USD 450K)
 Type: RESEARCH-GAP
 Related insights: [IG-SYNTH-16b], [IG-SYNTH-14]
 
@@ -156,3 +156,36 @@ Related insights: [IG-SYNTH-13], [IG-SYNTH-10]
 ---
 
 <!-- Updated by /synthesis on 2026-02-16 -->
+
+---
+
+### [CF-12] Conflicto de perspectiva — Framing "paz mental" cuestionado por CEO
+Status: RESOLVED
+Type: PERSPECTIVE-CONFLICT
+Related insights: [IG-SYNTH-16], [IG-03]
+
+- **Claim A (IG-SYNTH-16, VERIFIED):** "Paz mental" es la propuesta de valor experiencial central de TIMining CORE. Emergió del workshop, fue adoptada en el Sello de Experiencia y el Design Brief: "Diseñamos para dar paz mental en entornos críticos."
+- **Claim B (IG-SYNTH-16, Touchpoint 2026-02-19):** Philip (CEO) cuestiona el nombre: "puede ser correcto pero es muy abstracto — prefiero algo más relacionado con tiempo/eficiencia — 'te facilito el trabajo'". Camila también advierte: "no podemos hacer inception de paz mental en entrevistas — necesitamos que el usuario lo diga por sí mismo."
+
+**Resolution:** Bifurcación aprobada entre lenguaje interno y externo. "Paz mental" se mantiene como concepto de diseño interno (guía las decisiones de UX y arquitectura del producto). En comunicación externa con clientes, el framing aprobado es: *"ayúdame a tomar la mejor decisión porque yo no tengo tiempo"* — centrado en outcomes de eficiencia y confianza en la información, no en abstracción emocional. Este framing responde al perfil del comprador real (CEO, Jefe de Mina con agenda saturada) y al posicionamiento vs. Excel [IG-05]. Impacto: Principio #1 del SYSTEM_MAP actualizado con nota de framing externo.
+
+---
+
+### [CF-13] Contradicción — Resistencia de operadores vs. adopción bottom-up
+Status: PENDING — Research (resolver en entrevistas Etapa 2: pregunta directa a jefes de turno y operadores — ¿usas CORE porque quieres o porque debes? Impacta diseño de onboarding y estrategia GTM)
+Type: CONTRADICTION
+Related insights: [IG-04], [IG-SYNTH-17]
+
+- **Claim A (IG-SYNTH-17, VERIFIED):** TIMining adopta bottom-up — arranca con equipos de operaciones y se expande orgánicamente. Alta "stickiness" una vez embebido en rutinas. Modelo "operational pull."
+- **Claim B (IG-04, Touchpoint 2026-02-19):** Carlo (CTO) revela que planificación usa TIMining para auditar a operadores, generando resistencia activa. "Si no logramos vender al operador, estamos acá afuera."
+
+- **Nota de autoridad:** Ambas claims provienen de fuentes primarias (CEO/CTO). La contradicción puede ser temporal (adopción inicial vs. steady state) o contextual (operadores que lo adoptan voluntariamente vs. operadores que lo sienten como herramienta de control).
+
+**Options:**
+- A: La resistencia es específica a contextos donde planificación lo usa como herramienta de auditoría — el modelo bottom-up funciona cuando los propios operadores son los beneficiarios directos.
+- B: El modelo bottom-up requiere una condición: el operador debe percibir el tool como herramienta de ayuda (no de control). CORE debe diseñarse para que el operador vea su beneficio primero.
+- C: Investigar en entrevistas de Etapa 2 — pregunta específica: ¿usas TIMining porque quieres o porque debes?
+
+**Recommended action:** Incluir en guía de entrevistas Etapa 2. Resolver antes de definir estrategia de GTM/adoption.
+
+<!-- Updated by /synthesis on 2026-02-24 -->

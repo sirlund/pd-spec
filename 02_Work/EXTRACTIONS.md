@@ -1648,3 +1648,280 @@
 25. "'Timining Core no es software, es la validación matemática de la realidad.'"
 26. "Evolución en tres fases: Ayer: Visualización (Ver) → Hoy: Ecosistema Multimodal (Entender) → Mañana: Prescripción y Autonomía (Actuar)"
 27. "Documento etiquetado como 'Editorial Engineering' — generado via NotebookLM para comunicación interna de estrategia de plataforma"
+
+---
+
+## [sesiones-idemax/reunion_camila_2026-02-17.md] 🏢 INTERNAL
+- Type: transcript (Granola format — AI summary + embedded transcript)
+- Date: 2026-02-17
+- Participants: Niklas Lundin (UX Lead), Camila Bonilla (UX Researcher), Hugo Muñoz, Alejandro Guzzoni
+- Authority: internal
+- Preprocessed: yes (Pass A: speaker detection; Pass B: phonetics; Pass C: segmentation)
+- Extracted: 2026-02-24T10:30
+
+### Raw Claims
+1. "Nicolás traspasará casos de uso, pilares de diseño y mockups a presentación principal con referentes visuales por cada etapa del flujo (detección, análisis, recomendación)" [INTERNAL]
+2. "Se agregarán 2 casos de uso nuevos: optimización del plan minero y reportería CFO" [INTERNAL]
+3. "Workshop jueves presencial 10:00-12:00 en TIMining — asistirán Nicolás y Camila" [INTERNAL]
+4. "Estrategia post-aprobación: desarrollar manual UX con reglas específicas por pilar — qué significa cada pilar en términos concretos y guidelines para validación con usuarios reales" [INTERNAL]
+5. "Referentes por flujo: Detección = consola cromática con glow externo para alertas (referencia SpaceX); Análisis = proyección temporal de impactos (45 min hasta bloqueo chancador); Recomendación = opciones rankeadas con impacto de tonelaje cuantificado" [INTERNAL]
+6. "Principios de diseño identificados: Clear Path (máx 3 recomendaciones, mínimos clics), Quiet UI (colores solo para anomalías), Time Sight (visualización de futuro y proyecciones), priorización numérica esencial vs. solo paleta de colores" [INTERNAL]
+7. "Gap crítico: decisiones se toman fuera del software — comunicaciones por radio no quedan registradas en sistema — pérdida de conocimiento entre jefes de turno" [INTERNAL]
+8. "Urgente vs. importante como capacidad clave: Pedro arregla el camino (output previsible) vs. Juan manda camiones por otro camino y mitiga 30% más (impacto al plan). El software debe priorizar lo importante de cara al plan, no solo lo urgente visible" [INTERNAL]
+9. "Evolución estratégica en 3 fases: 1) Cumplimiento del plan (estado actual), 2) Optimización del plan en tiempo real (visión futura), 3) Anticipación proactiva basada en aprendizaje histórico" [INTERNAL]
+10. "Oportunidad de repricing: de $300K a $450K anuales si se demuestra valor generado vs. precio cobrado — no hay correlación actual entre valor agregado y pricing" [INTERNAL]
+11. "Transición de 7 productos fragmentados a plataforma core unificada — riesgo de fragmentación tecnológica actual" [INTERNAL]
+12. "Adopción dual necesaria: bottom-up (>100 usuarios activos post-piloto) + top-down (decisión la toma BHP en Canadá, no la mina local)" [INTERNAL]
+13. "Validación con usuarios finales crítica pero pendiente — no hay entrevistas programadas con jefes de turno reales — riesgo de diseñar basado solo en percepción interna" [INTERNAL]
+14. "Propuesta para gap de validación: entrevistar ex-empleados que ahora trabajan en clientes" [INTERNAL]
+15. "Confusión temporal en sistema actual: datos con delays de 15, 30, 45 minutos — usuarios no entienden qué está actualizado vs. histórico" [INTERNAL]
+16. "6 meses de consultoría por proyecto indica producto complejo — usuarios no adoptan herramientas por dificultad de uso" [INTERNAL]
+17. "Sistema omnisciente futuro: analiza situación completa cada X minutos, percibe todo, escala solo lo relevante — evolución hacia machine-to-machine communication" [INTERNAL]
+18. "Sistema aprende de decisiones expertas: jefe de turno rechaza opciones A, B, C y elige D → sistema aprende → eventualmente sugiere D como primera opción → democratización del conocimiento experto" [INTERNAL]
+19. "Incentivos alineados: reconocimiento individual por performance, visibilidad de logros para jefatura, bonificaciones por superar plan no solo cumplirlo" [INTERNAL]
+20. "23 insights extraídos de documentos TIMining — rankeados por relevancia y fuentes — Geometry gap y efecto Suiza validados como diferenciales" [INTERNAL]
+21. "4-5 densidades de uso radicalmente distintas entre perfiles — interfaz estática actual no se adapta a contextos — oportunidad de detección automática de rol/ubicación" [INTERNAL]
+
+### Action Items (reference only — not forwarded to /analyze)
+- Niklas traspasa casos de uso y pilares a presentación principal antes del workshop
+- Reunión de revisión al día siguiente en la tarde (30 min, remoto)
+- Workshop presencial jueves 10:00-12:00 en TIMining (Niklas + Camila)
+- Desarrollar manual UX post-aprobación con guidelines por pilar
+
+
+---
+
+## [sesiones-idemax/session-align-con-camila(wed18feb).md] 🏢 INTERNAL
+- Type: transcript (Granola format — per-turn speaker labels)
+- Date: 2026-02-18
+- Participants: Niklas Lundin (UX Lead, Me), Camila Bonilla (UX Researcher, Them)
+- Authority: internal
+- Preprocessed: yes (Pass A: Me→Niklas/Them→Camila; Pass B: phonetics; Pass C: sentence repair)
+- Extracted: 2026-02-24T10:30
+
+### Raw Claims
+1. "Camila no tiene acceso a la presentación HTML de Niklas — 'estoy totalmente a ciegas' — el equipo externo no puede colaborar en el documento principal" [INTERNAL]
+2. "La presentación HTML genera una 'pared invisible' de colaboración: funciona para presentar pero no para editar en conjunto" [INTERNAL]
+3. "Camila solicita que el material esté en formato editable (Google Slides/PowerPoint) para que TIMining pueda compartirlo internamente y el equipo IDEMAX pueda colaborar" [INTERNAL]
+4. "Niklas plantea que la presentación HTML se podría convertir a PPT y que el template de HTML permite cambios globales de color con un solo cambio — ventaja de eficiencia" [INTERNAL]
+5. "Plan acordado: mostrar workshop desde link HTML, luego traspasar a PowerPoint post-workshop como entregable final" [INTERNAL]
+6. "La presentación tiene 8 casos de uso: casos 1-6 (mundo actual donde Core no existe) + casos 7-8 (cuando Core ya existe — nivel 'extra mile')" [INTERNAL]
+7. "Caso 7: Optimización del plan minero — decisión estratégica mensual — 'La fase sur lleva 3 semanas rindiendo a bajo plan por problema técnico geológico; Core ayuda a tomar decisión de llevar plan al +8%'" [INTERNAL]
+8. "Caso 8: Reportería ejecutiva CFO — 'en reunión de directorio alguien pregunta cómo va la operación, datos en diferentes sistemas, no unificados — bottom line: respuesta en su idioma financiero en su bolsillo'" [INTERNAL]
+9. "DAR (Detección-Análisis-Recomendación) como patrón visual transversal: siempre rojo→amarillo→azul, aplicado en cada caso de uso y en la línea inferior de la presentación" [INTERNAL]
+10. "TimeSight no es solo mirar al futuro — cubre pasado/presente/futuro: '¿qué pasó atrás? ¿cómo estoy? ¿qué podría pasar?'" [INTERNAL]
+11. "Slide 20 (Carlos's NorthStar): cada X minutos el sistema analiza la situación, realiza simulaciones buscando óptimo global, genera replanificación, primero a personas luego a máquina — 'mina 5.0, 2040'" [INTERNAL]
+12. "Camila identifica que los insights deben mostrarse con su peso de evidencia (fuentes, veces mencionado) para dar credibilidad — 'la caja negra explicada'" [INTERNAL]
+13. "Camila preocupada por referencias internas (número de slides, nombres internos) que se filtraron en la presentación — deben removerse antes del workshop externo" [INTERNAL]
+14. "Niklas trabaja con Gemini para generar y editar presentación — el flujo de IA no estructurado consume mucho más tokens — necesita flujo ordenado" [INTERNAL]
+15. "Keep/Stop/Start framework del workshop: Keep = eliminar grasa operacional, Stop = dejar de hacer o repensar, Start = inteligencia / lo que el usuario no sabe que necesita" [INTERNAL]
+16. "Benchmark de Quiet UI incluye: CrowdStrike (90-95% gris oscuro, se ilumina solo en alerta crítica), SpaceX Dragon (UI funcional bajo presión máxima), Morib logística (filtra 99% de falsas alertas)" [INTERNAL]
+17. "Clear Path benchmark: Sentinel One Purple AI (agente IA para DAR), Vercel (guía hacia objetivo), Datadog (módulo AI proactivo que dice 'esto se puede arreglar así')" [INTERNAL]
+18. "Camila sobre validación: 'En una entrevista con usuario final no podemos hacer inception de paz mental — necesitamos que él nos lo diga, no contaminarlo con el concepto'" [INTERNAL]
+19. "Tres componentes del valor validado: 1) paz mental/tiempo, 2) detecta-analiza-recomienda, 3) experiencia iPhone-like para B2B — simple, intuitivo, adherente" [INTERNAL]
+20. "Hub de decisiones: decisiones deben tomarse EN la plataforma, no fuera — si se hace por radio, el sistema debe 'escuchar' la radio y registrar la decisión" [INTERNAL]
+21. "Urgente vs. importante como directriz estratégica: a veces el urgente no es lo importante — el jefe de turno debe poder distinguirlos desde la plataforma" [INTERNAL]
+22. "Propuesta de valor de TIMining Core: toma visión estratégica + principios + dominios + casos de uso + perfiles — 'con este sello'" [INTERNAL]
+
+### Action Items (reference only — not forwarded to /analyze)
+- Niklas: limpiar referencias internas de slides (números, nombres)
+- Niklas: agregar insights con peso de evidencia (veces mencionado por fuente) en slide introductoria
+- Niklas: mover slide 9 del workshop al inicio de la presentación como recordatorio de contexto
+- Niklas: mover Keep/Stop/Start antes del benchmark como enlace entre visión y pilares
+- Ambos: traspasar presentación a PowerPoint post-workshop para entregable editable
+- Niklas: dar acceso link de presentación a Camila para revisión colaborativa
+
+
+---
+
+## [Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md]
+- Type: touchpoint / milestone review (primera sesión formal IDEMAX + TIMining stakeholders)
+- Date: 2026-02-19
+- Participants: Philip Whatmore (CEO TIMining), Carlo Calderón (CTO TIMining), Camila Bonilla (IDEMAX), Niklas Lundin (IDEMAX), Ana Gómez (TIMining), Alejandro Guzzoni (IDEMAX)
+- Authority: primary
+- Preprocessed: yes (Pass A: content-based segmentation 14 transitions; Pass B: phonetics; Pass C: sentence repair)
+- Extracted: 2026-02-24T10:30
+
+### Raw Claims
+1. "[Niklas] Objetivo de la sesión: mostrar primeras definiciones derivadas de entrevistas internas y workshop — validar con stakeholders — si dedito arriba, siguiente paso es validar con clientes" 
+2. "[Camila] Metodología: 54 fuentes analizadas (archivos Philip, archivos Carlos, workshop, post-its, transcripts, reuniones) — 6 insights clave emergieron por repetición con peso de evidencia por fuente"
+3. "[Niklas] Próximo paso urgente: entrevistas con usuarios finales — 5-7 entrevistas de 30 minutos con perfiles de mayor uso — 'si no estamos en el cielo tocando tierra'"
+4. "[Niklas] Patrón keep: valores funcionales que tienen experiencia y hay que seguir reforzando — simplicidad y rapidez, claridad en proceso, control de operación, certeza de datos"
+5. "[Niklas] Patrón stop: muchos datos que se muestran sin requerir acción — confunde y satura — tirar a la basura no, pero repensar cómo se hace"
+6. "[Niklas] Patrón stop: capacitaciones extensas — la solución llega cuando el problema ya pasó — no directamente relacionada a acción"
+7. "[Niklas] Tercer gap: desconexión mina-planta — información de distintas fuentes — reporting sin valor real — operación y finanzas no se hablan como TIMining podría articular"
+8. "[Niklas] 6 insights validados: 1) gestión por excepción (silencio como default), 2) cada pantalla termina en acción, 3) sistema alcanza al usuario (no al revés), 4) medir valor real por decisión para mejorar pricing, 5) [incomplete — continúa], 6) experiencia iPhone-like para B2B"
+9. "[Niklas] Mantra operativo TIMining: el valor no reside en la solución técnica sino en generar paz mental — el sistema asegura certeza de datos, anticipa, recomienda"
+10. "[Philip] Sobre 'paz mental': el concepto puede ser correcto pero el nombre es muy abstracto — prefiere algo más relacionado con tiempo/eficiencia — 'te facilito el trabajo'"
+11. "[Philip] 'Mi cliente no es tecnología — mi cliente es el Excel' — la venta debe centrarse en outcomes y procesos familiares, no en capacidades técnicas"
+12. "[Philip] Preocupación por validación: 'No podemos hacer inception de paz mental en entrevista — necesitamos que el usuario lo diga por sí mismo, no contaminarle el concepto'"
+13. "[Philip] Oportunidad de pricing: '¿de qué manera vendo algo de $450K?' — necesita demostrar valor concreto medible por decisión tomada"
+14. "[Philip] Contexto datos: 'Cuando yo pregunto cuál es la velocidad del camión rápido — Three básicamente — si lo tenéis los datos...' — confianza del 98% cuando los datos están disponibles"
+15. "[Philip] Plan minero corto plazo vs. largo: 'Nosotros estamos en corto plazo — plan minero de largo plazo tiene otra ciencia' — TIMining ayuda indirectamente en optimización de corto"
+16. "[Philip] GPS decandadas (degradadas): 'Saben que tienen problemas de datos — están decandadas las GPS' — dato calidad como problema reconocido"
+17. "[Carlo] 'Doy un paso atrás — el Core es lo que tengo que trabajar' — CTO reconoce Core como plataforma central que debe construirse"
+18. "[Carlo] Concepto iceberg: 'nuestra tecnología es mucho más que un visor — integración de datos es valioso — la validez del dato' — diferenciador vs. competidores"
+19. "[Carlo] 60 reglas de negocio de ifs: dispatching, cambio de turno, secuencias de salida — lógica operacional propietaria que ya existe en TIMining"
+20. "[Carlo] Motor adicional integrado: 'Yo lo integro con un motor adicional' — posibilidad de integrar cálculo de IDEMAX con motores existentes de TIMining"
+21. "[Carlo] WhatsApp es el canal más usado para decisiones operacionales en minería (Anglo): 'impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp'"
+22. "[Carlo] Información crítica de operación vive en WhatsApp, no en el software — TIMining pierde el 90% de la información si no integra ese canal"
+23. "[Carlo] Visión: ser agnósticos al canal — 'si una mina usa full WhatsApp, se mete ahí; si usa Discord, también' — plataforma que captura decisiones cualquiera sea el canal"
+24. "[Carlo] Tensión de adopción: planificación usa TIMining para auditar a operadores — operadores resisten la herramienta — 'si no logramos vender al operador, estamos acá afuera'"
+25. "[Carlo] 'Movimiento en Brasil' amenazando posición de mercado de TIMining — señal de presión competitiva"
+26. "[Carlo] Diferenciador técnico real: motores de cálculo + motores de reglas de negocio que validan AI — 'hacen que no alucine' — esto es lo que convierte AI genérica en recomendador confiable"
+27. "[Philip/Carlo] Estrategia de pricing modular interna: cada nueva funcionalidad por cliente tiene costo — 'si te meto una nueva cajita, te la desarrollo, pero tiene un precio también' — necesitan establecer esto formalmente"
+28. "[Philip] Problema histórico: clientes piden cambios custom (ej. cambiar color de camiones) — TIMining desarrolla sin cobrar extra — nunca formalizaron pricing diferencial"
+29. "[Philip] Propuesta 'Un cerebro': no quieren múltiples consultores/guías — prefieren una sola capa inteligente"
+30. "[Niklas] Pilar 1 — Quiet UI: silencio como estado default — alertas/colores/sonidos solo para anomalías y decisiones requeridas — clasificar eventos antes de mostrar"
+31. "[Niklas] Benchmark Quiet UI: CrowdStrike (90-95% gris oscuro), SpaceX Dragon (UI funcional bajo presión extrema), Morib logística (filtra 99% falsas alertas)"
+32. "[Niklas] Pilar 2 — Clear Path: cada pantalla termina en acción — detección→análisis→recomendación — benchmark: Sentinel One Purple AI, Vercel, Datadog"
+33. "[Niklas] Pilar 3 — TimeSight: tres capas temporales en misma vista — pasado/presente/futuro — permite al usuario saber qué pasó, cómo va ahora, qué podría pasar"
+34. "[Niklas] Pilar 4 — OmniSense: sistema alcanza al usuario según contexto y canal — 'uno no va a buscar al sistema, el sistema te encuentra' — información en canal correcto (radio, WhatsApp, dashboard)"
+35. "[Philip/Carlo] Cuestionamiento al benchmark Quiet UI: '¿por qué el problema de saturación de alertas lo resolvería la UI? — ese problema no lo resuelve la UI, lo resuelve el sistema' — respuesta: ambos son necesarios, se complementan"
+36. "[Niklas] Conexión pilares: Quiet UI → Clear Path (el silencio se rompe cuando hay un camino claro), Clear Path → TimeSight (anticipa 45 min antes el bloqueo del chancador), TimeSight → OmniSense (canal correcto en horizonte temporal)"
+37. "[Niklas] Los pilares son los 'sentidos del sistema': oído (silencio/ruido), vista (claridad/detección), profundidad (perspectiva temporal), tacto (presencia/canal)"
+38. "[Philip/Carlo] Validación de insights del workshop: confirman que los 6 insights capturados reflejan lo que se discutió — 'No, claro, esto es Workshop' — alineación"
+39. "[Niklas] Propuesta Skynet (NorthStar): cada X minutos el sistema analiza, simula, optimiza globalmente, genera replanificación — primero a personas, luego machine-to-machine — 'mina 5.0, 2040'"
+40. "[Camila/Philip] Debate 'paz mental': el término puede generar resistencia — Philip sugiere orientarlo a facilitación de decisiones con mejor información — 'ayudarlo a tomar la mejor decisión'"
+41. "[Philip] Para las entrevistas de validación: Philip tiene contactos de usuarios en minas — puede facilitar acceso — 'nosotros tenemos identificados ciertos perfiles que son los que más usan la plataforma'"
+42. "[Session outcome] Dedito arriba implícito en pilares y DAR — equipo alineado en continuar a entrevistas con usuarios reales"
+
+## [Touchpoint 1/_FIELD_NOTES.md] 🏢 INTERNAL
+- Type: field_notes
+- Date: 2026-02-19
+- Observer: Nico Lundin (IDEMAX researcher)
+- Source: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+- Extracted: 2026-02-24T22:30
+
+### Raw Claims
+1. "Los 4 pilares de diseño de CORE (Quiet UI, Clear Path, Time Sight, Omni Sense) fueron presentados a Philip (CEO) y Carlo (CTO) en el Touchpoint 19-feb — validados sin objeciones estructurales" (Confidence: high) [INTERNAL]
+2. "Carlo cuestionó si Quiet UI es solo diseño de interfaz o también sistema de filtrado — la resolución fue que ambas capas se complementan: UI + sistema" (Confidence: high) [INTERNAL]
+3. "Quiet UI: absorber complejidad visual, mostrar solo lo que importa, gestión por excepción, alertas legibles en <5 segundos — requiere dos capas: sistema de filtrado inteligente + interfaz que presenta solo lo relevante" (Confidence: high) [INTERNAL]
+4. "Clear Path: reducir fricción cognitiva, flujos lineales sin bifurcaciones innecesarias, cada pantalla tiene una acción principal clara — el patrón D→A→R es la columna vertebral de toda interacción" (Confidence: high) [INTERNAL]
+5. "Time Sight: habilitar predicción temporal, dar visibilidad al futuro operacional (qué va a pasar, cuándo, qué hacer al respecto), timelines predictivos, alertas con tiempo estimado de impacto — transforma reacción en anticipación" (Confidence: high) [INTERNAL]
+6. "Omni Sense: unificar canales sensoriales — un mismo dato llega en múltiples formas (dashboard, WhatsApp, alerta sonora, email) según contexto del usuario" (Confidence: high) [INTERNAL]
+7. "Los 4 pilares forman un sistema encadenado: Quiet UI filtra → Clear Path guía → Time Sight anticipa → Omni Sense distribuye — el output de uno es input del siguiente" (Confidence: high) [INTERNAL]
+8. "Quiet UI y Omni Sense son capas de 'cómo se presenta'; Clear Path y Time Sight son capas de 'qué se presenta'" (Confidence: high) [INTERNAL]
+
+---
+
+## [Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf]
+- Type: presentation
+- Date: 2026-02-19
+- Participants: Niklas (UX Lead IDEMAX), Camila (UX Researcher IDEMAX), Philip (CEO TIMining), Carlo (CTO TIMining)
+- Preprocessed: no
+- Extracted: 2026-02-25T00:00
+
+### Raw Claims
+
+**Del Workshop — Entendimiento Común (p02)**
+1. "KEEP: Simplicidad de la experiencia, Rapidez de respuesta, Claridad del proceso, Control operacional, Certeza de datos, Seguridad primero — estos son los 6 valores que el equipo TIMining quiere preservar"
+2. "STOP / SOBRECARGA: data dumping (mostrar todo), KPIs repetidos en múltiples pantallas, visualización 3D cosmética (95% sin acción), alertas que no requieren respuesta"
+3. "STOP / FRICCIÓN: configuración larga y costosa por cliente, capacitaciones largas antes de uso, solución que llega tarde (no en el momento del problema)"
+4. "STOP / DESCONEXIÓN: silos entre mina, planta y chancado, decisiones tomadas por radio sin registro, reportes que llegan después de que la ventana de acción cerró"
+5. "START: silencio como default (solo excepción rompe el silencio), copiloto proactivo (sistema llega al usuario), cada pantalla termina en una acción concreta, sistema te alcanza por WhatsApp / radio / IROC según contexto"
+6. "START: medir el valor en USD por decisión — no en tonelaje, no en métricas de ingeniería"
+
+**Insights Clave validados con TIMining (p03)**
+7. "PAZ MENTAL: convergencia 25/54 fuentes — el insight de mayor frecuencia en toda la investigación"
+8. "GEOMETRY GAP: convergencia 15/54 fuentes — brecha entre plan minero y realidad topográfica"
+9. "DE DASHBOARD A COPILOTO: convergencia 12/54 fuentes — el sistema debe venir al usuario, no al revés"
+10. "PERFILES DIFERENCIADOS: convergencia 12/54 fuentes — diferentes roles requieren diferentes interfaces"
+11. "DEMASIADO RUIDO: convergencia 10/54 fuentes — sobrecarga de información como principal obstáculo de uso"
+12. "VALOR 'IPHONE-LIKE': simplicidad + impacto percibido — el producto debe sentirse premium y simple simultáneamente"
+
+**Visión Estratégica (p04)**
+13. "'El salto de modelo': de Kiosco (el usuario va al sistema) a Médico Operacional (el sistema viene al paciente con el diagnóstico listo)"
+14. "D→A→R (Detección → Análisis → Recomendación) es el patrón único validado en los 8 casos de uso del workshop"
+15. "Valor percibido: 'iPhone-like B2B' — simplicidad de consumo + impacto de herramienta industrial. Ticket objetivo USD 450K+"
+16. "'Medir valor en USD por decisión' como fundamento del pricing — cada recomendación tiene un delta financiero cuantificable"
+
+**Pilares de Diseño (p05)**
+17. "Quiet UI responde la pregunta del operador: '¿Necesito prestar atención?' — si no, silencio total"
+18. "Clear Path responde: '¿Qué debo hacer?' — respuesta directa, termina en acción"
+19. "Time Sight responde: '¿Por qué pasó y qué viene?' — rebobinar + anticipar"
+20. "Omni Sense responde: '¿Dónde y cómo me llega?' — agnóstico al canal, llega donde está el usuario"
+21. "Cada pilar está validado por benchmark inter-industria — no son principios internos sino patrones observados en los mejores productos del mundo"
+
+**Sistema Sensorial y Conexión de Pilares (p06)**
+22. "Los 4 pilares forman un sistema sensorial: Quiet UI = Oído (filtra el ruido), Clear Path = Vista (focaliza la atención), Time Sight = Profundidad (perspectiva temporal), Omni Sense = Tacto (distribuye por canal adecuado)"
+23. "'Los pilares no operan aislados — forman un sistema sensorial. Cada pilar alimenta al siguiente.'"
+24. "Conexión inter-pilar formal: Quiet UI filtra lo que no importa → Clear Path muestra qué hacer → Time Sight contextualiza con pasado y futuro → Omni Sense entrega en el canal correcto"
+
+**Benchmark (p07-p12)**
+25. "25 referentes únicos de 15 industrias distintas — minería, aviación, salud, finanzas, defensa, movilidad autónoma, ciberseguridad, SaaS, telecomunicaciones"
+26. "Quiet UI champions: CrowdStrike Falcon (anomaly-only alerting), SpaceX Dragon HMI (gestión compleja en silencio), Motive (fleet management con excepción visual)"
+27. "Clear Path champions: SentinelOne Purple AI (respuesta directa en lenguaje natural), Vercel v0 (texto listo para acción), Datadog Bits AI (recomendación proactiva)"
+28. "Time Sight champions: Tesla Fleet (Time Scrubbing — rebobinar incidentes para causalidad exacta), SentinelOne Storylines (reconstrucción forense narrativa), Chronosphere Lens (retención temporal ajustable durante incidentes activos)"
+29. "Omni Sense champions: Motive (voz + cámaras + telemática integrada, Edge AI en terreno), Discord (canales de voz activos, Push-to-Talk para triage de radio), Samsara (push proactivo multicanal)"
+30. "8 casos de uso mapeados a pilares y referentes D/A/R — cada caso tiene un 'referente por etapa'"
+
+**Arquitectura de Dominios Operativos (p13)**
+31. "4 dominios operativos: A=Respuesta a Crisis (6 escenarios), B=Anticipación Operativa (4 escenarios), C=Asistencia Inteligente (5 escenarios), D=Alineación Estratégica (3 casos + 2 síntesis)"
+32. "Mapping pilar → dominio: Quiet UI lidera Dominio A, Time Sight lidera Dominio B, Omni Sense lidera Dominio C, multi-pilar lidera Dominio D"
+
+**Caso #1 — Caída de Equipo Crítico (p14-p15)**
+33. "Caso #1 (Dominio A, Respuesta a Crisis): Despachador IROC, Supervisor Turno, Jefe Turno. D=sistema detecta KPI flota, A=cruza plan de turno e historial mantenimiento para evaluar riesgo cascada, R=reasignación rankeada con tiempo estimado de impacto"
+34. "Pilares Caso #1: Quiet UI (alerta solo cuando importa) + Clear Path (reasignación rankeada, acción directa)"
+
+**Caso #2 — Riesgo Espacial y Seguridad (p16-p17)**
+35. "Caso #2 (Dominio A+C): fusión ARIS + GPS + prismas geotécnicos. D=falla de prisma detectada, A=cruza GPS autónomos con estabilidad de terreno, R=alerta zona de riesgo + reasignación automática propuesta"
+
+**Caso #3 — Anticipación de Cuello de Botella (p18-p19)**
+36. "Caso #3 (Dominio B): Time Sight como pilar principal para anticipar cuello de botella en chancado antes de que ocurra, no después — anticipación proactiva vs. respuesta reactiva"
+
+**Caso #4 — Briefing Inteligente (p20-p21)**
+37. "Caso #4 (Dominio C): sistema alcanza a Sofía (Supervisor IROC) por WhatsApp 15 min antes del turno — el canal correcto para alguien en movimiento"
+38. "Briefing proactivo: tronadura -20%, 5 camiones parados, 2 riesgos identificados, priorización objetiva contra plan. 'Llega listo, no el raw data.'"
+39. "Omni Sense + Time Sight: el sistema no espera que el supervisor abra la app — llega al canal donde ya está el usuario (WhatsApp, no portal web)"
+
+**Caso #5 — Copiloto en Terreno (p22-p23)**
+40. "Caso #5 (Dominio C): Jefe de Turno en berma con radio saturada de 3 solicitudes simultáneas. Normas Sernageomin en PDF en oficina a 20 min. Manos en volante y radio. No hay cómo consultar, priorizar ni responder en paralelo."
+41. "'No necesita un manual — necesita una respuesta directa, manos libres.'"
+42. "D (Caso #5): consulta por voz + foto. Sistema recibe por el canal disponible (voz, imagen, texto). Radio transcrita automáticamente, solicitudes identificadas y en cola."
+43. "A (Caso #5): cruce instantáneo con normativa Sernageomin vigente + prevención de riesgos + procedimientos de faena. 3 solicitudes priorizadas por urgencia con contexto suficiente."
+44. "R (Caso #5): 'Cumple' o 'Regulariza así: [pasos concretos]'. Cola ordenada. Problema resuelto = silencio. Sin re-alertar. Manos libres de principio a fin."
+45. "Edge AI en terreno: procesamiento local sin depender de conectividad de oficina"
+
+**Caso #6 — Análisis Plan vs Realidad (p24-p25)**
+46. "Caso #6 (Dominio D): Gerente de Mina en cierre semanal. Autónomos se detuvieron 14 veces el fin de semana. Respuesta repartida en 4 sistemas: posicionamiento, log antenas, reporte alimentación planta, historial mantención."
+47. "'No necesita más datos — necesita la cadena causal completa en una sola vista.'"
+48. "D (Caso #6): alerta de brecha continua — no espera al cierre mensual. Gap plan-realidad detectado mientras ocurre. '¿Por qué?' ya respondida antes de que alguien la haga."
+49. "Time Scrubbing (Caso #6): rebobinar hasta el momento exacto del primer desvío. Cadena causal: antena descalibrada → posicionamiento incorrecto autónomos → alimentación errática a planta → recuperación baja. Todo en una vista."
+50. "R (Caso #6): ajuste cuantificado por intervención. 'Cuánto cuesta no corregirlo esta semana' como métrica de decisión."
+
+**Transición Casos 1-6 / 7-8 / Horizonte (p26)**
+51. "Casos 1-6 = CUMPLIR EL PLAN (D-A-R en incidentes de turno + anticipación + asistencia). La base. Sin esto, no hay plataforma."
+52. "Casos 7-8 = OPTIMIZAR EL PLAN (D-A-R en decisiones estratégicas). 'CORE ya existe y funciona. La pregunta es: ¿qué más puedo hacer con esto?'"
+53. "Horizonte = CEREBRO AUTÓNOMO: CORE como sistema nervioso central de la mina — percibe, decide y actúa sin intervención humana. Machine-to-Machine con equipos, sensores y sistemas."
+
+**Caso #7 — Optimización del Plan Minero (p27-p28)**
+54. "Caso #7 (Dominio D): Fase Sur lleva 3 semanas rindiendo bajo plan — no incidentes, sino modelo geológico incorrecto. El plan se hizo hace 3 meses. Nadie lo cuestiona porque es 'el plan'."
+55. "'No necesita corregir un turno — necesita reconfigurar el plan.'"
+56. "Origen Caso #7: síntesis de evidencia de múltiples fuentes y motor Orchestra — no proviene directamente de láminas del workshop."
+57. "D (Caso #7): patrón estructural — Fase Sur rindió bajo plan 18 de 21 últimos turnos. Divergencia cuantificada: dureza de roca 15% sobre proyección del modelo geológico."
+58. "A (Caso #7): Orchestra simula 4 configuraciones de secuenciación de fases para próximas 4 semanas. No 'qué hacer hoy' sino 'qué patrón adoptar'. Evaluado contra datos geológicos actualizados — no el plan de hace 3 meses."
+59. "R (Caso #7): concentrar 60% extracción en Fase Norte semanas 5-8. Recuperación proyectada +8% vs trayectoria actual. Impacto USD 4.2M en el mes. El plan se actualiza — nueva línea base que todos los turnos heredan."
+
+**Caso #8 — Reportería Ejecutiva (p29-p30)**
+60. "Caso #8 (Dominio D): CFO no puede responder '¿cómo va la operación minera?' sin llamar a alguien o abrir software que no entiende. 'La mina puede estar generando millones o destruyéndolos — la persona que reporta al directorio es la última en enterarse.'"
+61. "'No necesita acceso a sistemas de operaciones — necesita la respuesta en su bolsillo, en su idioma.'"
+62. "Origen Caso #8: Workshop 01 (gap identificado) + Design Brief (Executive App). CFO es 'usuario invisible' — caso aspiracional, no validado con usuario real."
+63. "D (Caso #8): notificación automática en teléfono del CFO. 4 KPIs traducidos a dinero. Un solo indicador destacado pide atención. El resto — silencio."
+64. "A (Caso #8): un tap → drill-down financiero (qué turno fue el peor, por qué, cuánto costó), comparativa trimestres anteriores, proyección cierre. Legible desde teléfono en reunión."
+65. "R (Caso #8): 'Ritmo actual cierra -12%. Con intervención, cierra +3%. Delta: USD 1.8M.' CFO responde sin levantarse de la mesa. 'El software no le pidió que aprendiera minería — aprendió a hablar finanzas.'"
+
+**Horizonte de Evolución (p31)**
+66. "'De asistente a sistema nervioso central. La evolución natural del patrón D→A→R.'"
+67. "PERCIBE: CORE analiza situación completa cada X minutos — sensores, GPS, clima, despacho, planta — sin intervención humana. El sistema sabe antes que el operador."
+68. "DECIDE: corre N simulaciones en paralelo, busca el óptimo global (no el mejor local). 'La experiencia del mejor jefe de turno, corriendo 24/7 sin fatiga.'"
+69. "ACTÚA: de sugerencia a instrucción directa — primero a personas, después M2M: CORE habla con dispatch, flota, planta. 'La recomendación se convierte en acción. Sin radio, sin demora.'"
+70. "Roadmap evolutivo: HOY (humano decide) → CORTO PLAZO (CORE optimiza y sugiere) → HORIZONTE (CORE ejecuta M2M)"
+
+**Mapa de Definiciones y Siguiente Paso (p32-p33)**
+71. "Arquitectura concéntrica validada formalmente: Visión Estratégica → Dominios Operativos → Pilares de Diseño → Patrón D→A→R transversal"
+72. "Siguiente paso formal en deck: 'Validar con usuarios reales que los casos y pilares responden a necesidades en terreno'"
+73. "Hoja de Ruta 10 semanas: Etapa 1 COMPLETADA (inmersión), Etapa 2 PARCIAL con GAP (falta entrevistas usuarios finales), Etapa 3 EN CURSO (Sem 4 — diseño plataforma), Etapa 4 PENDIENTE (comunicación Sem 9-10)"
+74. "Riesgo a mitigar identificado en deck: 'Planificar entrevistas con usuarios finales en mina para cerrar el gap de Etapa 2 antes de avanzar en wireframes definitivos'"
+75. "Siguiente paso inmediato en deck: identidad visual CORE (Quiet UI Achromatic) + prototipo 1 caso piloto con flujo D→A→R completo"
+

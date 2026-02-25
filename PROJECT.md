@@ -15,7 +15,7 @@
 > Updated automatically by skills after each execution.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-17
-- **Status:** Full pipeline executed. 54 sources processed, 24 insights, 11 conflicts.
-- **Insights count:** 24
-- **Conflicts count:** 11
+- **Last updated:** 2026-02-24
+- **Status:** /synthesis complete. 57 sources, 27 VERIFIED insights (0 PENDING), 6 conflicts PENDING.
+- **Insights count:** 31 (27 VERIFIED, 0 PENDING, 1 MERGED, 3 INVALIDATED)
+- **Conflicts count:** 13 (6 PENDING)
