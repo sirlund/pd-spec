@@ -32,6 +32,7 @@ export function parseInsights(content) {
   const lines = content.split('\n');
   const insights = [];
   let currentCategory = null;
+  let prevThematicCategory = null;
   let current = null;
   let section = null; // 'fields' | 'narrative' | 'evidence' | 'after'
 
@@ -49,7 +50,17 @@ export function parseInsights(content) {
     if (line.startsWith('## ') && !line.startsWith('### ')) {
       flush();
       current = null;
-      currentCategory = line.replace(/^## /, '').trim();
+      const rawCategory = line.replace(/^## /, '').trim();
+      // Skip session headers injected by --file mode (contain dates or "--file mode")
+      const isSessionHeader = /\(\d{4}-\d{2}-\d{2}/.test(rawCategory) ||
+        /--file mode/i.test(rawCategory);
+      if (!isSessionHeader) {
+        currentCategory = rawCategory;
+        prevThematicCategory = rawCategory;
+      } else {
+        // Keep previous thematic category — don't pollute category list
+        currentCategory = prevThematicCategory;
+      }
       continue;
     }
 
