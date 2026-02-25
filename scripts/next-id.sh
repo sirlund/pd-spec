@@ -54,7 +54,7 @@ case "$TYPE" in
 esac
 
 # Extract all numeric IDs and find the max
-NUMBERS=$(grep -oE "$PATTERN" "$FILE" | sed -E "s/\[${PREFIX}0*([0-9]+)\]/\1/" | sort -n)
+NUMBERS=$(grep -oE "$PATTERN" "$FILE" 2>/dev/null | sed -E "s/\[${PREFIX}0*([0-9]+)\]/\1/" | sort -n || true)
 
 if [ -z "$NUMBERS" ]; then
   # No existing IDs — start at 01
