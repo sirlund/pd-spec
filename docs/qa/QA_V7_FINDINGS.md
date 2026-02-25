@@ -1160,6 +1160,7 @@ The agent's checkpoint summary includes: *"Próximo paso crítico: Etapa 2 — 5
 | OBS-66 | Field notes as missing practice — transcripts capture discussion, not decisions; no onboarding guidance | Medium | **Fixed v4.23.0** (source onboarding in _README.md) |
 | OBS-67 | INTERNAL-only insights marked VERIFIED — IG-16/17 from field notes show VERIFIED despite skill rule requiring primary corroboration | Medium | Open — skill compliance gap |
 | OBS-68 | `/analyze` convergence update screen is abstract — user can't make informed decisions in terminal (single-source vs multi-source distinction not visible, options require background knowledge) | Medium | Open — → BL-92 (app action candidate) |
+| OBS-69 | Convergence updates have no app UI — agent asks approval in terminal but app has no way to review, approve, or visualize convergence changes. Decision requested without context. | High | Open — architecture gap |
 | OBS-24 | Pass C "No es fuente" editorial injection | Medium | **Fixed v4.21.0** |
 | OBS-25 | Pass A metadata corruption | Medium | **Fixed v4.21.0** |
 | OBS-30 | Participant frontmatter priority | Low | **Fixed v4.21.0** (absorbed BL-68) |
