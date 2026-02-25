@@ -60,6 +60,12 @@ Reviews pending conflicts, guides the user through resolution, updates insight s
 7. **Resolve conflicts** — Update conflict statuses to `RESOLVED` in `02_Work/CONFLICTS.md`. Add resolution notes and actions taken.
 
 8. **Update insights** — In `02_Work/INSIGHTS_GRAPH.md`:
+   - **Authority gate** — Before marking any insight as VERIFIED, scan its Evidence trail entries:
+     - If ALL evidence trail entries carry `[INTERNAL]` tags → block VERIFIED:
+       "⚠️ INTERNAL-only sources — cannot reach VERIFIED without primary corroboration. Options: keep PENDING, or add an external source first."
+     - If ALL evidence trail entries carry `[AI-SOURCE]` tags → block VERIFIED (same message, same logic).
+     - If a mix of INTERNAL/AI-SOURCE and primary entries exists → the primary entry provides corroboration. Proceed normally.
+     - **User override:** If the user explicitly requests VERIFIED with a justification note (e.g., "strategic decision by CEO+CTO"), write VERIFIED and append the justification note to the insight. The system warns but obeys human decisions.
    - Mark resolved insights as `VERIFIED`, `MERGED`, or `INVALIDATED`.
    - If merging, create a new insight that combines the originals.
 
