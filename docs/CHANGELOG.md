@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.23.0] — 2026-02-24
+
+### Highlights
+
+**Cross-category dedup protection in `/analyze`.** A `design-framework` claim is no longer collapsed against a `user-need` insight about the same topic. "Users want the system to only show what's critical" (user-need) and "Quiet UI: absorb visual complexity, exception-based management" (design-framework) are now correctly recognized as separate insights — one is the evidence, the other is the design decision.
+
+**`Grounded in:` field for design-framework insights.** Every `design-framework` insight now requires explicit references to the user-need, business, or technical insights that justify it. A design principle without evidence backing fails the Homer's Car gate.
+
+**Source onboarding guide.** `01_Sources/_README.md` now includes a readiness checklist (metadata, dates, participants), guidance for undated sources, and a field notes practice guide for capturing decisions that transcripts miss.
+
+### Changes
+
+- **`/analyze` SKILL.md** — Dedup rule: same category required for duplicate match. Cross-category example (Quiet UI user-need vs design-framework). `Grounded in:` field mandatory for `design-framework` insights with Homer's Car enforcement.
+- **`01_Sources/_README.md`** — Source readiness checklist, undated source handling table, field notes practice with confidence levels and template.
+- **`01_Sources/_SOURCE_TEMPLATE.md`** — Date field hint for approximate dates.
+- **Backlog** — BL-94 (Referential Integrity), BL-95 (Design Proposals layer) proposed.
+
 ## [4.22.0] — 2026-02-24
 
 ### Highlights
