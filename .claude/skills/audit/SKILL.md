@@ -2,7 +2,7 @@
 name: audit
 description: Quality gate — evaluates Work layer readiness before /ship. Checks traceability, completeness, and consistency.
 user-invocable: true
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Bash
 argument-hint: ""
 ---
 
@@ -111,10 +111,20 @@ Mix of `(current)` vs `(aspirational)` insights.
 - Ideal range: 30–70% current, 30–70% aspirational.
 - **Score:** 100% if within ideal range, 75% if within 20–80%, 50% if within 10–90%, 25% if all one type.
 
+#### Check 8: Referential Integrity
+
+Run `./scripts/integrity-check.sh` (with the project path as argument) to verify that every insight's `Ref:` line points to a source file that has a matching extraction section in EXTRACTIONS.md.
+
+- **Pass (2/2):** All insights have valid source references with matching extractions.
+- **Partial (1/2):** Some insights have orphaned references (source exists but no extraction section found). These may indicate sources that were re-extracted or renamed.
+- **Fail (0/2):** Multiple orphaned references found. Run `/extract` to update extractions, or investigate missing sources.
+
+Tip: Run `./scripts/integrity-check.sh [project_path]` manually to see the full orphan report.
+
 ### Phase 3: Report
 
 3. **Compute overall readiness:**
-   - Average all 7 check scores.
+   - Average all 8 check scores.
    - **Ready** (green): average ≥ 80% and no check below 50%.
    - **Needs Work** (amber): average ≥ 60% or any check below 50%.
    - **Not Ready** (red): average < 60%.
@@ -135,6 +145,7 @@ Mix of `(current)` vs `(aspirational)` insights.
    | 5 | Evidence Gaps            | XX%   | ✓ / ✗  |
    | 6 | Specification Completeness | XX% | ✓ / ✗  |
    | 7 | Temporal Balance         | XX%   | ✓ / ✗  |
+   | 8 | Referential Integrity    | XX%   | ✓ / ✗  |
 
    ### Failing Checks
 
@@ -149,6 +160,7 @@ Mix of `(current)` vs `(aspirational)` insights.
    - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/spec` to discuss them."
    - Specification Completeness: "Missing: [list]. Run `/spec` to fill in the strategic vision and proposals."
    - Temporal Balance: "All insights are [current/aspirational]. Add sources that cover [the missing perspective]."
+   - Referential Integrity: "N insights have orphaned source references. Run `/extract` to regenerate extractions, or check that source files haven't been renamed or removed."
 
 6. **Closing note:**
    > This is a diagnostic snapshot. You decide whether to proceed with `/ship` despite any warnings. Run `/audit` again after addressing issues to verify improvement.
