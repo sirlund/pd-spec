@@ -1158,7 +1158,8 @@ The agent's checkpoint summary includes: *"Próximo paso crítico: Etapa 2 — 5
 | OBS-64 | Cross-category dedup collapse — design-framework claims collapsed against user-need insights on same topic | High | **Fixed v4.23.0** (cross-category dedup protection) |
 | OBS-65 | No `Grounded in:` traceability — design-framework insights don't declare which insights justify them | High | **Fixed v4.23.0** (`Grounded in:` field mandatory) |
 | OBS-66 | Field notes as missing practice — transcripts capture discussion, not decisions; no onboarding guidance | Medium | **Fixed v4.23.0** (source onboarding in _README.md) |
-| OBS-67 | INTERNAL-only insights marked VERIFIED — IG-16/17 from field notes show VERIFIED despite skill rule requiring primary corroboration | Medium | Open — skill compliance gap |
+| OBS-67 | INTERNAL-only insights marked VERIFIED — IG-16/17 from field notes show VERIFIED despite skill rule requiring primary corroboration | Medium | **Fixed v4.24.0** (authority gate in /resolve) |
+| OBS-70 | Session headers injected by `--file` mode (e.g., dates, "--file mode" text) parsed as category chips in app Insights view | Medium | **Fixed v4.24.0** (session header detection in parser) |
 | OBS-68 | `/analyze` convergence update screen is abstract — user can't make informed decisions in terminal (single-source vs multi-source distinction not visible, options require background knowledge) | Medium | Open — → BL-92 (app action candidate) |
 | OBS-69 | Convergence updates have no app UI — agent asks approval in terminal but app has no way to review, approve, or visualize convergence changes. Decision requested without context. | High | Open — architecture gap |
 | OBS-24 | Pass C "No es fuente" editorial injection | Medium | **Fixed v4.21.0** |

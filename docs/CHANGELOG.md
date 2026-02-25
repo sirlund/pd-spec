@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.24.0] — 2026-02-24
+
+### Highlights
+
+**Authority gate in `/resolve`.** Insights backed exclusively by `[INTERNAL]` or `[AI-SOURCE]` evidence can no longer silently reach VERIFIED. The system now blocks promotion and offers options: keep PENDING or add external corroboration. User override preserved — the system warns but obeys human decisions. (OBS-67)
+
+**Re-processing safety for consolidated projects.** Running `/extract --full` on a project with >10 VERIFIED insights now triggers a warning with impact context and recommends surgical `/extract --file` instead. You can still proceed — but not accidentally. (BL-97, partial)
+
+**Freemode self-audit.** Before presenting any freemode proposal, the agent now runs an internal Homer's Car + complexity + gap check and shows findings as a compact prefix. Skip with "skip audit" in your request. (BL-98)
+
+**Orphan detection script.** New `scripts/integrity-check.sh` checks each insight's `Ref:` paths against EXTRACTIONS.md section headers. Reports orphans in table format with exit codes for CI. Section-level only — claim-level and semantic checks are future work. (BL-94, partial)
+
+**App: session headers no longer pollute category filters.** The insights parser now detects `--file` mode session headers (containing dates or "--file mode" text) and skips them as category values. Category chips in the Insights view stay clean. (OBS-70)
+
+### Changes
+
+- **OBS-70** — `insights.js` parser: `isSessionHeader` detection, `prevThematicCategory` fallback
+- **OBS-67** — `/resolve` SKILL.md step 8: authority gate sub-step before VERIFIED marking
+- **BL-97** — `/extract` SKILL.md step 7: safety gate for `--full` on consolidated projects (>10 VERIFIED)
+- **BL-98** — `CLAUDE.md` Freemode Protocol: new "Proposal Self-Audit" subsection
+- **BL-94** — `scripts/integrity-check.sh`: section-level orphan detection (bash 3 compatible)
+- **QA v8** — `docs/qa/QA_V8_PLAN.md` + `scripts/validate-fixes.sh` (6 mechanical checks)
+
 ## [4.23.0] — 2026-02-24
 
 ### Highlights

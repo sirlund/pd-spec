@@ -988,7 +988,7 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ### [BL-94] Referential Integrity — Orphan Insight Detection
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (partial) — v4.24.0, 2026-02-24
 **Priority:** P1
 **Origin:** QA v7 session + Granola transcript (Feb 24). Discovered while analyzing the OBS-24/25 preprocessing bug chain: insights created from corrupted extractions survive re-extraction and become untraceable. Expanded scope: the same problem applies when a source is *intentionally* deleted or reclassified.
 
@@ -1159,7 +1159,7 @@ Source → Claim → [IG-XX] Insight → [DP-XX] Proposal → Output section
 
 ### [BL-97] Re-Processing Safety — Protect Consolidated Projects from Destructive Re-Extraction
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (partial) — v4.24.0, 2026-02-24
 **Priority:** P1
 **Origin:** Granola transcript (Feb 24). User identified that a full re-extract on a mature project is a high-risk operation with no safeguards today.
 
@@ -1201,7 +1201,7 @@ Before any destructive operation (`--full` re-extract, source deletion), system 
 
 ### [BL-98] Auto-Critique Loop — Plan-Then-Audit as a Built-In Principle
 
-**Status:** Proposed
+**Status:** IMPLEMENTED — v4.24.0, 2026-02-24
 **Priority:** P2
 **Origin:** Granola transcript (Feb 22). User discovered that manually chaining plan mode → audit produces significantly better outputs than either alone.
 
