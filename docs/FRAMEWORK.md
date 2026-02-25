@@ -77,3 +77,55 @@ Not everything fits the pipeline. A structured "off-pipeline" mode allows ad-hoc
 ---
 
 > These patterns are descriptive, not prescriptive. They document what emerged from real usage across 4 QA cycles and multiple projects. A future PD-OS SDK would formalize them as composable primitives.
+
+---
+
+## Conceptual Tree — 4-Layer Product Specification Model
+
+A product specification can be decomposed into four layers, each answering a different question:
+
+```
+┌──────────────────────────────────────────────────────┐
+│ Layer 1: STRATEGIC (why)                              │
+│ Vision, Strategy, Design Principles, Domains, Values  │
+│ → STRATEGIC_VISION.md                                 │
+├──────────────────────────────────────────────────────┤
+│ Layer 2: STRUCTURAL (what)                            │
+│ Domain > Module > Feature (Design Proposals [DP-XX])  │
+│ → PROPOSALS.md                                        │
+├──────────────────────────────────────────────────────┤
+│ Layer 3: BEHAVIORAL (how user interacts)              │
+│ Use Cases, Scenarios, User Stories, Acceptance Criteria│
+│ → 03_Outputs/ (PRD, User Stories, Journey Maps)       │
+├──────────────────────────────────────────────────────┤
+│ Layer 4: MATERIALIZATION (how it looks)               │
+│ User Flows, UI Patterns, Screens, Components          │
+│ → Out of scope (PD-Build)                             │
+└──────────────────────────────────────────────────────┘
+```
+
+| Layer | Question | PD-Spec coverage | File(s) |
+|---|---|---|---|
+| **Strategic** | Why are we building this? | Full | `02_Work/STRATEGIC_VISION.md` |
+| **Structural** | What are we building? | Full | `02_Work/PROPOSALS.md` |
+| **Behavioral** | How does the user interact? | Partial (via `/ship`) | `03_Outputs/` deliverables |
+| **Materialization** | How does it look/feel? | Out of scope | PD-Build territory |
+
+### Design Principles are Transversal
+
+Design principles are not a node in the tree — they are a filter that crosses all layers. A principle like "Quiet UI" operates at the Strategic layer (it's a design value), the Structural layer (it constrains feature scope), the Behavioral layer (it shapes interaction patterns), and the Materialization layer (it dictates visual density).
+
+Each principle in `STRATEGIC_VISION.md` declares which layers it operates at.
+
+### Relationship to Insights
+
+Insights (`[IG-XX]`) are the evidence base that feeds all four layers:
+
+```
+[IG-XX] insights ──→ Layer 1: inform vision, strategy, principles
+                 ──→ Layer 2: ground proposals in evidence
+                 ──→ Layer 3: shape user stories and scenarios
+                 ──→ Layer 4: (indirect, via PD-Build)
+```
+
+Every entity at every layer must trace back to one or more `[IG-XX]` references. This is the Homer's Car gate — if a design proposal, principle, or feature cannot cite its evidence, it must justify its existence or be removed.
