@@ -357,6 +357,19 @@ External tools (Gemini, ChatGPT, Figma exports) often produce monolithic files �
 - **Structure** — index file goes in `03_Outputs/_custom/`, section files alongside it. The original stays in `_assets/` as reference.
 - **Structural index** — the agent creates and maintains `02_Work/_temp/STRUCTURE_INDEX.md` mapping sections → files → line ranges, enabling offset/limit reads for precise edits without loading the full artifact.
 
+### Proposal Self-Audit
+
+Before presenting any freemode plan, proposal, or design decision, run a brief internal critique:
+
+1. **Homer's Car check** — Can each proposed element justify itself with `[IG-XX]` references? Flag any element without evidence backing.
+2. **Complexity check** — Is this the simplest solution that satisfies verified needs? Flag over-engineering.
+3. **Gap check** — What assumptions are unvalidated? What evidence is missing?
+
+Present findings as a compact prefix:
+> ⚑ Self-audit: Homer's Car [N ungrounded elements] · Complexity [OK/flagged] · Gaps [N assumptions]
+
+User can skip with "skip audit" in their request.
+
 ## Documentation Guidelines
 
 PD-Spec maintains multiple documentation files. Each has a specific purpose and audience:
