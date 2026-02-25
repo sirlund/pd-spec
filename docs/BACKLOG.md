@@ -1040,6 +1040,75 @@ Source (fixed)   → /extract → Claim (fixed)   → EXTRACTIONS.md updated
 
 ---
 
+### [BL-95] Design Proposals — The Missing Layer Between Insights and Outputs
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** QA v7 session. While investigating why design pillars didn't enter the knowledge base (OBS-62), discovered a structural gap: there's no entity type for design decisions that bridge understanding (insights) to deliverables (outputs).
+
+**Problem — the architecture jump:**
+
+The current pipeline jumps from understanding to deliverables:
+
+```
+Sources → Claims → Insights → ??? → Outputs
+```
+
+`/ship` must make the leap from "here are 20 verified insights" to "here's a coherent PRD." Design decisions (pillars, principles, patterns, module definitions) are made implicitly during `/ship` or in freemode — never tracked, never traceable, never reusable.
+
+**New entity: Design Proposal `[DP-XX]`**
+
+| Layer | Entity | Example | Source |
+|---|---|---|---|
+| Evidence | Claim | "users want the system to only show what's critical" | Source file |
+| Understanding | Insight `[IG-XX]` | IG-SYNTH-07: Exception Management | `/analyze` (multiple claims consolidated) |
+| **Decision** | **Proposal `[DP-XX]`** | **DP-01: Quiet UI — absorb visual complexity** | **New skill or user** |
+| Deliverable | Output | PRD, Personas, etc. | `/ship` |
+
+**Anatomy of a `[DP-XX]`:**
+- **Name** — short label (e.g., "Quiet UI")
+- **Definition** — what it means and what it covers
+- **Grounded in:** `[IG-XX], [IG-XX]` — insight references that justify it (Homer's Car gate: no grounding = challenge it)
+- **Status:** `PROPOSED` → `APPROVED` → `REJECTED`
+- **Origin:** `agent` (skill-proposed) or `user` (manually proposed)
+- **Type:** `principle` | `pattern` | `module` | `strategy` (TBD)
+
+**Two creation flows:**
+
+1. **Agent-proposed (the designer behind the curtain):** A new skill analyzes verified insights, detects patterns, and proposes design decisions. The agent acts as a junior-to-mid designer — experienced designers may find the proposals basic, but for founders, PMs, or junior designers without design training, this is gold: better a grounded proposal than no design direction at all. User approves, modifies, or rejects each proposal.
+
+2. **User-proposed:** "I have an idea for pillar #5, connected to IG-SYNTH-99 and IG-38." The system validates grounding — do those insights exist? Are they VERIFIED? Do they support the proposal? If grounding checks pass, the proposal is elevated. If not, system flags gaps.
+
+**Where it lives:** New file `02_Work/PROPOSALS.md` (or evolution of SYSTEM_MAP.md — TBD). Tracked entities with `[DP-XX]` IDs, same pattern as `[IG-XX]` and `[CF-XX]`.
+
+**Impact on pipeline:**
+- `/analyze` — no change (stays at insight level)
+- **New skill** (`/design`? `/propose`? TBD) — reads insights, proposes `[DP-XX]` entries
+- `/ship` — references `[DP-XX]` instead of making ad-hoc design decisions. PRD sections trace to proposals, proposals trace to insights, insights trace to claims.
+- App — new view for proposals (approve/reject/modify buttons, BL-92 aligned)
+
+**Full traceability chain:**
+```
+Source → Claim → [IG-XX] Insight → [DP-XX] Proposal → Output section
+                    ↑ grounding          ↑ user approval
+```
+
+**Acceptance criteria:**
+- [ ] `[DP-XX]` entity format defined (fields, statuses, ID scheme)
+- [ ] Storage location decided (new file vs SYSTEM_MAP evolution)
+- [ ] New skill creates proposals from verified insights
+- [ ] User can propose `[DP-XX]` with insight refs, system validates grounding
+- [ ] `/ship` references `[DP-XX]` for design decisions, not ad-hoc
+- [ ] App shows Proposals view with approve/reject/modify actions
+- [ ] Homer's Car gate: proposal without `Grounded in:` refs is flagged
+
+**User stories:**
+> As a startup founder with no design background, I can run the design skill and get grounded design proposals (pillars, patterns, principles) derived from my user research — so I have a coherent design direction even without hiring a senior designer.
+
+> As an experienced designer, I can propose my own design decisions, link them to verified insights, and have the system validate that my proposals are evidence-grounded — so my design rationale is traceable and defensible to stakeholders.
+
+---
+
 ### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
 
 **Status:** PARKED
