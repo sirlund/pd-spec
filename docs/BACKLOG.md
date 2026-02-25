@@ -875,7 +875,11 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 **Status:** Proposed
 **Priority:** P2
-**Origin:** QA v7 session. Observation: in a multi-touchpoint project (TIMining, 10-week engagement), early insights become less relevant as the project evolves. PD-Spec has no mechanism to detect, signal, or manage this.
+**Origin:** QA v7 session + Granola transcript (Feb 24). Observation: in a multi-touchpoint project (TIMining, 10-week engagement), early insights become less relevant as the project evolves. PD-Spec has no mechanism to detect, signal, or manage this.
+
+**User framing (Feb 24):** "El insight es un organismo vivo que puede existir... yo no lo eliminaría, pero podrían dejar de ser algo que pese, de ser algo que mueva la aguja." / "Poder ir como apagándolos, no eliminándolos, como poniéndolos en freeze." / "¿Por qué no borrarlos? Porque está bien que haya una trazabilidad." The "freeze" metaphor coined here maps to the DEPRIORITIZED status in Layer 4.
+
+**On human curation (Feb 24):** "Hay un stakeholder que está remando por otro lado y luego post of the record fuera de la reunión, él mismo se contradice" — illustrates a case where a researcher rejects an insight not because of explicit contradiction in the data, but because of context that lives outside the sources. Human override is the correct mechanism here, not automated conflict detection.
 
 **Problem:** Insights are atemporal. An `[IG-SYNTH-01]` verified in Week 1 has the same visual weight as one verified in Week 5. Three types of obsolescence go undetected:
 1. **Decay by irrelevance** — nobody contradicts it, but project decisions no longer depend on it
@@ -946,9 +950,11 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 **Status:** Proposed
 **Priority:** P2
-**Origin:** QA v7 session discussion. User observation: "cada vez más siento que ese paso es un script más que un skill."
+**Origin:** QA v7 session + Granola transcripts (Feb 22, Feb 24). User observation: "cada vez más siento que ese paso es un script más que un skill." Follow-up: "Al principio mi intuición fue generar agentes, porque es lo más rápido, es lo más fácil de hacer al principio tal vez. Pero ahora me doy cuenta que podrían haber incluso agentes completos que podrían ser sólo un script."
 
 **Problem:** Several pipeline steps currently run as LLM agent skills (expensive, slow, non-deterministic) when they could be implemented as deterministic code with direct UI actions. The user runs `/resolve` and waits for an agent to process each conflict — when the same action could be a button click in the Live Research App that writes directly to files.
+
+**Specific skills flagged for review (Feb 24 observation):** `/visualize`, `/kickoff`, `/seed`, `/reset` — possibly unused or convertible to scripts. Need usage audit before deciding.
 
 **Analysis needed:** For each skill/phase, determine what percentage is:
 - **Mechanical** (counting, status changes, file writes, dedup by exact match) → script/API
@@ -984,7 +990,12 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 **Status:** Proposed
 **Priority:** P1
-**Origin:** QA v7 session. Discovered while analyzing the OBS-24/25 preprocessing bug chain: insights created from corrupted extractions survive re-extraction and become untraceable.
+**Origin:** QA v7 session + Granola transcript (Feb 24). Discovered while analyzing the OBS-24/25 preprocessing bug chain: insights created from corrupted extractions survive re-extraction and become untraceable. Expanded scope: the same problem applies when a source is *intentionally* deleted or reclassified.
+
+**Three source operations (Feb 24):**
+- **Add** — easy. New source → re-extract → re-analyze. No existing insights affected.
+- **Reclassify** — moderate. Source moves folder → context changes → some claims may be reinterpreted. Existing insights keep their refs but may need review.
+- **Delete** — complex. "Hay un insight que tenía su génesis en varios archivos y ahora le quito una fuente, ya pierde validez, pierde tal vez sólo un contador de un source. Pero en otros casos podría ser que el insight completo queda invalidado." The system needs to calculate the impact of source removal on each insight before allowing deletion.
 
 **Problem:**
 
@@ -1106,6 +1117,114 @@ Source → Claim → [IG-XX] Insight → [DP-XX] Proposal → Output section
 > As a startup founder with no design background, I can run the design skill and get grounded design proposals (pillars, patterns, principles) derived from my user research — so I have a coherent design direction even without hiring a senior designer.
 
 > As an experienced designer, I can propose my own design decisions, link them to verified insights, and have the system validate that my proposals are evidence-grounded — so my design rationale is traceable and defensible to stakeholders.
+
+---
+
+### [BL-96] Export Layer — Content-First Outputs for External Tools
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Granola transcript (Feb 20). Real workflow gap: IDEMAX produces deliverables in PD-Spec but needs to share them via Google Docs, PowerPoint, and Notion — requiring manual re-creation.
+
+**Problem:** Outputs live in `03_Outputs/` as Markdown or HTML. To share with clients or stakeholders outside the PD-Spec workflow, the user must manually copy, reformat, or rebuild in the target tool. There's no export path from the knowledge base to common external formats.
+
+**User framing (Feb 20):** "En el caso de IDEMAX, el mundo ideal sería exportar a Google Docs con alguna herramienta tipo MCP o manualmente exportar un PPT que se pueda importar a Google Docs y trabajarlo desde ahí." / "Los documentos HTML que se generen sean content-first, leen del markdown... para que sea fácil de exportar."
+
+**Two sub-problems:**
+
+1. **Semantic HTML outputs** — current HTML templates mix content and presentation. For clean export (PPT, Docs), HTML must be content-first: semantic structure, minimal inline styling, content pulled from Markdown data. Structure should survive conversion.
+
+2. **Export paths** — given content-first HTML or Markdown, provide export routes:
+   - PPT/PPTX — slide-per-section structure, optimized for import into Google Slides/Keynote
+   - Google Docs — via Docs API (MCP candidate) or Pandoc
+   - Notion — via Notion API (MCP candidate)
+   - Figma — future; structured data → component population
+
+**Homer's Car check:** IDEMAX has a real need today (client deliverables go to Google Slides). The content-first principle also directly improves HTML quality for web rendering — dual benefit.
+
+**Implementation path:**
+- Phase 1: Content-first HTML rule in `/ship` SKILL.md — structure outputs as semantic sections, no inline content
+- Phase 2: PPTX export via python-pptx or Pandoc (offline, no API)
+- Phase 3: Google Docs/Notion via MCP connectors (API-dependent)
+
+**Acceptance criteria:**
+- [ ] `/ship` outputs use content-first HTML (content in data attributes or separate MD, not hardcoded)
+- [ ] PPTX export produces importable file from any `/ship` output
+- [ ] At least one API-based export path (Google Docs or Notion) via MCP
+
+**User story:**
+> As a UX consultant finishing a research sprint, I can export my PRD and Personas directly to Google Docs to share with a client who doesn't use PD-Spec — without manually reformatting.
+
+---
+
+### [BL-97] Re-Processing Safety — Protect Consolidated Projects from Destructive Re-Extraction
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** Granola transcript (Feb 24). User identified that a full re-extract on a mature project is a high-risk operation with no safeguards today.
+
+**Problem:** On a fresh project, `/extract --full` is harmless. On a consolidated project (PRD shipped, personas approved, pillars defined), the same command can silently invalidate the evidence trail for dozens of VERIFIED insights — without any warning.
+
+**User framing (Feb 24):** "Si yo voy y reproceso todo, hago una especie de reset del extract, voy a generar un conflicto... voy a reemplazar los claims. ¿Cómo puede el sistema sobrevivir estos cambios? Me imagino que podemos poner stoppers." / "Estoy pensando como un branch donde tú dices, OK, mira, este proyecto está hasta acá, y voy a hacer como una versión alternativa de este proyecto."
+
+**Risk matrix:**
+
+| Operation | Risk level | Current safeguard |
+|---|---|---|
+| `/extract --file` (single file) | Low | None needed |
+| `/extract` incremental (new files only) | Low | SOURCE_MAP delta |
+| `/extract --full` on fresh project | Low | None needed |
+| `/extract --full` on consolidated project | **HIGH** | **None** |
+| Delete a source file | **HIGH** | **None** |
+| Reclassify a source to different folder | Medium | None |
+
+**Solution — project maturity gate:**
+
+Before any destructive operation (`--full` re-extract, source deletion), system checks:
+1. Count VERIFIED insights → if > threshold (e.g., 10), flag as "consolidated project"
+2. Calculate impact: how many VERIFIED insights reference the affected source(s)?
+3. Show warning proportional to impact (same cascade model as BL-93 Layer 4)
+4. Offer safe alternatives: `--file` for surgical re-extraction, branch for experimental re-processing
+
+**Branch alternative (git worktree pattern):** User can create an experimental branch to re-process with a new source set — cherry-picking VERIFIED insights from the original. The main branch stays intact. This is the git worktree model the engine already uses for projects — same principle applied within a project.
+
+**Acceptance criteria:**
+- [ ] `/extract --full` on project with >10 VERIFIED insights shows impact warning
+- [ ] Source deletion shows impacted insight count before proceeding
+- [ ] User can proceed with full acknowledgment — system warns, doesn't block
+- [ ] Documentation: recommended workflow for "fresh start within a consolidated project"
+
+**User story:**
+> As a researcher 8 weeks into a project, when I try to re-extract everything from scratch, the system shows me "this will affect 23 VERIFIED insights" and suggests running `/extract --file` on just the new sources instead — so I don't accidentally destroy weeks of verified knowledge.
+
+---
+
+### [BL-98] Auto-Critique Loop — Plan-Then-Audit as a Built-In Principle
+
+**Status:** Proposed
+**Priority:** P2
+**Origin:** Granola transcript (Feb 22). User discovered that manually chaining plan mode → audit produces significantly better outputs than either alone.
+
+**Problem:** Today, self-critique is user-driven: the researcher explicitly asks the system to audit its own plan after plan mode. This works well but requires the user to know the pattern and remember to apply it. Freemode requests ("give me a strategy for X") skip this entirely and can produce unvalidated, overengineered proposals.
+
+**User framing (Feb 22):** "Lo que me ha funcionado muy bien es pedirle que entre en plan mode y luego cuando termine, le pido que evalúe el plan como si fuera alguien auditándolo. Estaría súper bueno que esto fuera como un principio del sistema, cada vez que genera una propuesta, un plan o define que va a ser X cosa, la gente pare." / "Es como un modelo thinking pero interno... una capa extra de pensamiento que va a cuestionarse a sí mismo."
+
+**Two mechanisms:**
+
+1. **Self-critique within a session (internal):** After generating a plan or proposal, the agent runs an internal audit pass before presenting it. Not a second model — same model re-reading its own output with a "critic hat": Homer's Car check, gap detection, complexity audit. Adds ~1-2 turns but catches obvious overengineering before the user sees it.
+
+2. **Cross-agent audit (external, future):** A second agent instance reads the first's output and critiques it. User currently does this manually by opening two Claude Code windows. Formalizing this as a skill or app feature. Note from user testing: Gemini 3.0 Pro underperformed vs Claude Opus 4.6 for this role (over-simplification, missing project context) — Gemini 3.1 Pro pending evaluation.
+
+**Scope for immediate implementation:** Mechanism 1 is low-effort — add a "self-audit step" rule to freemode protocol in CLAUDE.md. Before presenting any plan or proposal generated in freemode, agent runs: Homer's Car check (can each element justify itself with `[IG-XX]`?), complexity check (is the simplest solution that covers verified needs?), gap check (what's missing?). Presents findings alongside the proposal.
+
+**Acceptance criteria:**
+- [ ] CLAUDE.md freemode protocol includes self-audit step before proposal presentation
+- [ ] Self-audit covers: Homer's Car, complexity, gap detection
+- [ ] User can skip self-audit with explicit flag (for fast iteration)
+- [ ] Cross-agent audit documented as experimental workflow
+
+**User story:**
+> As a researcher asking for a product strategy in freemode, before seeing the proposal I get a brief self-audit summary: "Homer's Car: 2 elements lack IG references. Complexity: module X could be replaced by a simpler approach. Gap: no evidence for assumption Y." — so I can evaluate the proposal with its limitations already surfaced.
 
 ---
 
