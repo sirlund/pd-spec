@@ -1,5 +1,41 @@
 # Changelog
 
+## [4.25.0] — 2026-02-25 — Architecture & Lifecycle
+
+Three architecture decisions, five utility scripts, insight lifecycle with six statuses, and the rename from /resolve to /spec. The biggest structural release since v4.0.
+
+<details>
+<summary>Features (11)</summary>
+
+- **Architecture decisions (BL-92+73+95+93)** — Three architecture conversations formalized: hybrid execution model (scripts + agents), Strategic Vision + Design Proposals replacing System Map, insight lifecycle state machine with six statuses
+- **/resolve → /spec rename (BL-73)** — Pipeline renamed: /extract → /analyze → /spec → /ship. SYSTEM_MAP.md replaced by STRATEGIC_VISION.md + PROPOSALS.md with new parsers and app views
+- **Design Proposals [DP-XX] (BL-95)** — New entity type with domain/module/feature taxonomy. PROPOSALS.md structure, parser, API endpoint, and dedicated app view
+- **Utility scripts (BL-92)** — Five bash 3 scripts: next-id.sh, count-statuses.sh, verify-insight.sh, resolve-conflict.sh, reset.sh. Shared execution layer for app + skills. /reset skill deprecated
+- **Insight lifecycle (BL-93)** — Six statuses (PENDING → VERIFIED → FROZEN / INVALIDATED / MERGED / SUPERSEDED), freshness indicator (green/yellow/red), Last-updated field, cascade protection in verify-insight.sh
+- **ID convention detection (BL-67)** — /analyze now scans existing IDs and continues the series using next-id.sh. No more mixed conventions in a project
+- **Moved file detection (BL-57)** — /extract detects renamed/moved sources by MD5 hash cross-reference before re-extracting
+- **Source deletion impact (BL-97)** — /extract warns about impacted insights before deleting sources. Source Management docs added to CLAUDE.md
+- **Referential integrity in /audit (BL-94)** — Check 8: integrity-check.sh validates insight refs against extractions. Scoring updated to 8 checks
+- **/ship all + /ship update (BL-88)** — Batch generation with dependency layers (L0→L3), incremental updates by diffing [IG-XX] refs against current knowledge base
+- **Browser navigation + nested folders (BL-90+84)** — pushState-based back/forward, recursive folder tree in file browser with aggregated counts
+
+</details>
+
+<details>
+<summary>Fixes (2)</summary>
+
+- **Legacy templates removed (BL-15)** — Deleted all HTML templates and JSON schemas from 03_Outputs/. Directories preserved with .gitkeep for future /export
+- **Convergence bar removed (BL-59)** — ProgressBar visualization removed from InsightCard. Convergence numbers kept in card metadata
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
 ## [4.24.0] — 2026-02-24
 
 ### Highlights

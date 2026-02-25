@@ -10,74 +10,6 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
-### [BL-90] Navigation History Stack — Back Navigation + View State Preservation
-
-**Status:** Proposed
-**Priority:** P1
-**Origin:** QA v7, BUG-13. Cross-navigation (BL-58) is broken in practice — users can follow a badge but can't return.
-
-**Problem:** The app uses a single `useState('dashboard')` for navigation. Every `setView()` unmounts the current view, destroying all component-local state (selected file, folder collapse state, preview, scroll position). No `pushState()` — browser back exits the app. Users navigating from Outputs preview → Insights are stranded.
-
-**Solution (two layers):**
-
-1. **View history stack** — `app.jsx` maintains `viewHistory: [{ view, context }]`. Each `navigateTo()` pushes to stack. Browser back (`popstate`) or a Back button pops the stack and restores view + context. `history.pushState()` on each navigation so browser back works.
-
-2. **State preservation** — Lift FileBrowser state (`selectedFile`, `collapsedFolders`) to App level so it survives unmount/remount. Pass as props + callbacks. Same pattern for InsightsView filters, ConflictsView filters, etc.
-
-**Acceptance criteria:**
-- [ ] Browser back button navigates to previous in-app view (not out of app)
-- [ ] Returning to Outputs after badge click restores: selected file, folder state, preview, scroll position
-- [ ] Works for all cross-nav paths (Outputs→Insights, Extractions→Insights, SystemMap→Insights, etc.)
-- [ ] No URL fragments leak (app remains single-page)
-
-**User story:**
-> As a researcher reviewing PERSONAS.md in Outputs, I can click an [IG-XX] badge to check the insight details, then press browser back to return exactly where I was — same file selected, same scroll position.
-
----
-
-### [BL-67] Consistent Insight ID Convention in /analyze
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7, OBS-18. TIMining has mixed `IG-SYNTH-XX` and `IG-XX` IDs from different /analyze runs. Confuses users and breaks cross-referencing.
-
-**Problem:** /analyze doesn't detect existing ID conventions. Each run can introduce a different naming pattern. Mixed IDs in the same project make the System Map references inconsistent.
-
-**Solution:** /analyze detects existing ID prefix in INSIGHTS_GRAPH.md and continues the series. If `IG-SYNTH-01` exists, new insights get `IG-SYNTH-22`, not `IG-01`.
-
-**Acceptance criteria:**
-- [ ] /analyze scans existing IDs before creating new ones
-- [ ] New IDs continue the existing series (prefix + next number)
-- [ ] No mixed conventions in a single project
-
----
-
-### [BL-57] Moved Source Detection — Hash-Based Path Reconciliation in /extract
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7 (2026-02-23). TIMining: Touchpoint file moved from `sesiones-idemax/` to `Touchpoint 1/` after extraction. SOURCE_MAP retained old path → file appeared as "untracked" despite being fully extracted with 134KB normalized transcript in `_temp/`.
-
-**Problem:** When a user moves or renames source files after `/extract`, SOURCE_MAP becomes stale. The file shows as untracked (new) and its extractions/insights lose traceability. Re-extracting wastes tokens on already-processed content.
-
-**Solution:** In `/extract`, before processing untracked files:
-1. Compute hash for each untracked file
-2. Cross-reference against existing SOURCE_MAP hashes
-3. If hash matches an entry with a different path → **moved file** → propose path update
-4. Update SOURCE_MAP path, EXTRACTIONS.md source header, and `_temp/*_normalized.md` filename
-5. Present to user: "Touchpoint_TIMining... moved from sesiones-idemax/ to Touchpoint 1/. Update path?"
-
-**Acceptance criteria:**
-- [ ] Moved files detected by hash match before extraction begins
-- [ ] User approves path updates (propose-before-execute)
-- [ ] SOURCE_MAP, EXTRACTIONS.md, and _temp/ normalized files updated consistently
-- [ ] No re-extraction needed for moved files (tokens saved)
-
-**User story:**
-> As a researcher reorganizing my source folders, I can move files freely and `/extract` detects the move and updates paths, without losing my existing extractions.
-
----
-
 ### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
 
 **Status:** Proposed
@@ -99,57 +31,6 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 **User story:**
 > As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.
-
----
-
-### [BL-88] `/ship all` + `/ship update` — Output Dependency Graph & Batch Generation
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** TIMining IDEAS.md (`/ship update`, "Pending changes" vista) + QA v7 OBS-54, OBS-55. Second use case confirmed by QA observation.
-
-**Problem:** When a user requests all 10 `/ship` types, the agent reasons ad-hoc about generation order. Some outputs depend on others (User Stories references Personas, Strategy references Audit), but `/ship` has no concept of inter-output dependencies. Results:
-- **OBS-54:** Agent improvised dependency order — correct but not codified.
-- **OBS-55:** Sequential generation in one session risks context compaction. Output #9 has degraded quality vs. Output #1 because the agent has accumulated 8 large documents in context.
-- **IDEAS.md `/ship update`:** After /synthesis, no way to detect which existing outputs are stale vs. current. Manual scan required.
-- **IDEAS.md "Pending changes":** The gap between "what the knowledge base knows" and "what outputs reflect" is invisible.
-
-**Solution:** Three capabilities:
-
-1. **Dependency graph** — Codified in `/ship` SKILL.md:
-   ```
-   Layer 1 (parallel):  PERSONAS, LEAN_CANVAS
-   Layer 2 (parallel):  JOURNEY_MAP, USER_STORIES, BENCHMARK_UX
-   Layer 3 (sequential): REPORT → AUDIT → STRATEGY → PRESENTATION
-   ```
-   Each layer reads from disk (not from prior context). Layer N waits for Layer N-1 to complete.
-
-2. **`/ship all`** — Generate all output types in dependency order using subagents:
-   - Coordinator launches subagents per layer (parallel within layer, sequential between layers)
-   - Each subagent starts with fresh context → output quality is uniform
-   - Coordinator verifies all outputs generated and logs to MEMORY
-
-3. **`/ship update`** — Detect stale outputs and sync:
-   - Scan `03_Outputs/` for existing files
-   - Diff each output's `[IG-XX]` refs against current INSIGHTS_GRAPH + SYSTEM_MAP
-   - Report debt: "PRD.md missing IG-03, IG-08 · PERSONAS.md up to date"
-   - Update stale outputs with user approval (propose-before-execute)
-
-**Evidence from TIMining:**
-- 9 outputs generated via subagents in ~24 min (coordinator + 3 parallel layers). Quality uniform.
-- After /synthesis (7 new insights, 2 resolved conflicts), PRD.md required 12 manual edits. `/ship update` would have detected and proposed them automatically.
-- "Pending changes" plan (`_temp/PLAN_cambios-touchpoint-2026-02-19.md`) is exactly the artifact `/ship update` should generate.
-
-**Acceptance criteria:**
-- [ ] Dependency graph codified in SKILL.md
-- [ ] `/ship all` generates all types in dependency order using subagents
-- [ ] Each subagent starts with fresh context (no accumulated documents)
-- [ ] `/ship update` scans existing outputs and reports stale refs
-- [ ] `/ship update` proposes specific edits for user approval
-- [ ] Coordinator logs all outputs to MEMORY (no OBS-60 missing entries)
-
-**User story:**
-> As a researcher who just completed /synthesis with 7 new insights, I can run `/ship update` and see which outputs need refreshing, then approve the updates — instead of manually checking each document for missing refs.
 
 ---
 
@@ -197,190 +78,6 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ---
 
-### [BL-92] Script-First Skill Decomposition — Replace LLM Skills with Code Where Possible
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7 session + Granola transcripts (Feb 22, Feb 24). User observation: "cada vez más siento que ese paso es un script más que un skill." Follow-up: "Al principio mi intuición fue generar agentes, porque es lo más rápido, es lo más fácil de hacer al principio tal vez. Pero ahora me doy cuenta que podrían haber incluso agentes completos que podrían ser sólo un script."
-
-**Problem:** Several pipeline steps currently run as LLM agent skills (expensive, slow, non-deterministic) when they could be implemented as deterministic code with direct UI actions. The user runs `/resolve` and waits for an agent to process each conflict — when the same action could be a button click in the Live Research App that writes directly to files.
-
-**Specific skills flagged for review (Feb 24 observation):** `/visualize`, `/kickoff`, `/seed`, `/reset` — possibly unused or convertible to scripts. Need usage audit before deciding.
-
-**Analysis needed:** For each skill/phase, determine what percentage is:
-- **Mechanical** (counting, status changes, file writes, dedup by exact match) → script/API
-- **Semantic** (understanding claims, detecting contradictions, writing narratives) → LLM required
-- **Interactive** (user decisions, approval loops) → app UI
-
-**Candidates for decomposition:**
-
-| Skill/Phase | Mechanical | Semantic | Interactive | Candidate? |
-|---|---|---|---|---|
-| `/resolve` — status changes (PENDING→VERIFIED) | 90% | 0% | 10% (user clicks) | High — app button |
-| `/resolve` — SYSTEM_MAP update | 20% | 70% | 10% | Low — needs LLM |
-| `/analyze` Phase 2 — dedup check | 60% | 40% | 0% | Medium — hybrid |
-| `/analyze` Phase 3 — synthesis | 10% | 80% | 10% | Low — needs LLM |
-| `/extract` — file discovery + delta | 95% | 0% | 5% | High — script |
-| `/extract` — claim extraction | 10% | 85% | 5% | Low — needs LLM |
-| `/ship` — all types | 5% | 90% | 5% | Low — needs LLM |
-
-**Vision:** The app becomes the primary interface for mechanical operations. Click to verify an insight, click to resolve a conflict, click to flag for research. File writes happen via Express API endpoints. LLM skills are reserved for operations that genuinely require semantic understanding (claim extraction, narrative synthesis, deliverable generation).
-
-**Acceptance criteria:**
-- [ ] Audit of all skills with mechanical/semantic/interactive percentages
-- [ ] At least one "High" candidate converted to app action (e.g., insight verification button)
-- [ ] API endpoints for direct file mutations (verify insight, resolve conflict, flag for research)
-- [ ] Skills updated to skip steps that are now handled by app actions
-
-**User story:**
-> As a researcher reviewing insights in the Live Research App, I can click "Verify" on an insight and it immediately updates INSIGHTS_GRAPH.md — no need to run `/resolve` or wait for an agent.
-
----
-
-### [BL-93] Insight Lifecycle — Temporal Freshness, Supersession, and Human Curation
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7 session + Granola transcript (Feb 24). Observation: in a multi-touchpoint project (TIMining, 10-week engagement), early insights become less relevant as the project evolves. PD-Spec has no mechanism to detect, signal, or manage this.
-
-**User framing (Feb 24):** "El insight es un organismo vivo que puede existir... yo no lo eliminaría, pero podrían dejar de ser algo que pese, de ser algo que mueva la aguja." / "Poder ir como apagándolos, no eliminándolos, como poniéndolos en freeze." / "¿Por qué no borrarlos? Porque está bien que haya una trazabilidad." The "freeze" metaphor coined here maps to the DEPRIORITIZED status in Layer 4.
-
-**On human curation (Feb 24):** "Hay un stakeholder que está remando por otro lado y luego post of the record fuera de la reunión, él mismo se contradice" — illustrates a case where a researcher rejects an insight not because of explicit contradiction in the data, but because of context that lives outside the sources. Human override is the correct mechanism here, not automated conflict detection.
-
-**Problem:** Insights are atemporal. An `[IG-SYNTH-01]` verified in Week 1 has the same visual weight as one verified in Week 5. Three types of obsolescence go undetected:
-1. **Decay by irrelevance** — nobody contradicts it, but project decisions no longer depend on it
-2. **Supersession** — a newer, more specific insight replaces it (not contradiction — evolution)
-3. **Human deprioritization** — the researcher knows this insight is valid but not a needle-mover right now
-
-(Type 0, explicit contradiction, is already handled by `/analyze` conflict detection.)
-
-**Solution — 4 layers, incremental:**
-
-**Layer 1: Temporal metadata (mechanical, scripteable)**
-- Calculate `last_evidence_date` per insight (most recent source file date)
-- Calculate `age_in_sessions` (how many extract/analyze cycles since last convergence bump)
-- Auto-flag `⚠️ STALE` when `age_in_sessions > N` without new convergence
-- App shows freshness indicator per insight: 🟢 fresh / 🟡 aging / 🔴 stale
-- 100% mechanical — parser + app feature, no LLM
-
-**Layer 2: Supersession detection (semantic, LLM in /analyze)**
-- During `/analyze` Phase 2, when a new insight is created, scan existing insights for subsumption (not just dedup)
-- "Operators need alerts" superseded by "Operators need alerts with D→A→R and estimated impact time"
-- Mark old insight `SUPERSEDED → [IG-XX new]` (like MERGED but with temporal direction)
-- Old insight kept as historical evidence, new one becomes the active reference
-- Moderate effort — extends existing dedup step in `/analyze`
-
-**Layer 3: Relevance scoring (hybrid, app dashboard)**
-- Composite score: Convergence (existing) × Freshness (layer 1) × Active references (grep of `[IG-XX]` in SYSTEM_MAP + outputs) × Supersession (layer 2)
-- Simple semaphore, not false-precision numbers
-- App shows relevance ranking — stale unreferenced insights at bottom, fresh high-convergence referenced insights at top
-
-**Layer 4: Human curation with cascade protection (app action + script)**
-- User marks insight as `DEPRIORITIZED` via app action (BL-92 style — button click, not skill)
-- Before executing, system calculates cascade impact (100% mechanical — grep `[IG-XX]` across all files):
-  - Depth: Design Principle > Module > Implication > detail
-  - Breadth: count of outputs referencing this insight
-  - Dependents: other insights citing it as convergence source
-- Warning proportional to impact:
-  - LOW (≤2 references): proceed silently
-  - MEDIUM (3-5 references): show orphaned refs, ask to confirm
-  - HIGH (design principle, 5+ refs, or strategic vision element): show full cascade tree, require explicit confirmation
-- System obeys the human decision. PD-Spec is a copilot, not an autonomous car.
-- DEPRIORITIZED is not INVALIDATED — the insight is valid, just not a current needle-mover. It can be re-prioritized later.
-
-**What this does NOT do:**
-- Auto-expire insights (STALE is a visual flag, not a status change)
-- Delete anything (history is valuable — superseded insights show how understanding evolved)
-- Use fake precision ("relevance: 7.3/10") — semaphore only
-
-**Implementation order:**
-1. Layer 1 first (lowest effort, highest immediate value — parser + app)
-2. Layer 4 next (app action button, cascade calculation is mechanical)
-3. Layer 2 (extends /analyze, moderate effort)
-4. Layer 3 (dashboard integration, needs layers 1+2 data)
-
-**Acceptance criteria:**
-- [ ] Insights show freshness indicator in app (layer 1)
-- [ ] `/analyze` detects and marks superseded insights (layer 2)
-- [ ] App shows relevance ranking with sortable view (layer 3)
-- [ ] "Deprioritize" button in app with cascade warning (layer 4)
-- [ ] DEPRIORITIZED status supported in INSIGHTS_GRAPH.md
-- [ ] Cascade calculation covers SYSTEM_MAP + all outputs + dependent insights
-
-**User story:**
-> As a researcher 6 weeks into a project, I can see which insights from Week 1 are still actively driving design decisions and which have been superseded by newer evidence — so I can confidently tell stakeholders "our understanding evolved from X to Y" instead of presenting stale conclusions.
-
----
-
-### [BL-95] Design Proposals — The Missing Layer Between Insights and Outputs
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7 session. While investigating why design pillars didn't enter the knowledge base (OBS-62), discovered a structural gap: there's no entity type for design decisions that bridge understanding (insights) to deliverables (outputs).
-
-**Problem — the architecture jump:**
-
-The current pipeline jumps from understanding to deliverables:
-
-```
-Sources → Claims → Insights → ??? → Outputs
-```
-
-`/ship` must make the leap from "here are 20 verified insights" to "here's a coherent PRD." Design decisions (pillars, principles, patterns, module definitions) are made implicitly during `/ship` or in freemode — never tracked, never traceable, never reusable.
-
-**New entity: Design Proposal `[DP-XX]`**
-
-| Layer | Entity | Example | Source |
-|---|---|---|---|
-| Evidence | Claim | "users want the system to only show what's critical" | Source file |
-| Understanding | Insight `[IG-XX]` | IG-SYNTH-07: Exception Management | `/analyze` (multiple claims consolidated) |
-| **Decision** | **Proposal `[DP-XX]`** | **DP-01: Quiet UI — absorb visual complexity** | **New skill or user** |
-| Deliverable | Output | PRD, Personas, etc. | `/ship` |
-
-**Anatomy of a `[DP-XX]`:**
-- **Name** — short label (e.g., "Quiet UI")
-- **Definition** — what it means and what it covers
-- **Grounded in:** `[IG-XX], [IG-XX]` — insight references that justify it (Homer's Car gate: no grounding = challenge it)
-- **Status:** `PROPOSED` → `APPROVED` → `REJECTED`
-- **Origin:** `agent` (skill-proposed) or `user` (manually proposed)
-- **Type:** `principle` | `pattern` | `module` | `strategy` (TBD)
-
-**Two creation flows:**
-
-1. **Agent-proposed (the designer behind the curtain):** A new skill analyzes verified insights, detects patterns, and proposes design decisions. The agent acts as a junior-to-mid designer — experienced designers may find the proposals basic, but for founders, PMs, or junior designers without design training, this is gold: better a grounded proposal than no design direction at all. User approves, modifies, or rejects each proposal.
-
-2. **User-proposed:** "I have an idea for pillar #5, connected to IG-SYNTH-99 and IG-38." The system validates grounding — do those insights exist? Are they VERIFIED? Do they support the proposal? If grounding checks pass, the proposal is elevated. If not, system flags gaps.
-
-**Where it lives:** New file `02_Work/PROPOSALS.md` (or evolution of SYSTEM_MAP.md — TBD). Tracked entities with `[DP-XX]` IDs, same pattern as `[IG-XX]` and `[CF-XX]`.
-
-**Impact on pipeline:**
-- `/analyze` — no change (stays at insight level)
-- **New skill** (`/design`? `/propose`? TBD) — reads insights, proposes `[DP-XX]` entries
-- `/ship` — references `[DP-XX]` instead of making ad-hoc design decisions. PRD sections trace to proposals, proposals trace to insights, insights trace to claims.
-- App — new view for proposals (approve/reject/modify buttons, BL-92 aligned)
-
-**Full traceability chain:**
-```
-Source → Claim → [IG-XX] Insight → [DP-XX] Proposal → Output section
-                    ↑ grounding          ↑ user approval
-```
-
-**Acceptance criteria:**
-- [ ] `[DP-XX]` entity format defined (fields, statuses, ID scheme)
-- [ ] Storage location decided (new file vs SYSTEM_MAP evolution)
-- [ ] New skill creates proposals from verified insights
-- [ ] User can propose `[DP-XX]` with insight refs, system validates grounding
-- [ ] `/ship` references `[DP-XX]` for design decisions, not ad-hoc
-- [ ] App shows Proposals view with approve/reject/modify actions
-- [ ] Homer's Car gate: proposal without `Grounded in:` refs is flagged
-
-**User stories:**
-> As a startup founder with no design background, I can run the design skill and get grounded design proposals (pillars, patterns, principles) derived from my user research — so I have a coherent design direction even without hiring a senior designer.
-
-> As an experienced designer, I can propose my own design decisions, link them to verified insights, and have the system validate that my proposals are evidence-grounded — so my design rationale is traceable and defensible to stakeholders.
-
----
-
 ### [BL-56] Export Layer — Multi-Format Deliverable Export
 
 **Status:** Proposed
@@ -417,26 +114,6 @@ Source → Claim → [IG-XX] Insight → [DP-XX] Proposal → Output section
 
 **User story:**
 > As a UX consultant finishing a research sprint, I can export my PRD and Personas directly to an editable PPTX or Google Docs to share with a client who doesn't use PD-Spec — without manually reformatting.
-
----
-
-### [BL-59] Convergence Indicator Redesign
-
-**Status:** Proposed
-**Priority:** P2
-**Origin:** QA v7, OBS-40 + OBS-19. The progress bar visual contradicts reality: 1/1 = full bar (looks strong, is weakest), 3/54 = nearly empty (looks weak, is reasonable).
-
-**Problem:** Convergence bar semantics are unclear. No user can tell what "good" looks like without explanation. The denominator (total project sources) makes every insight look poorly evidenced.
-
-**Solution:** Replace progress bar with a clearer indicator. Options:
-- Text-only: "3 sources" with color scale (1=amber, 2-3=neutral, 4+=green)
-- Fixed-scale bar: denominator = 5 (not total sources). 3/5 looks reasonable.
-- Chip list: show source count + authority breakdown inline
-
-**Acceptance criteria:**
-- [ ] Visual communicates evidence strength intuitively (more sources = better, visually)
-- [ ] Single-source insights clearly flagged as weak
-- [ ] No misleading "full bar" for 1/1
 
 ---
 
@@ -606,56 +283,6 @@ Or in dashboard JSON:
 
 ---
 
-### [BL-84] Nested Subfolders in File Browser — Recursive Tree with Max Depth
-
-**Status:** Proposed
-**Priority:** P3
-**Origin:** Hugo sync (2026-02-23). Observation during TIMining demo: projects with organized source structures (e.g., `sesiones-idemax/round-1/`, `Touchpoint 1/fotos/`) show subfolder paths as flat strings in the file tree instead of a navigable nested tree.
-
-**Problem:** The FileBrowser component groups files by their `folder` string (e.g., `"entrevistas/round-1"`), rendering each unique path as a single collapsible row. There is no visual nesting — `entrevistas/round-1` and `entrevistas/round-2` appear as two independent top-level folders, not as children of `entrevistas`. This breaks the mental model of a file explorer and makes deep folder structures hard to navigate.
-
-**Current behavior:**
-```
-▾ 📁 entrevistas/round-1    (3)
-    file-01.md
-    file-02.md
-▾ 📁 entrevistas/round-2    (2)
-    file-03.md
-▾ 📁 workshop/fotos         (5)
-    whiteboard-1.png
-```
-
-**Expected behavior:**
-```
-▾ 📁 entrevistas            (5)
-  ▾ 📁 round-1              (3)
-      file-01.md
-      file-02.md
-  ▸ 📁 round-2              (2)
-▾ 📁 workshop               (5)
-  ▸ 📁 fotos                (5)
-```
-
-**Solution:**
-1. **Frontend (FileBrowser.jsx):** Build a recursive tree structure from the flat `folder` strings. Split each `folder` by `/` and construct nested nodes. Render with indentation per level.
-2. **Max depth:** Define a configurable max nesting depth (recommended: 3 levels). Folders beyond max depth collapse into a flat string for the remaining segments.
-3. **Aggregated counts:** Parent folders show total file count across all descendants.
-4. **Collapse state:** Each tree node independently collapsible. Root folders expanded by default, deeper levels collapsed.
-5. **No API changes needed:** The `scanDir` functions already return full relative paths. Tree building is purely a frontend concern.
-
-**Acceptance criteria:**
-- [ ] Subfolders render as nested, indented tree nodes (not flat strings)
-- [ ] Max depth defined (default: 3 levels)
-- [ ] Parent folders show aggregated file count
-- [ ] Each folder node independently collapsible
-- [ ] Works for Sources, Work, and Outputs views
-- [ ] No API changes required
-
-**User story:**
-> As a researcher browsing a project with organized source folders (by milestone, by category), I can navigate nested subfolders visually, just like a desktop file explorer, instead of seeing flattened path strings.
-
----
-
 ### [BL-85] STT Correction Loop — Persistent Glossary
 
 **Status:** Proposed
@@ -743,20 +370,6 @@ MEMORY.md tries to be both audit trail and recovery mechanism. It fails at both 
 
 ---
 
-### [BL-73] System Map — Module vs Principles Clarity
-
-**Status:** Proposed
-**Priority:** P4
-**Origin:** QA v7, OBS-15 + OBS-17. "Modules" and "Design Principles" not self-explanatory. Module abstraction levels inconsistent (subsystem vs capability vs feature).
-
-**Solution:** Add brief intro under each section header explaining what it represents. Consider allowing hierarchy levels in modules. Partly a /synthesis skill issue (what granularity to target), partly UI.
-
-**Acceptance criteria:**
-- [ ] Each section has a one-line description
-- [ ] Module abstraction level documented or enforced by /synthesis
-
----
-
 ### [BL-86] UI Styling Consistency — Mono Badges, Chips, Counts
 
 **Status:** Proposed
@@ -825,113 +438,6 @@ Options under consideration:
 - **C) Kill** — Homer's Car. The scaling strategy already covers realistic project sizes. Projects with 200+ sources may need sub-project decomposition, not RAG.
 
 Decision deferred — revisit when a real project hits the ceiling.
-
----
-
-### [BL-94] Referential Integrity — Orphan Insight Detection
-
-**Status:** IMPLEMENTED (partial) — v4.24.0, 2026-02-24
-**Priority:** P1
-**Origin:** QA v7 session + Granola transcript (Feb 24). Discovered while analyzing the OBS-24/25 preprocessing bug chain: insights created from corrupted extractions survive re-extraction and become untraceable. Expanded scope: the same problem applies when a source is *intentionally* deleted or reclassified.
-
-**Three source operations (Feb 24):**
-- **Add** — easy. New source → re-extract → re-analyze. No existing insights affected.
-- **Reclassify** — moderate. Source moves folder → context changes → some claims may be reinterpreted. Existing insights keep their refs but may need review.
-- **Delete** — complex. "Hay un insight que tenía su génesis en varios archivos y ahora le quito una fuente, ya pierde validez, pierde tal vez sólo un contador de un source. Pero en otros casos podría ser que el insight completo queda invalidado." The system needs to calculate the impact of source removal on each insight before allowing deletion.
-
-**Problem:**
-
-When a source is re-extracted (after a bug fix, preprocessing correction, or manual edit), EXTRACTIONS.md is rewritten but INSIGHTS_GRAPH.md is not. Insights that were created from the old (potentially corrupted) claims remain in the graph with their `Ref:` pointing to the original source file — but the intermediate claim they were born from no longer exists or has changed semantically.
-
-These **ghost insights** (IG fantasma) violate Mandate #1 (No Hallucination): an insight that cannot trace back to a current, valid claim is an unverified assertion. The system has no mechanism to detect or flag this.
-
-**Failure chain:**
-```
-Source (corrupt) → /extract → Claim (corrupt) → /analyze → IG-XX created
-       ↓ fix + re-extract
-Source (fixed)   → /extract → Claim (fixed)   → EXTRACTIONS.md updated
-                                                  IG-XX still exists, references stale/gone claim
-```
-
-**Solution — Integrity check (mechanical, scriptable):**
-
-1. For each `[IG-XX]` in INSIGHTS_GRAPH.md:
-   - Read `Ref:` field (source file path)
-   - Read `Key quote:` text
-   - Search EXTRACTIONS.md for matching section (by source file)
-   - Search within that section for a claim that semantically matches the key quote
-2. Classification:
-   - **Valid** — matching claim found in current EXTRACTIONS.md
-   - **Orphan** — source section exists but no matching claim (claim was removed or changed)
-   - **Missing source** — source section doesn't exist in EXTRACTIONS.md (file was never re-extracted)
-3. Report orphans to user for review. Never auto-delete — the insight may still be valid, it just needs re-grounding.
-
-**Where it runs:**
-- `/audit` — natural fit as a quality gate check ("3 orphan insights detected — review before /ship")
-- `/analyze --full` — pre-flight check before processing ("Found 2 orphan insights from previous extractions — flag for review?")
-- Standalone script — `scripts/integrity-check.sh` for CI or manual runs
-
-**Implementation (BL-92 aligned — mostly mechanical):**
-
-| Step | Type | Tool |
-|---|---|---|
-| Parse IG refs + quotes from INSIGHTS_GRAPH.md | Mechanical | grep/script |
-| Parse claim sections from EXTRACTIONS.md | Mechanical | grep/script |
-| Match IG source refs → extraction sections | Mechanical | script |
-| Semantic match: key quote ↔ current claim text | Hybrid | LLM for fuzzy, exact substring for 80% |
-| Report + user decision | Interactive | terminal or app UI |
-
-**Acceptance criteria:**
-- [ ] Integrity check detects orphaned insights after re-extraction
-- [ ] Report shows: IG ID, original ref, key quote, reason (orphan/missing source)
-- [ ] No auto-deletion — user decides per insight (keep, invalidate, re-ground)
-- [ ] Integrated into `/audit` output
-- [ ] Works as standalone script for CI
-
-**User story:**
-> As a researcher who just fixed a preprocessing bug and re-extracted 3 sources, I can run an integrity check and immediately see which existing insights lost their evidence trail — so I can review them instead of unknowingly building deliverables on ghost data.
-
----
-
-### [BL-97] Re-Processing Safety — Protect Consolidated Projects from Destructive Re-Extraction
-
-**Status:** IMPLEMENTED (partial) — v4.24.0, 2026-02-24
-**Priority:** P1
-**Origin:** Granola transcript (Feb 24). User identified that a full re-extract on a mature project is a high-risk operation with no safeguards today.
-
-**Problem:** On a fresh project, `/extract --full` is harmless. On a consolidated project (PRD shipped, personas approved, pillars defined), the same command can silently invalidate the evidence trail for dozens of VERIFIED insights — without any warning.
-
-**User framing (Feb 24):** "Si yo voy y reproceso todo, hago una especie de reset del extract, voy a generar un conflicto... voy a reemplazar los claims. ¿Cómo puede el sistema sobrevivir estos cambios? Me imagino que podemos poner stoppers." / "Estoy pensando como un branch donde tú dices, OK, mira, este proyecto está hasta acá, y voy a hacer como una versión alternativa de este proyecto."
-
-**Risk matrix:**
-
-| Operation | Risk level | Current safeguard |
-|---|---|---|
-| `/extract --file` (single file) | Low | None needed |
-| `/extract` incremental (new files only) | Low | SOURCE_MAP delta |
-| `/extract --full` on fresh project | Low | None needed |
-| `/extract --full` on consolidated project | **HIGH** | **None** |
-| Delete a source file | **HIGH** | **None** |
-| Reclassify a source to different folder | Medium | None |
-
-**Solution — project maturity gate:**
-
-Before any destructive operation (`--full` re-extract, source deletion), system checks:
-1. Count VERIFIED insights → if > threshold (e.g., 10), flag as "consolidated project"
-2. Calculate impact: how many VERIFIED insights reference the affected source(s)?
-3. Show warning proportional to impact (same cascade model as BL-93 Layer 4)
-4. Offer safe alternatives: `--file` for surgical re-extraction, branch for experimental re-processing
-
-**Branch alternative (git worktree pattern):** User can create an experimental branch to re-process with a new source set — cherry-picking VERIFIED insights from the original. The main branch stays intact. This is the git worktree model the engine already uses for projects — same principle applied within a project.
-
-**Acceptance criteria:**
-- [ ] `/extract --full` on project with >10 VERIFIED insights shows impact warning
-- [ ] Source deletion shows impacted insight count before proceeding
-- [ ] User can proceed with full acknowledgment — system warns, doesn't block
-- [ ] Documentation: recommended workflow for "fresh start within a consolidated project"
-
-**User story:**
-> As a researcher 8 weeks into a project, when I try to re-extract everything from scratch, the system shows me "this will affect 23 VERIFIED insights" and suggests running `/extract --file` on just the new sources instead — so I don't accidentally destroy weeks of verified knowledge.
 
 ---
 
@@ -1008,26 +514,64 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 **Depends on:** Clearer understanding of how Actions → /synthesis flow works in practice across projects.
 
----
-
-### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
-
-**Status:** PARKED
-**Priority:** P2
-**Origin:** QA v2 (2026-02-15)
-
-Typography, micro-interactions, data viz, accessibility improvements for all templates.
-
-**Evidence from TIMining entregables (2026-02-17):**
-- Dark mode + light/dark toggle with localStorage
-- JetBrains Mono font, fichas 2x2 with sidebar layout
-- Timeline D→A→R pattern
-- Clearbit logos with fallback
-- Source: `pds--timining/02_Work/IDEAS.md` → idea "Upgrade de template de presentación"
-
----
-
 ## ✅ Implemented (Archive)
+
+<details>
+<summary><strong>BL-15 to BL-97 — v4.25.0 (Architecture & Lifecycle)</strong> (click to expand)</summary>
+
+### [BL-73] System Map → Strategic Vision + Design Proposals
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — /resolve → /spec rename. SYSTEM_MAP.md replaced by STRATEGIC_VISION.md + PROPOSALS.md with parsers, API endpoints, and dedicated app views.**
+
+### [BL-95] Design Proposals — The Missing Layer Between Insights and Outputs
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — [DP-XX] entity type with domain/module/feature taxonomy. PROPOSALS.md structure, parser, API endpoint, and app view.**
+
+### [BL-92] Script-First Skill Decomposition
+
+**IMPLEMENTED (v4.25.0, partial — Phase 1) — Five utility scripts: next-id.sh, count-statuses.sh, verify-insight.sh, resolve-conflict.sh, reset.sh. /reset skill deprecated. Phase 2 (app write endpoints) and Phase 3 (Claude API in app) deferred.**
+
+### [BL-93] Insight Lifecycle
+
+**IMPLEMENTED (v4.25.0, partial — L1+L4) — Six statuses, Last-updated field, freshness indicator (green/yellow/red), verify-insight.sh with cascade protection. L2 (supersession detection) and L3 (relevance scoring) deferred.**
+
+### [BL-90] Navigation History Stack
+
+**IMPLEMENTED (v4.25.0, partial) — pushState-based back/forward navigation. State preservation (lifting component state to App) deferred.**
+
+### [BL-84] Nested Subfolders in File Browser
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — Recursive tree from flat folder strings. Parent folders show aggregated file counts. Independent collapse state per node.**
+
+### [BL-67] Consistent Insight ID Convention in /analyze
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — /analyze uses next-id.sh to detect existing ID prefix and continue the series.**
+
+### [BL-57] Moved Source Detection
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — /extract cross-references NEW/DELETED by MD5 hash. Match = moved file, proposed path update.**
+
+### [BL-88] /ship all + /ship update
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — Dependency layers (L0→L3) for batch generation, incremental updates by diffing [IG-XX] refs.**
+
+### [BL-94] Referential Integrity — Orphan Insight Detection
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — Updated from v4.24.0 partial: added /audit Check 8 using integrity-check.sh. Claim-level/semantic matching deferred.**
+
+### [BL-97] Re-Processing Safety
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — Updated from v4.24.0 partial: added source deletion impact warnings in /extract + Source Management docs in CLAUDE.md.**
+
+### [BL-59] Convergence Indicator Redesign
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — ProgressBar removed from InsightCard. Convergence numbers kept in card metadata.**
+
+### [BL-15] Visual & Interaction Polish — Legacy Templates
+
+**IMPLEMENTED (v4.25.0, 2026-02-25) — All HTML templates and JSON schemas removed from 03_Outputs/. Directories preserved with .gitkeep for future /export.**
+
+</details>
 
 <details>
 <summary><strong>BL-58 to BL-98 — v4.20.0–v4.24.0 (Pipeline + QA fixes)</strong> (click to expand)</summary>
