@@ -61,6 +61,18 @@ The folder name provides context that individual files inherit. The agent valida
 
 **Non-markdown files** (images, PDFs, spreadsheets, .txt, .docx) can't carry internal metadata. Add a `_CONTEXT.md` in the folder to describe them — see `_CONTEXT_TEMPLATE.md` for the format.
 
+### Source Management
+
+Sources can be added, reclassified, or deleted. The agent validates each operation:
+
+| Operation | How | Agent behavior |
+|---|---|---|
+| **Add** | Place files in `01_Sources/` subfolder, run `/extract` | Normal extraction pipeline |
+| **Reclassify** | Move file to different subfolder | `/extract` detects via moved file detection (BL-57) |
+| **Delete** | Remove file from `01_Sources/` | `/extract` warns about impacted insights, requires confirmation for orphan-creating deletions |
+
+Deletion is the most destructive operation — it can orphan insights. The agent provides impact analysis before proceeding.
+
 ## Skills Pipeline
 
 | Skill | Command | What it does |
