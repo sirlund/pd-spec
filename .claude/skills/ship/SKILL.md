@@ -329,6 +329,37 @@ Standard Markdown with clear section hierarchy. Optimized for stakeholders who d
 
 10. **Update session checkpoint** — Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md`.
 
+### `/ship all` — Batch Generation
+
+When the user runs `/ship all`, generate all applicable output types in a single session.
+
+**Dependency layers** — outputs are generated in order to allow cross-referencing:
+- **L0 (foundation):** `persona`, `lean-canvas` — no dependencies on other outputs
+- **L1 (research):** `benchmark-ux`, `strategy` — may reference personas
+- **L2 (specification):** `prd`, `user-stories`, `journey-map` — reference everything above
+- **L3 (presentation):** `presentation`, `report` — synthesize all above
+
+Generate each layer sequentially. Within a layer, outputs can be generated in any order.
+
+**Cost awareness:** Each output reads the same primary sources (INSIGHTS_GRAPH, STRATEGIC_VISION, PROPOSALS). The agent should read these once at the start and reference them throughout, rather than re-reading per output.
+
+### `/ship update [type]` — Incremental Update
+
+When the user runs `/ship update [type]`, update an existing output rather than regenerating from scratch.
+
+1. **Read existing output** — Load the current file from `03_Outputs/`.
+2. **Diff insight references** — Compare `[IG-XX]` refs in the output against the current state of `INSIGHTS_GRAPH.md`. Identify:
+   - New VERIFIED insights not yet referenced in the output.
+   - INVALIDATED or SUPERSEDED insights still referenced in the output.
+   - Changed STRATEGIC_VISION or PROPOSALS entries since last generation.
+3. **Propose updates** — Present a summary of what would change:
+   - Sections to add (from new insights).
+   - Sections to remove or revise (from invalidated insights).
+   - Sections to update (from changed spec entries).
+4. **Apply after approval** — Write changes to the output file after user confirms.
+
+This is faster and cheaper than full regeneration when only a few insights have changed.
+
 ## Migration from Template+JSON
 
 Previous versions generated HTML files with embedded JSON data (`<script id="pd-data">`). Existing `.html` outputs in project branches remain valid — the Live Research App serves them via the Outputs FileBrowser. New `/ship` runs generate `.md` files alongside any existing `.html` files.
