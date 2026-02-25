@@ -186,13 +186,33 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **MODIFIED** — file in map, hash differs → reprocess (replace section in EXTRACTIONS.md)
    - **RETRY** — file in map with status=`error` → reprocess
    - **PENDING-HEAVY** — file in map with status=`pending-heavy` → process only in Heavy-only or Full mode, skip in Express mode
-   - **DELETED** — file in map but not discovered → remove section from EXTRACTIONS.md, mark as orphan
+   - **DELETED** — file in map but not discovered → run source deletion impact analysis (step 10a) before removing
+
+10a. **Source deletion impact** — When a source file has been deleted (present in SOURCE_MAP.md but no longer in `01_Sources/`):
+   1. Search `02_Work/INSIGHTS_GRAPH.md` for insights whose `Ref:` line references this source file.
+   2. If impacted insights are found, warn the user:
+      - List each impacted insight ID and title.
+      - For insights with only ONE source ref (this deleted file), flag as CRITICAL: `[IG-XX] has no remaining source — will become an orphan.`
+      - For insights with multiple source refs, flag as WARNING: `[IG-XX] loses one of N source refs — still grounded.`
+   3. **Double confirmation for deletions with CRITICAL impact:** `Deleting this source will orphan N insights. Type 'confirm' to proceed or 'skip' to keep the source in SOURCE_MAP.`
+   4. If the user confirms, mark the source as `DELETED` in SOURCE_MAP.md and remove its section from EXTRACTIONS.md. Do NOT automatically invalidate the impacted insights — that's a `/spec` decision.
+   5. If the user types 'skip', keep the source entry in SOURCE_MAP.md with status `missing` (file gone but tracked). Remove it from the DELETED list so it does not participate in moved file detection.
+   6. If no impacted insights are found, proceed with deletion silently (remove from EXTRACTIONS.md, mark as `DELETED` in SOURCE_MAP.md).
+
+10b. **Moved file detection** — After building the list of NEW and DELETED sources (from SOURCE_MAP.md hash comparison), cross-reference them:
+   - For each NEW file, compare its MD5 hash (computed in step 9) against DELETED files' stored hashes from SOURCE_MAP.md.
+   - If a NEW file's hash matches a DELETED file's hash → the file was **MOVED** (renamed or relocated). Report: `MOVED: old/path → new/path`. Update SOURCE_MAP.md with the new path but preserve the extraction state (status, timestamp, claims). No re-extraction needed — remove the file from the processing queue and the DELETED list.
+   - If a NEW file has the same filename (basename) as a DELETED file but a different hash → ask the user: `Same filename but different content: old/path vs new/path. Is this the same file (updated), or a new file?`
+     - If "same file (updated)" → treat as MODIFIED (reprocess, replace section in EXTRACTIONS.md under new path)
+     - If "new file" → treat as NEW (process normally) and proceed with DELETED cleanup for the old path
+   - This prevents unnecessary re-extraction when files are reorganized within `01_Sources/`.
 
 11. **Report delta to user** — Before processing, show:
    ```
    Delta computation complete:
    - NEW: 3 files (will process)
    - MODIFIED: 1 file (will reprocess)
+   - MOVED: 0 files (path updated, no re-extraction)
    - UNCHANGED: 53 files (will skip)
    - RETRY: 0 files (errors from last run)
    - DELETED: 0 files (orphaned)

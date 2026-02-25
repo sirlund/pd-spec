@@ -32,6 +32,8 @@
 .card-accent-conflict { border-left: 2px solid var(--conflict-fg); }
 .card-accent-merged { border-left: 2px solid var(--merged-fg); }
 .card-accent-invalidated { border-left: 2px solid var(--invalidated-fg); }
+.card-accent-frozen { border-left: 2px solid var(--frozen-fg); }
+.card-accent-superseded { border-left: 2px solid var(--superseded-fg); }
 
 .card-header {
   display: flex;
@@ -90,6 +92,8 @@
 .badge-pending { background: var(--pending-bg); color: var(--pending-fg); }
 .badge-merged { background: var(--merged-bg); color: var(--merged-fg); }
 .badge-invalidated { background: var(--invalidated-bg); color: var(--invalidated-fg); text-decoration: line-through; }
+.badge-frozen { background: var(--frozen-bg); color: var(--frozen-fg); }
+.badge-superseded { background: var(--superseded-bg); color: var(--superseded-fg); text-decoration: line-through; }
 .badge-resolved { background: var(--resolved-bg); color: var(--resolved-fg); }
 .badge-blocked, .badge-critical { background: var(--conflict-bg); color: var(--conflict-fg); }
 .badge-ready { background: var(--verified-bg); color: var(--verified-fg); }

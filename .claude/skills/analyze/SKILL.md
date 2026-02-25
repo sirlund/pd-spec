@@ -18,7 +18,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### Phase 0: Session Resume & Integrity Check
 
-0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, and `02_Work/SYSTEM_MAP.md`. If discrepancies are found (entries not logged in MEMORY, unexpected files in `02_Work/`), report them to the user before proceeding.
+0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, and `02_Work/STRATEGIC_VISION.md`. If discrepancies are found (entries not logged in MEMORY, unexpected files in `02_Work/`), report them to the user before proceeding.
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
@@ -31,7 +31,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 2. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
-3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs. Also check `02_Work/STRATEGIC_VISION.md` and `02_Work/PROPOSALS.md` for context on current product decisions.
 
 3b. **FILE mode filter** — If `--file` flag was passed, find the matching `## [section]` headers in EXTRACTIONS.md. If a section name is not found, warn the user and skip it. Build the filtered list from matched sections only. Skip steps 4-6 (incremental/full detection) and jump to step 7. Log: `File mode: processing N specified sections`.
 
@@ -92,9 +92,10 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - If new source has a better/clearer quote, update the quote
      - Log: "Updated convergence for [IG-XX]: 2/18 → 3/18"
    - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
+   - **SUPERSEDED detection (future)** — In a future version, Phase 2 will detect when a newer insight fully subsumes an older one (e.g., "users want real-time alerts" superseded by "users want configurable real-time alerts with severity levels"). The newer insight becomes VERIFIED and the older becomes SUPERSEDED → [IG-XX]. Not yet implemented — for now, subsumption is handled manually via `./scripts/verify-insight.sh --supersede`.
 
 10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
-   - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
+   - Determine the next available `[IG-XX]` ID. Use `./scripts/next-id.sh ig 02_Work/INSIGHTS_GRAPH.md` which auto-detects the zero-padding convention from existing IDs. If the script is unavailable, scan existing IDs manually: sequential two-digit minimum (`IG-01` through `IG-99`, then `IG-100`). Never three-digit zero-pad like `IG-001`. For synthesis insights, use `./scripts/next-id.sh synth 02_Work/INSIGHTS_GRAPH.md` for `[IG-SYNTH-XX]` IDs.
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`, `design-framework`.
      - `design-framework` — design principles, UX patterns, naming conventions, product pillars, design language definitions. Example: "Quiet UI absorbs visual complexity", "D→A→R is the interaction skeleton", "4 design pillars: X, Y, Z, W". These claims define *how* the product should feel/work, not *what* users need or *what* the system does.
    - Reference the specific source file it came from.
@@ -380,7 +381,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
 
 - **Question 2** (header: "Ambiguities", multiSelect: false):
   - Question text: "How to handle M ambiguities detected?" (in output_language)
-  - Option A: "Save for /resolve" — recommended. Write as PENDING conflicts, resolve later with dashboard.
+  - Option A: "Save for /spec" — recommended. Write as PENDING conflicts, resolve later with dashboard.
   - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
 
 **Proceed to Phase 4 based on user selections.**
@@ -429,7 +430,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
 23. **Handle ambiguities** — Based on AskUserQuestion response to Question 2:
-    - **"Save for /resolve":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
+    - **"Save for /spec":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
     - **"Resolve now":** Present each ambiguity in terminal with its options (A/B/C from step 16). For each, ask user to choose. Write resolved ones to CONFLICTS.md with status RESOLVED + chosen option. Write unresolved ones as PENDING.
 
 24. **Log conflicts** — For each detected contradiction (from step 11 cross-reference):

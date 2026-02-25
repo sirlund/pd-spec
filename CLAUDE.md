@@ -13,7 +13,7 @@ This project follows the PD-Spec 3-layer architecture. The AI agent operates wit
 
 ```
 01_Sources/  →  Raw input (read-only)
-02_Work/     →  Knowledge base (insights, conflicts, system map)
+02_Work/     →  Knowledge base (insights, conflicts, strategic vision, proposals)
 03_Outputs/  →  Deliverables (derived from Work, never authored directly)
 ```
 
@@ -61,6 +61,18 @@ The folder name provides context that individual files inherit. The agent valida
 
 **Non-markdown files** (images, PDFs, spreadsheets, .txt, .docx) can't carry internal metadata. Add a `_CONTEXT.md` in the folder to describe them — see `_CONTEXT_TEMPLATE.md` for the format.
 
+### Source Management
+
+Sources can be added, reclassified, or deleted. The agent validates each operation:
+
+| Operation | How | Agent behavior |
+|---|---|---|
+| **Add** | Place files in `01_Sources/` subfolder, run `/extract` | Normal extraction pipeline |
+| **Reclassify** | Move file to different subfolder | `/extract` detects via moved file detection (BL-57) |
+| **Delete** | Remove file from `01_Sources/` | `/extract` warns about impacted insights, requires confirmation for orphan-creating deletions |
+
+Deletion is the most destructive operation — it can orphan insights. The agent provides impact analysis before proceeding.
+
 ## Skills Pipeline
 
 | Skill | Command | What it does |
@@ -68,10 +80,10 @@ The folder name provides context that individual files inherit. The agent valida
 | Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
 | Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
 | Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
-| Resolve | `/resolve` | Resolve conflicts, update system map |
+| Spec | `/spec` | Resolve conflicts, build Strategic Vision + Design Proposals |
 | Ship | `/ship [type]` | Generate Markdown deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
-| Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
+| Visualize | `/visualize [target]` | Generate Mermaid diagrams (strategic-vision, proposals, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
 | View | `/view` | Start the Live Research App — local web viewer for Work layer data |
@@ -82,7 +94,54 @@ The folder name provides context that individual files inherit. The agent valida
 |---|---|---|
 | **Seed** | Initial brief only | Basic definitions, skeleton PRD, many open questions |
 | **Validation** | Brief + interviews/quant data | Cross-referencing active, conflicts surfacing |
-| **Ecosystem** | Multiple source types | Full contradiction detection, rich system map |
+| **Ecosystem** | Multiple source types | Full contradiction detection, rich strategic vision |
+
+## Insight Lifecycle
+
+Insights in `INSIGHTS_GRAPH.md` follow a 6-status state machine:
+
+```
+        /analyze creates
+              │
+              ▼
+        ┌──────────┐
+        │ PENDING  │
+        └────┬─────┘
+             │
+  ┌──────────┼──────────┐
+  │ verify   │ invalidate│ merge
+  ▼          ▼           ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ VERIFIED │ │INVALIDATED│ │  MERGED  │
+└────┬─────┘ └──────────┘ │→ [IG-XX] │
+     │                     └──────────┘
+  ┌──┼────────┐
+freeze│    supersede
+  ▼  │        ▼
+┌────────┐ ┌──────────┐
+│ FROZEN │ │SUPERSEDED│
+└───┬────┘ │→ [IG-XX] │
+ unfreeze  └──────────┘
+  ▼
+(VERIFIED)
+```
+
+| Status | Meaning | Counts toward convergence? |
+|---|---|---|
+| `PENDING` | New, unverified | Yes |
+| `VERIFIED` | Confirmed by evidence | Yes |
+| `FROZEN` | Valid but deprioritized (user-only decision) | No |
+| `INVALIDATED` | Contradicted + reason stored | No |
+| `MERGED` | Absorbed into another `[IG-XX]` | No |
+| `SUPERSEDED` | Replaced by newer `[IG-XX]` | No |
+
+**Format in INSIGHTS_GRAPH.md:**
+
+Each insight includes a `Last-updated: YYYY-MM-DD` field set by `/analyze` and `/spec` when touching the insight. The app displays a freshness indicator based on this date (green ≤14d, yellow ≤45d, red >45d).
+
+**Cascade protection:** Before FREEZE, INVALIDATE, or SUPERSEDE, `scripts/verify-insight.sh` greps the insight ID across STRATEGIC_VISION + PROPOSALS + Outputs. LOW (≤2 refs) proceeds silently. MEDIUM (3-5) shows orphans, asks confirm. HIGH (5+) requires explicit ID confirmation.
+
+**FROZEN = user only.** The agent cannot freeze insights. Only the user decides "this doesn't move the needle right now."
 
 ## Sources of Truth
 
@@ -93,8 +152,9 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/SOURCE_MAP.md` | Per-file extraction state (hash, status, timestamp) | Yes (via `/extract`, auto-maintained) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
-| `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/resolve`) |
-| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/resolve`) |
+| `02_Work/STRATEGIC_VISION.md` | Vision, strategy, principles, domains | Yes (via `/spec`) |
+| `02_Work/PROPOSALS.md` | Design proposals [DP-XX] | Yes (via `/spec`) |
+| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/spec`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
 | `02_Work/MEMORY.md` | Session log & state tracker (compacted at 80 lines) | Yes (via all skills) |
@@ -120,7 +180,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── kickoff/SKILL.md       /kickoff — project setup wizard
 │   ├── extract/SKILL.md      /extract — read sources, extract raw claims
 │   ├── analyze/SKILL.md       /analyze — process extractions into insights
-│   ├── resolve/SKILL.md       /resolve — resolve conflicts
+│   ├── spec/SKILL.md          /spec — build product specification
 │   ├── ship/SKILL.md          /ship — generate deliverables (10 output types)
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
@@ -138,7 +198,8 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── SOURCE_MAP.md           Per-file extraction state (hash, status, timestamp)
 │   ├── EXTRACTIONS.md          Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
-│   ├── SYSTEM_MAP.md          Product architecture decisions
+│   ├── STRATEGIC_VISION.md    Vision, strategy, principles, domains
+│   ├── PROPOSALS.md           Design proposals [DP-XX]
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
 │   ├── IDEAS.md               Ideas & bugs from project work (→ BACKLOG on main)
 │   ├── MEMORY.md              Session log & state tracker
@@ -258,11 +319,53 @@ All agent commits include `Co-Authored-By: Claude <model> <noreply@anthropic.com
 After `feat`/`fix` commits, wrap up the session with a single `docs` commit:
 
 1. `docs/BACKLOG.md` — mark BL item(s) as IMPLEMENTED with version and date
-2. `docs/CHANGELOG.md` — add version entry (highlights-first format, see Documentation Guidelines)
+2. `docs/CHANGELOG.md` — add version entry (see CHANGELOG Entry Format below)
 3. `PROJECT.md` template — bump `engine_version`
 4. Commit all three together: `docs: release vX.Y.Z — [summary]`
 
 The `feat:`/`fix:` commits carry code changes; the `docs: release` commit carries the bookkeeping.
+
+### CHANGELOG Entry Format
+
+Inspired by [Antigravity changelog](https://antigravity.google/changelog). Each entry follows this structure:
+
+```markdown
+## [X.Y.Z] — YYYY-MM-DD — Release Title
+
+One-liner description of what this release brings. Benefit-focused, not technical.
+
+<details>
+<summary>Features (N)</summary>
+
+- **Feature name (BL-XX)** — What it does, benefit to user
+- ...
+
+</details>
+
+<details>
+<summary>Fixes (N)</summary>
+
+- **Bug name (BUG-XX)** — What was broken, what's fixed
+- ...
+
+</details>
+
+<details>
+<summary>Patches (N)</summary>
+
+- **Patch description** — Minor tweak or cosmetic change
+- ...
+
+</details>
+```
+
+**Rules:**
+- **Release title** — short, catchy name (e.g., "Cross-Navigation & Markdown Outputs", "Demo Polish")
+- **One-liner** — one sentence, benefit-focused, no BL references
+- **Categories** — `Features` (new capabilities), `Fixes` (bugs), `Patches` (cosmetic, docs, config). Always show all three with counts, even if `(0)`
+- **Items** — one bullet per change. BL/BUG reference in parentheses. Brief description.
+- Empty categories: show `No [features/fixes/patches] in this release.` inside the `<details>` block
+- Historical entries (pre-v4.21) keep their original format — do not retroactively migrate
 
 ### Idea Flow: Project → Main
 
@@ -294,7 +397,7 @@ At the start of every session (new conversation), the agent recovers state with 
 1. **Read `02_Work/_temp/SESSION_CHECKPOINT.md`** (~2K tokens, single read).
    - If the checkpoint exists and its Quantitative Snapshot is **fresh** (counts match a quick header scan of INSIGHTS_GRAPH.md and CONFLICTS.md) → resume immediately from checkpoint context. No further reads needed.
    - If the checkpoint is **stale** (snapshot counts diverge from actual file headers) or **absent** → read `02_Work/MEMORY.md` (compacted, ~2K tokens) and rebuild context from there.
-2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and system map entries. Report discrepancies to the user before proceeding.
+2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and spec entries. Report discrepancies to the user before proceeding.
 3. **Resume context** — use checkpoint (preferred) or MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
 ### After Every Skill Execution
@@ -376,7 +479,7 @@ PD-Spec maintains multiple documentation files. Each has a specific purpose and 
 
 | File | Purpose | Audience | Content Type |
 |---|---|---|---|
-| **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Feature highlights, capability announcements, breaking changes. Framed commercially ("Now you can..."). Highlights-first format with technical details in collapsible sections. |
+| **CHANGELOG.md** | User-facing version history. "What's new" in each release. | PD-Spec consumers (researchers, PMs) | Antigravity-style entries: version + date + release title, one-liner description, categorized collapsible sections (Features, Fixes, Patches) with item counts. Framed commercially ("Now you can..."). See CHANGELOG Entry Format below. |
 | **BACKLOG.md** | Architectural decisions and feature planning. | PD-Spec developers (engine maintainers) | User stories, acceptance criteria, proposed fixes, implementation notes. Structured format. Can include evidence tables when needed to clarify the problem. Two sections: 🎯 Proposed (pending) + ✅ Implemented (archive with context). |
 | **QA findings** (`docs/qa/QA_V*_FINDINGS.md`) | Testing evidence and raw notes. | PD-Spec developers (debugging) | Observed behavior, reproduction steps, screenshots, logs, hypotheses, ideas. Informal lab notebook format. Created during formal QA sessions. BACKLOG items reference these for detailed evidence. |
 | **MEMORY.md** (`02_Work/`) | Session execution log. | AI agent (fallback resume) + user (audit trail) | Skill execution history, state snapshots, ad-hoc actions. Compacted at 80 lines (historical summary + recent entries). Timestamps in ISO format (`YYYY-MM-DDTHH:MM`). |
@@ -396,7 +499,7 @@ When a bug is discovered during formal QA:
 
 ### Writing Style
 
-- **CHANGELOG:** Conversational, benefit-focused. "You can now extract Office files without dependencies."
+- **CHANGELOG:** Conversational, benefit-focused. "You can now extract Office files without dependencies." Each entry has a release title, one-liner, and categorized items (Features/Fixes/Patches) in collapsible `<details>` blocks with counts.
 - **BACKLOG:** Technical, implementation-focused. "Add Bash to allowed-tools. Fallback: textutil → zipfile."
 - **QA findings:** Forensic, evidence-based. "Observed: 57 files discovered, 15 processed. Root cause: no explicit no-skip rule."
 - **MEMORY.md:** Structured log format. Request → Actions → Result → Snapshot.
@@ -426,7 +529,19 @@ Mechanical operations (counting, JSON generation, hash computation, denominator 
 
 **When NOT to script:** The operation requires semantic understanding (e.g., Pass C sentence repair, insight categorization, conflict detection).
 
-**Script-eligible operations:**
+**Utility scripts** (`scripts/`):
+
+| Script | Usage | Purpose |
+|---|---|---|
+| `next-id.sh` | `./scripts/next-id.sh [ig\|synth\|cf\|dp] <file>` | Next available ID (detects zero-padding) |
+| `count-statuses.sh` | `./scripts/count-statuses.sh <file>` | Count entities by status |
+| `verify-insight.sh` | `./scripts/verify-insight.sh --action <id> <file>` | Change insight status (6 transitions + cascade) |
+| `resolve-conflict.sh` | `./scripts/resolve-conflict.sh <id> <file> [--resolution "text"]` | Resolve a conflict |
+| `reset.sh` | `./scripts/reset.sh [--work\|--output\|--all]` | Reset generated layers to template state |
+| `integrity-check.sh` | `./scripts/integrity-check.sh [project_path]` | Detect orphan insights |
+| `validate-fixes.sh` | `./scripts/validate-fixes.sh` | Pre-commit mechanical checks |
+
+**Inline script patterns** (for ad-hoc operations):
 
 | Operation | Tool | Pattern |
 |---|---|---|
@@ -436,8 +551,6 @@ Mechanical operations (counting, JSON generation, hash computation, denominator 
 | Count claims | Bash | `grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md` |
 | MEMORY.md line count | Bash | `wc -l < 02_Work/MEMORY.md` |
 | File hash (md5) | Bash | `md5 -q "path/to/file"` |
-| Convergence denominator update | Bash/Python | Regex `X/N` → `X/(N+1)` across file |
-| STATUS.html JSON generation | Python | Parse Work files → build JSON → inject into template |
 
 **Validation rule:** After any script produces output, sanity-check before writing:
 - Counts must be > 0 (unless the file is genuinely empty)
@@ -454,7 +567,7 @@ Before committing engine changes, verify:
 2. **BACKLOG consistency** — BL items referenced in commit message exist in BACKLOG.md. Implemented items have version and date.
 3. **Skill integrity** — Changed skill files have valid YAML frontmatter (`name`, `description`, `user-invocable`, `allowed-tools`)
 4. **No generated content on main** — `git status` shows no files in 01_Sources/, 02_Work/, or 03_Outputs/*.html
-5. **CHANGELOG format** — New entries use highlights-first format with `<details>` for technical notes. Framed for PD-Spec consumers, not developers.
+5. **CHANGELOG format** — New entries use Antigravity-style format: release title + one-liner + categorized `<details>` (Features/Fixes/Patches with counts). Framed for PD-Spec consumers, not developers.
 
 Use `/verify` to automate these checks.
 

@@ -46,15 +46,14 @@ export default function FileBrowser({ root, title, onNavigate }) {
     }
   }
 
-  // Build folder tree — separate root files (folder=null) from real folders
+  // Build nested folder tree — supports paths like "a/b/c" (BL-84)
   const rootFiles = [];
-  const folders = {};
+  const folderTree = {}; // nested: { [name]: { files: [], children: {} } }
   const fileList = isSources ? files.data?.files : isWork ? files.data?.files : files.data?.outputs;
   if (fileList) {
     for (const f of fileList) {
       let folder;
       if (isOutputs) {
-        // For outputs, derive folder from path (strip 03_Outputs/ prefix)
         const parts = f.path.replace('03_Outputs/', '').split('/');
         folder = parts.length > 1 ? parts.slice(0, -1).join('/') : null;
       } else {
@@ -64,8 +63,16 @@ export default function FileBrowser({ root, title, onNavigate }) {
       if (folder === null || folder === undefined) {
         rootFiles.push(f);
       } else {
-        if (!folders[folder]) folders[folder] = [];
-        folders[folder].push(f);
+        const parts = folder.split('/');
+        let node = folderTree;
+        for (const part of parts) {
+          if (!node[part]) node[part] = { files: [], children: {} };
+          if (part === parts[parts.length - 1]) {
+            node[part].files.push(f);
+          } else {
+            node = node[part].children;
+          }
+        }
       }
     }
   }
@@ -172,6 +179,48 @@ export default function FileBrowser({ root, title, onNavigate }) {
     );
   };
 
+  // Recursive folder renderer (BL-84: nested folders)
+  const renderFolderTree = (tree, parentPath) => {
+    return Object.entries(tree).sort(([a], [b]) => a.localeCompare(b)).map(([name, node]) => {
+      const fullPath = parentPath ? `${parentPath}/${name}` : name;
+      const isCollapsed = collapsedFolders[fullPath];
+      const totalFiles = countTreeFiles(node);
+      const hasChildren = Object.keys(node.children).length > 0;
+
+      return (
+        <div key={fullPath} className="file-folder">
+          <div
+            className={`file-folder-name ${isCollapsed ? 'collapsed' : ''}`}
+            onClick={() => toggleFolder(fullPath)}
+          >
+            <Icon name="chevron-down" size={14} />
+            <Icon name={isCollapsed ? 'folder' : 'folder-open'} size={14} />
+            <span style={{ flex: 1 }}>{name}</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              {totalFiles}
+            </span>
+          </div>
+
+          {!isCollapsed && (
+            <>
+              {node.files.map(renderFileRow)}
+              {hasChildren && renderFolderTree(node.children, fullPath)}
+            </>
+          )}
+        </div>
+      );
+    });
+  };
+
+  // Count all files in a tree node (recursive)
+  const countTreeFiles = (node) => {
+    let count = node.files.length;
+    for (const child of Object.values(node.children)) {
+      count += countTreeFiles(child);
+    }
+    return count;
+  };
+
   return (
     <div className="file-browser-view">
       <div className="section-header">
@@ -194,27 +243,8 @@ export default function FileBrowser({ root, title, onNavigate }) {
           {/* Root-level files (flat, no collapsible container) */}
           {rootFiles.map(renderFileRow)}
 
-          {/* Sorted folder groups */}
-          {Object.entries(folders).sort(([a], [b]) => a.localeCompare(b)).map(([folder, folderFiles]) => {
-            const isCollapsed = collapsedFolders[folder];
-            return (
-              <div key={folder} className="file-folder">
-                <div
-                  className={`file-folder-name ${isCollapsed ? 'collapsed' : ''}`}
-                  onClick={() => toggleFolder(folder)}
-                >
-                  <Icon name="chevron-down" size={14} />
-                  <Icon name={isCollapsed ? 'folder' : 'folder-open'} size={14} />
-                  <span style={{ flex: 1 }}>{folder}</span>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {folderFiles.length}
-                  </span>
-                </div>
-
-                {!isCollapsed && folderFiles.map(renderFileRow)}
-              </div>
-            );
-          })}
+          {/* Recursive folder tree (BL-84) */}
+          {renderFolderTree(folderTree, '')}
         </div>
 
         {/* Right: Preview pane */}

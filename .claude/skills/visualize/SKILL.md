@@ -1,9 +1,9 @@
 ---
 name: visualize
-description: Generate interactive Mermaid diagrams (system-map, insights, conflicts) as HTML in 03_Outputs/ from the knowledge base in 02_Work/
+description: Generate interactive Mermaid diagrams (strategic-vision, proposals, insights, conflicts) as HTML in 03_Outputs/ from the knowledge base in 02_Work/
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
-argument-hint: "[system-map|insights|conflicts|all]"
+argument-hint: "[strategic-vision|proposals|insights|conflicts|all]"
 ---
 
 # /visualize — Diagram Generation
@@ -23,14 +23,15 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
 ### Phase 1: Load & Determine Target
 
 1. **Determine target** — Based on user argument:
-   - `system-map` (default) — Visualize modules, decisions, and their insight references from SYSTEM_MAP.md.
+   - `strategic-vision` (default) — Visualize principles, domains, and their insight references from STRATEGIC_VISION.md.
+   - `proposals` — Visualize design proposals hierarchy: domains > modules > features from PROPOSALS.md.
    - `insights` — Visualize the insights network: relationships, statuses, source references.
    - `conflicts` — Visualize tensions between insights and their resolution status.
-   - `all` — Generate all three diagrams in a single HTML file.
+   - `all` — Generate all diagrams in a single HTML file.
 
 2. **Load knowledge base** — Read the relevant `02_Work/` files for the target diagram(s).
 
-3. **Validate content** — If the target file is empty or has no entries, report this to the user and suggest running `/analyze` or `/resolve` first.
+3. **Validate content** — If the target file is empty or has no entries, report this to the user and suggest running `/analyze` or `/spec` first.
 
 ### Phase 2: Propose (User Approval)
 
@@ -44,10 +45,15 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
 
 5. **Build Mermaid diagram(s)** — Follow these syntax rules:
 
-   **For system-map:**
-   - Use `flowchart TD` (top-down) for module hierarchy.
-   - Nodes = modules/decisions. Edges = insight references `[IG-XX]`.
+   **For strategic-vision:**
+   - Use `flowchart TD` (top-down) for principle → domain hierarchy.
+   - Nodes = principles, domains, value props. Edges = insight references `[IG-XX]`.
    - Color-code by status: green for verified-backed, yellow for pending, red for conflicted.
+
+   **For proposals:**
+   - Use `flowchart TD` for domain > module > feature hierarchy.
+   - Nodes = [DP-XX] proposals. Edges = parent relationships + insight references.
+   - Color by status: blue=PROPOSED, green=VALIDATED, yellow=BUILDING, gray=SHIPPED.
 
    **For insights:**
    - Use `graph LR` (left-right) for insight network.
