@@ -4,15 +4,28 @@ import { StatusBadge, IdBadge, WarningBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
 import ProgressBar from './ui/ProgressBar.jsx';
 
+function getFreshness(lastUpdated) {
+  if (!lastUpdated) return null;
+  const now = new Date();
+  const updated = new Date(lastUpdated);
+  const days = Math.floor((now - updated) / (1000 * 60 * 60 * 24));
+  if (days <= 14) return { color: 'var(--vivid-green)', label: 'Fresh', days };
+  if (days <= 45) return { color: 'var(--vivid-yellow)', label: 'Aging', days };
+  return { color: 'var(--vivid-red)', label: 'Stale', days };
+}
+
 export default function InsightCard({ insight, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
   const [refsExpanded, setRefsExpanded] = useState(false);
+  const freshness = getFreshness(insight.last_updated);
 
   const statusAccent = {
     VERIFIED: 'verified',
     PENDING: 'pending',
     MERGED: 'merged',
     INVALIDATED: 'invalidated',
+    FROZEN: 'frozen',
+    SUPERSEDED: 'superseded',
   }[insight.status];
 
   return (
@@ -20,6 +33,12 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       <div className="card-header">
         <IdBadge id={insight.id} />
         <StatusBadge status={insight.status} />
+        {freshness && (
+          <span title={`${freshness.label} — updated ${freshness.days}d ago`} style={{
+            display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
+            background: freshness.color, flexShrink: 0,
+          }} />
+        )}
         {insight.ai_generated && <WarningBadge>AI-GENERATED</WarningBadge>}
       </div>
 

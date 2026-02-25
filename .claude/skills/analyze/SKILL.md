@@ -92,6 +92,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - If new source has a better/clearer quote, update the quote
      - Log: "Updated convergence for [IG-XX]: 2/18 → 3/18"
    - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
+   - **SUPERSEDED detection (future)** — In a future version, Phase 2 will detect when a newer insight fully subsumes an older one (e.g., "users want real-time alerts" superseded by "users want configurable real-time alerts with severity levels"). The newer insight becomes VERIFIED and the older becomes SUPERSEDED → [IG-XX]. Not yet implemented — for now, subsumption is handled manually via `./scripts/verify-insight.sh --supersede`.
 
 10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
    - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).

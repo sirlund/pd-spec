@@ -84,6 +84,53 @@ The folder name provides context that individual files inherit. The agent valida
 | **Validation** | Brief + interviews/quant data | Cross-referencing active, conflicts surfacing |
 | **Ecosystem** | Multiple source types | Full contradiction detection, rich strategic vision |
 
+## Insight Lifecycle
+
+Insights in `INSIGHTS_GRAPH.md` follow a 6-status state machine:
+
+```
+        /analyze creates
+              │
+              ▼
+        ┌──────────┐
+        │ PENDING  │
+        └────┬─────┘
+             │
+  ┌──────────┼──────────┐
+  │ verify   │ invalidate│ merge
+  ▼          ▼           ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ VERIFIED │ │INVALIDATED│ │  MERGED  │
+└────┬─────┘ └──────────┘ │→ [IG-XX] │
+     │                     └──────────┘
+  ┌──┼────────┐
+freeze│    supersede
+  ▼  │        ▼
+┌────────┐ ┌──────────┐
+│ FROZEN │ │SUPERSEDED│
+└───┬────┘ │→ [IG-XX] │
+ unfreeze  └──────────┘
+  ▼
+(VERIFIED)
+```
+
+| Status | Meaning | Counts toward convergence? |
+|---|---|---|
+| `PENDING` | New, unverified | Yes |
+| `VERIFIED` | Confirmed by evidence | Yes |
+| `FROZEN` | Valid but deprioritized (user-only decision) | No |
+| `INVALIDATED` | Contradicted + reason stored | No |
+| `MERGED` | Absorbed into another `[IG-XX]` | No |
+| `SUPERSEDED` | Replaced by newer `[IG-XX]` | No |
+
+**Format in INSIGHTS_GRAPH.md:**
+
+Each insight includes a `Last-updated: YYYY-MM-DD` field set by `/analyze` and `/spec` when touching the insight. The app displays a freshness indicator based on this date (green ≤14d, yellow ≤45d, red >45d).
+
+**Cascade protection:** Before FREEZE, INVALIDATE, or SUPERSEDE, `scripts/verify-insight.sh` greps the insight ID across STRATEGIC_VISION + PROPOSALS + Outputs. LOW (≤2 refs) proceeds silently. MEDIUM (3-5) shows orphans, asks confirm. HIGH (5+) requires explicit ID confirmation.
+
+**FROZEN = user only.** The agent cannot freeze insights. Only the user decides "this doesn't move the needle right now."
+
 ## Sources of Truth
 
 | File | Role | Editable? |

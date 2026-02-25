@@ -81,6 +81,7 @@ export function parseInsights(content) {
         authority: null,
         status: 'PENDING',
         ai_generated: false,
+        last_updated: null,
         narrative: '',
         evidence: [],
         named_concept_origin: null,
@@ -116,6 +117,9 @@ export function parseInsights(content) {
 
       const status = line.match(/^Status:\s*(\w+)/);
       if (status) { current.status = status[1].toUpperCase(); continue; }
+
+      const lastUpdated = line.match(/^Last-updated:\s*(\d{4}-\d{2}-\d{2})/);
+      if (lastUpdated) { current.last_updated = lastUpdated[1]; continue; }
 
       const aiTag = line.match(/\[AI-GENERATED/);
       if (aiTag) { current.ai_generated = true; continue; }

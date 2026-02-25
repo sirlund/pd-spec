@@ -33,6 +33,10 @@
   --merged-fg: #38bdf8;
   --invalidated-bg: #1a1a1a;
   --invalidated-fg: #666666;
+  --frozen-bg: #1a1a2e;
+  --frozen-fg: #818cf8;
+  --superseded-bg: #1a1a1a;
+  --superseded-fg: #888888;
   --resolved-bg: #0d3320;
   --resolved-fg: #4ade80;
 
@@ -69,6 +73,10 @@
   --merged-fg: #2563eb;
   --invalidated-bg: #f3f4f6;
   --invalidated-fg: #9ca3af;
+  --frozen-bg: #eef2ff;
+  --frozen-fg: #6366f1;
+  --superseded-bg: #f3f4f6;
+  --superseded-fg: #9ca3af;
   --resolved-bg: #dcfce7;
   --resolved-fg: #16a34a;
 
