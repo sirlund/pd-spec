@@ -470,7 +470,19 @@ Mechanical operations (counting, JSON generation, hash computation, denominator 
 
 **When NOT to script:** The operation requires semantic understanding (e.g., Pass C sentence repair, insight categorization, conflict detection).
 
-**Script-eligible operations:**
+**Utility scripts** (`scripts/`):
+
+| Script | Usage | Purpose |
+|---|---|---|
+| `next-id.sh` | `./scripts/next-id.sh [ig\|synth\|cf\|dp] <file>` | Next available ID (detects zero-padding) |
+| `count-statuses.sh` | `./scripts/count-statuses.sh <file>` | Count entities by status |
+| `verify-insight.sh` | `./scripts/verify-insight.sh --action <id> <file>` | Change insight status (6 transitions + cascade) |
+| `resolve-conflict.sh` | `./scripts/resolve-conflict.sh <id> <file> [--resolution "text"]` | Resolve a conflict |
+| `reset.sh` | `./scripts/reset.sh [--work\|--output\|--all]` | Reset generated layers to template state |
+| `integrity-check.sh` | `./scripts/integrity-check.sh [project_path]` | Detect orphan insights |
+| `validate-fixes.sh` | `./scripts/validate-fixes.sh` | Pre-commit mechanical checks |
+
+**Inline script patterns** (for ad-hoc operations):
 
 | Operation | Tool | Pattern |
 |---|---|---|
@@ -480,8 +492,6 @@ Mechanical operations (counting, JSON generation, hash computation, denominator 
 | Count claims | Bash | `grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md` |
 | MEMORY.md line count | Bash | `wc -l < 02_Work/MEMORY.md` |
 | File hash (md5) | Bash | `md5 -q "path/to/file"` |
-| Convergence denominator update | Bash/Python | Regex `X/N` → `X/(N+1)` across file |
-| STATUS.html JSON generation | Python | Parse Work files → build JSON → inject into template |
 
 **Validation rule:** After any script produces output, sanity-check before writing:
 - Counts must be > 0 (unless the file is genuinely empty)
