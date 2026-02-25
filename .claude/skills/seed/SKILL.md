@@ -10,7 +10,7 @@ argument-hint: "[domain] [--seed|--validation|--ecosystem] [--temp low|medium|hi
 
 ## What this skill does
 
-Generates realistic synthetic source files in `01_Sources/` to test the full pipeline (`/analyze` → `/resolve` → `/ship`) without needing real project data. Also useful as onboarding — a new user runs `/seed` and sees the system working in minutes.
+Generates realistic synthetic source files in `01_Sources/` to test the full pipeline (`/analyze` → `/spec` → `/ship`) without needing real project data. Also useful as onboarding — a new user runs `/seed` and sees the system working in minutes.
 
 ## When to use
 

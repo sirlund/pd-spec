@@ -2,7 +2,7 @@
 
 **Do not edit files in this folder manually.**
 
-This layer is the project's "brain" — maintained by the `/extract`, `/analyze`, and `/resolve` skills.
+This layer is the project's "brain" — maintained by the `/extract`, `/analyze`, and `/spec` skills.
 
 ## What lives here
 
@@ -10,16 +10,17 @@ This layer is the project's "brain" — maintained by the `/extract`, `/analyze`
 |---|---|---|
 | `EXTRACTIONS.md` | `/extract` | Raw claims extracted from sources |
 | `INSIGHTS_GRAPH.md` | `/analyze` | Atomic verified insights |
-| `CONFLICTS.md` | `/analyze`, `/resolve` | Contradiction log |
+| `CONFLICTS.md` | `/analyze`, `/spec` | Contradiction log |
 | `RESEARCH_BRIEF.md` | `/analyze` | Stakeholder narrative summary |
-| `SYSTEM_MAP.md` | `/resolve` | Product architecture decisions |
+| `STRATEGIC_VISION.md` | `/spec` | Vision, strategy, principles, domains |
+| `PROPOSALS.md` | `/spec` | Design proposals organized by domain |
 | `MEMORY.md` | All skills | Session log and state tracking |
 
 ## How to change things
 
 - **To add information** → put sources in `01_Sources/` and run `/extract`, then `/analyze`
-- **To resolve conflicts** → run `/resolve`
-- **To update decisions** → run `/resolve`
+- **To resolve conflicts** → run `/spec`
+- **To update decisions** → run `/spec`
 - **To check readiness** → run `/audit` before `/ship`
 
 Manual edits to this folder will be detected and flagged by the agent at the start of the next session.

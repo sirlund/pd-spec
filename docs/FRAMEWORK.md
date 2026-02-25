@@ -60,7 +60,7 @@ Logs grow unbounded. Compress old entries into summaries while preserving recent
 
 ### 6. Composable Skill Chain
 
-**Origin:** PD-Spec pipeline (/extract → /analyze → /resolve → /ship).
+**Origin:** PD-Spec pipeline (/extract → /analyze → /spec → /ship).
 
 Skills are independent steps with clear input/output contracts. Each skill reads from a known location, writes to a known location, and logs its execution. Skills can be run individually or chained. Incremental by default.
 

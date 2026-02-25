@@ -15,7 +15,7 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 ## When to use
 
 - Before `/ship` — to verify the knowledge base is solid enough for deliverables.
-- After `/resolve` — to confirm that conflict resolution improved quality.
+- After `/spec` — to confirm that conflict resolution improved quality.
 - Anytime — as a health check on research progress.
 
 ## Instructions
@@ -31,7 +31,8 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 1. **Read all Work layer files:**
    - `02_Work/INSIGHTS_GRAPH.md` — parse all `[IG-XX]` entries with status, category, temporal tag, convergence, and source ref.
    - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status.
-   - `02_Work/SYSTEM_MAP.md` — parse vision, modules (name, status, refs, design implications), design principles, open questions.
+   - `02_Work/STRATEGIC_VISION.md` — parse vision, strategy, principles, domains, value props, open questions.
+   - `02_Work/PROPOSALS.md` — parse design proposals [DP-XX] (type, domain, status, refs, implications).
    - `02_Work/EXTRACTIONS.md` — check if extractions exist (non-empty beyond template header).
 
 2. **If no insights exist** (INSIGHTS_GRAPH.md is empty or template-only), report: "Nothing to audit. Run `/extract` then `/analyze` first." Then stop.
@@ -42,11 +43,11 @@ Run each check and compute a score (0–100%). Present results per check.
 
 #### Check 1: Traceability Completeness
 
-Every system map module must have `[IG-XX]` refs. Every design implication must reference an insight.
+Every design proposal must have `[IG-XX]` refs (Grounded in:). Every strategic vision entry must reference insights.
 
-- Count modules with refs vs. modules without refs.
-- Count design implications with refs vs. without refs.
-- **Score:** % of entries (modules + implications) that have at least one `[IG-XX]` reference.
+- Count proposals with refs vs. proposals without refs.
+- Count strategic vision entries (principles, domains) with refs vs. without refs.
+- **Score:** % of entries (proposals + principles + domains) that have at least one `[IG-XX]` reference.
 - **Pass threshold:** 100% — traceability is binary, any untraced entry is a gap.
 
 #### Check 2: Insight Coverage
@@ -81,20 +82,20 @@ What percentage of insights have convergence > 1 source?
 
 How many known gaps exist? Are they documented?
 
-- Count open questions in SYSTEM_MAP.md (unchecked `- [ ]` items).
+- Count open questions in STRATEGIC_VISION.md (unchecked `- [ ]` items).
 - Check if source diversity gaps are documented (from previous `/analyze` runs — look for gap mentions in INSIGHTS_GRAPH.md or EXTRACTIONS.md).
 - **Score:** Inverse scale — 100% if 0–2 gaps, 75% if 3–5, 50% if 6–10, 25% if >10.
 - Gaps are not inherently bad (they show awareness), but many unaddressed gaps signal the knowledge base needs more work.
 
-#### Check 6: System Map Completeness
+#### Check 6: Specification Completeness
 
-Does the system map have substantive content?
+Do STRATEGIC_VISION.md and PROPOSALS.md have substantive content?
 
 Checklist:
-- [ ] Vision statement exists (not placeholder text)
-- [ ] At least one module is defined
-- [ ] At least one module has design implications
-- [ ] Design principles are defined (at least one)
+- [ ] Vision statement exists in STRATEGIC_VISION.md (not placeholder text)
+- [ ] At least one design principle is defined
+- [ ] At least one operational domain is defined
+- [ ] At least one design proposal [DP-XX] exists in PROPOSALS.md
 - [ ] Open questions are tracked
 
 - **Score:** (checked items / 5) × 100%.
@@ -132,7 +133,7 @@ Mix of `(current)` vs `(aspirational)` insights.
    | 3 | Conflict Resolution      | XX%   | ✓ / ✗  |
    | 4 | Source Backing            | XX%   | ✓ / ✗  |
    | 5 | Evidence Gaps            | XX%   | ✓ / ✗  |
-   | 6 | System Map Completeness  | XX%   | ✓ / ✗  |
+   | 6 | Specification Completeness | XX% | ✓ / ✗  |
    | 7 | Temporal Balance         | XX%   | ✓ / ✗  |
 
    ### Failing Checks
@@ -141,12 +142,12 @@ Mix of `(current)` vs `(aspirational)` insights.
    ```
 
 5. **For each failing check**, provide a specific remediation action:
-   - Traceability: "Add `[IG-XX]` references to untraced modules in SYSTEM_MAP.md. Run `/resolve` to update."
+   - Traceability: "Add `[IG-XX]` references to untraced proposals in PROPOSALS.md. Run `/spec` to update."
    - Insight Coverage: "Missing [category] insights. Run `/extract` on sources that cover [category], then `/analyze`."
-   - Conflict Resolution: "N conflicts still PENDING. Run `/resolve` to resolve them."
+   - Conflict Resolution: "N conflicts still PENDING. Run `/spec` to resolve them."
    - Source Backing: "N insights rely on a single source. Add more sources covering these topics and re-run `/extract` + `/analyze`."
-   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/resolve` to discuss them."
-   - System Map Completeness: "Missing: [list]. Run `/resolve` to fill in the system map."
+   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/spec` to discuss them."
+   - Specification Completeness: "Missing: [list]. Run `/spec` to fill in the strategic vision and proposals."
    - Temporal Balance: "All insights are [current/aspirational]. Add sources that cover [the missing perspective]."
 
 6. **Closing note:**

@@ -5,7 +5,7 @@ import { StatusBadge, IdBadge } from './ui/Badge.jsx';
 const CATEGORIES = [
   { key: 'insights', label: 'Insights', icon: 'diamond', nav: (r) => r.id },
   { key: 'conflicts', label: 'Conflicts', icon: 'bolt', nav: (r) => r.id },
-  { key: 'modules', label: 'System Map', icon: 'sitemap', nav: () => 'system-map' },
+  { key: 'proposals', label: 'Proposals', icon: 'layout-list', nav: () => 'proposals' },
   { key: 'claims', label: 'Extractions', icon: 'list-details', nav: () => 'extractions' },
   { key: 'sources', label: 'Sources', icon: 'folders', nav: () => 'sources' },
 ];

@@ -64,7 +64,7 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
    ```markdown
    # Conflicts Log
 
-   Contradictions detected between insights. Each conflict has a unique `[CF-XX]` ID and must be resolved through `/resolve` before the system map can be updated.
+   Contradictions detected between insights. Each conflict has a unique `[CF-XX]` ID and must be resolved through `/spec` before the specification can be updated.
 
    ## Status Legend
 
@@ -76,37 +76,70 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
    <!-- New conflicts are appended below by /analyze -->
    ```
 
-   **`02_Work/SYSTEM_MAP.md`:**
+   **`02_Work/STRATEGIC_VISION.md`:**
    ```markdown
-   # System Map
+   # Strategic Vision
 
-   The product's logic layer. Every decision here traces back to verified insights in `INSIGHTS_GRAPH.md`.
+   The product's strategic layer. Every decision here traces back to verified insights in `INSIGHTS_GRAPH.md`.
 
    ## Product Vision
 
    > [To be defined after initial source analysis. Reference [IG-XX] insights.]
 
-   ## Modules
+   ## Product Strategy
 
-   <!-- Each module should reference the insights that justify its existence.
-        Include design implications derived from those insights. Format:
-
-        ### Module: [Name]
-        **Status:** [Ready/Blocked]
-        **Refs:** [IG-XX], [IG-YY]
-        **Design implications:**
-        - [Implication derived from insight] — [IG-XX]
-   -->
+   > [Market positioning, differentiation, business model. Reference [IG-XX] insights.]
 
    ## Design Principles
 
-   <!-- Each principle should reference the insights it's grounded in. -->
+   <!-- Transversal decision criteria. Each declares where it operates.
+        ### [principle name]
+        - **Operates at:** Strategic / Structural / Behavioral / Materialization
+        - **Description:** ...
+        - **Refs:** [IG-XX]
+   -->
+
+   ## Operational Domains
+
+   <!-- High-level functional territory groupings.
+        ### [domain name]
+        - **Lead pillar:** [principle name]
+        - **Refs:** [IG-XX]
+   -->
+
+   ## Value Propositions
+
+   <!-- User outcomes grounded in insights. -->
 
    ## Open Questions
 
    - [ ] What are the core user needs? (Run `/analyze` on initial sources)
    - [ ] What technical constraints exist?
    - [ ] What business goals drive prioritization?
+   ```
+
+   **`02_Work/PROPOSALS.md`:**
+   ```markdown
+   # Design Proposals
+
+   Design decisions organized by operational domain. Each proposal traces back to verified insights.
+
+   <!-- Format:
+        ## Domain: [domain name]
+
+        ### [DP-XX] [Name]
+        **Type:** module | feature
+        **Domain:** [domain name]
+        **Status:** PROPOSED | VALIDATED | BUILDING | SHIPPED
+        **Grounded in:** [IG-XX], [IG-XX]
+        **Parent:** [DP-XX] (features point to their module)
+        **Design implications:**
+        - ...
+        **Acceptance criteria:**
+        - ...
+        **Open questions:**
+        - ...
+   -->
    ```
 
    **`02_Work/MEMORY.md`:**
@@ -151,6 +184,6 @@ Restores `02_Work/` and/or `03_Outputs/` to their empty template state. Sources 
    - Files deleted.
    - Reminder: "Sources in `01_Sources/` are untouched. Run `/analyze` to rebuild the knowledge base."
 
-9. **Update CLAUDE.md Current State** if insight/conflict counts changed:
+9. **Update PROJECT.md Current State** if insight/conflict counts changed:
    - Set insights count to 0.
    - Set conflicts count to 0.

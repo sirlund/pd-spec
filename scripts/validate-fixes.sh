@@ -11,8 +11,8 @@ check() {
   fi
 }
 
-DESC="INTERNAL/AI-SOURCE gate in resolve SKILL.md"
-check grep -q 'Authority gate' .claude/skills/resolve/SKILL.md
+DESC="INTERNAL/AI-SOURCE gate in spec SKILL.md"
+check grep -q 'Authority gate' .claude/skills/spec/SKILL.md
 
 DESC="Safety gate in extract SKILL.md"
 check grep -q 'Safety gate' .claude/skills/extract/SKILL.md

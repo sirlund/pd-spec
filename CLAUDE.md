@@ -13,7 +13,7 @@ This project follows the PD-Spec 3-layer architecture. The AI agent operates wit
 
 ```
 01_Sources/  →  Raw input (read-only)
-02_Work/     →  Knowledge base (insights, conflicts, system map)
+02_Work/     →  Knowledge base (insights, conflicts, strategic vision, proposals)
 03_Outputs/  →  Deliverables (derived from Work, never authored directly)
 ```
 
@@ -68,10 +68,10 @@ The folder name provides context that individual files inherit. The agent valida
 | Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
 | Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
 | Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
-| Resolve | `/resolve` | Resolve conflicts, update system map |
+| Spec | `/spec` | Resolve conflicts, build Strategic Vision + Design Proposals |
 | Ship | `/ship [type]` | Generate Markdown deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |
-| Visualize | `/visualize [target]` | Generate Mermaid diagrams (system-map, insights, conflicts, all) |
+| Visualize | `/visualize [target]` | Generate Mermaid diagrams (strategic-vision, proposals, insights, conflicts, all) |
 | Reset | `/reset [--work\|--output]` | Reset generated layers to empty template state. Preserves sources and engine. |
 | Seed | `/seed [domain] [--level]` | Generate synthetic sources for testing and onboarding. Includes deliberate contradictions. |
 | View | `/view` | Start the Live Research App — local web viewer for Work layer data |
@@ -82,7 +82,7 @@ The folder name provides context that individual files inherit. The agent valida
 |---|---|---|
 | **Seed** | Initial brief only | Basic definitions, skeleton PRD, many open questions |
 | **Validation** | Brief + interviews/quant data | Cross-referencing active, conflicts surfacing |
-| **Ecosystem** | Multiple source types | Full contradiction detection, rich system map |
+| **Ecosystem** | Multiple source types | Full contradiction detection, rich strategic vision |
 
 ## Sources of Truth
 
@@ -93,8 +93,9 @@ The folder name provides context that individual files inherit. The agent valida
 | `02_Work/SOURCE_MAP.md` | Per-file extraction state (hash, status, timestamp) | Yes (via `/extract`, auto-maintained) |
 | `02_Work/EXTRACTIONS.md` | Raw claims from sources | Yes (via `/extract`) |
 | `02_Work/INSIGHTS_GRAPH.md` | Atomic verified insights | Yes (via `/analyze`) |
-| `02_Work/SYSTEM_MAP.md` | Product logic & decisions | Yes (via `/resolve`) |
-| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/resolve`) |
+| `02_Work/STRATEGIC_VISION.md` | Vision, strategy, principles, domains | Yes (via `/spec`) |
+| `02_Work/PROPOSALS.md` | Design proposals [DP-XX] | Yes (via `/spec`) |
+| `02_Work/CONFLICTS.md` | Contradiction log | Yes (via `/analyze` and `/spec`) |
 | `02_Work/RESEARCH_BRIEF.md` | Stakeholder narrative summary | Yes (via `/analyze`) |
 | `02_Work/IDEAS.md` | Ideas & bugs captured during project work | Yes (manual, project branches only) |
 | `02_Work/MEMORY.md` | Session log & state tracker (compacted at 80 lines) | Yes (via all skills) |
@@ -120,7 +121,7 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── kickoff/SKILL.md       /kickoff — project setup wizard
 │   ├── extract/SKILL.md      /extract — read sources, extract raw claims
 │   ├── analyze/SKILL.md       /analyze — process extractions into insights
-│   ├── resolve/SKILL.md       /resolve — resolve conflicts
+│   ├── spec/SKILL.md          /spec — build product specification
 │   ├── ship/SKILL.md          /ship — generate deliverables (10 output types)
 │   ├── visualize/SKILL.md    /visualize — generate diagrams
 │   ├── reset/SKILL.md        /reset — reset generated layers
@@ -138,7 +139,8 @@ The folder name provides context that individual files inherit. The agent valida
 │   ├── SOURCE_MAP.md           Per-file extraction state (hash, status, timestamp)
 │   ├── EXTRACTIONS.md          Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md      [IG-XX] atomic insights
-│   ├── SYSTEM_MAP.md          Product architecture decisions
+│   ├── STRATEGIC_VISION.md    Vision, strategy, principles, domains
+│   ├── PROPOSALS.md           Design proposals [DP-XX]
 │   ├── CONFLICTS.md           [CF-XX] contradiction log
 │   ├── IDEAS.md               Ideas & bugs from project work (→ BACKLOG on main)
 │   ├── MEMORY.md              Session log & state tracker
@@ -336,7 +338,7 @@ At the start of every session (new conversation), the agent recovers state with 
 1. **Read `02_Work/_temp/SESSION_CHECKPOINT.md`** (~2K tokens, single read).
    - If the checkpoint exists and its Quantitative Snapshot is **fresh** (counts match a quick header scan of INSIGHTS_GRAPH.md and CONFLICTS.md) → resume immediately from checkpoint context. No further reads needed.
    - If the checkpoint is **stale** (snapshot counts diverge from actual file headers) or **absent** → read `02_Work/MEMORY.md` (compacted, ~2K tokens) and rebuild context from there.
-2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and system map entries. Report discrepancies to the user before proceeding.
+2. **Integrity check** — only performed when checkpoint snapshot counts diverge from actual file headers. Compare counts of insights, conflicts, and spec entries. Report discrepancies to the user before proceeding.
 3. **Resume context** — use checkpoint (preferred) or MEMORY to continue where the last session left off, without requiring the user to re-explain.
 
 ### After Every Skill Execution

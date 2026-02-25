@@ -59,14 +59,16 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
    - `audit` / `strategy` → `AUDIT.md` / `STRATEGY.md` — Specialized documents
 
 2. **Load knowledge base** — Read:
-   - `02_Work/SYSTEM_MAP.md` for product architecture and decisions
+   - `02_Work/STRATEGIC_VISION.md` for vision, strategy, principles, and domains
+   - `02_Work/PROPOSALS.md` for design proposals [DP-XX]
    - `02_Work/INSIGHTS_GRAPH.md` for verified insights to reference
 
 3. **Validate readiness** — Check Work layer has sufficient verified content:
    - Are there VERIFIED insights to reference?
-   - Is SYSTEM_MAP populated with traceable decisions?
+   - Is STRATEGIC_VISION populated with traceable decisions?
+   - Are there design proposals in PROPOSALS.md?
    - Are there unresolved PENDING conflicts affecting the deliverable?
-   - **If insufficient**, report gaps and suggest `/analyze` or `/resolve` first.
+   - **If insufficient**, report gaps and suggest `/analyze` or `/spec` first.
 
 ### Phase 2: Propose (User Approval)
 

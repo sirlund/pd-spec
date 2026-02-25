@@ -10,7 +10,8 @@ import { execFile } from 'child_process';
 import { parseInsights } from './parsers/insights.js';
 import { parseConflicts } from './parsers/conflicts.js';
 import { parseSourceMap } from './parsers/source-map.js';
-import { parseSystemMap } from './parsers/system-map.js';
+import { parseStrategicVision } from './parsers/strategic-vision.js';
+import { parseProposals } from './parsers/proposals.js';
 import { renderMarkdown, parseExtractions } from './parsers/markdown.js';
 
 // MIME types for raw file serving
@@ -116,10 +117,19 @@ export function createApi(projectRoot) {
     }
   });
 
-  // GET /api/system-map — parsed SYSTEM_MAP.md
-  router.get('/system-map', async (req, res) => {
+  // GET /api/strategic-vision — parsed STRATEGIC_VISION.md
+  router.get('/strategic-vision', async (req, res) => {
     try {
-      res.json(await readAndParse('02_Work/SYSTEM_MAP.md', parseSystemMap));
+      res.json(await readAndParse('02_Work/STRATEGIC_VISION.md', parseStrategicVision));
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // GET /api/proposals — parsed PROPOSALS.md
+  router.get('/proposals', async (req, res) => {
+    try {
+      res.json(await readAndParse('02_Work/PROPOSALS.md', parseProposals));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -280,7 +290,7 @@ export function createApi(projectRoot) {
       const files = [];
       // Files with dedicated views — exclude from browser
       const DEDICATED_VIEW_FILES = new Set([
-        'INSIGHTS_GRAPH.md', 'CONFLICTS.md', 'SYSTEM_MAP.md',
+        'INSIGHTS_GRAPH.md', 'CONFLICTS.md', 'STRATEGIC_VISION.md', 'PROPOSALS.md',
         'RESEARCH_BRIEF.md', 'EXTRACTIONS.md', 'SOURCE_MAP.md',
       ]);
       const HIDDEN_FILES = new Set(['_README.md', '.gitkeep', 'status_data.json']);
@@ -389,16 +399,16 @@ export function createApi(projectRoot) {
       const q = (req.query.q || '').trim().toLowerCase();
       if (q.length < 2) return res.json({ insights: [], conflicts: [], modules: [], claims: [], sources: [] });
 
-      const [insights, conflicts, systemMap, extractions, sourcePaths] = await Promise.all([
+      const [insights, conflicts, proposals, extractions, sourcePaths] = await Promise.all([
         readAndParse('02_Work/INSIGHTS_GRAPH.md', parseInsights),
         readAndParse('02_Work/CONFLICTS.md', parseConflicts),
-        readAndParse('02_Work/SYSTEM_MAP.md', parseSystemMap),
+        readAndParse('02_Work/PROPOSALS.md', parseProposals),
         readAndParse('02_Work/EXTRACTIONS.md', parseExtractions),
         scanSourceFiles(),
       ]);
 
       const LIMIT = 5;
-      const result = { insights: [], conflicts: [], modules: [], claims: [], sources: [] };
+      const result = { insights: [], conflicts: [], proposals: [], claims: [], sources: [] };
 
       // Search insights
       for (const ig of (insights.insights || [])) {
@@ -418,12 +428,12 @@ export function createApi(projectRoot) {
         }
       }
 
-      // Search system map modules
-      for (const mod of (systemMap.modules || [])) {
-        if (result.modules.length >= LIMIT) break;
-        const hay = [mod.name, mod.status, ...(mod.implications || [])].filter(Boolean).join(' ').toLowerCase();
+      // Search design proposals
+      for (const dp of (proposals.proposals || [])) {
+        if (result.proposals.length >= LIMIT) break;
+        const hay = [dp.id, dp.name, dp.domain, dp.status, ...(dp.implications || [])].filter(Boolean).join(' ').toLowerCase();
         if (hay.includes(q)) {
-          result.modules.push({ id: mod.name, text: mod.name + (mod.status ? ` (${mod.status})` : '') });
+          result.proposals.push({ id: dp.id, text: `${dp.id} ${dp.name}` + (dp.status ? ` (${dp.status})` : '') });
         }
       }
 

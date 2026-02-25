@@ -18,7 +18,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 ### Phase 0: Session Resume & Integrity Check
 
-0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, and `02_Work/SYSTEM_MAP.md`. If discrepancies are found (entries not logged in MEMORY, unexpected files in `02_Work/`), report them to the user before proceeding.
+0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state (insight count, conflict count, last actions). Then compare against the current state of `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, and `02_Work/STRATEGIC_VISION.md`. If discrepancies are found (entries not logged in MEMORY, unexpected files in `02_Work/`), report them to the user before proceeding.
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all insight descriptions, conflict summaries, and source issue reports in that language. System IDs (`[IG-XX]`, `[CF-XX]`, status labels like `PENDING`, `VERIFIED`) stay in English.
 
@@ -31,7 +31,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 
 2. **Read extractions** — Read `02_Work/EXTRACTIONS.md`. If the file is missing or contains only the template header (no extraction sections), tell the user: "No extractions found. Run `/extract` first to read source files and extract raw claims." Then stop.
 
-3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs.
+3. **Load current state** — Read `02_Work/INSIGHTS_GRAPH.md` to understand existing insights and their IDs. Also check `02_Work/STRATEGIC_VISION.md` and `02_Work/PROPOSALS.md` for context on current product decisions.
 
 3b. **FILE mode filter** — If `--file` flag was passed, find the matching `## [section]` headers in EXTRACTIONS.md. If a section name is not found, warn the user and skip it. Build the filtered list from matched sections only. Skip steps 4-6 (incremental/full detection) and jump to step 7. Log: `File mode: processing N specified sections`.
 
@@ -380,7 +380,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
 
 - **Question 2** (header: "Ambiguities", multiSelect: false):
   - Question text: "How to handle M ambiguities detected?" (in output_language)
-  - Option A: "Save for /resolve" — recommended. Write as PENDING conflicts, resolve later with dashboard.
+  - Option A: "Save for /spec" — recommended. Write as PENDING conflicts, resolve later with dashboard.
   - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
 
 **Proceed to Phase 4 based on user selections.**
@@ -429,7 +429,7 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    - Source confidence (field notes only): `Source confidence: [high/medium/low/hunch]` — omit for non-field-note sources
 
 23. **Handle ambiguities** — Based on AskUserQuestion response to Question 2:
-    - **"Save for /resolve":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
+    - **"Save for /spec":** Write each ambiguity to `02_Work/CONFLICTS.md` as PENDING (format from step 16). Include options and recommended actions.
     - **"Resolve now":** Present each ambiguity in terminal with its options (A/B/C from step 16). For each, ask user to choose. Write resolved ones to CONFLICTS.md with status RESOLVED + chosen option. Write unresolved ones as PENDING.
 
 24. **Log conflicts** — For each detected contradiction (from step 11 cross-reference):

@@ -5,20 +5,20 @@ import { IdBadge, StatusBadge } from './ui/Badge.jsx';
 import AccentBox from './ui/AccentBox.jsx';
 import Icon from './ui/Icon.jsx';
 
-export default function SystemMapView({ onNavigate }) {
-  const { data, loading } = useLiveData('/system-map', ['SYSTEM_MAP']);
+export default function StrategicVisionView({ onNavigate }) {
+  const { data, loading } = useLiveData('/strategic-vision', ['STRATEGIC_VISION']);
 
   if (loading) {
-    return <div className="empty-state"><div className="empty-state-text">Loading system map...</div></div>;
+    return <div className="empty-state"><div className="empty-state-text">Loading strategic vision...</div></div>;
   }
 
-  if (!data || (!data.vision && data.modules.length === 0)) {
+  if (!data || (!data.vision && data.principles.length === 0 && data.domains.length === 0)) {
     return (
       <div className="empty-state">
         <Icon name="sitemap" size={48} className="empty-state-icon" />
-        <div className="empty-state-title">No system map yet</div>
+        <div className="empty-state-title">No strategic vision yet</div>
         <div className="empty-state-text">
-          Run <code>/resolve</code> to generate the product system map.
+          Run <code>/spec</code> to generate the strategic vision.
         </div>
       </div>
     );
@@ -27,7 +27,7 @@ export default function SystemMapView({ onNavigate }) {
   return (
     <div>
       <div className="section-header">
-        <h1 className="section-title">System Map</h1>
+        <h1 className="section-title">Strategic Vision</h1>
       </div>
 
       {/* Vision */}
@@ -40,57 +40,20 @@ export default function SystemMapView({ onNavigate }) {
         </div>
       )}
 
-      {/* Modules */}
-      {data.modules.length > 0 && (
+      {/* Strategy */}
+      {data.strategy && (
         <div style={{ marginBottom: 20 }}>
-          <div className="label-mono" style={{ marginBottom: 12 }}>
-            Modules ({data.modules.length})
-          </div>
-          {data.modules.map((mod, i) => (
-            <Card key={i} accent={mod.blocker ? 'conflict' : mod.status === 'Ready' ? 'verified' : 'pending'}>
-              <div className="card-header">
-                <span className="card-title">{mod.name}</span>
-                {mod.status && <StatusBadge status={mod.status} />}
-              </div>
-
-              {mod.refs.length > 0 && (
-                <div style={{ marginBottom: 8, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                  {mod.refs.map(ref => (
-                    <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
-                  ))}
-                </div>
-              )}
-
-              {mod.implications.length > 0 && (
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: 4 }}>
-                    Design Implications
-                  </div>
-                  <ul style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 16, margin: 0 }}>
-                    {mod.implications.map((imp, j) => (
-                      <li key={j} style={{ marginBottom: 3 }}>{imp}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {mod.blocker && (
-                <div style={{
-                  marginTop: 8, padding: '8px 12px', borderRadius: 'var(--radius)',
-                  background: 'var(--conflict-bg)', fontSize: '0.82rem', color: 'var(--conflict-fg)',
-                }}>
-                  <strong>Blocker:</strong> {mod.blocker}
-                </div>
-              )}
-            </Card>
-          ))}
+          <div className="label-mono" style={{ marginBottom: 8 }}>Product Strategy</div>
+          <AccentBox>
+            <RichText text={data.strategy} onNavigate={onNavigate} />
+          </AccentBox>
         </div>
       )}
 
       {/* Design Principles */}
       {data.principles.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="label-mono" style={{ marginBottom: 12 }}>Design Principles</div>
+          <div className="label-mono" style={{ marginBottom: 12 }}>Design Principles ({data.principles.length})</div>
           {data.principles.map((p, i) => (
             <Card key={i}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -100,8 +63,17 @@ export default function SystemMapView({ onNavigate }) {
                 }}>
                   {i + 1}.
                 </span>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div className="card-title">{p.name}</div>
+                  {p.operates_at.length > 0 && (
+                    <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {p.operates_at.map(layer => (
+                        <span key={layer} className="badge badge-id" style={{ fontSize: '0.65rem', cursor: 'default' }}>
+                          {layer}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   {p.description && (
                     <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0' }}>
                       {p.description}
@@ -117,6 +89,51 @@ export default function SystemMapView({ onNavigate }) {
                 </div>
               </div>
             </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Operational Domains */}
+      {data.domains.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div className="label-mono" style={{ marginBottom: 12 }}>
+            Operational Domains ({data.domains.length})
+          </div>
+          {data.domains.map((d, i) => (
+            <Card key={i}>
+              <div className="card-header">
+                <span className="card-title">{d.name}</span>
+              </div>
+              {d.lead_pillar && (
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 6 }}>
+                  Lead pillar: <strong>{d.lead_pillar}</strong>
+                </div>
+              )}
+              {d.refs.length > 0 && (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {d.refs.map(ref => (
+                    <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
+                  ))}
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Value Propositions */}
+      {data.value_props.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div className="label-mono" style={{ marginBottom: 12 }}>Value Propositions</div>
+          {data.value_props.map((vp, i) => (
+            <div key={i} style={{
+              padding: '8px 0', borderBottom: '1px solid var(--border-subtle)',
+              fontSize: '0.85rem', display: 'flex', gap: 8, alignItems: 'flex-start',
+            }}>
+              <span style={{ color: 'var(--text-main)', flex: 1 }}>
+                <RichText text={vp.text} onNavigate={onNavigate} />
+              </span>
+            </div>
           ))}
         </div>
       )}
