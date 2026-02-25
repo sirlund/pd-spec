@@ -980,6 +980,66 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 
 ---
 
+### [BL-94] Referential Integrity — Orphan Insight Detection
+
+**Status:** Proposed
+**Priority:** P1
+**Origin:** QA v7 session. Discovered while analyzing the OBS-24/25 preprocessing bug chain: insights created from corrupted extractions survive re-extraction and become untraceable.
+
+**Problem:**
+
+When a source is re-extracted (after a bug fix, preprocessing correction, or manual edit), EXTRACTIONS.md is rewritten but INSIGHTS_GRAPH.md is not. Insights that were created from the old (potentially corrupted) claims remain in the graph with their `Ref:` pointing to the original source file — but the intermediate claim they were born from no longer exists or has changed semantically.
+
+These **ghost insights** (IG fantasma) violate Mandate #1 (No Hallucination): an insight that cannot trace back to a current, valid claim is an unverified assertion. The system has no mechanism to detect or flag this.
+
+**Failure chain:**
+```
+Source (corrupt) → /extract → Claim (corrupt) → /analyze → IG-XX created
+       ↓ fix + re-extract
+Source (fixed)   → /extract → Claim (fixed)   → EXTRACTIONS.md updated
+                                                  IG-XX still exists, references stale/gone claim
+```
+
+**Solution — Integrity check (mechanical, scriptable):**
+
+1. For each `[IG-XX]` in INSIGHTS_GRAPH.md:
+   - Read `Ref:` field (source file path)
+   - Read `Key quote:` text
+   - Search EXTRACTIONS.md for matching section (by source file)
+   - Search within that section for a claim that semantically matches the key quote
+2. Classification:
+   - **Valid** — matching claim found in current EXTRACTIONS.md
+   - **Orphan** — source section exists but no matching claim (claim was removed or changed)
+   - **Missing source** — source section doesn't exist in EXTRACTIONS.md (file was never re-extracted)
+3. Report orphans to user for review. Never auto-delete — the insight may still be valid, it just needs re-grounding.
+
+**Where it runs:**
+- `/audit` — natural fit as a quality gate check ("3 orphan insights detected — review before /ship")
+- `/analyze --full` — pre-flight check before processing ("Found 2 orphan insights from previous extractions — flag for review?")
+- Standalone script — `scripts/integrity-check.sh` for CI or manual runs
+
+**Implementation (BL-92 aligned — mostly mechanical):**
+
+| Step | Type | Tool |
+|---|---|---|
+| Parse IG refs + quotes from INSIGHTS_GRAPH.md | Mechanical | grep/script |
+| Parse claim sections from EXTRACTIONS.md | Mechanical | grep/script |
+| Match IG source refs → extraction sections | Mechanical | script |
+| Semantic match: key quote ↔ current claim text | Hybrid | LLM for fuzzy, exact substring for 80% |
+| Report + user decision | Interactive | terminal or app UI |
+
+**Acceptance criteria:**
+- [ ] Integrity check detects orphaned insights after re-extraction
+- [ ] Report shows: IG ID, original ref, key quote, reason (orphan/missing source)
+- [ ] No auto-deletion — user decides per insight (keep, invalidate, re-ground)
+- [ ] Integrated into `/audit` output
+- [ ] Works as standalone script for CI
+
+**User story:**
+> As a researcher who just fixed a preprocessing bug and re-extracted 3 sources, I can run an integrity check and immediately see which existing insights lost their evidence trail — so I can review them instead of unknowingly building deliverables on ghost data.
+
+---
+
 ### [BL-15] Visual & Interaction Polish — HTML Template Upgrade
 
 **Status:** PARKED
