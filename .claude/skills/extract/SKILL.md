@@ -140,7 +140,19 @@ EVERY file discovered in Phase 1 MUST be:
 
 **Purpose:** Only process new, modified, or failed files. Skip unchanged files to save time.
 
-7. **Check for full re-extract flag** — If user passed `--full`, skip delta computation and process all files discovered in Phase 1 (after mode filtering).
+7. **Check for full re-extract flag** — If user passed `--full`:
+
+   **Safety gate (consolidated project):**
+   Count VERIFIED insights: `grep -c 'Status: VERIFIED' 02_Work/INSIGHTS_GRAPH.md`
+   IF count > 10 (consolidated project threshold):
+     Warn user: "⚠️ --full re-extraction on consolidated project (N VERIFIED insights).
+     All claims will be replaced — insights may lose their evidence trail.
+     Recommended: use `/extract --file [source]` for surgical re-extraction.
+     Proceed with --full? [confirm/cancel]"
+     Wait for explicit confirmation before continuing. If cancelled, abort with no changes.
+   IF count ≤ 10: proceed silently.
+
+   Skip delta computation and process all files discovered in Phase 1 (after mode filtering).
 
 8. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
    - If missing → treat all files as NEW, proceed to Phase 2
