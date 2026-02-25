@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import Card from './ui/Card.jsx';
 import { StatusBadge, IdBadge, WarningBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
-import ProgressBar from './ui/ProgressBar.jsx';
-
 function getFreshness(lastUpdated) {
   if (!lastUpdated) return null;
   const now = new Date();
@@ -55,22 +53,6 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
         {insight.voice && <span><strong>Voice:</strong> {insight.voice}</span>}
       </div>
 
-      {insight.convergence_ratio && (
-        <div style={{ marginBottom: 8 }}>
-          <ProgressBar segments={[
-            {
-              value: insight.convergence_ratio.matched,
-              color: insight.convergence_ratio.total <= 1 ? 'var(--vivid-yellow)' : 'var(--accent-cyan)',
-            },
-            { value: insight.convergence_ratio.total - insight.convergence_ratio.matched, color: 'transparent' },
-          ]} />
-          {insight.convergence_ratio.total <= 1 && (
-            <div style={{ fontSize: '0.7rem', color: 'var(--vivid-yellow)', marginTop: 2 }}>
-              Single source — consider cross-referencing
-            </div>
-          )}
-        </div>
-      )}
 
       {insight.narrative && (
         <div className="card-body">
