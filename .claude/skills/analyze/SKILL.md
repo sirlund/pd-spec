@@ -95,7 +95,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    - **SUPERSEDED detection (future)** — In a future version, Phase 2 will detect when a newer insight fully subsumes an older one (e.g., "users want real-time alerts" superseded by "users want configurable real-time alerts with severity levels"). The newer insight becomes VERIFIED and the older becomes SUPERSEDED → [IG-XX]. Not yet implemented — for now, subsumption is handled manually via `./scripts/verify-insight.sh --supersede`.
 
 10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
-   - Determine the next available `[IG-XX]` ID (sequential, two-digit minimum: `IG-01` through `IG-99`, then `IG-100`, `IG-101`, etc. Never three-digit zero-pad like `IG-001`).
+   - Determine the next available `[IG-XX]` ID. Use `./scripts/next-id.sh ig 02_Work/INSIGHTS_GRAPH.md` which auto-detects the zero-padding convention from existing IDs. If the script is unavailable, scan existing IDs manually: sequential two-digit minimum (`IG-01` through `IG-99`, then `IG-100`). Never three-digit zero-pad like `IG-001`. For synthesis insights, use `./scripts/next-id.sh synth 02_Work/INSIGHTS_GRAPH.md` for `[IG-SYNTH-XX]` IDs.
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`, `design-framework`.
      - `design-framework` — design principles, UX patterns, naming conventions, product pillars, design language definitions. Example: "Quiet UI absorbs visual complexity", "D→A→R is the interaction skeleton", "4 design pillars: X, Y, Z, W". These claims define *how* the product should feel/work, not *what* users need or *what* the system does.
    - Reference the specific source file it came from.
