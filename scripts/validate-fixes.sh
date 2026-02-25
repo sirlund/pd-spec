@@ -27,7 +27,7 @@ DESC="integrity-check.sh exists and is executable"
 check test -x scripts/integrity-check.sh
 
 DESC="Version consistency (PROJECT.md vs CHANGELOG.md)"
-proj_v=$(grep 'engine_version:' PROJECT.md | sed 's/.*: *//')
+proj_v=$(grep 'engine_version:' PROJECT.md | sed 's/.*: *//' | sed 's/\*//g' | tr -d ' ')
 cl_v=$(grep -m1 '^## ' docs/CHANGELOG.md | sed 's/^## \[/v/' | sed 's/\].*//')
 check test "$proj_v" = "$cl_v"
 
