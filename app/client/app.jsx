@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useLiveData, useWebSocket } from './hooks.js';
 import Icon from './components/ui/Icon.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
@@ -32,7 +32,7 @@ export const VIEW_REGISTRY = [
 ];
 
 export default function App() {
-  const [view, setView] = useState('dashboard');
+  const [view, setViewRaw] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [connected, setConnected] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
@@ -46,18 +46,40 @@ export default function App() {
 
   useWebSocket(useCallback(() => { setConnected(true); }, []));
 
+  // --- Browser navigation (BL-90): pushState with state objects, NO URL changes ---
+  const setView = useCallback((newView, opts = {}) => {
+    setViewRaw(newView);
+    if (!opts.fromPopState) {
+      history.pushState({ view: newView, highlightId: opts.highlightId || null }, '');
+    }
+  }, []);
+
+  useEffect(() => {
+    // Set initial state
+    history.replaceState({ view: 'dashboard', highlightId: null }, '');
+
+    const onPopState = (e) => {
+      if (e.state?.view) {
+        setViewRaw(e.state.view);
+        setHighlightId(e.state.highlightId || null);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   const navigateTo = useCallback((id) => {
     if (!id) return;
     if (id.startsWith('IG-')) {
-      setView('insights');
       setHighlightId(id);
+      setView('insights', { highlightId: id });
     } else if (id.startsWith('CF-')) {
-      setView('conflicts');
       setHighlightId(id);
+      setView('conflicts', { highlightId: id });
     } else if (VIEW_REGISTRY.some(v => v.id === id)) {
       setView(id);
     }
-  }, []);
+  }, [setView]);
 
   const counts = dashboard.data ? {
     insights: dashboard.data.pipeline.insights,
