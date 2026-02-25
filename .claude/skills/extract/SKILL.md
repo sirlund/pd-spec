@@ -188,11 +188,20 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
    - **PENDING-HEAVY** — file in map with status=`pending-heavy` → process only in Heavy-only or Full mode, skip in Express mode
    - **DELETED** — file in map but not discovered → remove section from EXTRACTIONS.md, mark as orphan
 
+10b. **Moved file detection** — After building the list of NEW and DELETED sources (from SOURCE_MAP.md hash comparison), cross-reference them:
+   - For each NEW file, compare its MD5 hash (computed in step 9) against DELETED files' stored hashes from SOURCE_MAP.md.
+   - If a NEW file's hash matches a DELETED file's hash → the file was **MOVED** (renamed or relocated). Report: `MOVED: old/path → new/path`. Update SOURCE_MAP.md with the new path but preserve the extraction state (status, timestamp, claims). No re-extraction needed — remove the file from the processing queue and the DELETED list.
+   - If a NEW file has the same filename (basename) as a DELETED file but a different hash → ask the user: `Same filename but different content: old/path vs new/path. Is this the same file (updated), or a new file?`
+     - If "same file (updated)" → treat as MODIFIED (reprocess, replace section in EXTRACTIONS.md under new path)
+     - If "new file" → treat as NEW (process normally) and proceed with DELETED cleanup for the old path
+   - This prevents unnecessary re-extraction when files are reorganized within `01_Sources/`.
+
 11. **Report delta to user** — Before processing, show:
    ```
    Delta computation complete:
    - NEW: 3 files (will process)
    - MODIFIED: 1 file (will reprocess)
+   - MOVED: 0 files (path updated, no re-extraction)
    - UNCHANGED: 53 files (will skip)
    - RETRY: 0 files (errors from last run)
    - DELETED: 0 files (orphaned)
