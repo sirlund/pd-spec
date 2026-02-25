@@ -81,7 +81,10 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 9. **Deduplication check** — Before creating any new insight, compare each candidate claim against ALL existing insights (not just their IDs — read the actual claim text). A claim is a duplicate if:
    - It makes the same factual assertion as an existing insight, even if worded differently (semantic match, not string match).
    - It describes the same user need, pain point, or constraint from the same perspective.
-   - **NOT a duplicate if:** the same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
+   - **AND** both the candidate and existing insight belong to the same category (or would be categorized the same way).
+   - **NOT a duplicate if:**
+     - The same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
+     - **The candidate and the existing insight have different categories.** A `design-framework` claim that *defines* a concept is never a duplicate of a `user-need` insight about the same topic. Example: "Users want the system to only show what's critical" (`user-need`) and "Quiet UI: absorb visual complexity, exception-based management, alerts readable in <5 seconds" (`design-framework`) are about the same topic but serve different functions — evidence vs. design decision. The user-need is the *justification*; the design-framework is the *proposal*. Both must exist as separate insights.
    - **When a duplicate is found (INCREMENTAL convergence update):**
      - Do NOT create a new insight
      - Increment convergence count on existing insight (e.g., 2/18 → 3/18)
@@ -130,6 +133,12 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - `high` / `medium` — Treat as normal claims. Process into PENDING insights like any other source.
      - `low` — Process into PENDING insights but add a note: `Source confidence: low — consider cross-referencing before verification`.
      - `hunch` — Do NOT create a regular insight. Instead, generate an open question for the system map: `"[IG-XX claim rephrased as question] (from field note hunch)"`. Log as a PENDING insight with the note `Source confidence: hunch — logged as open question, not assertion`.
+   - **`Grounded in:` field (design-framework only)** — Every `design-framework` insight MUST include a `Grounded in:` line listing the `[IG-XX]` insight(s) that justify its existence. These are the user-need, business, technical, or constraint insights that provide the evidence for the design decision. Example:
+     ```
+     Grounded in: [IG-SYNTH-07] (exception management need), [IG-03] (alert fatigue in control room)
+     ```
+     A `design-framework` insight without `Grounded in:` references fails the Homer's Car gate — challenge it: "This design principle has no evidence trail. Which user needs or constraints justify it?"
+
    - **Granularity guidance** — When to separate vs. consolidate:
      - **Separate** when claims have different sources, different categories, or could be independently verified/invalidated.
      - **Consolidate** when two claims are really the same observation stated differently (deduplicate, not merge).
