@@ -258,13 +258,13 @@ TODAY=$(date +%Y-%m-%d)
 TMPFILE=$(mktemp)
 awk -v id="$INSIGHT_ID" -v today="$TODAY" '
   /^### \[/ { in_target = (index($0, "[" id "]") > 0); found_lu = 0 }
-  in_target && /^Last-updated: / {
-    print "Last-updated: " today
+  in_target && /^\*{0,2}Last-updated:\*{0,2} / {
+    print "**Last-updated:** " today
     found_lu = 1
     next
   }
   in_target && /^$/ && !found_lu {
-    print "Last-updated: " today
+    print "**Last-updated:** " today
     found_lu = 1
     print
     next
