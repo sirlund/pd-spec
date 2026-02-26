@@ -65,6 +65,11 @@ export default function StrategicVisionView({ onNavigate }) {
                 </span>
                 <div style={{ flex: 1 }}>
                   <div className="card-title">{p.name}</div>
+                  {p.role && (
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                      {p.role}
+                    </div>
+                  )}
                   {p.operates_at.length > 0 && (
                     <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {p.operates_at.map(layer => (
@@ -74,13 +79,28 @@ export default function StrategicVisionView({ onNavigate }) {
                       ))}
                     </div>
                   )}
+                  {p.primary_domain && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>
+                      Domain: <strong>{p.primary_domain}</strong>
+                    </div>
+                  )}
                   {p.description && (
-                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0' }}>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '6px 0 0', lineHeight: '1.5' }}>
                       {p.description}
                     </p>
                   )}
+                  {p.design_question && (
+                    <div style={{
+                      marginTop: 8, padding: '6px 10px',
+                      borderLeft: '2px solid var(--accent-cyan)',
+                      fontSize: '0.78rem', color: 'var(--accent-cyan)',
+                      fontStyle: 'italic',
+                    }}>
+                      {p.design_question}
+                    </div>
+                  )}
                   {p.refs.length > 0 && (
-                    <div style={{ marginTop: 6, display: 'flex', gap: 4 }}>
+                    <div style={{ marginTop: 6, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {p.refs.map(ref => (
                         <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
                       ))}
@@ -88,6 +108,30 @@ export default function StrategicVisionView({ onNavigate }) {
                   )}
                 </div>
               </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Internal Design Criteria */}
+      {data.internal_criteria && data.internal_criteria.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div className="label-mono" style={{ marginBottom: 12 }}>Internal Design Criteria ({data.internal_criteria.length})</div>
+          {data.internal_criteria.map((c, i) => (
+            <Card key={i}>
+              <div className="card-title" style={{ fontSize: '0.9rem' }}>{c.name}</div>
+              {c.description && (
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '4px 0 0', lineHeight: '1.5' }}>
+                  {c.description}
+                </p>
+              )}
+              {c.refs.length > 0 && (
+                <div style={{ marginTop: 6, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {c.refs.map(ref => (
+                    <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
+                  ))}
+                </div>
+              )}
             </Card>
           ))}
         </div>
@@ -105,8 +149,18 @@ export default function StrategicVisionView({ onNavigate }) {
                 <span className="card-title">{d.name}</span>
               </div>
               {d.lead_pillar && (
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 6 }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 4 }}>
                   Lead pillar: <strong>{d.lead_pillar}</strong>
+                </div>
+              )}
+              {d.description && (
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '2px 0 4px', lineHeight: '1.5' }}>
+                  {d.description}
+                </p>
+              )}
+              {d.cases && (
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 4 }}>
+                  <strong>Cases:</strong> {d.cases}
                 </div>
               )}
               {d.refs.length > 0 && (
@@ -124,16 +178,32 @@ export default function StrategicVisionView({ onNavigate }) {
       {/* Value Propositions */}
       {data.value_props.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div className="label-mono" style={{ marginBottom: 12 }}>Value Propositions</div>
+          <div className="label-mono" style={{ marginBottom: 12 }}>Value Propositions ({data.value_props.length})</div>
           {data.value_props.map((vp, i) => (
-            <div key={i} style={{
-              padding: '8px 0', borderBottom: '1px solid var(--border-subtle)',
-              fontSize: '0.85rem', display: 'flex', gap: 8, alignItems: 'flex-start',
-            }}>
-              <span style={{ color: 'var(--text-main)', flex: 1 }}>
-                <RichText text={vp.text} onNavigate={onNavigate} />
-              </span>
-            </div>
+            <Card key={i}>
+              {vp.title && <div className="card-title" style={{ fontSize: '0.9rem', marginBottom: 4 }}>{vp.title}</div>}
+              {vp.quote && (
+                <div style={{
+                  padding: '6px 10px', marginBottom: 6,
+                  borderLeft: '2px solid var(--accent-cyan)',
+                  fontSize: '0.85rem', fontStyle: 'italic', color: 'var(--accent-cyan)',
+                }}>
+                  "{vp.quote}"
+                </div>
+              )}
+              {vp.description && (
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.5' }}>
+                  <RichText text={vp.description} onNavigate={onNavigate} />
+                </p>
+              )}
+              {vp.refs.length > 0 && (
+                <div style={{ marginTop: 6, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                  {vp.refs.map(ref => (
+                    <IdBadge key={ref} id={ref} onClick={() => onNavigate?.(ref)} />
+                  ))}
+                </div>
+              )}
+            </Card>
           ))}
         </div>
       )}
@@ -141,23 +211,60 @@ export default function StrategicVisionView({ onNavigate }) {
       {/* Open Questions */}
       {data.open_questions.length > 0 && (
         <div>
-          <div className="label-mono" style={{ marginBottom: 12 }}>Open Questions</div>
-          {data.open_questions.map((q, i) => (
-            <div key={i} style={{
-              display: 'flex', gap: 10, alignItems: 'flex-start',
-              padding: '8px 0', borderBottom: '1px solid var(--border-subtle)',
-              fontSize: '0.85rem',
-            }}>
-              <span style={{ color: q.resolved ? 'var(--verified-fg)' : 'var(--text-muted)', flexShrink: 0 }}>
-                <Icon name={q.resolved ? 'check' : 'x'} size={16} />
-              </span>
-              <span style={{ color: 'var(--text-main)', flex: 1 }}>{q.text}</span>
-              {q.conflict_ref && (
-                <IdBadge id={q.conflict_ref} onClick={() => onNavigate?.(q.conflict_ref)} />
-              )}
-            </div>
-          ))}
+          <div className="label-mono" style={{ marginBottom: 12 }}>Open Questions ({data.open_questions.length})</div>
+          <QuestionList questions={data.open_questions} onNavigate={onNavigate} />
         </div>
+      )}
+    </div>
+  );
+}
+
+// Group questions by category and render
+function QuestionList({ questions, onNavigate }) {
+  const hasCategories = questions.some(q => q.category);
+
+  if (!hasCategories) {
+    return questions.map((q, i) => <QuestionItem key={i} q={q} onNavigate={onNavigate} />);
+  }
+
+  const groups = [];
+  let currentCat = null;
+  let currentItems = [];
+  for (const q of questions) {
+    if (q.category !== currentCat) {
+      if (currentItems.length) groups.push({ category: currentCat, items: currentItems });
+      currentCat = q.category;
+      currentItems = [];
+    }
+    currentItems.push(q);
+  }
+  if (currentItems.length) groups.push({ category: currentCat, items: currentItems });
+
+  return groups.map((g, gi) => (
+    <div key={gi} style={{ marginBottom: 12 }}>
+      {g.category && (
+        <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+          {g.category}
+        </div>
+      )}
+      {g.items.map((q, i) => <QuestionItem key={i} q={q} onNavigate={onNavigate} />)}
+    </div>
+  ));
+}
+
+function QuestionItem({ q, onNavigate }) {
+  return (
+    <div style={{
+      display: 'flex', gap: 10, alignItems: 'flex-start',
+      padding: '8px 0', borderBottom: '1px solid var(--border-subtle)',
+      fontSize: '0.85rem',
+    }}>
+      <span style={{ color: q.resolved ? 'var(--verified-fg)' : 'var(--text-muted)', flexShrink: 0 }}>
+        <Icon name={q.resolved ? 'check' : 'x'} size={16} />
+      </span>
+      <span style={{ color: 'var(--text-main)', flex: 1 }}>{q.text}</span>
+      {q.conflict_ref && (
+        <IdBadge id={q.conflict_ref} onClick={() => onNavigate?.(q.conflict_ref)} />
       )}
     </div>
   );
