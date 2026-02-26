@@ -10,6 +10,49 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-100] Deliverable Architecture — MASTER + Specific Documents
+
+**Status:** PROPOSED
+**Priority:** P2
+**Origin:** Field experience with TIMining /ship outputs. All deliverable types re-synthesize the same insights independently, producing repetitive, shallow documents that feel interchangeable.
+
+**Problem:**
+1. **Repetition:** Each `/ship [type]` generates a standalone document that re-explains the same IGs, strategic context, and key concepts. A PRD, presentation, and lean canvas for the same project read 70% identical.
+2. **No hierarchy:** Documents are peers with no shared narrative. No single source of truth for "what this project is about" — each document reinvents it.
+3. **One-size-fits-all:** All 10 ship types are available regardless of project context. A B2B SaaS project doesn't need a journey map. A benchmark UX doesn't need personas. The agent should reason about which deliverables are relevant.
+
+**Solution — MASTER + Specifics architecture:**
+
+```
+03_Outputs/
+  MASTER.md              ← executive synthesis, single narrative, references specifics
+  ├─→ PERSONAS.md        ← deep dive (if applicable)
+  ├─→ USER_STORIES.md    ← deep dive (if applicable)
+  ├─→ JOURNEY_MAP.md     ← deep dive (if applicable)
+  ├─→ LEAN_CANVAS.md     ← deep dive (if applicable)
+  └─→ ...
+```
+
+**Key design decisions:**
+- **MASTER replaces PRD.** The current PRD tries to be both executive summary and detailed spec — it does neither well. MASTER is the single narrative document. "PRD" as a term is too dev-centric for a research/strategy tool.
+- **Specifics don't repeat context.** They reference MASTER for shared concepts and go deep on their own domain. A persona doc doesn't re-explain the strategic vision — it links to MASTER §Strategy and focuses on archetypes.
+- **Agent proposes, user decides.** `/ship` with no args → agent analyzes the Work layer and proposes which specifics are relevant (with reasoning). User approves, rejects, or edits the list. `/ship [type]` forces generation of a specific document regardless.
+- **Relevance is semantic.** The agent reasons about project type, insight categories, and conflict themes to recommend specifics. A project heavy on user-need insights gets personas + journey maps. A project heavy on business/strategy gets lean canvas + strategy report.
+
+**Scope:**
+- [ ] Define MASTER.md structure (replaces PRD — executive synthesis with cross-references)
+- [ ] Refactor /ship skill: no-arg mode proposes deliverable set, typed mode forces specific
+- [ ] Specifics reference MASTER instead of re-synthesizing IGs
+- [ ] Agent reasoning for deliverable relevance (which specifics fit this project)
+- [ ] Deprecate `prd` as ship type, migrate to MASTER
+- [ ] Update /ship help and CLAUDE.md skill table
+
+**Open questions:**
+- Should MASTER be generated once and specifics incrementally, or all at once?
+- When the Work layer changes (new insights, resolved conflicts), does MASTER auto-update or require explicit `/ship` re-run?
+
+---
+
 ### [BL-99] Improved Conflict Lifecycle — OPEN/NEEDS-*/RESOLVED with IG Actions
 
 **Status:** PROPOSED
