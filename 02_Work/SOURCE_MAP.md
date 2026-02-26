@@ -61,6 +61,7 @@ Per-file extraction state tracker. Maintained automatically by `/extract`.
 
 | sesiones-idemax/reunion_camila_2026-02-17.md | md | processed | 21 | 91183e80a488f3aa9faee9ee541250b7 | 2026-02-24T10:30 |
 | sesiones-idemax/session-align-con-camila(wed18feb).md | md | processed | 22 | 3b9d04245c78f1fe375c911bceb49cb5 | 2026-02-24T10:30 |
+| sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md | md | processed | 45 | 790a3849aac61747bb823d2d64cf3a41 | 2026-02-26T12:00 |
 | Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md | md | processed | 42 | de1149b7630e7b82186dfff80740ff62 | 2026-02-24T10:30 |
 | Touchpoint 1/_FIELD_NOTES.md | md | processed | 8 | 9dba69f37bf525539ca5dfcaeb6ac066 | 2026-02-24T22:30 |
 | Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf | pdf | processed | 75 | 0babec2362f6772bd37a86333499c87f | 2026-02-25T00:00 |

@@ -30,3 +30,25 @@
 - **Actions:** STRATEGIC_VISION.md escrito desde template vacío (visión, estrategia, 3 ventajas defensibles, 4 pilares con rol/capas/dominio/pregunta de diseño, 6 criterios internos, 4 dominios operativos, 3 propuestas de valor, 14 open questions). PROPOSALS.md escrito desde template vacío (7 DPs: DP-01 Geometry Engine, DP-02 Copiloto, DP-03 Briefing, DP-04 Time Scrubbing, DP-05 Experiencia Multimodal, DP-06 Manos Libres, DP-07 Plataforma Integración). 4 PENDING conflicts sin cambio de estado (CF-05 Flagged, CF-07/08/13 Research — pendientes Etapa 2). MEMORY.md compactado (83→<80 líneas).
 - **Result:** STRATEGIC_VISION.md + PROPOSALS.md completos. Trazabilidad completa con 38 VERIFIED insights. 10 outputs + 2 Work layer specs.
 - **Snapshot:** 44 insights (38 VERIFIED, 0 PENDING, 5 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING) · 59 fuentes · 1406 claims · 12 archivos spec/output
+
+## [2026-02-26T12:00] /extract sesiones-idemax
+- **Request:** Extraer nueva fuente `reunion_ux_timining_prox_pasos_24feb.md` (sesión interna IDEMAX, 24-feb).
+- **Actions:** Delta: 2 UNCHANGED, 1 NEW (59KB, 455 líneas). Preprocessing: Granola transcript, Pass A (Me→Nico, Them→Ale/Cami), Pass B (43 correcciones fonéticas), Pass C (5 marcadores). Extracción: 20 claims AI summary [AI-SOURCE][INTERNAL] + 25 claims transcript [INTERNAL] + 6 action items.
+- **Result:** 45 claims extraídos. EXTRACTIONS.md actualizado (60 secciones, 1451 claims total). SOURCE_MAP.md actualizado.
+- **Stats:**
+  - `sesiones-idemax/`: 1 archivo nuevo, 45 claims
+  - **Total:** 1 archivo procesado, 45 claims extraídos
+- **Preprocessing:** 1 archivo (2 speakers, 43 correcciones)
+- **Snapshot:** 44 insights · 13 conflictos · 60 fuentes · 1451 claims · 12 archivos spec/output
+- **Org issues:** `_CONTEXT.md` no lista el archivo nuevo ni cubre la fecha 2026-02-24 → corregido
+
+## [2026-02-26T12:30] /analyze (incremental)
+- **Request:** /analyze incremental post-extract sesiones-idemax
+- **Mode:** INCREMENTAL (45 claims de 1 sección nueva, 59 secciones sin cambios)
+- **Actions:**
+  - Convergencia actualizada: 9 insights existentes (IG-03, IG-05, IG-06, IG-16, IG-17, IG-18, IG-20, IG-22, IG-SYNTH-07)
+  - Nuevos insights: 3 PENDING (IG-23 Omni Sense prioritario, IG-24 pillar-domain asimétrico, IG-25 validación externa Felipe Reyes)
+  - Claims descartados: 33 (proceso IDEMAX, action items, duplicados sin nueva convergencia)
+  - Conflictos nuevos: 0
+- **Result:** 47 insights (38 VERIFIED, 3 PENDING, 5 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING)
+- **Snapshot:** 47 insights · 13 conflictos · 60 fuentes · 1451 claims · 12 archivos spec/output

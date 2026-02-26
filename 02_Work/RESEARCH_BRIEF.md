@@ -1,7 +1,7 @@
 # Research Brief
-> Actualizado por /analyze --file el 2026-02-25
-> Basado en 44 insights de 59 fuentes (1406 claims) — incluye análisis completo Touchpoint 1 (transcript + field notes + PDF deck)
-> 5 insights PENDING de revisión: IG-18 (4 dominios operativos), IG-19 (Time Scrubbing), IG-20 (CFO usuario invisible), IG-21 (manos libres en terreno), IG-22 (plan compliance vs. optimization)
+> Actualizado por /analyze incremental el 2026-02-26
+> Basado en 47 insights de 60 fuentes (1451 claims) — incluye sesión interna IDEMAX 24-feb (debrief Touchpoint, validación Felipe Reyes, priorización pilares)
+> 3 insights PENDING: IG-23 (Omni Sense prioritario), IG-24 (relación pilar-dominio asimétrica), IG-25 (validación externa Felipe Reyes). Los 3 son [INTERNAL] — requieren corroboración primaria.
 
 ## Lo que está roto
 
@@ -35,7 +35,11 @@
 
 **El patrón Detección→Análisis→Recomendación está validado.** Las 20 láminas del workshop siguen una estructura idéntica confirmada por los propios usuarios [IG-SYNTH-06]. Este patrón es el esqueleto natural de CORE.
 
-**Las decisiones operacionales viven en WhatsApp, no en TIMining.** Carlo (CTO) reveló en el Touchpoint que "impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp" — TIMining pierde el 90% de la información si no integra ese canal [IG-03]. La brecha no es de UI sino de canal: el operador ya tomó la decisión y se fue, sin que el sistema la registrara.
+**Las decisiones operacionales viven en WhatsApp, no en TIMining.** Carlo (CTO) reveló en el Touchpoint que "impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp" — TIMining pierde el 90% de la información si no integra ese canal [IG-03]. La brecha no es de UI sino de canal: el operador ya tomó la decisión y se fue, sin que el sistema la registrara. En la sesión interna post-Touchpoint, el equipo IDEMAX identificó Omni Sense como el pilar más crítico precisamente por esto: si el sistema no está donde el operador ya trabaja, no existe [IG-23].
+
+**La relación pilares-dominios no es una grilla simétrica.** Al mapear los 4 pilares de diseño contra los 4 dominios operativos, el equipo descubrió que no todos los cruces tienen el mismo peso: "Quiet UI en respuesta a crisis es evidente, pero Quiet UI con asistencia inteligente no pega mucho" [IG-24]. Esto implica que el diseño debe priorizar los cruces pilar×dominio de mayor impacto, no intentar cubrir los 16 por igual.
+
+**Primera validación externa parcial: Felipe Reyes.** Sin mostrarle los dominios operativos, Felipe Reyes (profesional minero externo) los validó de forma independiente — "le ven mucho valor a incorporar la mirada espacial, sensorizar el yacimiento, tener cerebro para toma de decisiones" [IG-25]. También enfatizó la necesidad de traducir el valor a lenguaje financiero (costos, EBITDA) para CFOs. Esta es la primera señal externa, pero aún reportada de segunda mano — necesita entrevista directa para confirmar.
 
 **Los operadores pueden resistir la herramienta.** Carlo también reveló que cuando planificación usa TIMining para auditar a operadores, estos resisten activamente [IG-04]. Si el modelo bottom-up requiere que el operador perciba el tool como ayuda propia (no herramienta de control), CORE necesita diseñarse con esta tensión en mente [CF-13].
 

@@ -1734,6 +1734,73 @@
 
 ---
 
+## [sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md] 🏢 INTERNAL
+- Type: working session (internal IDEMAX alignment + next steps UX/UI)
+- Date: 2026-02-24
+- Participants: Alejandro Guzzoni (IDEMAX), Niklas Lundin (IDEMAX UX Lead), Camila Bonilla (IDEMAX UX Researcher)
+- Authority: internal
+- Preprocessed: yes (Pass A: Me→Nico, Them→Ale/Cami; Pass B: 43 phonetic corrections; Pass C: 5 markers)
+- Extracted: 2026-02-26T12:00
+
+### Raw Claims (AI Summary — Granola)
+1. "Nicolás se disculpó por retrasos en entregable de presentación de 32 slides — generada con sistema AI pero no pudo convertirla a formato editable a tiempo" [AI-SOURCE][INTERNAL]
+2. "Camila se sintió bloqueada por no poder editar la presentación HTML, creando problemas de workflow" [AI-SOURCE][INTERNAL]
+3. "Acuerdo: necesitan repositorio compartido, editable y accesible 24/7 — evitar ownership individual de entregables" [AI-SOURCE][INTERNAL]
+4. "Habilitar inteligencia colectiva y colaboración en tiempo real como método de trabajo IDEMAX" [AI-SOURCE][INTERNAL]
+5. "Dos opciones tácticas inmediatas: (1) wireframe Google Slides → sistema AI → presentación final, (2) enfoque directo en PowerPoint con mejor coordinación temporal" [AI-SOURCE][INTERNAL]
+6. "Nicolás desarrolló sistema de análisis de datos que mapea decisiones de diseño a quotes de stakeholders y conflictos — trackea quién dijo qué, cuándo y en qué archivo" [AI-SOURCE][INTERNAL]
+7. "Sistema procesa transcripts de reuniones y normaliza audio — identifica speakers en settings de grupo complejos" [AI-SOURCE][INTERNAL]
+8. "Entrevista reciente con Felipe Reyes (ex-profesional minero) validó los cuatro dominios operativos" [AI-SOURCE][INTERNAL]
+9. "Felipe Reyes confirmó valor de inteligencia espacial y 'cerebro para toma de decisiones'" [AI-SOURCE][INTERNAL]
+10. "Felipe Reyes enfatizó necesidad de traducción a lenguaje de negocio (costos, impacto en EBITDA)" [AI-SOURCE][INTERNAL]
+11. "Entrevista pendiente con Juan Pablo Palma — superintendente de planificación de Minera Los Pelambres" [AI-SOURCE][INTERNAL]
+12. "Competidor real de TIMining es Excel, no otro software — Philip: 'Mi cliente no es la tecnología, mi cliente es el Excel'" [AI-SOURCE][INTERNAL]
+13. "Concepto 'paz mental' invalidado por Philip y Carlos — reemplazar con soporte a decisiones bajo presión de tiempo" [AI-SOURCE][INTERNAL]
+14. "Carlos enfatizó mejoramiento continuo sobre adherencia al plan — minas frecuentemente exceden planes, objetivo es mejor planificación" [AI-SOURCE][INTERNAL]
+15. "Cuatro pilares de diseño validados pero necesitan demostración visual" [AI-SOURCE][INTERNAL]
+16. "Omni Sense identificado como potencialmente el pilar más crítico" [AI-SOURCE][INTERNAL]
+17. "WhatsApp es actualmente la herramienta de comunicación principal en minas" [AI-SOURCE][INTERNAL]
+18. "Siguiente fase: transformar pilares conceptuales en ejemplos de interfaz tangibles — mostrar múltiples enfoques visuales, no solo 'gris con highlights verdes'" [AI-SOURCE][INTERNAL]
+19. "Carlos quiere escenarios realistas y específicos, no mockups genéricos" [AI-SOURCE][INTERNAL]
+20. "Enfoque: cruzar pilares con dominios operativos — foco en combinaciones de mayor impacto" [AI-SOURCE][INTERNAL]
+
+### Raw Claims (Transcript)
+21. "Alejandro: 'Es superimportante que la info esté en algún tipo de repositorio desintermediado 24/7, que podamos salir a buscarlo cuando queramos — no es por control, es porque estamos trabajando colaborativamente'" [INTERNAL]
+22. "Alejandro: 'No podemos ganarnos un pequeño punto ciego o estrés porque no sabemos lo que está pasando'" [INTERNAL]
+23. "Nico: 'En el touch point, hay una sola cosa que le generó ruido, que fue el concepto de paz mental, pero todo lo demás está validado'" [INTERNAL]
+24. "Alejandro sobre Carlos: 'En vez de hablar de cumplir el plan minero, hablar de herramienta operacional para mejoramiento continuo' — Carlos enfatizó que muchas veces el plan sí lo cumplen, a veces hasta lo exceden" [INTERNAL]
+25. "Nico: 'Paz mental está como invalidado por Philip y por Carlos' — Camila lo tiene escrito: 'ayúdame a tomar la mejor decisión porque ya no tengo tiempo, simplifícame'" [INTERNAL]
+26. "Alejandro: Felipe Reyes 'le dio mucho valor a todas las definiciones — sin decirle los dominios, los validó — le ven mucho valor a incorporar la mirada espacial, sensorizar el yacimiento, tener cerebro para tomar decisiones'" [INTERNAL]
+27. "Alejandro: Felipe Reyes dijo 'toda esta cuestión de la operación se puede transferir y puede hablar el lenguaje de dinero — los CFO y controladores lo que les interesa es money'" [INTERNAL]
+28. "Nico citando a Philip al inicio de la reunión del Touchpoint: 'Mi cliente no es la tecnología, mi cliente es el Excel' — competidor real no es Hexagon sino lograr que minas dejen Excel y usen TIMining" [INTERNAL]
+29. "Nico: 'Estos cuatro pilares están más que validados'" [INTERNAL]
+30. "Nico: 'Omni Sense podría ser el principal — en la reunión salió muy fuerte el tema de que lo que más usan en la mina es WhatsApp'" [INTERNAL]
+31. "Alejandro: Carlos 'está obsesionado con que TIMining pueda incorporar más datos pero que se visualicen de manera no saturada — ya es suficientemente saturado'" [INTERNAL]
+32. "Alejandro: Carlos sugirió explorar referente de Meta AR lenses — cómo incorporar más datos con lentes sin saturar la pantalla" [INTERNAL]
+33. "Nico: 'Carlos dijo están buenos, me gustan [los mockups], pero eso que está mostrando es demasiado genérico, no me evoca nada real — asegúrense de que cuando hagan estas cosas, conversen con las personas indicadas para levantar casos reales'" [INTERNAL]
+34. "Alejandro: 'Lo importante es que hay una coherencia en el principio que está detrás que rige — es importante mostrar distintos caminos porque puede que lo lleven a la práctica de maneras distintas según el software, la complejidad, para cada perfil'" [INTERNAL]
+35. "Nico: 'No está claro todavía si CORE va a dejar de lado Aware/Orchestra, lo va a dejar así, se van a enfocar 100% en el nuevo CORE que se conecta con Aware, o si la nueva UI va en retroactiva a productos actuales'" [INTERNAL]
+36. "Alejandro: 'La rueda la cambian a medida que el auto va avanzando — como cuando cerraron Flickr, le dan larga vida mientras construyen otra plataforma'" — analogy para migración CORE [INTERNAL]
+37. "Alejandro: 'Frente a un dominio, hay pilares que son más enfáticos — no es 4x4, Quiet UI en respuesta a crisis es evidente, pero Quiet UI con asistencia inteligente no pega mucho'" [INTERNAL]
+38. "Nico: 'Si seguimos levantando información, no vamos a terminar nunca — como un embudo, dirigir la conversación' — necesidad de converger en entrevistas Etapa 2" [INTERNAL]
+39. "Alejandro: 'Estoy gestionando tres entrevistas con personas de TIMining — Carlos y Ana nos dijeron que habláramos primero con los de TIMining y después con clientes que ellos nos den'" [INTERNAL]
+40. "Nico: propuesta de validación en dos instancias — (1) cerrar cabos sueltos conceptuales con equipo TIMining, (2) revisión de pilares en profundidad con benchmark champions y prototipos por dominio" [INTERNAL]
+41. "Alejandro: 'Necesitamos un buen pool de opciones de experiencia ligada a interfaz — que quede superclaro que cuando hablamos de Quiet UI es esto lo que estamos pensando y no es solamente acromático'" [INTERNAL]
+42. "Alejandro: 'Dominio asociado a pilar — la visión estratégica siempre tiene que estar presente, después cada dominio puede expresarse pero hay pilares más potentes por dominio que otros'" [INTERNAL]
+43. "Nico: 'Carlos me acuerdo que dijo de esos cuatro [dominios], este que estás mostrando es el más importante' — posiblemente Alineación Estratégica o Omni Sense" [INTERNAL]
+44. "Alejandro: 'El foco siempre sea como el negocio, más que la pala con la pala' — lo táctico vs lo estratégico" [INTERNAL]
+45. "Nico: 'Voy a trabajar en cómo proponerles llegar a la siguiente reunión con una mejor vinculación entre pilares, visión estratégica y dominios — un concepto bien redondo sin puntos frágiles'" [INTERNAL]
+
+### Action Items (reference only — not forwarded to /analyze)
+- Nico: Desarrollar estrategia de visualización pilar-a-dominio para el viernes
+- Nico: Revisar transcript para comentarios de Carlos sobre priorización de dominios
+- Nico: Enviar conceptos rough antes de review viernes 12:30
+- Alejandro: Coordinar tres entrevistas con empleados TIMining
+- Alejandro: Traspasar formateo de presentación a estándares IDEMAX
+- Equipo: Viernes 12:30 — review enfoque UX/UI y finalizar estrategia de presentación a cliente
+
+---
+
 ## [Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md]
 - Type: touchpoint / milestone review (primera sesión formal IDEMAX + TIMining stakeholders)
 - Date: 2026-02-19

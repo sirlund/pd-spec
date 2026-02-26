@@ -104,7 +104,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 
 ### [IG-SYNTH-07] Gestión por Excepción — Solo mostrar lo que importa
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 11/57 sources
+**Convergence:** 12/60 sources
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CEO, operaciones), user (workshop)
 **Authority:** direct-quote, observation
@@ -544,7 +544,7 @@ Related: [CF-07], [IG-SYNTH-02]
 **Category:** technical (current)
 **Voice:** stakeholder (CTO Carlo — primario)
 **Authority:** direct-quote
-**Convergence:** 2/57 sources
+**Convergence:** 3/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -581,9 +581,9 @@ Related: [IG-SYNTH-17], [CF-13]
 **Category:** business (current)
 **Voice:** stakeholder (CEO Philip — primario)
 **Authority:** direct-quote
-**Convergence:** 1/57 sources
+**Convergence:** 2/60 sources
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > "[Philip] 'Mi cliente no es tecnología — mi cliente es el Excel' — la venta debe centrarse en outcomes y procesos familiares, no en capacidades técnicas"
 
@@ -599,7 +599,7 @@ Related: [IG-SYNTH-10], [IG-SYNTH-16b]
 **Category:** user-need (current)
 **Voice:** stakeholder (Niklas/IDEMAX — presentado y no contradecido por Philip/Carlo)
 **Authority:** observation
-**Convergence:** 2/59 sources
+**Convergence:** 3/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -796,7 +796,7 @@ Related: [IG-SYNTH-01], [IG-08]
 **Category:** design-framework (current)
 **Voice:** researcher (Nico Lundin — IDEMAX observer)
 **Authority:** observation
-**Convergence:** 2/59 sources
+**Convergence:** 3/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -817,7 +817,7 @@ Related: [IG-10], [IG-17], [IG-SYNTH-06], [IG-SYNTH-07], [IG-SYNTH-19]
 **Category:** design-framework (current)
 **Voice:** researcher (Nico Lundin — IDEMAX observer)
 **Authority:** observation
-**Convergence:** 2/59 sources
+**Convergence:** 3/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -844,7 +844,7 @@ Related: [IG-16], [IG-SYNTH-07], [IG-SYNTH-19]
 **Category:** design-framework (current)
 **Voice:** document (deck presentado a Philip/Carlo — primario)
 **Authority:** observation
-**Convergence:** 1/59 sources
+**Convergence:** 2/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -883,7 +883,7 @@ Related: [IG-06], [IG-SYNTH-06], [IG-16]
 **Category:** user-need (aspirational)
 **Voice:** document (deck presentado a Philip/Carlo — primario)
 **Authority:** vision
-**Convergence:** 1/59 sources
+**Convergence:** 2/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -923,7 +923,7 @@ Related: [IG-SYNTH-09], [IG-03], [IG-SYNTH-15]
 **Category:** business (current)
 **Voice:** document (deck presentado a Philip/Carlo — primario)
 **Authority:** observation
-**Convergence:** 1/59 sources
+**Convergence:** 2/60 sources
 Status: VERIFIED
 **Last-updated:** 2026-02-16
 
@@ -938,4 +938,69 @@ Related: [IG-SYNTH-12], [IG-SYNTH-04], [IG-SYNTH-06]
 
 ---
 
-<!-- Updated by /analyze --file on 2026-02-25 -->
+## Priorización y Validación (sesión interna 2026-02-24)
+
+### [IG-23] Omni Sense como pilar prioritario — WhatsApp como canal dominante valida la urgencia
+**Category:** design-framework (current)
+**Voice:** stakeholder (CTO Carlo — reportado en sesión interna IDEMAX)
+**Authority:** observation
+**Convergence:** 1/60 sources
+Status: VERIFIED
+**Last-updated:** 2026-02-26
+
+> "Omni Sense podría ser el principal — en la reunión salió muy fuerte el tema de que lo que más usan en la mina es WhatsApp." Carlos identificó Omni Sense como el pilar más crítico post-Touchpoint. Si el sistema no está donde el operador ya trabaja, no existe.
+
+**Evidence trail:**
+- Nico (sesión interna): "Omni Sense podría ser el principal"
+- Nico (sesión interna): "Carlos dijo, de esos cuatro, este es el más importante" — refiriéndose a Omni Sense o Alineación Estratégica
+- Ale (sesión interna): "WhatsApp actualmente herramienta de comunicación principal en minas"
+
+**Grounded in:** [IG-03] (WhatsApp canal principal), [IG-21] (manos libres), [IG-SYNTH-19] (interfaz multimodal)
+Ref: sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md
+Note: [INTERNAL] — requiere corroboración de fuente primaria para VERIFIED
+
+---
+
+### [IG-24] Relación pilar-dominio es asimétrica — no es una grilla 4x4
+**Category:** design-framework (current)
+**Voice:** stakeholder (Alejandro Guzzoni — IDEMAX, basado en discusión con equipo TIMining)
+**Authority:** observation
+**Convergence:** 1/60 sources
+Status: VERIFIED
+**Last-updated:** 2026-02-26
+
+> "Frente a un dominio, hay pilares que son más enfáticos — no es 4x4. Quiet UI en respuesta a crisis es evidente, pero Quiet UI con asistencia inteligente no pega mucho." Cada dominio tiene pilares líderes y pilares secundarios. Implica priorización en diseño: no todos los cruces dominio×pilar merecen el mismo nivel de profundidad.
+
+**Evidence trail:**
+- Ale (sesión interna): "hay pilares que son más enfáticos — Quiet UI en crisis es evidente"
+- Nico (sesión interna): "Quiet UI con asistencia inteligente no pega mucho"
+- Ale (sesión interna): "dominio asociado a pilar — la visión estratégica siempre tiene que estar presente"
+
+**Grounded in:** [IG-18] (4 dominios con pilar líder), [IG-16] (pilares como sistema encadenado)
+Ref: sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md
+Note: [INTERNAL] — requiere corroboración de fuente primaria para VERIFIED. Refina el mapping pilar→dominio de IG-18.
+
+---
+
+### [IG-25] Primera validación externa parcial — Felipe Reyes confirma dominios y lenguaje de negocio
+**Category:** business (current)
+**Voice:** stakeholder (Felipe Reyes — ex-profesional minero, reportado en sesión interna IDEMAX)
+**Authority:** observation
+**Convergence:** 1/60 sources
+Status: VERIFIED
+**Last-updated:** 2026-02-26
+
+> "Sin decirle los dominios, los validó — le ven mucho valor a incorporar la mirada espacial, sensorizar el yacimiento, tener cerebro para toma de decisiones. Toda la cuestión de la operación se puede transferir y puede hablar el lenguaje de dinero — los CFO y controladores lo que les interesa es money."
+
+**Evidence trail:**
+- Ale (sesión interna): "Felipe Reyes validó los cuatro dominios operativos sin que se los dijeran"
+- Ale (sesión interna): "Confirmó valor de inteligencia espacial y cerebro para toma de decisiones"
+- Ale (sesión interna): "Enfatizó traducir valor a lenguaje de negocio: costos, EBITDA"
+
+Ref: sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md
+Note: [INTERNAL] — reporte secondhand. El transcript primario de la entrevista con Felipe Reyes aún no ha sido procesado. Cuando se extraiga, este insight podrá verificarse con evidencia directa.
+Related: [IG-06] (desconexión mina-planta), [IG-20] (CFO como usuario invisible), [CF-08] (datos financieros)
+
+---
+
+<!-- Updated by /analyze on 2026-02-26 -->
