@@ -68,8 +68,7 @@ Related insights: [IG-SYNTH-10]
 ---
 
 ### [CF-05] Definición ambigua — Customización vs configuración
-Status: RESOLVED
-Resolution: es customizacion, por eso se desarrollan features custom que despues no se usan.
+Status: PENDING — Flagged (pendiente discusión con equipo de producto y desarrollo: definir framework formal configuración vs. extensión vs. customización a medida)
 Type: AMB-05 (Definition gap)
 Related insights: [IG-SYNTH-02], [IG-SYNTH-10]
 
