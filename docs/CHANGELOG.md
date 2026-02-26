@@ -1,5 +1,32 @@
 # Changelog
 
+## [4.25.1] — 2026-02-26 — Slim Core
+
+CLAUDE.md cut from ~8.5K to ~2K tokens per message. Reference content moved to docs/CLAUDE_REFERENCE.md, loaded on demand.
+
+<details>
+<summary>Features (0)</summary>
+
+No features in this release.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (3)</summary>
+
+- **Core+Reference split (OBS-W1-16)** — CLAUDE.md slimmed to ~135 lines (core rules only). Moved 11 reference sections (source organization, maturity levels, sources of truth, folder structure, worktrees, engine dev workflow, CHANGELOG format, freemode protocol, documentation guidelines, script detail, pre-commit verification) to `docs/CLAUDE_REFERENCE.md`. Saves ~65% input tokens per message (~275K tokens over a 50-message session).
+- **Reference gate** — New Session Protocol step 4: "Before engine dev, release, or custom/ad-hoc work (freemode) → read docs/CLAUDE_REFERENCE.md first." Converts passive footer pointer into active trigger for the 3 highest-risk scenarios.
+- **Anti-pattern clarifications** — Engine files defined explicitly (docs/, scripts/, .claude/, root config). New rule: project ideas/bugs go in `02_Work/IDEAS.md`, never edit `docs/BACKLOG.md` from project branches. Checkpoint schema hint added (context, snapshot, goals, decisions, pending work).
+
+</details>
+
 ## [4.25.0] — 2026-02-25 — Architecture & Lifecycle
 
 Three architecture decisions, five utility scripts, insight lifecycle with six statuses, and the rename from /resolve to /spec. The biggest structural release since v4.0.
