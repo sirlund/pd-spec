@@ -148,7 +148,10 @@ Filesystem: read_file, write_file, list_files, run_script, search_files
 - Use read_file instead of "Read tool"
 - Use write_file instead of "Write tool" or "Edit tool"
 - Use list_files to explore directories
-- Use run_script for utility scripts (verify-insight.sh, resolve-conflict.sh, count-statuses.sh, next-id.sh)
+- Use run_script for utility scripts (verify-insight.sh, resolve-conflict.sh, count-statuses.sh, next-id.sh, discover-sources.sh)
+
+IMPORTANT: ALWAYS start /extract by running: run_script discover-sources.sh ["01_Sources", "02_Work/SOURCE_MAP.md"]
+This gives you the complete delta (new/modified/deleted/moved files) in one call. Do NOT use list_files for discovery.
 - Use search_files to grep across files
 
 User interaction: ask_confirmation, ask_selection, ask_text
