@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from './ui/Card.jsx';
 import { StatusBadge, IdBadge, WarningBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
+import { useScriptAction } from '../hooks.js';
 function getFreshness(lastUpdated) {
   if (!lastUpdated) return null;
   const now = new Date();
@@ -15,7 +16,36 @@ function getFreshness(lastUpdated) {
 export default function InsightCard({ insight, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
   const [refsExpanded, setRefsExpanded] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const { execute, loading, error, clearError } = useScriptAction();
   const freshness = getFreshness(insight.last_updated);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(clearError, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, clearError]);
+
+  const handleApprove = async () => {
+    try {
+      await execute('verify-insight', { id: insight.id, action: 'verify' });
+    } catch { /* error shown inline */ }
+  };
+
+  const handleReject = async () => {
+    if (!showRejectInput) {
+      setShowRejectInput(true);
+      return;
+    }
+    if (!rejectReason.trim()) return;
+    try {
+      await execute('verify-insight', { id: insight.id, action: 'invalidate', reason: rejectReason.trim() });
+      setShowRejectInput(false);
+      setRejectReason('');
+    } catch { /* error shown inline */ }
+  };
 
   const statusAccent = {
     VERIFIED: 'verified',
@@ -111,21 +141,47 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
         </div>
       )}
 
-      {/* Decision buttons for PENDING insights */}
-      {insight.status === 'PENDING' && onDecision && (
-        <div className="decision-row">
-          <button
-            className={`btn btn-sm btn-approve ${decision === 'approve' ? 'active' : ''}`}
-            onClick={() => onDecision(insight.id, 'approve')}
-          >
-            <Icon name="check" size={14} /> Approve
-          </button>
-          <button
-            className={`btn btn-sm btn-reject ${decision === 'reject' ? 'active' : ''}`}
-            onClick={() => onDecision(insight.id, 'reject')}
-          >
-            <Icon name="x" size={14} /> Reject
-          </button>
+      {/* Direct action buttons for PENDING insights */}
+      {insight.status === 'PENDING' && (
+        <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              className="btn btn-sm btn-approve"
+              onClick={handleApprove}
+              disabled={loading}
+            >
+              {loading ? '...' : <><Icon name="check" size={14} /> Approve</>}
+            </button>
+            <button
+              className="btn btn-sm btn-reject"
+              onClick={handleReject}
+              disabled={loading}
+            >
+              <Icon name="x" size={14} /> Reject
+            </button>
+          </div>
+          {showRejectInput && (
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                className="form-input"
+                style={{ fontSize: '0.78rem', padding: '4px 8px' }}
+                placeholder="Reason for rejection..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleReject()}
+                autoFocus
+              />
+              <button className="btn btn-sm btn-reject" onClick={handleReject} disabled={!rejectReason.trim() || loading}>
+                Send
+              </button>
+              <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>
+                Cancel
+              </button>
+            </div>
+          )}
+          {error && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)' }}>{error}</div>
+          )}
         </div>
       )}
     </Card>
