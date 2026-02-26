@@ -33,8 +33,11 @@ export default function ConflictsView({ highlightId, onHighlightClear, onNavigat
   }
 
   const filtered = data.conflicts.filter(c => {
-    if (statusFilter !== 'all' && c.status !== statusFilter) return false;
-    return true;
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'FLAGGED') return c.intermediate === 'FLAGGED';
+    if (statusFilter === 'RESEARCH') return c.intermediate === 'RESEARCH';
+    if (statusFilter === 'PENDING') return c.status === 'PENDING' && !c.intermediate;
+    return c.status === statusFilter;
   });
 
   return (
@@ -57,6 +60,16 @@ export default function ConflictsView({ highlightId, onHighlightClear, onNavigat
         <button className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`} onClick={() => setStatusFilter('PENDING')}>
           Pending ({data.summary.pending})
         </button>
+        {data.summary.flagged > 0 && (
+          <button className={`filter-btn ${statusFilter === 'FLAGGED' ? 'active' : ''}`} onClick={() => setStatusFilter('FLAGGED')}>
+            Flagged ({data.summary.flagged})
+          </button>
+        )}
+        {data.summary.research > 0 && (
+          <button className={`filter-btn ${statusFilter === 'RESEARCH' ? 'active' : ''}`} onClick={() => setStatusFilter('RESEARCH')}>
+            Research ({data.summary.research})
+          </button>
+        )}
         <button className={`filter-btn ${statusFilter === 'RESOLVED' ? 'active' : ''}`} onClick={() => setStatusFilter('RESOLVED')}>
           Resolved ({data.summary.resolved})
         </button>

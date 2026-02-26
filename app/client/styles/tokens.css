@@ -39,6 +39,10 @@
   --superseded-fg: #888888;
   --resolved-bg: #0d3320;
   --resolved-fg: #4ade80;
+  --flagged-bg: #33200a;
+  --flagged-fg: #fb923c;
+  --research-bg: #0c1d3e;
+  --research-fg: #60a5fa;
 
   /* Vivid accents — stay bright in both themes (dots, bars, indicators) */
   --vivid-green: #4ade80;
@@ -79,6 +83,10 @@
   --superseded-fg: #9ca3af;
   --resolved-bg: #dcfce7;
   --resolved-fg: #16a34a;
+  --flagged-bg: #fff7ed;
+  --flagged-fg: #ea580c;
+  --research-bg: #dbeafe;
+  --research-fg: #2563eb;
 
   /* Vivid accents — keep bright for visual indicators in light mode */
   --vivid-green: #22c55e;

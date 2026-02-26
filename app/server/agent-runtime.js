@@ -17,6 +17,7 @@ const ALLOWED_SCRIPTS = new Set([
   'count-statuses.sh',
   'next-id.sh',
   'integrity-check.sh',
+  'discover-sources.sh',
 ]);
 
 // Readable paths
@@ -86,7 +87,7 @@ const filesystemTools = [
   },
   {
     name: 'run_script',
-    description: 'Run a utility script from the scripts/ directory. Allowed: verify-insight.sh, resolve-conflict.sh, count-statuses.sh, next-id.sh, integrity-check.sh.',
+    description: 'Run a utility script from the scripts/ directory. Allowed: verify-insight.sh, resolve-conflict.sh, count-statuses.sh, next-id.sh, integrity-check.sh, discover-sources.sh.',
     input_schema: {
       type: 'object',
       properties: {

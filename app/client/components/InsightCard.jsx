@@ -184,6 +184,43 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
           )}
         </div>
       )}
+
+      {/* Invalidate button for VERIFIED insights (BL-87 minimal) */}
+      {insight.status === 'VERIFIED' && (
+        <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              className="btn btn-sm btn-reject"
+              onClick={handleReject}
+              disabled={loading}
+            >
+              <Icon name="x" size={14} /> Invalidate
+            </button>
+          </div>
+          {showRejectInput && (
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                className="form-input"
+                style={{ fontSize: '0.78rem', padding: '4px 8px' }}
+                placeholder="Reason for invalidation..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleReject()}
+                autoFocus
+              />
+              <button className="btn btn-sm btn-reject" onClick={handleReject} disabled={!rejectReason.trim() || loading}>
+                Send
+              </button>
+              <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>
+                Cancel
+              </button>
+            </div>
+          )}
+          {error && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)' }}>{error}</div>
+          )}
+        </div>
+      )}
     </Card>
   );
 }

@@ -30,7 +30,8 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
     } catch { /* error shown inline */ }
   };
 
-  const statusAccent = conflict.status === 'RESOLVED' ? 'verified' : 'conflict';
+  const statusAccent = conflict.status === 'RESOLVED' ? 'verified'
+    : conflict.intermediate ? 'pending' : 'conflict';
 
   const handleOption = (optionId) => {
     if (optionId === 'context') {
@@ -46,7 +47,7 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
     <Card accent={statusAccent}>
       <div className="card-header">
         <IdBadge id={conflict.id} />
-        <StatusBadge status={conflict.status} />
+        <StatusBadge status={conflict.intermediate || conflict.status} />
         {conflict.type && <SubtleBadge>{conflict.type}</SubtleBadge>}
         {conflict.priority && (
           <span className={`badge ${conflict.priority === 'Critical' ? 'badge-critical' : conflict.priority === 'High' ? 'badge-pending' : 'badge-subtle'}`}>
@@ -58,6 +59,12 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
       <div className="card-title" style={{ marginBottom: 8 }}>
         {conflict.title && `${conflict.title} — `}{conflict.description}
       </div>
+
+      {conflict.intermediate_note && (
+        <div style={{ marginBottom: 8, fontSize: '0.82rem', color: 'var(--text-muted)', fontStyle: 'italic', paddingLeft: 8, borderLeft: `2px solid var(--${conflict.intermediate === 'FLAGGED' ? 'flagged' : 'research'}-fg)` }}>
+          {conflict.intermediate_note}
+        </div>
+      )}
 
       {conflict.related_insights.length > 0 && (
         <div style={{ marginBottom: 8, display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
@@ -99,7 +106,7 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
       )}
 
       {/* Decision radio options for unresolved conflicts */}
-      {conflict.status !== 'RESOLVED' && onDecision && (
+      {conflict.status !== 'RESOLVED' && !conflict.intermediate && onDecision && (
         <div className="radio-group">
           {CONFLICT_OPTIONS.map(opt => (
             <div key={opt.id}>
