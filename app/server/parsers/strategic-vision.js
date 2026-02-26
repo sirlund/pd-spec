@@ -104,9 +104,9 @@ export function parseStrategicVision(content) {
     // Skip HTML comments, separators, and blank-ish lines for accumulation
     if (line.startsWith('<!--') || line === '---') continue;
 
-    // Vision paragraph
+    // Vision paragraph — strip blockquote markers
     if (section === 'vision') {
-      if (line.trim()) vision += line + '\n';
+      if (line.trim()) vision += line.replace(/^>\s*/, '') + '\n';
       continue;
     }
 
