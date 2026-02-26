@@ -99,7 +99,11 @@ if ! grep -q "### \[$INSIGHT_ID\]" "$FILE"; then
 fi
 
 # Get current status
-CURRENT_STATUS=$(awk "/^### \[$INSIGHT_ID\]/,/^### \[/" "$FILE" | grep -m1 '^Status:' | sed 's/^Status: *//')
+CURRENT_STATUS=$(awk -v id="$INSIGHT_ID" '
+  /^### \[/ && index($0, "[" id "]") > 0 { found=1; next }
+  found && /^### \[/ { exit }
+  found { print }
+' "$FILE" | grep -m1 '^Status:' | sed 's/^Status: *//')
 
 # --- Validate transition ---
 validate_transition() {
