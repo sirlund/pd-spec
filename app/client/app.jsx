@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useLiveData, useWebSocket } from './hooks.js';
 import Icon from './components/ui/Icon.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
@@ -37,6 +37,10 @@ export default function App() {
   const [connected, setConnected] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
 
+  // FileBrowser state preservation (BL-90: back/forward memory)
+  const viewContextRef = useRef(null); // current FileBrowser's selectedFile
+  const [restoredFile, setRestoredFile] = useState(null);
+
   // Decision state (ephemeral — lost on refresh)
   const [insightDecisions, setInsightDecisions] = useState({});
   const [conflictDecisions, setConflictDecisions] = useState({});
@@ -46,13 +50,23 @@ export default function App() {
 
   useWebSocket(useCallback(() => { setConnected(true); }, []));
 
+  const handleFileSelect = useCallback((filePath) => {
+    viewContextRef.current = filePath;
+  }, []);
+
   // --- Browser navigation (BL-90): pushState with state objects, NO URL changes ---
   const setView = useCallback((newView, opts = {}) => {
+    if (!opts.fromPopState) {
+      // Snapshot current view's selectedFile into the current history entry
+      history.replaceState({ view, highlightId, selectedFile: viewContextRef.current }, '');
+      viewContextRef.current = null;
+      setRestoredFile(null);
+    }
     setViewRaw(newView);
     if (!opts.fromPopState) {
       history.pushState({ view: newView, highlightId: opts.highlightId || null }, '');
     }
-  }, []);
+  }, [view, highlightId]);
 
   useEffect(() => {
     // Set initial state
@@ -62,6 +76,8 @@ export default function App() {
       if (e.state?.view) {
         setViewRaw(e.state.view);
         setHighlightId(e.state.highlightId || null);
+        setRestoredFile(e.state.selectedFile || null);
+        viewContextRef.current = null;
       }
     };
     window.addEventListener('popstate', onPopState);
@@ -149,11 +165,11 @@ export default function App() {
           />
         );
       case 'sources':
-        return <FileBrowser key="sources" root="01_Sources" title="Sources" onNavigate={navigateTo} />;
+        return <FileBrowser key="sources" root="01_Sources" title="Sources" onNavigate={navigateTo} onFileSelect={handleFileSelect} initialFile={restoredFile} />;
       case 'work':
-        return <FileBrowser key="work" root="02_Work" title="Work" onNavigate={navigateTo} />;
+        return <FileBrowser key="work" root="02_Work" title="Work" onNavigate={navigateTo} onFileSelect={handleFileSelect} initialFile={restoredFile} />;
       case 'outputs':
-        return <FileBrowser key="outputs" root="03_Outputs" title="Outputs" onNavigate={navigateTo} />;
+        return <FileBrowser key="outputs" root="03_Outputs" title="Outputs" onNavigate={navigateTo} onFileSelect={handleFileSelect} initialFile={restoredFile} />;
       default:
         return null;
     }
