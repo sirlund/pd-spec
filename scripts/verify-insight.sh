@@ -173,64 +173,33 @@ esac
 validate_transition "$CURRENT_STATUS" "$NEW_STATUS"
 
 # --- Cascade protection (for FREEZE, INVALIDATE, SUPERSEDE) ---
-cascade_check() {
-  local id="$1"
-  local ref_count=0
-  local ref_files=""
-
-  # Check STRATEGIC_VISION.md
-  SV="$PROJECT/02_Work/STRATEGIC_VISION.md"
-  if [ -f "$SV" ]; then
-    local c
-    c=$(grep -c "\[$id\]" "$SV" 2>/dev/null || echo 0)
-    if [ "$c" -gt 0 ]; then
-      ref_count=$((ref_count + c))
-      ref_files="$ref_files  STRATEGIC_VISION.md: $c refs\n"
-    fi
-  fi
-
-  # Check PROPOSALS.md
-  PP="$PROJECT/02_Work/PROPOSALS.md"
-  if [ -f "$PP" ]; then
-    local c
-    c=$(grep -c "\[$id\]" "$PP" 2>/dev/null || echo 0)
-    if [ "$c" -gt 0 ]; then
-      ref_count=$((ref_count + c))
-      ref_files="$ref_files  PROPOSALS.md: $c refs\n"
-    fi
-  fi
-
-  # Check 03_Outputs/
-  OUTPUTS="$PROJECT/03_Outputs"
-  if [ -d "$OUTPUTS" ]; then
-    for f in "$OUTPUTS"/*.md "$OUTPUTS"/*.html; do
-      [ -f "$f" ] || continue
-      local c
-      c=$(grep -c "\[$id\]" "$f" 2>/dev/null || echo 0)
-      if [ "$c" -gt 0 ]; then
-        ref_count=$((ref_count + c))
-        ref_files="$ref_files  $(basename "$f"): $c refs\n"
-      fi
-    done
-  fi
-
-  echo "$ref_count"
-  if [ "$ref_count" -gt 0 ]; then
-    printf "References to [$id]:\n"
-    printf "$ref_files"
-  fi
-}
-
 needs_cascade() {
   [ "$ACTION" = "freeze" ] || [ "$ACTION" = "invalidate" ] || [ "$ACTION" = "supersede" ]
 }
 
 if needs_cascade; then
-  CASCADE_OUTPUT=$(cascade_check "$INSIGHT_ID")
-  REF_COUNT=$(echo "$CASCADE_OUTPUT" | head -1)
+  REF_COUNT=0
+  REF_DETAILS=""
+
+  # Scan files for references to this insight
+  for scan_file in \
+    "$PROJECT/02_Work/STRATEGIC_VISION.md" \
+    "$PROJECT/02_Work/PROPOSALS.md" \
+    "$PROJECT/03_Outputs"/*.md \
+    "$PROJECT/03_Outputs"/*.html; do
+    [ -f "$scan_file" ] || continue
+    c=$(grep -c "\[$INSIGHT_ID\]" "$scan_file" 2>/dev/null || true)
+    c=$(echo "$c" | tr -d '[:space:]')
+    if [ -n "$c" ] && [ "$c" -gt 0 ]; then
+      REF_COUNT=$((REF_COUNT + c))
+      REF_DETAILS="$REF_DETAILS  $(basename "$scan_file"): $c refs
+"
+    fi
+  done
 
   if [ "$REF_COUNT" -gt 0 ]; then
-    echo "$CASCADE_OUTPUT" | tail -n +2
+    echo "References to [$INSIGHT_ID]:"
+    printf "%s" "$REF_DETAILS"
     echo ""
 
     if [ "$REF_COUNT" -le 2 ]; then
