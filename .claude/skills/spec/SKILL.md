@@ -79,8 +79,8 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 9. **Write Strategic Vision** — In `02_Work/STRATEGIC_VISION.md`:
    - Product Vision — if core assumptions changed.
    - Product Strategy — market positioning, differentiation, business model.
-   - **Design Principles** — transversal decision criteria. Each principle gets:
-     - A **memorable name** (e.g., "Quiet UI", "The Delta", "Zero-Friction Onboarding") — use language from sources, don't invent.
+   - **Design Principles** — product-level principles only. Source exclusively from insights with category `design-framework`. Internal methodology concepts (Homer's Car, D→A→R, etc.) are NOT product principles — list them in a separate "Internal Design Criteria" subsection if relevant. Each principle gets:
+     - A **memorable name** — use the name from the source insight, don't rename or invent.
      - **Operates at:** which layers of the conceptual tree (Strategic / Structural / Behavioral / Materialization).
      - **Description:** what it means, how it guides decisions.
      - **Refs:** `[IG-XX]` references that ground it.
