@@ -651,6 +651,10 @@
   border-left: 1px solid var(--border-subtle);
 }
 
+.file-folder:has(> .file-folder-name.collapsed) {
+  border-left-color: transparent;
+}
+
 .file-folder .file-folder {
   border-bottom: none;
   padding-left: 0;
