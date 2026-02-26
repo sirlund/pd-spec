@@ -6,7 +6,7 @@
 #   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md --resolution "Prioritize speed per user majority"
 #   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md
 #
-# Changes "Status: PENDING" to "Status: RESOLVED" for the given conflict.
+# Changes "Status: PENDING..." to "Status: RESOLVED" for the given conflict.
 # Optionally appends a "Resolution:" line after the status.
 
 set -euo pipefail
@@ -46,30 +46,56 @@ if ! grep -q "### \[$CONFLICT_ID\]" "$FILE"; then
   exit 2
 fi
 
-# Check current status
-CURRENT_STATUS=$(awk "/^### \[$CONFLICT_ID\]/,/^### \[/" "$FILE" | grep -m1 '^Status:' | sed 's/^Status: *//')
+# Extract the block for this conflict (from its heading to next heading or ---  or EOF)
+# Use awk with a flag to avoid the range-closes-on-first-line problem
+CURRENT_STATUS=$(awk -v id="$CONFLICT_ID" '
+  /^### \[/ { if (found) exit; if (index($0, "[" id "]") > 0) found=1 }
+  found && /^Status:/ { sub(/^Status: */, ""); print; exit }
+' "$FILE")
 
-if [ "$CURRENT_STATUS" = "RESOLVED" ]; then
-  echo "$CONFLICT_ID is already RESOLVED"
-  exit 0
+if [ -z "$CURRENT_STATUS" ]; then
+  echo "ERROR: Could not read status for $CONFLICT_ID"
+  exit 1
 fi
 
-if [ "$CURRENT_STATUS" != "PENDING" ]; then
-  echo "WARNING: $CONFLICT_ID has status '$CURRENT_STATUS' (expected PENDING). Proceeding anyway."
-fi
+# Check if already resolved
+case "$CURRENT_STATUS" in
+  RESOLVED*)
+    echo "$CONFLICT_ID is already RESOLVED"
+    exit 0
+    ;;
+esac
 
-# Replace status
-if [ -n "$RESOLUTION" ]; then
-  # Replace Status: PENDING with Status: RESOLVED + add Resolution: line
-  sed -i '' "/^### \[$CONFLICT_ID\]/,/^### \[/{
-    s/^Status: *PENDING/Status: RESOLVED/
-    /^Status: RESOLVED/a\\
-Resolution: $RESOLUTION
-  }" "$FILE"
-else
-  sed -i '' "/^### \[$CONFLICT_ID\]/,/^### \[/{
-    s/^Status: *PENDING/Status: RESOLVED/
-  }" "$FILE"
-fi
+# Check if PENDING (may have suffix like "PENDING — Flagged (...)")
+case "$CURRENT_STATUS" in
+  PENDING*)
+    ;;
+  *)
+    echo "WARNING: $CONFLICT_ID has status '$CURRENT_STATUS' (expected PENDING). Proceeding anyway."
+    ;;
+esac
+
+# Replace status using awk (more reliable than sed for multi-line context)
+TMPFILE=$(mktemp)
+awk -v id="$CONFLICT_ID" -v resolution="$RESOLUTION" '
+  /^### \[/ {
+    if (in_target && !did_replace) {
+      # Edge case: reached next heading without finding Status line
+    }
+    in_target = (index($0, "[" id "]") > 0)
+    did_replace = 0
+  }
+  in_target && /^Status: *PENDING/ && !did_replace {
+    print "Status: RESOLVED"
+    if (resolution != "") {
+      print "Resolution: " resolution
+    }
+    did_replace = 1
+    next
+  }
+  { print }
+' "$FILE" > "$TMPFILE"
+
+mv "$TMPFILE" "$FILE"
 
 echo "OK: $CONFLICT_ID → RESOLVED"
