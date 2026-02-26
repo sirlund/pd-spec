@@ -649,6 +649,13 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.file-folder .file-folder {
+  border-bottom: none;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-subtle);
+}
+
 .file-folder-name {
   display: flex;
   align-items: center;

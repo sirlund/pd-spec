@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useLiveData, useApi } from '../hooks.js';
 import Icon from './ui/Icon.jsx';
 import { StatusBadge } from './ui/Badge.jsx';
@@ -22,7 +22,7 @@ const ROOT_PREFIX = {
   '03_Outputs': '',
 };
 
-export default function FileBrowser({ root, title, onNavigate }) {
+export default function FileBrowser({ root, title, onNavigate, onFileSelect, initialFile }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [collapsedFolders, setCollapsedFolders] = useState({});
   const [preview, setPreview] = useState(null);
@@ -92,6 +92,7 @@ export default function FileBrowser({ root, title, onNavigate }) {
     const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
 
     setSelectedFile(path);
+    if (onFileSelect) onFileSelect(path);
     setPreview(null);
     setPreviewLoading(true);
 
@@ -130,6 +131,14 @@ export default function FileBrowser({ root, title, onNavigate }) {
       });
     } catch { /* ignore */ }
   };
+
+  // Restore file selection from navigation history (BL-90: back/forward memory)
+  useEffect(() => {
+    if (!initialFile || selectedFile) return;
+    if (!fileList) return;
+    const file = fileList.find(f => getFilePath(f) === initialFile);
+    if (file) handleFileClick(file);
+  }, [initialFile, fileList, selectedFile, getFilePath, handleFileClick]);
 
   const totalFiles = fileList?.length || 0;
   const processedCount = isSources ? (sourceMap.data?.summary?.processed || 0) : 0;
