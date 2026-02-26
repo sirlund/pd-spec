@@ -47,10 +47,16 @@ export function createClaudeRoutes(projectRoot, broadcast) {
   /**
    * POST /api/claude/session — validate key, create session
    */
+  // Check for env var API key availability
+  router.get('/env-available', (req, res) => {
+    res.json({ available: !!process.env.ANTHROPIC_API_KEY });
+  });
+
   router.post('/session', async (req, res) => {
-    const { apiKey } = req.body || {};
+    const { apiKey: bodyKey, fromEnv } = req.body || {};
+    const apiKey = fromEnv ? process.env.ANTHROPIC_API_KEY : bodyKey;
     if (!apiKey || !apiKey.startsWith('sk-ant-')) {
-      return res.status(400).json({ error: 'Invalid API key format' });
+      return res.status(400).json({ error: fromEnv ? 'ANTHROPIC_API_KEY not set in server environment' : 'Invalid API key format' });
     }
 
     try {
@@ -76,7 +82,10 @@ export function createClaudeRoutes(projectRoot, broadcast) {
       if (err.status === 401) {
         return res.status(401).json({ error: 'Invalid API key' });
       }
-      res.status(500).json({ error: err.message });
+      // Extract human-readable message from Anthropic SDK errors
+      const friendlyMessage = err.error?.error?.message || err.message;
+      const status = err.status || 500;
+      res.status(status).json({ error: friendlyMessage });
     }
   });
 
@@ -176,6 +185,7 @@ ${projectMd}
         content: [{ type: 'tool_result', tool_use_id: toolUseId, content: message }],
       });
       conv.pendingInteraction = null;
+      conv.aborted = false; // Reset — close of previous SSE set this to true
     } else if (!conv || conv.mode === 'qa') {
       // Q&A mode — read work layer for context
       let context = '';
@@ -249,18 +259,33 @@ ${projectMd}
         }
 
         let response;
-        try {
-          response = await client.messages.create(apiParams, {
-            signal: abortController.signal,
-          });
-        } catch (err) {
-          if (err.name === 'AbortError' || conv.aborted) {
-            sendSSE({ type: 'aborted' });
+        const MAX_RETRIES = 3;
+        for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+          try {
+            response = await client.messages.create(apiParams, {
+              signal: abortController.signal,
+            });
+            break; // success
+          } catch (err) {
+            if (err.name === 'AbortError' || conv.aborted) {
+              sendSSE({ type: 'aborted' });
+              response = null;
+              break;
+            }
+            // Retry on 429 (rate limit) and 529 (overloaded)
+            if ((err.status === 429 || err.status === 529) && attempt < MAX_RETRIES) {
+              const wait = Math.min(15 * (attempt + 1), 60); // 15s, 30s, 45s
+              sendSSE({ type: 'text', content: `Rate limited — retrying in ${wait}s...` });
+              await new Promise(r => setTimeout(r, wait * 1000));
+              continue;
+            }
+            const friendlyMessage = err.error?.error?.message || err.message;
+            sendSSE({ type: 'error', message: friendlyMessage });
+            response = null;
             break;
           }
-          sendSSE({ type: 'error', message: err.message });
-          break;
         }
+        if (!response) break;
 
         // Process content blocks
         const toolResults = [];
@@ -323,6 +348,11 @@ ${projectMd}
         if (response.stop_reason === 'tool_use' && toolResults.length > 0) {
           // Auto-continue with tool results
           conv.messages.push({ role: 'user', content: toolResults });
+
+          // Trim older tool results to keep conversation context lean
+          // This prevents accumulated read_file contents from exceeding rate limits
+          trimConversationContext(conv);
+
           sendSSE({ type: 'continuing' });
           continue;
         }
@@ -367,6 +397,30 @@ ${projectMd}
   });
 
   return router;
+}
+
+/**
+ * Trim conversation context to stay within rate limits.
+ * Truncates large tool_result contents in older messages,
+ * keeping only the last 2 user/assistant pairs at full fidelity.
+ */
+function trimConversationContext(conv) {
+  const MAX_RESULT_CHARS = 2000;
+  const KEEP_RECENT = 4; // keep last 4 messages (2 pairs) untouched
+
+  const messages = conv.messages;
+  const trimBefore = messages.length - KEEP_RECENT;
+
+  for (let i = 0; i < trimBefore; i++) {
+    const msg = messages[i];
+    if (msg.role === 'user' && Array.isArray(msg.content)) {
+      for (const block of msg.content) {
+        if (block.type === 'tool_result' && typeof block.content === 'string' && block.content.length > MAX_RESULT_CHARS) {
+          block.content = block.content.slice(0, MAX_RESULT_CHARS) + `\n\n[... truncated from ${block.content.length} chars to save context ...]`;
+        }
+      }
+    }
+  }
 }
 
 /** Summarize tool input for SSE display (hide large content) */

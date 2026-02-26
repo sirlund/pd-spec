@@ -6,6 +6,15 @@ export default function SettingsPanel({ open, onClose, sessionToken, onSessionCh
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [validating, setValidating] = useState(false);
+  const [envAvailable, setEnvAvailable] = useState(false);
+
+  // Check if env var API key is available
+  useEffect(() => {
+    fetch('/api/claude/env-available')
+      .then(r => r.json())
+      .then(d => setEnvAvailable(d.available))
+      .catch(() => {});
+  }, [open]);
 
   // On mount, validate existing session token
   useEffect(() => {
@@ -25,6 +34,26 @@ export default function SettingsPanel({ open, onClose, sessionToken, onSessionCh
         .finally(() => setValidating(false));
     }
   }, [open]);
+
+  const handleConnectFromEnv = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/claude/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromEnv: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      localStorage.setItem('pd-session-token', data.sessionToken);
+      onSessionChange(data.sessionToken);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleConnect = async () => {
     if (!apiKey.trim()) return;
@@ -89,6 +118,16 @@ export default function SettingsPanel({ open, onClose, sessionToken, onSessionCh
               <span className="settings-dot disconnected" />
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Not connected</span>
             </div>
+            {envAvailable && (
+              <button
+                className="btn btn-accent"
+                onClick={handleConnectFromEnv}
+                disabled={loading}
+                style={{ marginBottom: 12 }}
+              >
+                {loading ? 'Validating...' : 'Connect from server env'}
+              </button>
+            )}
             <div className="form-group">
               <input
                 type="password"
