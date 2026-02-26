@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from './ui/Card.jsx';
 import { StatusBadge, IdBadge, SubtleBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
+import { useScriptAction } from '../hooks.js';
 
 const CONFLICT_OPTIONS = [
   { id: 'flag', label: 'Flag for discussion' },
@@ -12,6 +13,22 @@ const CONFLICT_OPTIONS = [
 export default function ConflictCard({ conflict, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
   const [contextText, setContextText] = useState('');
+  const { execute, loading, error, clearError } = useScriptAction();
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(clearError, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, clearError]);
+
+  const handleResolve = async () => {
+    if (!contextText.trim()) return;
+    try {
+      await execute('resolve-conflict', { id: conflict.id, resolution: contextText.trim() });
+      setContextText('');
+    } catch { /* error shown inline */ }
+  };
 
   const statusAccent = conflict.status === 'RESOLVED' ? 'verified' : 'conflict';
 
@@ -94,15 +111,30 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
                 <span>{opt.label}</span>
               </div>
               {opt.id === 'context' && currentType === 'context' && (
-                <textarea
-                  className="context-textarea"
-                  placeholder="Add your context here..."
-                  value={contextText}
-                  onChange={(e) => {
-                    setContextText(e.target.value);
-                    onDecision?.(conflict.id, { type: 'context', text: e.target.value });
-                  }}
-                />
+                <>
+                  <textarea
+                    className="context-textarea"
+                    placeholder="Add your context here..."
+                    value={contextText}
+                    onChange={(e) => {
+                      setContextText(e.target.value);
+                      onDecision?.(conflict.id, { type: 'context', text: e.target.value });
+                    }}
+                  />
+                  {contextText.trim() && (
+                    <button
+                      className="btn btn-sm btn-accent"
+                      style={{ marginTop: 6 }}
+                      onClick={handleResolve}
+                      disabled={loading}
+                    >
+                      {loading ? '...' : 'Resolve now'}
+                    </button>
+                  )}
+                  {error && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginTop: 4 }}>{error}</div>
+                  )}
+                </>
               )}
             </div>
           ))}

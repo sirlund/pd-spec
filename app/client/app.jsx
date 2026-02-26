@@ -11,7 +11,8 @@ import StrategicVisionView from './components/StrategicVisionView.jsx';
 import ProposalsView from './components/ProposalsView.jsx';
 import EvidenceGapsView from './components/EvidenceGapsView.jsx';
 import AddContextView from './components/AddContextView.jsx';
-import ActionsView from './components/ActionsView.jsx';
+import AgentView from './components/AgentView.jsx';
+import SettingsPanel from './components/SettingsPanel.jsx';
 import FileBrowser from './components/FileBrowser.jsx';
 import SearchBar from './components/SearchBar.jsx';
 
@@ -25,7 +26,7 @@ export const VIEW_REGISTRY = [
   { id: 'proposals', label: 'Proposals', icon: 'layout-list', section: 'structure' },
   { id: 'brief', label: 'Research Brief', icon: 'file-text', section: 'structure' },
   { id: 'add-context', label: 'Add Context', icon: 'pencil-plus', section: 'tools' },
-  { id: 'actions', label: 'Actions', icon: 'send', section: 'tools' },
+  { id: 'agent', label: 'Agent', icon: 'bot', section: 'tools' },
   { id: 'sources', label: 'Sources', icon: 'folders', section: 'browse' },
   { id: 'work', label: 'Work', icon: 'flask', section: 'browse' },
   { id: 'outputs', label: 'Outputs', icon: 'file-export', section: 'browse' },
@@ -36,6 +37,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [connected, setConnected] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
+  const [sessionToken, setSessionToken] = useState(() => localStorage.getItem('pd-session-token'));
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // FileBrowser state preservation (BL-90: back/forward memory)
   const viewContextRef = useRef(null); // current FileBrowser's selectedFile
@@ -156,12 +159,11 @@ export default function App() {
         return <MarkdownView path="/file/02_Work/RESEARCH_BRIEF.md" title="Research Brief" onNavigate={navigateTo} />;
       case 'add-context':
         return <AddContextView projectName={project.data?.name} />;
-      case 'actions':
+      case 'agent':
         return (
-          <ActionsView
-            insightDecisions={insightDecisions}
-            conflictDecisions={conflictDecisions}
-            decisionCount={decisionCount}
+          <AgentView
+            sessionToken={sessionToken}
+            onNavigate={navigateTo}
           />
         );
       case 'sources':
@@ -189,6 +191,14 @@ export default function App() {
           )}
           <div className="live-dot" title="Live — watching for changes" />
           <ThemeToggle />
+          <button
+            className="theme-toggle"
+            onClick={() => setSettingsOpen(true)}
+            title="Settings"
+            style={sessionToken ? { borderColor: 'var(--verified-fg)' } : {}}
+          >
+            <Icon name="settings" size={16} />
+          </button>
         </div>
         <SearchBar value={searchQuery} onChange={setSearchQuery} onNavigate={navigateTo} />
       </header>
@@ -204,6 +214,13 @@ export default function App() {
       <main className="app-main">
         {renderView()}
       </main>
+
+      <SettingsPanel
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        sessionToken={sessionToken}
+        onSessionChange={setSessionToken}
+      />
     </div>
   );
 }

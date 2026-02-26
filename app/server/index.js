@@ -15,6 +15,8 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
 import { createApi } from './api.js';
+import { createScriptRoutes } from './scripts.js';
+import { createClaudeRoutes } from './claude.js';
 import { createWatcher } from './watcher.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -48,6 +50,12 @@ app.use(express.json());
 // API routes
 const { router, parseCache } = createApi(projectRoot);
 app.use('/api', router);
+
+// Script endpoints (no API key needed)
+app.use('/api/scripts', createScriptRoutes(projectRoot));
+
+// Claude API endpoints (requires API key session)
+app.use('/api/claude', createClaudeRoutes(projectRoot, broadcast));
 
 // Serve output files (for "Open in new tab")
 app.use('/outputs', express.static(resolve(projectRoot, '03_Outputs'), {
