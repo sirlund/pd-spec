@@ -84,5 +84,5 @@
 - **OBS-QA9-02:** T15 version consistency check fails on TIMining (expected — PROJECT.md has v4.7.0 preserved by merge=ours). Not a real failure.
 - **OBS-QA9-03:** Sprite SVG caching caused layout-list icon to not appear until server restart. Hard refresh (Cmd+Shift+R) was insufficient in some browsers.
 - **OBS-QA9-04:** `verify-insight.sh` successfully detected 39 cross-file references for IG-SYNTH-01 across 9 output files. Cascade protection works as designed.
-- **OBS-QA9-05:** No insights have `Last-updated:` field — freshness dots don't render. Field was introduced in v4.25 but `/spec` only wrote new files, didn't touch insight statuses. Batch backfill pending.
+- **OBS-QA9-05:** No insights had `Last-updated:` field — freshness dots didn't render. Batch backfill applied (44 insights, dates from git blame). **TODO:** verify that `/analyze` and `/spec` write `Last-updated:` when they touch insights — not yet tested in a live run.
 - **OBS-QA9-06:** Strategic Vision view is very linear — all sections stack vertically with heavy scroll. Consider collapsible sections, tabs, or grid layout for future iteration.
