@@ -185,6 +185,7 @@ ${projectMd}
         content: [{ type: 'tool_result', tool_use_id: toolUseId, content: message }],
       });
       conv.pendingInteraction = null;
+      conv.aborted = false; // Reset — close of previous SSE set this to true
     } else if (!conv || conv.mode === 'qa') {
       // Q&A mode — read work layer for context
       let context = '';
