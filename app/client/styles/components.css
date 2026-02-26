@@ -647,13 +647,13 @@
 
 .file-folder {
   border-bottom: 1px solid var(--border-subtle);
+  margin-left: 12px;
+  border-left: 1px solid var(--border-subtle);
 }
 
 .file-folder .file-folder {
   border-bottom: none;
-  margin-left: 12px;
-  padding-left: 12px;
-  border-left: 1px solid var(--border-subtle);
+  padding-left: 0;
 }
 
 .file-folder-name {
