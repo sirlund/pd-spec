@@ -242,7 +242,7 @@ export default function AgentView({ sessionToken, onNavigate }) {
       </div>
 
       {/* Progress Log */}
-      {groupedLog.length > 0 && (
+      {(groupedLog.length > 0 || running) && (
         <div className="agent-log">
           {groupedLog.map((entry, i) => (
             <LogEntry key={i} entry={entry} onNavigate={onNavigate} />
