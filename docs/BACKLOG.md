@@ -12,7 +12,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
 
-**Status:** Proposed
+**Status:** PARTIALLY IMPLEMENTED (v4.25.2)
 **Priority:** P2
 **Origin:** QA v7, OBS-32/33/34/46. No way to challenge a VERIFIED insight, reject with a reason note, or detect when a conflict becomes stale after an insight decision.
 
@@ -23,11 +23,14 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 2. Reject action includes optional reason note → stored in INSIGHTS_GRAPH.md
 3. App detects when insight status changes make existing conflicts stale → banner warning
 
-**Acceptance criteria:**
-- [ ] Challenge action creates a conflict entry linked to the insight
-- [ ] Reject includes optional reason note persisted in INSIGHTS_GRAPH.md
+**Implemented (v4.25.2):**
+- [x] "Invalidate" button on VERIFIED insights with required reason note
+- [x] Reject (PENDING) includes reason note persisted via verify-insight.sh
+- [x] Cascade protection warns about orphaned references before invalidating
+
+**Remaining:**
+- [ ] Challenge action creates a conflict entry linked to the insight (separate from Invalidate)
 - [ ] Stale conflict detection and visual warning
-- [ ] All actions follow propose-before-execute
 
 **User story:**
 > As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.
@@ -443,9 +446,18 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
 
-**Status:** PARKED — Blocked until BL-92 (script-first skill decomposition) clarifies which skills are scriptable vs LLM-dependent. No point integrating LLM in the app before that cleanup.
+**Status:** IMPLEMENTED (Wave 1, v4.25.1–v4.25.2)
 **Priority:** P1
 **Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
+
+**Implemented (Wave 1):**
+- [x] BYOK settings UI — user enters Claude API key, stored server-side in memory (not persisted between restarts)
+- [x] Q&A mode — text input in app → LLM responds using Work layer context
+- [x] Action mode — approve/reject/invalidate insights from UI → INSIGHTS_GRAPH.md updated via verify-insight.sh
+- [x] Conflict resolution from UI → resolve-conflict.sh called server-side
+- [x] Pipeline execution from app — /extract, /analyze, /spec triggered via UI buttons with progress display
+- [x] WebSocket broadcasts file changes after every LLM/script action
+- [x] Claude API only (BYOK). No Gemini/GPT support — evaluated post-pilot if demanded.
 
 **Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
 
@@ -457,23 +469,11 @@ Decision deferred — revisit when a real project hits the ceiling.
 3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
 4. Alternatively: platform-provided tokens with usage billing
 
-**Scope:**
-- Phase 1: Text input → LLM response (Q&A about project state)
-- Phase 2: Structured actions (approve insight, resolve conflict, add field note)
-- Phase 3: Skill execution from UI (run /extract, /analyze from browser)
-
 **Evidence:**
 - Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
 - Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
 - Hugo: *"Le metería un LLM, eso sí"*
 - Hugo offered to create API key and contribute credits for testing
-
-**Acceptance criteria:**
-- [ ] Settings UI for API key input (BYOK)
-- [ ] At least one provider working (Claude API recommended)
-- [ ] Q&A mode: user asks question about project → LLM answers using Work layer context
-- [ ] Action mode: approve/reject insight from UI → INSIGHTS_GRAPH.md updated
-- [ ] WebSocket broadcasts changes after LLM action
 
 **User story:**
 > As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
@@ -501,18 +501,9 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 
 ### [BL-78] Insight Challenge + Feedback Loop
 
-**Status:** PARKED — Needs architecture design
+**Status:** ABSORBED by BL-87 — Invalidate-with-reason and cascade protection shipped in BL-87 (v4.25.2). Remaining scope (challenge-creates-conflict, stale conflict detection) lives in BL-87's "Remaining" list.
 **Priority:** P2 (high value, high effort)
-**Origin:** QA v7, OBS-32 + OBS-33 + OBS-34. No way to challenge a VERIFIED insight from the app. No warning when decisions invalidate conflicts. No reason notes on approve/reject.
-
-**Problem:** Pipeline flows forward only (sources → claims → insights). No efficient backward flow (new evidence → challenge → re-evaluate). Field notes require full pipeline round-trip for a single correction.
-
-**Vision:**
-1. "Challenge" action on any insight → creates conflict with counter-evidence
-2. App detects when insight decisions make conflicts stale → banner warning
-3. Approve/reject includes optional reason note → stored in INSIGHTS_GRAPH.md + included in /synthesis prompt
-
-**Depends on:** Clearer understanding of how Actions → /synthesis flow works in practice across projects.
+**Origin:** QA v7, OBS-32 + OBS-33 + OBS-34.
 
 ## ✅ Implemented (Archive)
 

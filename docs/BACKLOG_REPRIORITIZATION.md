@@ -36,18 +36,20 @@ Son necesidades reales pero no impiden que Hugo o Yoe testeen:
 
 ## Waves repriorizadas
 
-### 🔴 Wave 1: "Flujo Desbloqueado" — Hacer los pilotos funcionales
+### 🔴 Wave 1: "Flujo Desbloqueado" — Hacer los pilotos funcionales ✅ COMPLETE (v4.25.1–v4.25.2)
 
 **Objetivo:** Hugo o Yoe abren la app, ven su data, ejecutan acciones reales y corren el pipeline sin tocar un terminal.
-**Plazo objetivo:** Esta semana (semana del 24 feb)
+**Plazo objetivo:** ~~Esta semana (semana del 24 feb)~~ Completado 2026-02-26
 **Métrica de éxito:** Alguien que no sea Nico puede aprobar un insight, resolver un conflicto, hacer una pregunta, y correr `/extract` → `/analyze` → `/spec` desde el navegador.
 
-| # | Ítem | Qué | Esfuerzo | Por qué ahora |
+| # | Ítem | Qué | Esfuerzo | Status |
 |---|---|---|---|---|
-| 1 | **Endpoints de scripts** | Wrappers REST API para verify-insight.sh, resolve-conflict.sh, count-statuses.sh | S | Prerequisito de BL-80 — la app necesita llamar estos scripts vía HTTP. Los scripts ya existen desde v4.25. |
-| 2 | **BL-80 Fase 1** | Integración LLM con BYOK — UI de settings para API key + acciones básicas (aprobar/rechazar insight, resolver conflicto) vía llamadas LLM server-side | L | EL bloqueante. Ambos chocaron con esta pared. BL-92 Fase 1 (scripts) se lanzó en v4.25, así que las acciones mecánicas son scriptables. LLM solo se necesita para acciones semánticas (Q&A, razonamiento de resolución de conflictos). |
-| 3 | **BL-80 Fase 1b** | Modo Q&A — input de texto en la app → LLM responde usando contexto del Work layer | M | Segunda feature más pedida. "Oye, ¿dónde está el documento?" debería funcionar desde la app. Hugo lo pidió explícitamente. |
-| 4 | **Ejecutar pipeline desde app** | Botones para disparar `/extract`, `/analyze`, `/spec` desde la UI. Mostrar progreso. | M | Sin esto, después de cargar fuentes aún tienen que abrir un terminal. Completa la promesa de "nunca tocar la CLI". Subido desde Wave 2 por decisión de priorización. |
+| 1 | ✅ **Endpoints de scripts** | Wrappers REST API para verify-insight.sh, resolve-conflict.sh, count-statuses.sh | S | v4.25.0 |
+| 2 | ✅ **BL-80 Fase 1** | Integración LLM con BYOK — UI de settings para API key + acciones básicas (aprobar/rechazar insight, resolver conflicto) vía llamadas LLM server-side | L | v4.25.1 |
+| 3 | ✅ **BL-80 Fase 1b** | Modo Q&A — input de texto en la app → LLM responde usando contexto del Work layer | M | v4.25.1 |
+| 4 | ✅ **Ejecutar pipeline desde app** | Botones para disparar `/extract`, `/analyze`, `/spec` desde la UI. Mostrar progreso. | M | v4.25.1 |
+
+**Wave 1 QA:** OBS-W1-13 y OBS-W1-15 llevaron a `discover-sources.sh` (detección delta de fuentes para /extract). Bug fix en conflict parser para statuses intermedios (v4.25.2). BL-87 parcialmente implementado durante Wave 1 (invalidate con razón + cascade protection).
 
 **Decisiones de arquitectura para Wave 1:**
 - **Solo BYOK.** El usuario ingresa su API key en settings. El servidor la guarda en memoria (no se persiste entre reinicios por seguridad). Las llamadas API van server-side. WebSocket transmite cambios de archivos a la UI. Sin billing, sin sistema de créditos, sin selección de modelo. Solo "pega tu API key de Claude, empieza a trabajar."
@@ -55,10 +57,10 @@ Son necesidades reales pero no impiden que Hugo o Yoe testeen:
 
 ---
 
-### 🟡 Wave 2: "Piloto Suave" — Hacer el onboarding sin fricción
+### 🟡 Wave 2: "Piloto Suave" — Hacer el onboarding sin fricción — NEXT
 
 **Objetivo:** Un usuario no-técnico (o alguien que no quiere usar git) puede iniciar un proyecto y cargar fuentes con mínima fricción.
-**Plazo objetivo:** Semana siguiente a Wave 1
+**Plazo objetivo:** Semana del 2 mar
 **Métrica de éxito:** Yoe puede iniciar un proyecto con sus datos de encuestas de Intercom sin que Nico esté en una llamada.
 
 | # | Ítem | Qué | Esfuerzo | Por qué ahora |
@@ -92,7 +94,7 @@ Necesidades legítimas que se vuelven críticas a escala pero son prematuras par
 |---|---|---|
 | **BL-89** (Niveles de veracidad) | Importante para entregables de consultoría, pero los pilotos no van a generar suficientes outputs para sentir este dolor |
 | **BL-56** (Export PPTX/Docs) | Dolor real para entrega a clientes, pero workaround existe (copy-paste, screenshots). Se vuelve P1 post-piloto. |
-| **BL-87** (Challenge insight, reject con razón) | Refinamiento del flujo de insights. El approve/reject básico de Wave 1 alcanza para pilotos. |
+| **BL-87** (Challenge insight, reject con razón) | Parcialmente implementado en v4.25.2 (invalidate con razón + cascade protection). Remaining: challenge-creates-conflict, stale conflict detection. |
 | **BL-65** (Open Questions) | Buena feature, no bloquea piloto |
 | **BL-85** (Glosario STT) | Solo importa cuando el mismo proyecto procesa muchos transcripts en el tiempo |
 | **BL-76** (Logging estructurado) | Mejora de infraestructura, invisible para usuarios |
@@ -158,12 +160,12 @@ El mayor riesgo no es técnico — es que la data del piloto no produzca insight
 
 ## Puntos de decisión
 
-### Decidido:
-1. ~~**Scope de Wave 1**~~ → BYOK + approve/reject + Q&A + **ejecución de pipeline desde la app**. Wave 1 es el paquete completo para que un piloto funcione sin terminal.
-2. ~~**Elección de modelo**~~ → **Solo Claude API.** Yoe usa Gemini dentro del ecosistema Google, pero eso no implica que PD-Spec necesite soportarlo. Se evalúa post-piloto.
-3. ~~**Timeline**~~ → **Esta semana.** Nico marca el ritmo, prioridad es ir rápido.
+### Decidido (Wave 1 — completado):
+1. ~~**Scope de Wave 1**~~ → BYOK + approve/reject + Q&A + ejecución de pipeline desde la app. **Entregado v4.25.1–v4.25.2.**
+2. ~~**Elección de modelo**~~ → **Solo Claude API.** Se evalúa post-piloto si hay demanda de Gemini/GPT.
+3. ~~**Timeline**~~ → **Completado semana del 24 feb.**
 
-### Decidir después de Wave 1:
+### Decidir para Wave 2:
 4. **Hosted vs. localhost** — ¿Los pilotos de Wave 2 pueden seguir corriendo en localhost, o Hugo/Yoe necesitan una URL?
 5. **Multi-proyecto** — ¿Yoe necesita esto para el piloto, o con un proyecto basta para validar?
 
