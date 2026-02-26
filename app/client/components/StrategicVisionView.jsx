@@ -270,15 +270,83 @@ function QuestionItem({ q, onNavigate }) {
   );
 }
 
-// Render text with inline [IG-XX] / [CF-XX] as clickable badges
+// Render markdown text with line structure, bold, headings, blockquotes, and [IG-XX] badges
 function RichText({ text, onNavigate }) {
-  const parts = text.split(/(\[(?:IG-[A-Za-z0-9-]+|CF-\d+)\])/g);
+  if (!text) return null;
+  const lines = text.split('\n');
+
+  return (
+    <div style={{ lineHeight: '1.6' }}>
+      {lines.map((line, li) => {
+        if (!line.trim()) return <div key={li} style={{ height: 8 }} />;
+
+        // ### heading
+        const h3 = line.match(/^###\s+(.+)/);
+        if (h3) {
+          return (
+            <div key={li} style={{ fontWeight: 600, fontSize: '0.9rem', marginTop: 12, marginBottom: 4, color: 'var(--text-main)' }}>
+              <InlineRich text={h3[1]} onNavigate={onNavigate} />
+            </div>
+          );
+        }
+
+        // > blockquote
+        if (line.startsWith('>')) {
+          const content = line.replace(/^>\s*/, '');
+          return (
+            <div key={li} style={{
+              borderLeft: '2px solid var(--accent-cyan)', paddingLeft: 10,
+              fontSize: '0.85rem', fontStyle: 'italic', color: 'var(--accent-cyan)',
+              margin: '4px 0',
+            }}>
+              <InlineRich text={content} onNavigate={onNavigate} />
+            </div>
+          );
+        }
+
+        // | table row — render monospace
+        if (line.startsWith('|')) {
+          // Skip separator rows like |---|---|
+          if (line.match(/^\|[\s-|]+\|$/)) return null;
+          return (
+            <div key={li} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'pre' }}>
+              {line}
+            </div>
+          );
+        }
+
+        // Regular line
+        return (
+          <div key={li} style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>
+            <InlineRich text={line} onNavigate={onNavigate} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// Inline: bold + italic + [IG-XX]/[CF-XX] badges
+function InlineRich({ text, onNavigate }) {
+  // Split on [IG-XX], [CF-XX], **bold**, and *italic*
+  const parts = text.split(/(\[(?:IG-[A-Za-z0-9-]+|CF-\d+)\]|\*\*[^*]+\*\*|\*[^*]+\*)/g);
   return (
     <span>
       {parts.map((part, i) => {
-        const match = part.match(/^\[(IG-[A-Za-z0-9-]+|CF-\d+)\]$/);
-        if (match) {
-          return <IdBadge key={i} id={match[1]} onClick={() => onNavigate?.(match[1])} />;
+        // [IG-XX] or [CF-XX] badge
+        const refMatch = part.match(/^\[(IG-[A-Za-z0-9-]+|CF-\d+)\]$/);
+        if (refMatch) {
+          return <IdBadge key={i} id={refMatch[1]} onClick={() => onNavigate?.(refMatch[1])} />;
+        }
+        // **bold**
+        const boldMatch = part.match(/^\*\*(.+)\*\*$/);
+        if (boldMatch) {
+          return <strong key={i}>{boldMatch[1]}</strong>;
+        }
+        // *italic*
+        const italicMatch = part.match(/^\*([^*]+)\*$/);
+        if (italicMatch) {
+          return <em key={i}>{italicMatch[1]}</em>;
         }
         return <span key={i}>{part}</span>;
       })}
