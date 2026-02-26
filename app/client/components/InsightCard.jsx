@@ -7,9 +7,9 @@ function getFreshness(lastUpdated) {
   const now = new Date();
   const updated = new Date(lastUpdated);
   const days = Math.floor((now - updated) / (1000 * 60 * 60 * 24));
-  if (days <= 14) return { color: 'var(--vivid-green)', label: 'Fresh', days };
-  if (days <= 45) return { color: 'var(--vivid-yellow)', label: 'Aging', days };
-  return { color: 'var(--vivid-red)', label: 'Stale', days };
+  if (days <= 14) return { color: null, label: 'Fresh', days, warn: false };
+  if (days <= 45) return { color: 'var(--vivid-yellow)', label: 'Aging', days, warn: true };
+  return { color: 'var(--vivid-red)', label: 'Stale', days, warn: true };
 }
 
 export default function InsightCard({ insight, onNavigate, decision, onDecision }) {
@@ -31,13 +31,18 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       <div className="card-header">
         <IdBadge id={insight.id} />
         <StatusBadge status={insight.status} />
-        {freshness && (
+        {freshness?.warn && (
           <span title={`${freshness.label} — updated ${freshness.days}d ago`} style={{
             display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
             background: freshness.color, flexShrink: 0,
           }} />
         )}
         {insight.ai_generated && <WarningBadge>AI-GENERATED</WarningBadge>}
+        {freshness && (
+          <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: freshness.warn ? freshness.color : 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Updated {freshness.days}d ago
+          </span>
+        )}
       </div>
 
       <div className="card-title" style={{ marginBottom: 8 }}>

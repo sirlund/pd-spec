@@ -31,8 +31,8 @@
   --conflict-fg: #f87171;
   --merged-bg: #0c2d3e;
   --merged-fg: #38bdf8;
-  --invalidated-bg: #1a1a1a;
-  --invalidated-fg: #666666;
+  --invalidated-bg: #2a1215;
+  --invalidated-fg: #ef4444;
   --frozen-bg: #1a1a2e;
   --frozen-fg: #818cf8;
   --superseded-bg: #1a1a1a;
@@ -71,8 +71,8 @@
   --conflict-fg: #dc2626;
   --merged-bg: #dbeafe;
   --merged-fg: #2563eb;
-  --invalidated-bg: #f3f4f6;
-  --invalidated-fg: #9ca3af;
+  --invalidated-bg: #fee2e2;
+  --invalidated-fg: #dc2626;
   --frozen-bg: #eef2ff;
   --frozen-fg: #6366f1;
   --superseded-bg: #f3f4f6;
