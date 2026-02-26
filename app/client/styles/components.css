@@ -145,6 +145,16 @@
   color: var(--resolved-fg);
 }
 
+.badge-flagged {
+  background: var(--flagged-bg);
+  color: var(--flagged-fg);
+}
+
+.badge-research {
+  background: var(--research-bg);
+  color: var(--research-fg);
+}
+
 .badge-blocked,
 .badge-critical {
   background: var(--conflict-bg);

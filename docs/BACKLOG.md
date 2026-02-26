@@ -12,7 +12,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
 
-**Status:** Proposed
+**Status:** PARTIALLY IMPLEMENTED (v4.25.2)
 **Priority:** P2
 **Origin:** QA v7, OBS-32/33/34/46. No way to challenge a VERIFIED insight, reject with a reason note, or detect when a conflict becomes stale after an insight decision.
 
@@ -23,11 +23,14 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 2. Reject action includes optional reason note → stored in INSIGHTS_GRAPH.md
 3. App detects when insight status changes make existing conflicts stale → banner warning
 
-**Acceptance criteria:**
-- [ ] Challenge action creates a conflict entry linked to the insight
-- [ ] Reject includes optional reason note persisted in INSIGHTS_GRAPH.md
+**Implemented (v4.25.2):**
+- [x] "Invalidate" button on VERIFIED insights with required reason note
+- [x] Reject (PENDING) includes reason note persisted via verify-insight.sh
+- [x] Cascade protection warns about orphaned references before invalidating
+
+**Remaining:**
+- [ ] Challenge action creates a conflict entry linked to the insight (separate from Invalidate)
 - [ ] Stale conflict detection and visual warning
-- [ ] All actions follow propose-before-execute
 
 **User story:**
 > As a researcher reviewing insights after a new round of interviews, I can challenge a previously VERIFIED insight directly from the app, without manually editing Work layer files.

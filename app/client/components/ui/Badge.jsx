@@ -8,6 +8,8 @@ const STATUS_CLASS = {
   FROZEN: 'badge-frozen',
   SUPERSEDED: 'badge-superseded',
   RESOLVED: 'badge-resolved',
+  FLAGGED: 'badge-flagged',
+  RESEARCH: 'badge-research',
   BLOCKED: 'badge-blocked',
   READY: 'badge-ready',
   Critical: 'badge-critical',
