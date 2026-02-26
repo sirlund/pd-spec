@@ -10,6 +10,68 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-99] Improved Conflict Lifecycle — OPEN/NEEDS-*/RESOLVED with IG Actions
+
+**Status:** PROPOSED
+**Priority:** P1
+**Origin:** Field experience with TIMining (13 conflicts). Current model shows "0 PENDING" when 4 conflicts are unresolved (intermediate states split from PENDING). "Resolve with context" saves text but doesn't touch related insights — orphaned field notes with no traceability.
+
+**Problem:**
+1. **Misleading dashboard:** Intermediate states (Flagged, Research) are counted separately from PENDING, so "0 PENDING" lies about project state.
+2. **Orphaned resolutions:** "I have context" writes a note to the CF but takes no action on related IGs. User writes "CTO validated proposal B" thinking it acts as a decision, but IG-A stays VERIFIED and IG-B stays VERIFIED — nothing changes.
+3. **No note accumulation:** Field notes from stakeholder sessions can't be incrementally added to a conflict without closing it.
+
+**Solution — New conflict lifecycle:**
+
+```
+/analyze detects
+       │
+       ▼
+    ┌──────┐
+    │ OPEN │  ← detected, not yet reviewed
+    └──┬───┘
+       │ user reviews
+  ┌────┼──────────┐
+  │    │          │
+  ▼    ▼          ▼
+NEEDS  NEEDS    RESOLVED
+RESEARCH DISCUSSION  (context + IG action)
+  │    │
+  │    │  new info / decision
+  └────┼──────┐
+       │      ▼
+       └─→ RESOLVED
+            (context + IG action)
+```
+
+**4 statuses:**
+| Status | Meaning | Who triggers |
+|---|---|---|
+| `OPEN` | Detected, not reviewed | `/analyze` |
+| `NEEDS-RESEARCH` | Reviewed, needs more data | User via app or /spec |
+| `NEEDS-DISCUSSION` | Reviewed, needs stakeholder decision | User via app or /spec |
+| `RESOLVED` | Closed with mandatory context + IG action | User via app or /spec |
+
+**Key design decisions:**
+- **Notes accumulate.** Adding context to an OPEN or NEEDS-* conflict doesn't close it — it's intelligence gathering. Notes stack chronologically.
+- **Resolution = IG action (always).** Resolving a conflict requires both context text AND an action on related insights (keep A, keep B, merge, invalidate both). No orphaned resolutions.
+- **RESOLVED is atomic:** context + IG action happen in one step. The CF records what was decided and why; the IGs reflect the decision.
+
+**Migration:** Rename existing statuses: PENDING → OPEN, PENDING — Flagged → NEEDS-DISCUSSION, PENDING — Research → NEEDS-RESEARCH, RESOLVED stays RESOLVED. Audit existing RESOLVED CFs for orphaned resolutions (context text but no IG changes).
+
+**Scope:**
+- [ ] Update CONFLICTS.md format and status legend
+- [ ] Update conflict parser (4 statuses, note accumulation)
+- [ ] Update ConflictsView + ConflictCard UI (new badges, note timeline)
+- [ ] Update resolve-conflict.sh (OPEN → NEEDS-*/RESOLVED transitions, IG action enforcement)
+- [ ] Update /analyze skill (new conflicts created as OPEN)
+- [ ] Update /spec skill (new resolution flow with mandatory IG action)
+- [ ] Migrate existing TIMining conflicts
+
+**Future (separate BL):** Auto-resolution — `/analyze` crosses new claims against open CFs and proposes closure when contradiction no longer exists.
+
+---
+
 ### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
 
 **Status:** PARTIALLY IMPLEMENTED (v4.25.2)
