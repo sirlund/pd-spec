@@ -20,6 +20,7 @@ Atomic verified insights extracted from sources. Each insight has a unique `[IG-
 **Voice:** stakeholder (COO, CEO, CTO), document (briefs, pitch decks)
 **Authority:** direct-quote, observation, fact
 Status: VERIFIED
+**Last-updated:** 2026-02-14
 
 > **Narrative:** El problema fundamental que TIMining resuelve es la desconexión entre el plan minero (entidad geométrica estática) y la operación real (dinámica, ruidosa, cambiante). La industria intentó cerrar esta brecha con más sensores, pero falló en lo esencial: no se puede optimizar lo que no se ve geométricamente. TIMining es la única empresa que ha logrado inferir topografía en tiempo real usando datos GPS de equipos existentes, actualizándola cada 15 minutos sin drones.
 
@@ -41,6 +42,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, Antecedentes/Narrativa 
 **Voice:** stakeholder (CEO, COO, CTO), document (cases, metrics)
 **Authority:** fact, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-14
 
 > **Narrative:** El cambio de paradigma de TIMining es medir "adherencia espacial" (cumplimiento geométrico del plan) en vez de "toneladas movidas" (productividad ciega). Los desvíos no ocurren una vez al año sino en cada turno, y un 5% de mejora en adherencia puede agregar USD 15B de valor a la industria anualmente. Los resultados probados incluyen +9-19% adherencia, USD 10M+ en ahorros en 3 minas, USD 6M capturados en 5 meses en una sola faena.
 
@@ -64,6 +66,7 @@ Ref: TIMINING_Workshop 01 _ 28 Enero 26.pptx, Visión Futuro _CORE_/GEMINI exerc
 **Voice:** stakeholder (COO, operaciones), user (operadores vía stakeholders)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-14
 
 > **Narrative:** TIMining enfrenta un riesgo existencial que el propio equipo ha bautizado "Auto de Homero Simpson": cada cliente pide funcionalidades, se implementan sin validar uso real, y el producto resultante no funciona bien para nadie. Todo 2025 fue dedicado a customización para un solo cliente. El equipo operacional reconoce que "no tenemos que implementar solo porque el cliente lo dijo; debemos entender para qué lo va a usar." La tensión entre satisfacer al cliente y mantener un producto escalable es el conflicto central del negocio.
 
@@ -85,6 +88,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 **Voice:** user (operadores vía stakeholders), stakeholder (operaciones)
 **Authority:** direct-quote, fact
 Status: VERIFIED
+**Last-updated:** 2026-02-15
 
 > **Narrative:** Aware opera con múltiples frecuencias de actualización (GPS casi real-time, mapas de calor cada 3h con 30min de desfase, indicadores cada 30min, topografía cada 15min) que los usuarios no comprenden. El resultado es abandono: "llegamos, capacitamos, se entusiasman, pero luego no le entienden, adiós." Se perdió un cliente concreto porque las métricas de extracción estaban a 24 horas cuando los mineros evalúan por turno. Este es un problema de UX, no de tecnología.
 
@@ -105,6 +109,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 **Voice:** stakeholder (CEO, operaciones), user (workshop)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-25
 
 > **Narrative:** Los usuarios no quieren más dashboards ni más datos. Quieren que el sistema vigile silenciosamente y los interrumpa solo cuando es crítico. "Si hay 50 camiones bien, no mostrarlos; mostrar los 5 que generan problema." El workshop retro fue enfático: STOP "demasiada información que no utilizan", STOP "más pantallas", START "reducir el ruido de información."
 
@@ -126,6 +131,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop
 **Voice:** user (workshop), stakeholder (COO, PM)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Al menos 4-5 perfiles de usuario claramente diferenciados necesitan información radicalmente distinta: el Despachador necesita control segundo a segundo; el Jefe de Turno necesita alertas tácticas sin pantalla (está en terreno); el Gerente de Mina necesita visión semáforo desde el celular; el Planificador necesita profundidad analítica. Hoy Aware presenta la misma interfaz para todos, "se iluminan/apagan capas" sin diferenciación por perfil.
 
@@ -146,6 +152,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 **Voice:** stakeholder (PM Orchestra, operaciones), user (indirecto)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Orchestra tiene un 30% de uso real. Los usuarios no tienen tiempo para la curva de aprendizaje porque "trabajan en mina, constantemente reagendan." La capacitación inicial no alcanza para una interfaz con múltiples capas. El workshop retro pide que la plataforma sea intuitiva sin manuales ni certificaciones, con "capacitación in-app contextual" por perfil de usuario. La nomenclatura misma requiere un experto para entender.
 
@@ -166,6 +173,7 @@ Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas
 **Voice:** stakeholder (CEO, CTO), document (vision docs)
 **Authority:** observation, vision
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Las transiciones de turno generan caídas de producción por pérdida de contexto ("Efecto Gaviota"). El turno entrante no sabe qué pasó, qué quedó pendiente ni dónde están los problemas. La visión incluye briefings automáticos multimedia (voice note, video reel, KPI summary) para que el turno entrante tenga contexto completo en 15 minutos antes de empezar.
 
@@ -189,6 +197,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Visión Futuro _
 **Voice:** stakeholder (CEO, CTO, PM), document (design brief, vision docs)
 **Authority:** vision, observation, hypothesis
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** TIMining plantea una transición fundamental: de pantallas con gráficos que el usuario debe interpretar, a un sistema proactivo que anticipa problemas, sugiere soluciones y se comunica por el canal más adecuado. El concepto "Skynet" del workshop imagina un sistema que cada X minutos analiza la situación, corre N simulaciones y envía sugerencias — primero a personas, luego a máquinas. El valor no está en el software sino en la "paz mental" del usuario: saber que está tomando la decisión correcta.
 
@@ -210,6 +219,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Workshop 1/works
 **Voice:** user (operadores en workshop), stakeholder (equipo TIMining)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Las 20 láminas del Workshop 01 siguen un patrón consistente: el usuario enfrenta una situación de estrés operacional, TIMining la detecta automáticamente, analiza el impacto (causa raíz, alternativas), y recomienda acciones con métricas de impacto rankeadas. Este patrón Detección→Análisis→Recomendación es el modelo operativo validado por los propios usuarios de TIMining y debe ser el esqueleto UX de CORE.
 
@@ -229,6 +239,7 @@ Ref: Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/laminas-caso-uso-1.png
 **Voice:** stakeholder (CTO, CEO, PM), document (vision docs)
 **Authority:** vision, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Hoy, acceder a datos de la mina requiere expertos en SQL y software de planificación. La visión de TIM Agent (en alianza con Google Gemini) es que cualquier supervisor pueda preguntar en lenguaje natural y obtener respuestas ancladas en la realidad física de la mina, sin alucinaciones. Esto pasa la inteligencia "del desktop al bolsillo", con meta de 100+ usuarios activos por sitio mediante licenciamiento ilimitado.
 
@@ -250,6 +261,7 @@ Ref: Antecedentes/Narrativa CCB para Mngt Team_ESP.docx, Visión Futuro _CORE_/D
 **Voice:** document (design brief, vision docs)
 **Authority:** vision
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** La arquitectura de navegación de CORE se basa en 4 lentes: Reality (3D Digital Twin con Time-Travel Slider), Tactical (simulación 2D con Scenario Ghosting), Agent (TIM copiloto conversacional), Briefing (feed mobile-first con cards). Cada lente sirve a perfiles de usuario y contextos distintos, gobernadas por un "Unified Navigation Ribbon." La multimodalidad se extiende a voz (Radio IP), chat, visual 3D y alertas push.
 
@@ -271,6 +283,7 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experienci
 **Voice:** stakeholder (CEO, workshop, Touchpoint), document (Sello)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** El valor de TIMining no reside en el software sino en la "paz mental" del operador: la certeza de que está tomando la decisión correcta. Si la herramienta no reduce la carga mental, no sirve. El concepto evoca un producto tipo "iPhone" — minimalismo, tecnología, limpieza — que justifique el ticket premium de USD 450k+. La interfaz debe dar certeza, no más datos.
 
@@ -294,6 +307,7 @@ Ref: Workshop 1/transcript.md, Workshop 1/analisis_workshop.md, Sello de Experie
 **Voice:** stakeholder (COO, CEO, CTO), document (strategic narratives)
 **Authority:** fact, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** En una industria donde los líderes (Hexagon, Sandvik, Caterpillar) compran competidores para crear "super suites" con lock-in, TIMining se diferencia por ser agnóstico al hardware y proveedores. Integra datos de OEMs competidores (Komatsu, Cat, Modular, Hexagon) y software de planificación (Maptek, Deswik), creando un contexto unificado irreplicable. El "Efecto Suiza" significa que OEMs integran rutinariamente con TIMining incluso cuando no integran entre sí.
 
@@ -315,6 +329,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 **Voice:** stakeholder (CEO, CTO), document (strategic narratives, design brief)
 **Authority:** vision, fact
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** TIMining tiene 6-8 productos (Aware, Orchestra, Delta, SIC, Tangram, ARIS, Drillit) desarrollados en momentos distintos con tecnologías distintas. La visión CORE es consolidarlos en una plataforma unificada con arquitectura modular. En 2024 se modularizaron los algoritmos en APIs; en 2025 se integró IA y alarmas; en 2026 la meta es el relanzamiento como plataforma de alto nivel que justifique USD 450k (vs los USD 300k actuales de Aware).
 
@@ -336,6 +351,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 **Voice:** stakeholder (operaciones)
 **Authority:** fact
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** TIMining invierte 30-36 horas por caso de renovación, realizó ~20 casos y 2 consultorías completas (~600 horas) en 2022. El equipo de servicios es descrito como "las manos del cerebro" del cliente. El ciclo de venta dura 2 años, más 6 meses de instalación. Esta dependencia de venta consultiva limita la escalabilidad del modelo SaaS.
 
@@ -355,6 +371,7 @@ Ref: entrevistas operaciones/analisis reu con operaciones.md, entrevistas operac
 **Voice:** stakeholder (CEO, CTO, workshop, Touchpoint)
 **Authority:** fact, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** Aware se vende a USD 300k/año por faena con usuarios ilimitados; CORE apunta a USD 450k. Pero el valor capturado es de millones (USD 6M en 5 meses en una faena, USD 10M+ en 3 minas). Existe "desconexión entre precio de licencia y valor entregado." La oportunidad es realinear de "licencia de software" a "valor empresarial."
 
@@ -375,6 +392,7 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Antecedentes/31_12_
 **Voice:** stakeholder (CEO), document (strategic narrative)
 **Authority:** fact, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** El modelo de adopción de TIMining arranca con equipos de operaciones y se expande orgánicamente a 100+ usuarios activos por sitio. Los patrones de uso diario muestran alta "stickiness" — las herramientas se embeben en rutinas estándar de cambio de turno. La tracción interna ("operational pull") acelera acuerdos corporativos, en contraste con "corporate push."
 
@@ -398,6 +416,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 **Voice:** stakeholder (COO)
 **Authority:** fact
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 Source fragility: single-source-type (stakeholder interviews only) — would benefit from technical documentation corroboration
 
 > **Narrative:** Los productos están construidos en C++, Unity, Go, Python y web, sin autenticación unificada. Para conectar Orchestra con sistemas web se recurre a "bajar bases de datos y hacer cruces manuales." El estado "plug and play" aún no se cumple; el esfuerzo humano es clave para que los sistemas "conversen."
@@ -418,6 +437,7 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 **Voice:** user (workshop), stakeholder (operaciones)
 **Authority:** direct-quote, observation
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > **Narrative:** La seguridad es prioridad inminente en la operación minera: alertas por incursión en zonas geotécnicas de riesgo, verificación de procedimientos de trabajo, gestión de tronaduras y despejes. El workshop dedicó 3 de 20 casos de uso a seguridad (gestión de alerta geotécnica, procedimientos, tronadura). La integración de ARIS (monitoreo geotécnico con 30+ tipos de instrumentos) en Aware se reconoce como deseable pero compleja: "sería genial integrar pero no sé cómo sin complejizar."
 
@@ -438,6 +458,7 @@ Ref: Workshop 1/workshop-laminas-11.02.57 AM.png, Workshop 1/workshop-laminas-11
 **Voice:** stakeholder (Ana, Gerente Comunicaciones), researcher (field notes)
 **Authority:** direct-quote, observation
 Status: INVALIDATED
+**Last-updated:** 2026-02-16
 Reason: Rechazado en /synthesis — baja convergencia (2/54), insight frágil y no accionable para el alcance actual.
 
 > **Narrative:** El expertise técnico está muy concentrado en Carlo (CTO/CEO). Existe un "gap entre producto y storytelling" — gente super técnica que comunica técnicamente. El CTO está confiado en la calidad de UX del producto, pero la evidencia de usuarios muestra problemas graves de adopción y usabilidad. Ver AMB-03.
@@ -458,6 +479,7 @@ Ref: entrevistas iniciales stakeholders/Entrevista_Ana.png, Workshop 1/_FIELD_NO
 **Voice:** document (strategic narratives, vision docs)
 **Authority:** vision
 Status: INVALIDATED
+**Last-updated:** 2026-02-16
 Reason: Rechazado en /synthesis — visión 2040 demasiado lejana para el alcance actual del proyecto. No accionable para diseño de CORE.
 
 > **Narrative:** La visión a largo plazo describe un IROC maduro donde corporaciones gestionan múltiples minas globales desde centros urbanos, la distinción mina-planta desaparece, los vehículos son 100% autónomos y la interacción con datos ocurre exclusivamente por lenguaje natural. TIMining se posiciona como el "cerebro inteligente" que supervisa la geometría para flotas autónomas, proveyendo el modelo en tiempo real tipo "LIDAR-like" necesario para la autonomía.
@@ -482,6 +504,7 @@ Ref: Antecedentes/31_12_2025_TIMining The Evolution of the Digital Mine v1_Inter
 **Source confidence:** high
 **Convergence:** 1/1 sources
 Status: MERGED → IG-SYNTH-16
+**Last-updated:** 2026-02-16
 
 > "Es una frase que acuñó un stakeholder presente en el workshop para según él poder justificar vender la suite a 450k USD. Se refería a algo sofisticado y fácil de usar."
 
@@ -497,6 +520,7 @@ Trigger: Workshop 01
 **Source confidence:** high
 **Convergence:** 2/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Estamos entrando a Etapa 3 del plan Idemax (Lineamientos de diseño) sin haber completado las 6 entrevistas con usuarios clave de Etapa 2. Todas las perspectivas de usuario son indirectas (stakeholders internos). Riesgo de repetir el patrón 'Auto de Homero Simpson' (IG-SYNTH-02) a nivel de estrategia UX."
 
@@ -522,6 +546,7 @@ Related: [CF-07], [IG-SYNTH-02]
 **Authority:** direct-quote
 **Convergence:** 2/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Carlo] 'impresionante la cantidad de toma de decisiones que ocurren día a día en la operación, vía WhatsApp' — TIMining pierde el 90% de la información si no integra ese canal. Visión: agnósticos al canal, si una mina usa full WhatsApp, se mete ahí; si usa Discord, también."
 
@@ -540,6 +565,7 @@ Related: [IG-SYNTH-04], [IG-SYNTH-19], [CF-12]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Carlo] 'planificación usa TIMining para auditar a operadores — operadores resisten la herramienta — si no logramos vender al operador, estamos acá afuera'"
 
@@ -557,6 +583,7 @@ Related: [IG-SYNTH-17], [CF-13]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Philip] 'Mi cliente no es tecnología — mi cliente es el Excel' — la venta debe centrarse en outcomes y procesos familiares, no en capacidades técnicas"
 
@@ -574,6 +601,7 @@ Related: [IG-SYNTH-10], [IG-SYNTH-16b]
 **Authority:** observation
 **Convergence:** 2/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Niklas] 'Tercer gap: desconexión mina-planta — información de distintas fuentes — reporting sin valor real — operación y finanzas no se hablan como TIMining podría articular'"
 
@@ -593,6 +621,7 @@ Related: [IG-SYNTH-01], [IG-SYNTH-09], [IG-20]
 **Authority:** observation
 **Convergence:** 2/57 sources
 Status: INVALIDATED
+**Last-updated:** 2026-02-16
 Reason: Rejected during review.
 
 > "Urgente vs. importante: Pedro arregla el camino (output previsible) vs. Juan manda camiones por otro camino y mitiga 30% más (impacto al plan). El software debe priorizar lo importante de cara al plan, no solo lo urgente visible."
@@ -614,6 +643,7 @@ Related: [IG-SYNTH-07], [CF-07]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Carlo] '60 reglas de negocio de ifs: dispatching, cambio de turno, secuencias de salida — lógica operacional propietaria que ya existe en TIMining' — hacen que la AI no alucine y convierten AI genérica en recomendador confiable"
 
@@ -631,6 +661,7 @@ Related: [IG-SYNTH-01], [IG-SYNTH-05]
 **Authority:** hypothesis
 **Convergence:** 2/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Jefe de turno rechaza opciones A, B, C y elige D → sistema aprende → eventualmente sugiere D como primera opción → democratización del conocimiento experto operacional"
 
@@ -653,6 +684,7 @@ Related: [IG-SYNTH-04], [IG-SYNTH-08]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Philip/Carlo] '¿por qué el problema de saturación de alertas lo resolvería la UI? — ese problema no lo resuelve la UI, lo resuelve el sistema' — respuesta: ambos son necesarios, se complementan"
 
@@ -670,6 +702,7 @@ Related: [IG-SYNTH-07], SYSTEM_MAP Principio #2 "Quiet UI"
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Philip] '¿de qué manera vendo algo de $450K?' — necesita demostrar valor concreto medible por decisión tomada"
 
@@ -687,6 +720,7 @@ Related: [CF-08], [IG-09], [IG-SYNTH-12]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: INVALIDATED
+**Last-updated:** 2026-02-16
 Reason: Rejected during review.
 
 > "[Philip] 'No podemos hacer inception de paz mental en entrevista — necesitamos que el usuario lo diga por sí mismo, no contaminarle el concepto'"
@@ -705,6 +739,7 @@ Related: [CF-07], [CF-12]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Philip] Clientes piden cambios custom (ej. cambiar color de camiones) — TIMining los desarrolla sin cobrar extra — nunca formalizaron pricing diferencial para desarrollo a medida"
 
@@ -722,6 +757,7 @@ Related: [CF-05], [CF-08]
 **Authority:** observation
 **Convergence:** 1/57 sources
 Status: INVALIDATED
+**Last-updated:** 2026-02-16
 Reason: Rejected during review.
 
 > "[Carlo] 'Movimiento en Brasil' amenazando posición de mercado de TIMining — señal de presión competitiva activa"
@@ -742,6 +778,7 @@ Related: [IG-SYNTH-05]
 **Authority:** direct-quote
 **Convergence:** 1/57 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "[Philip] 'Saben que tienen problemas de datos — están decandadas las GPS' — dato calidad como problema reconocido internamente"
 
@@ -761,6 +798,7 @@ Related: [IG-SYNTH-01], [IG-08]
 **Authority:** observation
 **Convergence:** 2/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Los 4 pilares forman un sistema encadenado: Quiet UI filtra → Clear Path guía → Time Sight anticipa → Omni Sense distribuye — el output de uno es input del siguiente"
 
@@ -781,6 +819,7 @@ Related: [IG-10], [IG-17], [IG-SYNTH-06], [IG-SYNTH-07], [IG-SYNTH-19]
 **Authority:** observation
 **Convergence:** 2/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Quiet UI y Omni Sense son capas de 'cómo se presenta'; Clear Path y Time Sight son capas de 'qué se presenta'"
 
@@ -807,6 +846,7 @@ Related: [IG-16], [IG-SYNTH-07], [IG-SYNTH-19]
 **Authority:** observation
 **Convergence:** 1/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "4 dominios operativos: A=Respuesta a Crisis (6 escenarios), B=Anticipación Operativa (4 escenarios), C=Asistencia Inteligente (5 escenarios), D=Alineación Estratégica (3 casos + 2 síntesis). Mapping pilar→dominio: Quiet UI lidera Dominio A, Time Sight lidera Dominio B, Omni Sense lidera Dominio C, multi-pilar lidera Dominio D."
 
@@ -825,6 +865,7 @@ Related: [IG-SYNTH-06], [IG-SYNTH-09], [IG-16]
 **Authority:** observation
 **Convergence:** 1/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Time Scrubbing: rebobinar hasta el momento exacto del primer desvío. Cadena causal: antena descalibrada → posicionamiento incorrecto autónomos → alimentación errática a planta → recuperación baja. Todo en una vista." Patrón UX específico dentro de Time Sight — forensics operacional, distinto de visibilidad temporal general. Benchmark: Tesla Fleet.
 
@@ -844,6 +885,7 @@ Related: [IG-06], [IG-SYNTH-06], [IG-16]
 **Authority:** vision
 **Convergence:** 1/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "'La mina puede estar generando millones o destruyéndolos — la persona que reporta al directorio es la última en enterarse.' CFO es 'usuario invisible' — caso aspiracional, no validado con usuario real. No necesita acceso a sistemas operativos — necesita la respuesta en su bolsillo, en su idioma. El software aprende a hablar finanzas, no le enseña minería al CFO."
 
@@ -864,6 +906,7 @@ Related: [IG-06], [IG-SYNTH-09], [CF-08]
 **Authority:** observation
 **Convergence:** 1/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Jefe de Turno en berma con radio saturada de 3 solicitudes simultáneas. Normativa Sernageomin en PDF en oficina a 20 min. Manos en volante y radio. 'No necesita un manual — necesita una respuesta directa, manos libres.' Entrada por voz+foto, Push-to-Talk. Edge AI en terreno: procesamiento local sin depender de conectividad de oficina."
 
@@ -882,6 +925,7 @@ Related: [IG-SYNTH-09], [IG-03], [IG-SYNTH-15]
 **Authority:** observation
 **Convergence:** 1/59 sources
 Status: VERIFIED
+**Last-updated:** 2026-02-16
 
 > "Casos 1-6 = CUMPLIR EL PLAN (D→A→R en incidentes de turno + anticipación + asistencia). La base. Sin esto, no hay plataforma. Casos 7-8 = OPTIMIZAR EL PLAN (D→A→R en decisiones estratégicas). 'CORE ya existe y funciona. La pregunta es: ¿qué más puedo hacer con esto?' Son proposiciones de valor distintas con diferentes audiencias y criterios de compra."
 
