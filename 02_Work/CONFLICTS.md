@@ -104,7 +104,7 @@ Related insights: [IG-SYNTH-03], [IG-SYNTH-09], [IG-SYNTH-11], [IG-02]
 - **Gap:** Todas las perspectivas de usuario provienen de stakeholders internos (COO, PMs, equipo TIMining). No hay entrevistas directas con mineros, despachadores, jefes de turno, ni tests de usabilidad.
 - **Risk:** Las necesidades de usuario son suposiciones de stakeholders, no evidencia directa. Los insights user-need pueden ser incorrectos.
 
-**Action:** Completar plan de entrevistas. 1 entrevista con usuario externo a TIMining ya efectuada. Philip facilita acceso a usuarios en faenas activas. Objetivo: 5-7 entrevistas adicionales, 30 min cada una, para resolver CF-07, CF-12, CF-13 con datos primarios.
+**Action:** Completar plan de entrevistas. 1 entrevista con usuario externo ya efectuada (Felipe Reyes — validó dominios y lenguaje de negocio [IG-25]). Juan Pablo Palma (Superintendente Pelambres) pendiente de procesar. Philip facilita acceso a usuarios en faenas activas. Objetivo: 5-7 entrevistas adicionales, 30 min cada una, para resolver CF-07, CF-13 con datos primarios.
 - **Priority:** Crítica — fundamento de toda la estrategia UX
 
 ---

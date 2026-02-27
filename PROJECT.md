@@ -15,7 +15,7 @@
 > Updated automatically by skills after each execution.
 
 - **Maturity:** Level 1 (Seed)
-- **Last updated:** 2026-02-24
-- **Status:** /synthesis complete. 57 sources, 27 VERIFIED insights (0 PENDING), 6 conflicts PENDING.
-- **Insights count:** 31 (27 VERIFIED, 0 PENDING, 1 MERGED, 3 INVALIDATED)
-- **Conflicts count:** 13 (6 PENDING)
+- **Last updated:** 2026-02-26
+- **Status:** /spec complete. 60 sources, 39 VERIFIED insights (0 PENDING), 4 conflicts PENDING.
+- **Insights count:** 47 (39 VERIFIED, 0 PENDING, 1 MERGED, 7 INVALIDATED)
+- **Conflicts count:** 13 (4 PENDING)

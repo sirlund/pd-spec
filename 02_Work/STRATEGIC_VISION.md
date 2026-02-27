@@ -1,6 +1,6 @@
 # Strategic Vision — TIMining
 
-> Última actualización: 2026-02-25 | 38 insights VERIFIED · 4 conflictos PENDING
+> Última actualización: 2026-02-26 | 39 insights VERIFIED · 4 conflictos PENDING
 
 ---
 
@@ -33,8 +33,10 @@ Los 4 pilares de diseño no son features de interfaz sino la arquitectura de có
 
 | Nivel | Casos | Propuesta | Requisito |
 |---|---|---|---|
-| **Plan compliance** | 1-6 | Decisión correcta, turno a turno | Base — sin esto no hay plataforma |
-| **Plan optimization** | 7-8 | Reconfigurar el plan cuando el modelo es incorrecto | Requiere nivel 1 consolidado |
+| **Mejoramiento continuo** | 1-6 | Decisión correcta, turno a turno — no para "cumplir" el plan ciegamente, sino para mejorarlo continuamente | Base — sin esto no hay plataforma |
+| **Reconfiguración estratégica** | 7-8 | Detectar cuándo el plan subyacente es incorrecto y ajustarlo antes de que el costo sea irrecuperable | Requiere nivel 1 consolidado |
+
+> **Nota de framing (directriz CTO):** TIMining no es una herramienta para "cumplir el plan" — es una herramienta de planificación permanente. El plan cambia, el sistema acompaña. [IG-22, IG-SYNTH-12]
 
 ---
 
@@ -45,6 +47,8 @@ Los pilares son los principios de diseño del producto: la arquitectura de cómo
 **Cadena:** Quiet UI → Clear Path → Time Sight → Omni Sense
 
 **Distinción arquitectural:** Quiet UI + Omni Sense son capas de *cómo se presenta* la información (presentación + canal). Clear Path + Time Sight son capas de *qué se presenta* (contenido + anticipación). [IG-17]
+
+**Relación asimétrica:** La relación pilar-dominio no es una grilla 4×4 uniforme. Cada dominio tiene pilares líderes (alta afinidad) y pilares secundarios (presentes pero no dominantes). Ej: Quiet UI es central en Respuesta a Crisis pero marginal en Asistencia Inteligente. Esto implica priorización en diseño — no todos los cruces merecen el mismo nivel de profundidad. [IG-24]
 
 ---
 
@@ -88,7 +92,9 @@ El cambio de turno no borra el contexto. Cada dato tiene temporalidad visible (q
 **Rol en el sistema:** Distribuye — la información llega por el canal donde el usuario ya está.
 **Opera en:** Materialization (canal de entrega) + Behavioral (modalidad de interacción)
 **Dominio primario:** C — Asistencia Inteligente
-**Refs:** [IG-03], [IG-SYNTH-19], [IG-21]
+**Refs:** [IG-03], [IG-SYNTH-19], [IG-21], [IG-23]
+
+> **Señal de priorización (post-Touchpoint):** CTO Carlo identificó Omni Sense como potencialmente el pilar más crítico. La predominancia de WhatsApp como herramienta real de decisión en minas valida esta urgencia: si el sistema no está donde el operador ya trabaja, el sistema no existe. [IG-23]
 
 Agnóstico al canal: si la mina usa WhatsApp, el sistema está en WhatsApp. Las decisiones que ocurren fuera del software no se pierden. Extensión manos libres: en terreno, el Jefe de Turno no puede usar las manos — Push-to-Talk y Edge AI son requisitos de diseño no opcionales para este perfil. [IG-21]
 
@@ -100,8 +106,10 @@ Agnóstico al canal: si la mina usa WhatsApp, el sistema está en WhatsApp. Las 
 
 Heurísticas del equipo para evaluar decisiones de producto. No son principios del producto — son filtros de decisión internos.
 
-### Paz Mental
-Cada interacción debe reducir la carga cognitiva, no aumentarla. Si una pantalla genera más preguntas que respuestas, está fallando. En comunicación con clientes, traducir a: *"ayúdame a tomar la mejor decisión porque yo no tengo tiempo"* — centrado en eficiencia y confianza en la información. [IG-SYNTH-16, CF-12 RESOLVED]
+### Reducción de Carga Cognitiva
+Cada interacción debe reducir la carga cognitiva, no aumentarla. Si una pantalla genera más preguntas que respuestas, está fallando. Framing aprobado para comunicación con clientes: *"ayúdame a tomar la mejor decisión porque yo no tengo tiempo"* / *"simplificame"* — centrado en eficiencia y confianza en la información, no en abstracción emocional. [CF-12 RESOLVED]
+
+> **Nota:** El concepto original "Paz Mental" fue rechazado como lenguaje de producto/venta por CEO y CTO (IG-SYNTH-16 INVALIDATED). La heurística interna se mantiene bajo un nombre accionable.
 
 ### Zero Homer
 No implementar features sin evidencia de uso real. Cada funcionalidad debe justificar su existencia con un [IG-XX]. Si no hay evidencia, no se construye. [IG-SYNTH-02]
@@ -144,9 +152,9 @@ Los 4 dominios organizan los casos de uso de CORE. Cada dominio tiene un pilar l
 
 ### Dominio D — Alineación Estratégica
 **Pilar líder:** Clear Path
-**Descripción:** Conectar la operación con las finanzas. El CFO y el Gerente de Mina necesitan el camino más corto de datos operacionales a decisiones estratégicas — sin necesitar entender minería ni tecnología.
-**Casos:** Reportería ejecutiva CFO · Plan optimization (Casos 7-8) · Desconexión mina-planta
-**Refs:** [IG-06], [IG-20], [IG-22], [IG-SYNTH-16b]
+**Descripción:** Conectar la operación con las finanzas. El CFO y el Gerente de Mina necesitan el camino más corto de datos operacionales a decisiones estratégicas — sin necesitar entender minería ni tecnología. Primera validación externa (Felipe Reyes) confirma: "todo se puede transferir y hablar el lenguaje de dinero — los CFO y controladores lo que les interesa es money." [IG-25]
+**Casos:** Reportería ejecutiva CFO · Reconfiguración estratégica (Casos 7-8) · Desconexión mina-planta
+**Refs:** [IG-06], [IG-20], [IG-22], [IG-SYNTH-16b], [IG-25]
 
 ---
 
@@ -165,7 +173,7 @@ Cuando el plan subyacente es incorrecto, CORE detecta el momento exacto y sugier
 ### Para finanzas — CFO (Dominio D)
 > *"El impacto financiero de la operación, en tu lenguaje, en tu bolsillo."*
 
-La desconexión mina-planta deja al CFO dependiente de reportes manuales tardíos. CORE cierra ese gap conectando KPIs operacionales con métricas financieras accionables, sin que el CFO necesite entender terminología minera. [IG-06, IG-20, IG-SYNTH-16b]
+La desconexión mina-planta deja al CFO dependiente de reportes manuales tardíos. CORE cierra ese gap conectando KPIs operacionales con métricas financieras accionables, sin que el CFO necesite entender terminología minera. Validación externa parcial: Felipe Reyes (ex-profesional minero) confirma que el lenguaje de costos/EBITDA es el canal de comunicación que abre puertas con CFOs y controladores. [IG-06, IG-20, IG-SYNTH-16b, IG-25]
 
 ---
 
@@ -189,4 +197,4 @@ La desconexión mina-planta deja al CFO dependiente de reportes manuales tardío
 - [ ] ¿Bloqueantes técnicos para migración a CORE? APIs, modelos de datos, backend headless → [CF-11]
 - [ ] ¿Estándares WCAG aplicables a cada pilar en contexto de terreno? → [CF-10]
 
-<!-- Updated by /spec on 2026-02-25 -->
+<!-- Updated by /spec on 2026-02-26 -->

@@ -52,3 +52,26 @@
   - Conflictos nuevos: 0
 - **Result:** 47 insights (38 VERIFIED, 3 PENDING, 5 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING)
 - **Snapshot:** 47 insights · 13 conflictos · 60 fuentes · 1451 claims · 12 archivos spec/output
+
+## [2026-02-26T15:00] Freemode + cambios manuales en UI
+- **Request:** Trabajo freemode semana 5 IDEMAX + cambios directos en Live Research App
+- **Actions (freemode):**
+  - Creado `03_Outputs/_custom/MATRIZ_DOMINIOS_PILARES.md` v1.1 — matriz ponderada dominios × pilares, 3 decisiones de framework (AE envolvente, mejoramiento continuo, erradicar paz mental)
+  - Evidencia trazada desde Touchpoint 1 transcript + sesión interna 24-feb
+- **Actions (UI directas — usuario):**
+  - IG-23, IG-24, IG-25: PENDING → VERIFIED (verificados por usuario en app)
+  - IG-SYNTH-09: VERIFIED → INVALIDATED — "Rechazado como principio para vender CORE por CEO y CTO en touchpoint del 19 de febrero"
+  - IG-15: VERIFIED → INVALIDATED — "esto es interno de idemax, respecto al plan de consultoria de 10 semanas"
+  - RESEARCH_BRIEF.md actualizado con IG-23/24/25
+- **Pendiente:** /spec NO ejecutado — decisiones de freemode (MATRIZ) aún no propagadas a STRATEGIC_VISION.md ni PROPOSALS.md. Refs huérfanas a IG-SYNTH-09 y IG-15 sin limpiar.
+- **Snapshot:** 47 insights (39 VERIFIED, 0 PENDING, 7 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING) · 60 fuentes · 1451 claims
+
+## [2026-02-26T20:46] /spec
+- **Request:** Ejecutar /spec para propagar cambios manuales (IG-23/24/25 VERIFIED, IG-SYNTH-16 INVALIDATED, IG-02 INVALIDATED) y directrices de IDEMAX_PENDING_ITEMS a STRATEGIC_VISION.md + PROPOSALS.md.
+- **Actions:**
+  - **STRATEGIC_VISION.md v1.0→v1.1:** Header 39 VERIFIED. Reframing "Plan compliance/optimization" → "Mejoramiento continuo/Reconfiguración estratégica" (directriz CTO). Nota asimetría pilar-dominio [IG-24]. Omni Sense +señal priorización [IG-23]. "Paz Mental" → "Reducción de Carga Cognitiva" (IG-SYNTH-16 INVALIDATED). Dominio D + Value Prop Finanzas +Felipe Reyes [IG-25].
+  - **PROPOSALS.md:** DP-05 +IG-23, DP-07 +IG-25.
+  - **CONFLICTS.md:** CF-07 nota actualizada (Felipe Reyes + Juan Pablo Palma progreso). 4 conflictos permanecen PENDING con tags intermedios.
+  - **Nota MEMORY:** IG-SYNTH-09 e IG-15 mencionados como INVALIDATED en entry anterior eran en realidad IG-SYNTH-16 e IG-02 (el archivo INSIGHTS_GRAPH.md es la fuente de verdad). MATRIZ_DOMINIOS_PILARES.md ya no existe en disco.
+- **Result:** Spec actualizado con 3 nuevos insights propagados, 1 criterio renombrado, 1 reframing narrativo. No hay insights PENDING ni conflictos resueltos.
+- **Snapshot:** 47 insights (39 VERIFIED, 0 PENDING, 7 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING) · 60 fuentes · 1451 claims

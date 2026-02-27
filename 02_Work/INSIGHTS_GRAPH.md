@@ -282,8 +282,8 @@ Ref: Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experienci
 **Category:** user-need (aspirational)
 **Voice:** stakeholder (CEO, workshop, Touchpoint), document (Sello)
 **Authority:** direct-quote, observation
-Status: VERIFIED
-**Last-updated:** 2026-02-16
+Status: INVALIDATED — Rechazado como principio para vender CORE por CEO y CTO en touchpoint del 19 de febrero. Para mas info revisar transcript de la reunion.
+**Last-updated:** 2026-02-26
 
 > **Narrative:** El valor de TIMining no reside en el software sino en la "paz mental" del operador: la certeza de que está tomando la decisión correcta. Si la herramienta no reduce la carga mental, no sirve. El concepto evoca un producto tipo "iPhone" — minimalismo, tecnología, limpieza — que justifique el ticket premium de USD 450k+. La interfaz debe dar certeza, no más datos.
 
@@ -519,8 +519,8 @@ Trigger: Workshop 01
 **Authority:** observation
 **Source confidence:** high
 **Convergence:** 2/59 sources
-Status: VERIFIED
-**Last-updated:** 2026-02-16
+Status: INVALIDATED — esto es interno de idemax, respecto al plan de consultoria de 10 semanas
+**Last-updated:** 2026-02-26
 
 > "Estamos entrando a Etapa 3 del plan Idemax (Lineamientos de diseño) sin haber completado las 6 entrevistas con usuarios clave de Etapa 2. Todas las perspectivas de usuario son indirectas (stakeholders internos). Riesgo de repetir el patrón 'Auto de Homero Simpson' (IG-SYNTH-02) a nivel de estrategia UX."
 

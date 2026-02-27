@@ -135,7 +135,7 @@ Capacidad de "rebobinar" la operación hasta el momento del primer desvío para 
 **Type:** module
 **Domain:** C — Asistencia Inteligente
 **Status:** PROPOSED
-**Grounded in:** [IG-16], [IG-17], [IG-03], [IG-SYNTH-19], [IG-SYNTH-05]
+**Grounded in:** [IG-16], [IG-17], [IG-03], [IG-SYNTH-19], [IG-SYNTH-05], [IG-23]
 
 El sistema es agnóstico al canal: si la mina usa WhatsApp, el sistema está en WhatsApp. Las decisiones que ocurren fuera del software no se pierden. Los 4 pilares son la arquitectura de presentación: Quiet UI + Omni Sense definen *cómo* se presenta la información (canal + materialización); Clear Path + Time Sight definen *qué* se presenta (contenido + temporalidad).
 
@@ -189,7 +189,7 @@ En terreno, el Jefe de Turno no puede usar las manos. Push-to-Talk y Edge AI son
 **Type:** module
 **Domain:** D — Alineación Estratégica
 **Status:** PROPOSED
-**Grounded in:** [IG-06], [IG-20], [IG-SYNTH-05], [IG-11], [IG-13], [IG-SYNTH-16b]
+**Grounded in:** [IG-06], [IG-20], [IG-SYNTH-05], [IG-11], [IG-13], [IG-SYNTH-16b], [IG-25]
 
 La desconexión mina-planta deja al CFO dependiente de reportes manuales tardíos. La Plataforma de Integración cierra ese gap conectando KPIs operacionales con métricas financieras accionables, sin que el CFO necesite entender terminología minera. Integración neutral con cualquier OEM, FMS o software de planificación existente.
 
@@ -211,4 +211,4 @@ La desconexión mina-planta deja al CFO dependiente de reportes manuales tardío
 - ¿Cómo se mide el valor por decisión individual para demostrar ROI del ticket USD 450K? → [IG-11], [CF-08]
 - ¿Framework formal de configuración vs. extensión vs. custom? → [CF-05]
 
-<!-- Updated by /spec on 2026-02-25 -->
+<!-- Updated by /spec on 2026-02-26 -->
