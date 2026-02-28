@@ -102,6 +102,15 @@
 
 ## Bugs & Gotchas Técnicos
 
+### [IDEA] — Reducir consumo de tokens en sesiones Claude Code → BL-NEW
+**Context:** Sesiones de trabajo en este proyecto consumen tokens rápidamente. Análisis de feb-2026 identificó causas: EXTRACTIONS.md (196 KB) se lee completo en cada `/analyze`, index.html (247 KB) se relee por cada edición de slides, transcripciones normalizadas en `_temp/` (348 KB) persisten post-extracción sin uso, y sesiones largas (40+ turnos) acumulan contexto exponencialmente.
+**Proposed:**
+1. **Archivado de EXTRACTIONS.md** — mover claims ya procesados a `_temp/EXTRACTIONS_ARCHIVE.md`. Target: 196 KB → ~80 KB activos. Trigger: >250 KB o >1500 claims.
+2. **Limpieza de `_temp/`** — mover `*_normalized.md` a archivo después de `/extract` + `/analyze`. Se consultan <1% post-procesamiento.
+3. **Modularización de presentaciones HTML** — separar slides en partials o usar build step para que cada edición lea solo la sección relevante, no 247 KB completos.
+4. **Guía de sesión para usuarios** — documentar: sesiones de 10-15 turnos enfocadas > maratones de 40+; agrupar cambios al mismo archivo en un solo pedido; evitar `/analyze --full` si incremental basta.
+5. **INSIGHTS_GRAPH index** — crear `_temp/INSIGHTS_INDEX.md` (índice por status) para búsquedas rápidas sin leer 68 KB completo.
+
 ### [BUG] — CSS mask-image no funciona para control de color de logos — PARKED (gotcha)
 **Context:** Intentamos usar `mask-image` para cambiar el color del logo Idemax dinámicamente. El div quedó vacío/invisible. Reverted a `<img>` plano.
 **Proposed:** Documentar como gotcha. `mask-image` requiere que el elemento tenga dimensiones explícitas y background-color. Con logos transparentes PNG es frágil. Usar `filter: brightness(0) invert(1)` para blanco o img directo.
