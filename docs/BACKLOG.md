@@ -147,13 +147,23 @@ Scope limited to migrating the main presentation (`index.html`, 35 slides) to MD
 
 **Full plan:** `docs/PLAN_TOKEN_OPTIMIZATION_AND_SHOWCASE.md`
 
-**⚠️ App Runtime Compatibility Gap — RESOLVED BY BL-80 Phase 1:**
+**⚠️ App Runtime Compatibility — RESOLVED BY BL-80 Phase 1:**
 
-The index system requires `Read(offset, limit)` and `Bash` — capabilities missing from the current custom Agent Runtime. Analysis in session 2026-02-27 identified this as a fundamental gap.
-
-**Resolution:** BL-80 Phase 1 (SDK migration) replaces the custom runtime with the Claude Agent SDK, which provides all required capabilities natively. After Phase 1, skills (including index-aware reads) run identically in CLI and app. No compatibility workarounds needed.
+The index system requires `Read(offset, limit)` and `Bash` — capabilities missing from the current custom Agent Runtime. Analysis in session 2026-02-27 identified this as a fundamental gap. BL-80 Phase 1 (SDK migration) resolves this: the Claude Agent SDK provides all required capabilities natively.
 
 **Dependency:** BL-101 can be implemented immediately for CLI use. Full app compatibility arrives with BL-80 Phase 1.
+
+**⚠️ Skill instruction constraint (important for implementation):**
+
+Skill modifications (SKILL.md files) must be **runtime-agnostic**. After BL-80 Phase 1, skills run identically in Claude Code CLI and the Agent SDK in the app. Instructions must NOT reference tool-specific patterns.
+
+| ✗ Don't write | ✓ Write instead |
+|---|---|
+| "Use the Bash tool to run `md5 -q`" | "Run `./scripts/generate-index.sh`" |
+| "Use Read with offset=X, limit=Y" | "Read lines X-Y of the file" |
+| "Call the Grep tool to search" | "Search the file for pattern X" |
+
+The agent resolves these to the correct tool in each runtime. Skills describe *what to do*, not *which tool to use*.
 
 ---
 
