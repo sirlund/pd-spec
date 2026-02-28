@@ -94,7 +94,7 @@ Scope limited to migrating the main presentation (`index.html`, 35 slides) to MD
 
 ### [BL-101] Work Layer Index System — Token Optimization
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.26.0, 2026-02-28)
 **Priority:** P1
 **Effort:** L
 **Origin:** Session 2026-02-27. pds--timining (densest project: 60+ sources, 199 KB EXTRACTIONS, 68 KB INSIGHTS_GRAPH) consumes ~89,000 tokens per `/analyze` run. 90% of the cost is data reads, not skill instructions.
