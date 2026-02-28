@@ -1,8 +1,9 @@
-# Plan: Token Optimization + Showcase System
+# Plan: Token Optimization + Showcase System + Agent Architecture
 
-> **Origin:** Session 2026-02-27. Analysis of pds--timining token consumption (densest project: 60+ sources, 47 insights, 199 KB EXTRACTIONS, 68 KB INSIGHTS_GRAPH).
-> **BLs:** BL-101 (Work Layer Index System), BL-102 (Showcase Presentation System)
+> **Origin:** Sessions 2026-02-27 and 2026-02-28. Analysis of pds--timining token consumption and app agent architecture.
+> **BLs:** BL-101 (Work Layer Index System), BL-102 (Showcase Presentation System), BL-80 (Agent SDK Migration)
 > **Full plan with architecture, formats, schemas, and test plans.**
+> **Last updated:** 2026-02-28 — added SDK migration context, v1/v2/v3 phasing for BL-102, runtime-agnostic skill constraint for BL-101.
 
 ---
 
@@ -13,6 +14,8 @@ PD-Spec projects with dense Work layers consume excessive session tokens. Root c
 Secondary problem: freemode presentations (HTML monoliths of 250+ KB) require full-file reads for small edits, compounding the token drain.
 
 Both issues are addressed at the engine level, benefiting all current and future projects.
+
+Third finding (session 2026-02-28): The Live Research App's custom Agent Runtime (`agent-runtime.js`) has fundamental limitations that prevent index-based reads and make skills behave differently in CLI vs app. The Claude Agent SDK resolves this — see "Agent Architecture" section below.
 
 ### Token consumption breakdown — `/analyze` on pds--timining
 
@@ -179,13 +182,23 @@ If `current_hash != index_hash` → stale → regenerate or fallback.
 
 ### Skill Modifications
 
+**⚠️ Runtime-agnostic constraint:** After BL-80 Phase 1, skills run identically in Claude Code CLI and the Agent SDK in the app. SKILL.md instructions must describe *what to do*, not *which tool to use*:
+
+| ✗ Don't write | ✓ Write instead |
+|---|---|
+| "Use the Bash tool to run `md5 -q`" | "Run `./scripts/generate-index.sh`" |
+| "Use Read with offset=X, limit=Y" | "Read lines X–Y of the file" |
+| "Call the Grep tool to search" | "Search the file for pattern X" |
+
+The agent resolves these to the correct tool in each runtime.
+
 #### /extract → generates EXTRACTIONS index + normalized indexes
-After Phase 2 completion: call `generate-index.sh extractions` and `generate-index.sh normalized` for each file > 20 KB.
+After Phase 2 completion: run `generate-index.sh extractions` and `generate-index.sh normalized` for each file > 20 KB.
 
 #### /analyze → consumes EXTRACTIONS index + INSIGHTS_GRAPH index, generates INSIGHTS_GRAPH index
 - Phase 0: Read indexes instead of full files (with hash validation + fallback)
 - Phase 1 (incremental): Filter sections via index table (timestamps already there)
-- Phase 2 (dedup): Compare claims against index titles. Only `Read(INSIGHTS_GRAPH.md, offset=L-start, limit=20)` for potential matches.
+- Phase 2 (dedup): Compare claims against index titles. Only read lines L-start through L-start+20 of INSIGHTS_GRAPH.md for potential matches.
 - After Phase 4: Regenerate insights index.
 
 #### /spec → consumes INSIGHTS_GRAPH index, regenerates after modifications
@@ -212,6 +225,8 @@ After Phase 2 completion: call `generate-index.sh extractions` and `generate-ind
 
 ## BL-102: Showcase — Presentation System
 
+> **Scope updated 2026-02-28:** Full scope (XL) reduced to v1 (L) focused on index.html migration. v2/v3 deferred.
+
 ### Problem
 
 Current freemode presentations are HTML monoliths (index.html = 253 KB, styles.css = 68 KB). Content, layout, and styles are tangled. Editing one slide requires reading 250+ KB (~63,000 tokens).
@@ -232,13 +247,13 @@ Theme   (CSS tokens)     →  how it looks       (design tokens)
 pd-showcase/                        ← SEPARATE REPO (git submodule of pd-spec)
   src/
     components/
-      primitives/                   ← composable: Grid, Column, Card, Image, Quote, Stat, Tag, InsightRef, Icon
-      patterns/                     ← convenience: SlideCover, SlideSection, SlideGrid, SlideBenchEvidencia, SlideCompare
+      primitives/                   ← v1: Grid, Card, Image, Quote, Stat, Tag, Icon
+      patterns/                     ← v1: BenchCard, CaseStudy, DarFlow, RecBox, LayerDiagram
     layouts/
       SlideLayout.astro             ← single slide wrapper
       PresentationLayout.astro      ← deck wrapper (navigation, counter, transitions)
     themes/
-      theme_spec.css                ← default neutral theme
+      theme_spec.css                ← default theme (extracted from existing styles.css)
     pages/
       [deck]/
         index.astro
@@ -255,22 +270,55 @@ pd-showcase/                        ← SEPARATE REPO (git submodule of pd-spec)
 showcase/                           ← git submodule → pd-showcase
 03_Outputs/_showcase/               ← project-specific content
   decks/
-    main/                           ← primary deck
+    main/                           ← v1: single deck only
       cover.mdx
       contexto.mdx
       pilares.mdx
       ...
-    interna/                        ← second deck
-      ...
   theme/
-    tokens.json                     ← project theme overrides
-    overrides.css
+    overrides.css                   ← project theme overrides (v1: optional)
   public/
     img/                            ← images and assets
-  deck.config.ts                    ← deck metadata (brand, language, decks)
+  deck.config.ts                    ← deck metadata (brand, language)
 ```
 
 **Content outside submodule:** Astro 5 content layer with `glob()` loader reads from `../../03_Outputs/_showcase/decks`. Submodule = pure engine. Content = project-specific.
+
+### Phasing
+
+#### v1 — Single Deck Migration (Effort: L) ← THIS PLAN
+
+Scope: Migrate pds--timining's `index.html` (35 slides) to MDX.
+
+**7 components** (derived from slide-by-slide analysis of index.html):
+
+| Component | Slides | Description |
+|---|---|---|
+| `<Card>` | S3-S10, S22-S25 | Content card: icon, title, text. Variants: default, accent, muted |
+| `<BenchCard>` | S11-S18 | Benchmark evidence: overview image (3:2), closeups, industry tag, domain color |
+| `<CaseStudy>` | S19-S21 | Quote + metric cluster + source attribution |
+| `<DarFlow>` | S26-S27 | DAR decision flow: Decision → Alternatives → Rationale |
+| `<RecBox>` | S28-S31 | Recommendation box: numbered rec, priority tag, IG refs |
+| `<LayerDiagram>` | S22 | Stacked layer visualization (3 layers with descriptions) |
+| `<Grid>` | all | CSS grid container (cols: 2-4, gap configurable) |
+
+**Also includes:** SlideLayout + PresentationLayout, `theme_spec.css` extracted from existing `styles.css` (visual parity, not new design), basic `/showcase` skill (`--init` + edit mode + `--dev`), single deck.
+
+#### v2 — Multi-Deck + Generation (deferred)
+
+- Multi-deck support (directory-based, per-deck config in `deck.config.ts`)
+- `/showcase --generate [deck]` — auto-generate slides from Work layer data
+- Additional pattern components for variant presentations (interna, v2_boceto slide types)
+- PRESENTATION.md as seed for `--generate`
+- `<InsightRef>` component (plain styling, no build-time data)
+
+#### v3 — Themes + Traceability + Export (deferred)
+
+- `/showcase --theme` — auto-generate project theme from STRATEGIC_VISION + BENCHMARK_UX context
+- `<InsightRef>` with build-time data from INSIGHTS_GRAPH_INDEX (depends on BL-101)
+- Presenter mode (speaker notes route)
+- Print CSS for PDF export
+- Mermaid diagram embedding via remark plugin
 
 ### Content Schema
 
@@ -324,24 +372,12 @@ import { Grid, Card, Icon } from '@showcase/primitives'
 
 **Token cost:** ~700 tokens (read + edit) vs ~63,000 tokens for equivalent HTML edit.
 
-### Component System
-
-**Two layers:**
-
-**Primitives** (composable, no layout opinions):
-`<Grid>`, `<Column>`, `<Card>`, `<Image>`, `<Quote>`, `<Stat>`, `<Tag>`, `<InsightRef>`, `<Icon>`
-
-**Patterns** (convenience, compose primitives):
-`<SlideCover>`, `<SlideSection>`, `<SlideGrid>`, `<SlideBenchEvidencia>`, `<SlideBenchPatrones>`, `<SlideCompare>`
-
-**Principle:** Patterns never limit — they accelerate. User can always drop to primitives for custom layouts.
-
 ### Theme System
 
 CSS custom properties. No Tailwind, no build-time resolution.
 
 ```css
-/* theme_spec.css (default) */
+/* theme_spec.css — extracted from existing styles.css for visual parity */
 :root {
   --slide-bg: #0a0f12;
   --card-bg: #0f1419;
@@ -357,70 +393,78 @@ CSS custom properties. No Tailwind, no build-time resolution.
 }
 ```
 
-**Inheritance:** `theme_spec.css` (always loaded) → `theme/overrides.css` (project) → deck-level (rare).
+**v1:** `theme_spec.css` extracted from existing presentation. Project `overrides.css` optional.
+**v3:** Agent-generated themes from STRATEGIC_VISION + BENCHMARK_UX + PROJECT.md.
 
-**Agent-generated themes:** `/showcase --theme` reads STRATEGIC_VISION + BENCHMARK_UX + PROJECT.md to derive domain colors, brand hints. Rules: never invent brand colors (ask user), domain colors map to pillar names, typography stays system-neutral, dark mode default.
-
-### Skill: /showcase
+### Skill: /showcase (v1 scope)
 
 ```
 /showcase --init                    Initialize (add submodule, create content structure)
-/showcase --generate [deck]         Auto-generate slides from Work layer
-/showcase --theme [name]            Generate/regenerate project theme
 /showcase [deck]                    Edit mode (read specific slides, accept edit instructions)
 /showcase --dev                     Start Astro dev server
 ```
 
-**Relationship to /ship:** `/ship presentation` → PRESENTATION.md (markdown). `/showcase --generate` → MDX slides (visual, component-based). They coexist. PRESENTATION.md can serve as input for `/showcase --generate`.
+**v2 adds:** `--generate [deck]` (auto-generate slides from Work layer)
+**v3 adds:** `--theme [name]` (generate/regenerate project theme)
+
+**Relationship to /ship:** `/ship presentation` → PRESENTATION.md (markdown). `/showcase --generate` (v2) → MDX slides (visual). They coexist.
 
 ### Gaps for Implementation
 
-1. **Slide transitions** — minimal for MVP (fade or none)
-2. **InsightRef rendering** — tooltip with insight title requires build-time read of INSIGHTS_GRAPH_INDEX.md
-3. **Presenter mode** — speaker notes route, Phase 2
-4. **Responsive** — fixed 16:9 aspect ratio, scale to fit viewport
-5. **Migration** — start fresh with `--generate`, existing HTML as visual reference only
-6. **Mermaid** — Astro remark plugin, Phase 2
-7. **Export** — Print CSS for PDF. PPTX via adapted html2pptx.py. Phase 5.
-8. **Images** — Astro auto-optimization (WebP, srcset, lazy). Git LFS flag if repo > 500 MB.
+**v1 gaps:**
+1. **Slide transitions** — minimal (fade or none)
+2. **Responsive** — fixed 16:9 aspect ratio, scale to fit viewport
+3. **Images** — Astro auto-optimization (WebP, srcset, lazy). Git LFS flag if repo > 500 MB.
+
+**Deferred to v2/v3:**
+4. **InsightRef rendering** — tooltip with insight title requires build-time read of INSIGHTS_GRAPH_INDEX.md (v3, depends BL-101)
+5. **Presenter mode** — speaker notes route (v3)
+6. **Mermaid** — Astro remark plugin (v3)
+7. **Export** — Print CSS for PDF (v3). PPTX via adapted html2pptx.py (post-v3).
+8. **Migration from existing HTML** — start fresh with `--generate` (v2), existing HTML as visual reference only
 
 ---
 
 ## Execution Roadmap
 
-### Phase 1: Index Foundation
+### Phase 1: Index Foundation (BL-101)
 - `generate-index.sh` (extractions type)
 - EXTRACTIONS_INDEX.md validated against pds--timining
 - `/extract` modified to call generate-index.sh
 - `02_Work/_index/` convention documented in CLAUDE_REFERENCE.md
 
-### Phase 2: Index Completion
+### Phase 2: Index Completion (BL-101)
 - `generate-index.sh` (insights + normalized types)
 - `/analyze` using indexes with fallback
 - `/spec`, `/audit`, `/ship`, `/visualize` updated
 - Staleness detection (hash comparison) working
 - End-to-end: `/extract` → `/analyze` → `/audit` using indexes
 
-### Phase 3: Showcase Foundation
+### Phase 3: Showcase v1 (BL-102 v1)
 - pd-showcase repo (Astro 5)
-- Primitive components (9) + SlideLayout + PresentationLayout
-- theme_spec.css
+- 7 components (Card, BenchCard, CaseStudy, DarFlow, RecBox, LayerDiagram, Grid)
+- SlideLayout + PresentationLayout
+- theme_spec.css (extracted from existing styles.css)
 - Content schema (Zod) + deck config
-- `/showcase --init` working
-- External content directory validated
+- `/showcase --init` + edit mode + `--dev`
+- 35 slides from index.html migrated to .mdx
 
-### Phase 4: Showcase Generation + Themes
+### Phase 4: Showcase v2 (BL-102 v2, deferred)
+- Multi-deck support
 - `/showcase --generate` from Work layer data
-- Pattern components (6)
-- Theme generation from project context
-- InsightRef with index integration
-- Migration of 1 pds--timining deck
+- Additional components for variant presentations
+- InsightRef (plain styling)
 
-### Phase 5: Polish + Export
-- Print CSS for PDF
-- Presenter mode
-- Mermaid embed
+### Phase 5: Showcase v3 + Polish (BL-102 v3, deferred)
+- `/showcase --theme` auto-generation
+- InsightRef with build-time data (depends on BL-101)
+- Presenter mode, Print CSS, Mermaid
 - Documentation in CLAUDE_REFERENCE.md
+
+### Parallel: Agent SDK Migration (BL-80, independent of above)
+- Phase 1 (M): Replace agent-runtime.js with Agent SDK `query()`
+- Phase 2 (L): Model routing + cost control
+- Phase 3 (M): Remote deployment + multi-tenant (evaluate MCP Apps route before committing)
 
 ---
 
@@ -515,6 +559,8 @@ The index system modifies the reading pattern of 6 skills. Regression testing is
 
 ### BL-102 Test Plan — Showcase System
 
+#### v1 Tests
+
 #### T-102-01: Submodule Init
 
 | Step | Action | Expected |
@@ -537,28 +583,19 @@ The index system modifies the reading pattern of 6 skills. Regression testing is
 
 | Step | Action | Expected |
 |---|---|---|
-| 1 | Create slide using each primitive (`<Grid>`, `<Card>`, `<Image>`, `<Quote>`, `<Stat>`, `<Tag>`) | All render correctly |
-| 2 | Create slide using `<Grid cols={3}>` with mixed children (`<Card>` + `<Image>` + `<Quote>`) | Modular composition works |
-| 3 | Create slide using a pattern (`<SlideCover>`) | Pattern renders as expected |
-| 4 | Override a pattern's internals with custom primitives | Custom composition takes priority |
+| 1 | Create slide using each of the 7 components (`<Card>`, `<BenchCard>`, `<CaseStudy>`, `<DarFlow>`, `<RecBox>`, `<LayerDiagram>`, `<Grid>`) | All render correctly |
+| 2 | Create slide using `<Grid cols={3}>` with mixed children (`<Card>` + `<BenchCard>` + `<RecBox>`) | Modular composition works |
+| 3 | Verify visual parity with original index.html for 5 representative slides | Layout, colors, spacing match |
 
-#### T-102-04: Theme System
+#### T-102-04: Theme System (v1 — extraction only)
 
 | Step | Action | Expected |
 |---|---|---|
-| 1 | Build with theme_spec only | Default dark theme renders |
+| 1 | Build with theme_spec.css (extracted from styles.css) | Renders with visual parity to current index.html |
 | 2 | Add `theme/overrides.css` with `--brand-primary: red` | Brand color changes throughout |
 | 3 | Verify inheritance: unoverridden tokens use theme_spec values | Only overridden tokens change |
 
-#### T-102-05: Multi-Deck
-
-| Step | Action | Expected |
-|---|---|---|
-| 1 | Create two decks (`main/`, `interna/`) with different slides | Both render at `/main` and `/interna` |
-| 2 | Verify ordering (`order` frontmatter) is per-deck | Deck A's order doesn't affect Deck B |
-| 3 | Verify `deck.config.ts` metadata shows in each deck | Brand, title, subtitle correct per deck |
-
-#### T-102-06: Slide Editing Token Cost
+#### T-102-05: Slide Editing Token Cost
 
 | Step | Action | Expected |
 |---|---|---|
@@ -566,14 +603,97 @@ The index system modifies the reading pattern of 6 skills. Regression testing is
 | 2 | Compare to editing equivalent in current HTML monolith | Read + Edit = ~63,000+ tokens |
 | 3 | Reorder 2 slides (change `order` values) | 2 small edits, no other files affected |
 
-#### T-102-07: /showcase --generate
+#### T-102-06: Full Migration Validation
+
+| Step | Action | Expected |
+|---|---|---|
+| 1 | All 35 slides from index.html migrated to .mdx | 35 files in `decks/main/` |
+| 2 | `npm run dev` → full presentation renders | All slides navigable, counter works |
+| 3 | Side-by-side comparison with original index.html | Content parity (text, images, structure) |
+
+#### v2+ Tests (deferred)
+
+#### T-102-07: Multi-Deck (v2)
+
+| Step | Action | Expected |
+|---|---|---|
+| 1 | Create two decks (`main/`, `interna/`) | Both render at `/main` and `/interna` |
+| 2 | Verify ordering is per-deck | Deck A's order doesn't affect Deck B |
+
+#### T-102-08: /showcase --generate (v2)
 
 | Step | Action | Expected |
 |---|---|---|
 | 1 | Run on project with completed Work layer | Slide outline proposed for approval |
-| 2 | Approve outline | .mdx files generated, one per slide |
-| 3 | Verify `refs:` in frontmatter trace to real [IG-XX] | All refs exist in INSIGHTS_GRAPH |
-| 4 | `npm run dev` → presentation renders | Visual output matches proposed outline |
+| 2 | Approve outline → .mdx files generated | `refs:` in frontmatter trace to real [IG-XX] |
+
+#### T-102-09: InsightRef with build-time data (v3, depends BL-101)
+
+| Step | Action | Expected |
+|---|---|---|
+| 1 | Slide with `<InsightRef id="IG-12" />` | Renders styled reference with insight title from INSIGHTS_GRAPH_INDEX |
+
+---
+
+## BL-80: Agent Architecture — SDK Migration
+
+> **Added 2026-02-28.** This section was not part of the original plan. It emerged from analyzing the App Runtime Compatibility Gap in BL-101 and realizing the custom Agent Runtime is the wrong foundation for scaling.
+
+### Problem
+
+The Live Research App's custom Agent Runtime (`agent-runtime.js`) reimplements a fraction of Claude Code's capabilities:
+
+| Capability | Custom Runtime | Claude Agent SDK |
+|---|---|---|
+| File reads | `read_file` — full file only | `Read` — with offset + limit |
+| Shell | `run_script` — 6 whitelisted scripts | `Bash` — full shell (sandboxed) |
+| File search | `search_files` — 5-match limit | `Grep` + `Glob` — full capabilities |
+| Context mgmt | Manual trimming to 2000 chars | Automatic compaction |
+| Model | Hardcoded Sonnet | Configurable per-query |
+| Subagents | Not supported | `Task` tool native |
+| Sessions | In-memory, 8h TTL | Persistent with resume/fork |
+
+Skills cannot run identically in CLI and app. Every engine improvement (indexes, new skills) requires parallel compatibility work.
+
+### Solution: Claude Agent SDK
+
+Replace the custom runtime with the Claude Agent SDK (`@anthropic-ai/claude-agent-sdk`). The SDK provides `query()` — an async generator that streams the full agent loop with all built-in tools.
+
+Key integration point: `canUseTool` callback. When the agent needs user interaction, the callback sends the request to the frontend via WebSocket, pauses execution, and waits for the user's response. This replaces the custom `ask_confirmation`/`ask_selection`/`ask_text` tools.
+
+### Service Abstractions (SaaS-ready, localhost implementations)
+
+Phase 1 defines interfaces designed for multi-tenant SaaS, with simple implementations for localhost:
+
+| Abstraction | Phase 1 (localhost) | Phase 3 (SaaS) |
+|---|---|---|
+| `WorkspaceService` | Local filesystem path | Isolated container per user/project |
+| `SessionStore` | In-memory Map | Database (Postgres/Redis) with TTL |
+| `ExecutionQueue` | Direct `query()` call | Job queue with concurrency limits |
+| `KeyVault` | Memory (current BYOK) | Encrypted store, BYOK + platform keys |
+
+The SDK is called through these abstractions — never directly from route handlers.
+
+### Strategic Fork: SaaS vs MCP App
+
+Two distribution models (not mutually exclusive):
+
+| | Route A: SaaS standalone | Route B: MCP App |
+|---|---|---|
+| User goes to | pd-spec.app (your domain) | Claude, ChatGPT, VS Code, any MCP host |
+| UI ownership | Full control (React frontend) | MCP Apps protocol (iframed components) |
+| Infrastructure | You own servers, auth, billing | Host provides infra |
+| Multi-host | Only your app | Any MCP-compatible client |
+
+**Risk for Route B:** MCP Apps is new (Jan 2026). May not gain host adoption. Complex multi-step UX may not fit in chat-embedded iframes. Counter-argument: the target is accessibility, not power users.
+
+**Decision point:** Evaluate before Phase 3. Phases 1-2 are route-agnostic. By Phase 3, MCP Apps maturity and host adoption will be clearer.
+
+### Impact on BL-101
+
+The index system's App Runtime Compatibility Gap **disappears** after BL-80 Phase 1. The SDK has `Read` with offset/limit and `Bash` natively. `generate-index.sh` executes without whitelisting. Skills work identically in both environments.
+
+BL-101 can be implemented immediately for CLI. Full app compatibility arrives with BL-80 Phase 1.
 
 ---
 
@@ -583,7 +703,10 @@ The index system modifies the reading pattern of 6 skills. Regression testing is
 |---|---|---|
 | Index line numbers wrong after manual edit | Stale data read | Hash staleness detection + fallback to full read |
 | Modifying 6 skill files breaks pipeline | Reliability loss | Phased rollout, behavioral equivalence test (T-101-05) |
+| Tool-specific skill instructions | Skills break in app | Runtime-agnostic constraint: describe *what*, not *which tool* |
 | Showcase submodule adds git complexity | Developer friction | `/showcase --init` handles setup, documented in CLAUDE_REFERENCE |
-| Theme scope creep | Delays MVP | theme_spec only in Phase 3. Custom themes in Phase 4 |
-| Component library maintenance | Long-term cost | 9 primitives only. Patterns are optional sugar |
+| Theme scope creep | Delays v1 | v1: extract from existing styles.css only. Custom themes in v3 |
+| Component library maintenance | Long-term cost | 7 components for v1. Expand only when needed |
 | Astro upgrades break schema | Migration pain | Pin version. Content schema is minimal Zod |
+| SDK migration breaks existing app functionality | Wave 1 regression | Frontend stays intact. Only backend agent loop changes |
+| MCP Apps doesn't gain adoption | Route B unviable | Decision deferred to Phase 3. Phases 1-2 are route-agnostic |
