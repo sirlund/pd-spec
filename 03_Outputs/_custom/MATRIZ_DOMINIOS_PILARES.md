@@ -1,6 +1,6 @@
 # Matriz Dominios × Pilares — TIMining CORE
 
-> **Versión:** 1.1 (2026-02-26)
+> **Versión:** 1.2 (2026-02-26)
 > **Origen:** Cruce de 8 casos de uso (Touchpoint 1) + IG-24 (asimetría) + resolución jerarquía dominios
 > **Propósito:** Guía de diseño — qué pilar priorizar en cada dominio operativo
 
@@ -19,6 +19,10 @@
 - Nico (línea 407): "Si es que era como tú lo pones todo al mismo nivel, para mí ese es por encima. Y, si no, era Omni Sense."
 - Ale (línea 388): Corrige — Carlos dijo Omni Sense respecto al caso #2, no como jerarquía general.
 
+**Validación externa parcial [IG-25]:** Felipe Reyes (ex-profesional minero) validó los 4 dominios sin que se los dijeran, y enfatizó que "todo se puede transferir y hablar el lenguaje de dinero — los CFO y controladores lo que les interesa es money." Confirma AE como capa envolvente. Pendiente: procesar transcript primario.
+
+**Validación operativa [IG-27]:** La demanda de "ver plata, no toneladas" no viene solo de ejecutivos — Felipe Reyes ("la plata", "hoy no aporta") y Juan Pablo Palma (control de gestión financiero) la levantan desde operaciones. AE como envolvente se confirma bottom-up: los operadores también quieren traducir su trabajo a impacto económico.
+
 **Resolución:** Son capas distintas, no competidoras.
 
 ```
@@ -35,6 +39,10 @@
 │                                             │
 │  Pilar transversal prioritario: Omni Sense  │
 │  ("si no estás en WhatsApp, no existes")    │
+├─────────────────────────────────────────────┤
+│  CONFIANZA EN DATOS (prerrequisito) [IG-28] │
+│  Si el dato no cuadra con terreno, vuelven  │
+│  a la radio y al Excel. Gate de adopción.   │
 └─────────────────────────────────────────────┘
 ```
 
@@ -139,6 +147,10 @@ Omni Sense domina: el canal ES la experiencia (WhatsApp, voz, manos libres). Cle
  └───────────────────────────────────────────────────────────────────────────┘
 
  ━━━ Líder (●●●)   ─── Presente (●●)   ╌╌╌ Secundario (●○)   [vacío] Ausente
+
+ ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄
+ CONFIANZA EN DATOS (prerrequisito) [IG-28]
+ Si falla → operador vuelve a radio/Excel. Gate de adopción para todo lo anterior.
 ```
 
 ## Diagrama: Cadena Funcional (slide 06)
@@ -195,15 +207,23 @@ Nico (sesión interna, línea 263):
 | Meta fija → adherencia | Meta adaptativa → optimización |
 | TIMining verifica | TIMining mejora |
 
+**Dos niveles de valor (alineado con [IG-22] en spec):**
+
+| Nivel | Casos | Narrativa |
+|---|---|---|
+| **Mejoramiento continuo** | 1-6 | Decisión correcta, turno a turno — no para "cumplir" ciegamente, sino para mejorar continuamente |
+| **Reconfiguración estratégica** | 7-8 | Detectar cuándo el plan subyacente es incorrecto y ajustarlo antes de que el costo sea irrecuperable |
+
 **Impacto en framework:**
 - El Dominio D (Alineación Estratégica) cambia de "¿Cómo vamos contra plan?" a "¿Cómo mejoramos el plan?"
-- Los Casos #6 y #7 necesitan ajuste narrativo: no es detectar desviación del plan, es detectar oportunidades de mejora
-- [IG-22] (plan compliance vs. optimization) ya captura esta tensión — esto la resuelve a favor de optimization
+- Casos 1-6: mejoramiento continuo (el plan es correcto, optimizar la ejecución)
+- Casos 7-8: reconfiguración estratégica (el plan es incorrecto, detectar y ajustar)
+- [IG-22] (plan compliance vs. optimization) ya capturaba esta tensión — resuelta con los dos niveles
 - Afecta directamente a [DP-02] (Copiloto) y [DP-04] (Time Scrubbing)
 
 ---
 
-## Decisión: Erradicar "Paz Mental"
+## Decisión: "Paz Mental" → "Tiempo Cero"
 
 **Problema:** "Paz mental" fue el nombre original del mantra operativo de TIMining CORE. Philip (CEO) y Carlos (CTO) lo cuestionaron en el Touchpoint. En la sesión interna se confirmó que debe eliminarse.
 
@@ -224,24 +244,26 @@ Nico (línea 217):
 Ale (línea 260):
 > "Está la paz mental que hablamos [en la slide 12 — hay que cambiarlo]."
 
-**Resolución: Reemplazar por conceptos accionables.**
+**Resolución: "Tiempo Cero"** — el tiempo entre dato y decisión debe ser cero.
 
-| "Paz mental" (abstracto) | Reemplazo (accionable) |
+> *"No tengo tiempo para pensar." El sistema comprime el camino de dato a acción: detecta, analiza y recomienda antes de que el operador levante la radio. Si hay demora, no sirve.*
+
+| "Paz mental" (abstracto) | "Tiempo Cero" (accionable) |
 |---|---|
-| Tranquilidad operativa | "Ayúdame a tomar la mejor decisión porque no tengo tiempo" |
-| Certeza | "Simplificame" — reducción de carga cognitiva |
-| Confianza | "El sistema lo hace por mí" — delegación operacional |
+| Tranquilidad operativa | Dato → decisión sin demora |
+| Certeza | "Ayúdame a tomar la mejor decisión porque no tengo tiempo" |
+| Confianza | "Simplificame" — el sistema ya pensó por ti |
 
-**El concepto subyacente es válido.** Lo que falla es el nombre:
+**El concepto subyacente es válido.** Lo que falla era el nombre:
 - Demasiado abstracto para validar con usuarios
 - Suena a marketing, no a herramienta
-- Carlos y Philip lo rechazaron explícitamente
+- Carlos y Philip lo rechazaron explícitamente — pero sí validaron el eje de **tiempo**
 
 **Impacto en framework:**
-- Eliminar "paz mental" de STRATEGIC_VISION.md (visión, criterios internos)
-- Reemplazar con el mantra que sí validaron: "De dashboard a copiloto — el sistema detecta, analiza y recomienda"
-- Los 6 criterios internos en STRATEGIC_VISION.md incluyen "Paz Mental" — reemplazar por "Delegación Operacional" o "Carga Cognitiva Cero"
+- STRATEGIC_VISION.md: criterio interno "Reducción de Carga Cognitiva" → renombrar a **"Tiempo Cero"**
+- Mantra: "De dashboard a copiloto — el sistema detecta, analiza y recomienda"
 - Afecta slides 05 y 12 de la presentación
+- [IG-SYNTH-16] INVALIDATED como respaldo formal
 
 ---
 
@@ -257,5 +279,15 @@ Ale (línea 260):
 | [IG-03] | WhatsApp canal principal de decisiones operacionales |
 | [IG-SYNTH-07] | Gestión por excepción (Glanceable Intelligence) |
 | [IG-SYNTH-06] | Patrón D→A→R validado por usuarios |
-| [IG-22] | Plan compliance vs. optimization — resuelto a favor de optimization |
+| [IG-22] | Plan compliance vs. optimization — resuelto en dos niveles (mejoramiento continuo + reconfiguración estratégica) |
+| [IG-25] | Primera validación externa parcial — Felipe Reyes confirma dominios y lenguaje de negocio |
+| [IG-27] | Cuantificación económica demandada desde operaciones (no solo ejecutivos) — refuerza AE bottom-up |
+| [IG-28] | Confianza en datos como prerrequisito de adopción — capa debajo de la matriz |
+| [IG-SYNTH-16] | INVALIDATED — "Paz mental" rechazado por CEO+CTO en touchpoint 19-feb |
 | CF-12 | "Paz mental" como nombre — cuestionado por Philip y Carlos |
+
+### Preguntas abiertas
+
+| Ref | Pregunta | Estado |
+|---|---|---|
+| [IG-26] | P&T (Perforación y Tronadura) como gap operativo — ¿cabe en Dominio A (Crisis) o necesita nombre propio? Single-source (Felipe Reyes). | Pendiente — validar en entrevistas |

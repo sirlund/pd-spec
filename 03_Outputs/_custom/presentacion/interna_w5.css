@@ -1,0 +1,79 @@
+/* interna_w5.css — IDEMAX Interna Semana 5 */
+/* Unique classes for the internal presentation */
+
+/* Decision Card */
+.decision-card {
+    border: 1px solid var(--accent-cyan);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.decision-header {
+    background: rgba(0, 243, 255, 0.08);
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.decision-body {
+    padding: 14px 16px;
+}
+
+/* v2 Proposal Table */
+.v2-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.v2-table th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-muted);
+    text-align: left;
+}
+
+.v2-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: top;
+}
+
+/* v2 Tags */
+.v2-tag-new {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: #0f0;
+    background: rgba(0, 255, 0, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.v2-tag-update {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent-cyan);
+    background: var(--accent-dim);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.v2-tag-replace {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--color-a);
+    background: rgba(255, 152, 0, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* Light mode */
+[data-theme="light"] .v2-table td { color: #333 !important; }
+[data-theme="light"] .v2-tag-new { color: #0a7a0a; background: rgba(0, 128, 0, 0.08); }
+[data-theme="light"] .decision-header { background: rgba(0, 119, 182, 0.08); }

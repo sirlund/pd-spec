@@ -66,4 +66,11 @@ Per-file extraction state tracker. Maintained automatically by `/extract`.
 | Touchpoint 1/_FIELD_NOTES.md | md | processed | 8 | 9dba69f37bf525539ca5dfcaeb6ac066 | 2026-02-24T22:30 |
 | Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf | pdf | processed | 75 | 0babec2362f6772bd37a86333499c87f | 2026-02-25T00:00 |
 
+| entrevistas usuarios:clientes/entrevista_cristian-rozas.png | png | processed | 8 | 547974847dfa7b52b104f49c5ebbca5e | 2026-02-26T23:00 |
+| entrevistas usuarios:clientes/entrevista_felipe-reyes.png | png | processed | 15 | e3321106d91bc87508d6b7b468ffd994 | 2026-02-26T23:00 |
+| entrevistas usuarios:clientes/entrevista_joaquin (interno).png | png | processed | 10 | 7c719e7b583633d4abb85ca5a3a0db7d | 2026-02-26T23:00 |
+| entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png | png | processed | 14 | 6c891f39d02d11d0b5506c74b77e7d3b | 2026-02-26T23:00 |
+
+| entrevistas usuarios:clientes/analisis_gemini_entrevistas.md | md | processed | 18 | 47a98e262d57b95c39f898a2b86cada9 | 2026-02-26T23:10 |
+
 <!-- Updated automatically by /extract -->

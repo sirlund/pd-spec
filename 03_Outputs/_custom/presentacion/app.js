@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const footer = document.querySelector('.pres-footer');
 
+    // Dynamic slide counters
+    const total = slides.length;
+    slides.forEach((slide, i) => {
+        const num = slide.querySelector('.slide-number');
+        if (num) num.textContent = `${String(i + 1).padStart(2, '0')} / ${total}`;
+    });
+
     function showSlide(index) {
         slides.forEach(slide => slide.classList.remove('active'));
         slides[index].classList.add('active');

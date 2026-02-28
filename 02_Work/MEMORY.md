@@ -75,3 +75,27 @@
   - **Nota MEMORY:** IG-SYNTH-09 e IG-15 mencionados como INVALIDATED en entry anterior eran en realidad IG-SYNTH-16 e IG-02 (el archivo INSIGHTS_GRAPH.md es la fuente de verdad). MATRIZ_DOMINIOS_PILARES.md ya no existe en disco.
 - **Result:** Spec actualizado con 3 nuevos insights propagados, 1 criterio renombrado, 1 reframing narrativo. No hay insights PENDING ni conflictos resueltos.
 - **Snapshot:** 47 insights (39 VERIFIED, 0 PENDING, 7 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING) · 60 fuentes · 1451 claims
+
+## [2026-02-26T23:00] /extract entrevistas usuarios:clientes
+- **Request:** Extraer 4 canvas de entrevistas con usuarios/clientes (PNGs)
+- **Actions:** Delta: 60 UNCHANGED, 4 NEW. _CONTEXT.md creado. Extracción visual de canvas de entrevista estructurados.
+- **Result:** 65 claims extraídos de 5 archivos (4 canvas PNG + 1 análisis Gemini ai-generated). EXTRACTIONS.md actualizado (65 secciones, 1516 claims total).
+- **Stats:**
+  - `entrevistas usuarios:clientes/`: 5 archivos, 65 claims (47 primary + 18 AI-SOURCE)
+  - **Total:** 5 archivos procesados, 65 claims extraídos
+- **Preprocessing:** ninguno
+- **Snapshot:** 47 insights · 13 conflictos · 65 fuentes · 1516 claims
+- **Nota:** Resolución de imágenes limita extracción de post-its individuales. Análisis Gemini complementa con claims más detallados (citas directas, patrones cruzados). Claims AI-SOURCE no pueden llegar a VERIFIED sin corroboración primaria.
+
+## [2026-02-26T23:30] /analyze (incremental)
+- **Request:** /analyze incremental post-extract entrevistas usuarios:clientes
+- **Mode:** INCREMENTAL (65 claims de 5 secciones nuevas, 60 secciones sin cambios)
+- **Actions:**
+  - Convergencia actualizada: 5 insights existentes (IG-SYNTH-09 13→16/65, IG-SYNTH-11 8→9/65, IG-06 3→5/65, IG-20 2→3/65, IG-SYNTH-18 8→9/65)
+  - Nuevos insights: 6 PENDING (IG-26 P&T gap, IG-27 costos por ineficiencia, IG-28 confianza datos, IG-29 madurez digital, IG-30 control ambiental, IG-31 auditoría datos como negocio)
+  - 2 insights frágiles (solo AI-SOURCE): IG-29, IG-31
+  - Claims descartados: ~30 (duplicados, convergencia sin nuevo insight)
+  - Conflictos nuevos: 0
+  - RESEARCH_BRIEF.md actualizado (header + IG-28 confianza datos + Joaquín barreras adopción)
+- **Result:** 53 insights (39 VERIFIED, 6 PENDING, 7 INVALIDATED, 1 MERGED) · 13 conflictos (4 PENDING)
+- **Snapshot:** 53 insights · 13 conflictos · 65 fuentes · 1516 claims · 12 archivos spec/output

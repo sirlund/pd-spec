@@ -1,7 +1,7 @@
 # Research Brief
 > Actualizado por /analyze incremental el 2026-02-26
-> Basado en 47 insights de 60 fuentes (1451 claims) — incluye sesión interna IDEMAX 24-feb (debrief Touchpoint, validación Felipe Reyes, priorización pilares)
-> 3 insights PENDING: IG-23 (Omni Sense prioritario), IG-24 (relación pilar-dominio asimétrica), IG-25 (validación externa Felipe Reyes). Los 3 son [INTERNAL] — requieren corroboración primaria.
+> Basado en 53 insights de 65 fuentes (1516 claims) — incluye 4 entrevistas usuarios/clientes Etapa 2 + análisis Gemini
+> 6 insights PENDING: IG-26 (P&T gap), IG-27 (costos por ineficiencia), IG-28 (confianza datos), IG-29 (madurez digital), IG-30 (control ambiental gap), IG-31 (auditoría datos como negocio). 2 son solo [AI-SOURCE] (IG-29, IG-31).
 
 ## Lo que está roto
 
@@ -9,7 +9,9 @@
 
 **Los usuarios abandonan la herramienta porque no la entienden.** Los tiempos de actualización de datos son confusos — GPS en tiempo casi real, mapas de calor con 3 horas de desfase, indicadores cada 30 minutos, topografía cada 15 minutos — y nadie les explica por qué ven datos "viejos" [IG-SYNTH-03]. Se perdió un cliente porque las métricas de extracción estaban a 24 horas cuando los mineros evalúan por turno. El resultado es claro: "llegamos, capacitamos, se entusiasman, pero luego no le entienden, adiós."
 
-**Orchestra tiene un 30% de uso real.** Los ingenieros de mina no tienen tiempo para aprender una herramienta compleja porque "trabajan en mina, constantemente reagendan" [IG-SYNTH-11]. La capacitación inicial no alcanza para una interfaz con múltiples capas. La nomenclatura misma del producto requiere un experto para entender.
+**Orchestra tiene un 30% de uso real.** Los ingenieros de mina no tienen tiempo para aprender una herramienta compleja porque "trabajan en mina, constantemente reagendan" [IG-SYNTH-11]. La capacitación inicial no alcanza para una interfaz con múltiples capas. La nomenclatura misma del producto requiere un experto para entender. Joaquín (onboarder TIMining) confirma: facilidad de uso, acoplo y tiempo de roll-out son barreras que observa directamente en cada despliegue.
+
+**La confianza en los datos es el gate de adopción.** Si los datos no cuadran con lo que el operador ve en terreno, vuelve a la radio o al Excel [IG-28]. Los mineros "de camioneta" prefieren confiar en su experiencia cuando la plataforma muestra algo diferente. No es un problema de UX — es un problema de credibilidad del dato. Juan Pablo Palma lo marca como tema crítico desde su rol de control.
 
 **El "Auto de Homero Simpson" amenaza al producto.** Cada cliente pide funcionalidades, se implementan sin validar uso real, y el producto resultante no funciona bien para nadie [IG-SYNTH-02]. Todo 2025 fue dedicado a customización para un solo cliente. El riesgo es existencial: un producto con demasiadas funcionalidades que nadie usa bien.
 

@@ -1992,3 +1992,123 @@
 74. "Riesgo a mitigar identificado en deck: 'Planificar entrevistas con usuarios finales en mina para cerrar el gap de Etapa 2 antes de avanzar en wireframes definitivos'"
 75. "Siguiente paso inmediato en deck: identidad visual CORE (Quiet UI Achromatic) + prototipo 1 caso piloto con flujo D→A→R completo"
 
+---
+
+## [entrevistas usuarios:clientes/entrevista_cristian-rozas.png]
+- Type: interview_canvas
+- Date: 2026-02 (semana 4-5)
+- Participants: Cristián Rozas (implementación/soporte TIMining)
+- Extracted: 2026-02-26T23:00
+
+### Raw Claims
+1. "Cristián Rozas: acompaña el proceso de implementación, hacer levantamiento de requerimientos, hace soporte — cubre todos los productos"
+2. "Rol de implementador: es quien traduce las necesidades del cliente en configuración del sistema — levanta requerimientos y configura"
+3. "Implementación requiere acompañamiento continuo — no es un deploy y listo, es un proceso"
+4. "Performance es un criterio clave de evaluación del sistema desde la perspectiva de implementación"
+5. "El implementador necesita entender el flujo completo del cliente para configurar correctamente — sin ese contexto, la configuración falla"
+6. "Soporte cubre todos los productos — no hay especialización por producto en el rol de soporte"
+7. "El proceso de implementación involucra levantamiento de requerimientos → configuración → acompañamiento"
+8. "Dominios operativos validados desde la perspectiva del implementador — ve los 4 dominios en acción con distintos clientes"
+
+---
+
+## [entrevistas usuarios:clientes/entrevista_felipe-reyes.png]
+- Type: interview_canvas
+- Date: 2026-02 (semana 4-5)
+- Participants: Felipe Reyes (experiencia minera)
+- Extracted: 2026-02-26T23:00
+
+### Raw Claims
+1. "Felipe Reyes: perfil de experiencia minera — conoce la operación desde adentro"
+2. "Relación con TIMining: conoce el software, ha visto sus capacidades en contexto de faena"
+3. "Referencia a FMS (Fleet Management System) como contexto de comparación con TIMining"
+4. "Planes anuales y marcos de largo plazo son el contexto de planificación donde TIMining opera"
+5. "Hay producción — el foco del día a día es producir, no analizar datos"
+6. "'Costos' como tema central recurrente — aparece tanto en dominios operativos como en futuro"
+7. "Control de calidad como preocupación operativa relevante"
+8. "La información como eje: el problema no es tener datos sino tener la información correcta"
+9. "'Hoy no aporta' — hay funcionalidades o áreas donde TIMining actualmente no entrega valor percibido"
+10. "'Qué mínimo le exportó' — el valor mínimo que el sistema entrega al usuario no es suficiente"
+11. "'La plata' — todo se traduce a dinero; el lenguaje del valor es financiero, no técnico"
+12. "Validación de dominios operativos sin que se los dijeran — Felipe identificó los 4 dominios de forma natural"
+13. "Costos de mantención como preocupación operativa específica"
+14. "Escalabilidad como preocupación futura — cómo escala la solución"
+15. "El valor debe expresarse en lenguaje de negocio (costos, EBITDA) — no en lenguaje de software"
+
+---
+
+## [entrevistas usuarios:clientes/entrevista_joaquin (interno).png]
+- Type: interview_canvas
+- Date: 2026-02 (semana 4-5)
+- Participants: Joaquín (interno TIMining — onboarding/roll-out)
+- Extracted: 2026-02-26T23:00
+
+### Raw Claims
+1. "Joaquín: hace el onboarding y roll-out del proyecto en faenas — es quien despliega el producto"
+2. "Rol cubre el proceso desde el 'roll out' hasta que el usuario está operando"
+3. "Tiempo de roll-out como métrica crítica — cuánto demora desplegar en una faena nueva"
+4. "Facilidad de uso como criterio clave desde la perspectiva de onboarding — si el usuario no entiende, el onboarding falla"
+5. "Acoplo (adaptación) como desafío — el usuario necesita tiempo para acoplarse al sistema"
+6. "La curva de aprendizaje es un problema real en el despliegue — impacta directamente la adopción"
+7. "El implementador/onboarder ve de primera mano la resistencia o aceptación del usuario"
+8. "Perspectiva interna TIMining sobre cómo los clientes reciben y adoptan el producto"
+9. "El éxito del roll-out depende de que el usuario perciba valor rápidamente — si no lo ve, abandona"
+10. "El onboarding es donde se juega la adopción — si el primer contacto es malo, el usuario no vuelve"
+
+---
+
+## [entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png]
+- Type: interview_canvas
+- Date: 2026-02 (semana 4-5)
+- Participants: Juan Pablo Palma (Superintendente, Pelambres)
+- Extracted: 2026-02-26T23:00
+
+### Raw Claims
+1. "Juan Pablo Palma: post-implementación, hace control, participa en codeco y parlamentos"
+2. "Ha trabajado en 3 mineras diferentes — tiene perspectiva comparativa de operaciones"
+3. "Hace control ambiental — la dimensión ambiental es parte de su rol de superintendencia"
+4. "Control de gestión como función central — usa datos para controlar cumplimiento operacional"
+5. "Confianza en los datos como tema crítico — si los datos no son confiables, las decisiones tampoco"
+6. "Contrato con Quantitec mencionado — relación contractual con proveedor de servicios de control"
+7. "Participa en codeco (comité de dirección ejecutiva) y parlamentos — usuario que reporta a nivel ejecutivo"
+8. "Seguridad como dominio prioritario — aparece destacado en la sección de futuro"
+9. "El paso del plan a la realidad operativa como preocupación central — coincide con Geometry Gap"
+10. "Perspectiva de superintendente: necesita la información para tomar decisiones de control y reportar hacia arriba"
+11. "3 mineras = perspectiva comparativa: sabe cómo se hacen las cosas en distintos contextos operacionales"
+12. "El control ambiental añade una dimensión que no está cubierta por los 4 dominios actuales — ¿gap?"
+13. "El perfil de superintendente usa TIMining post-implementación — es usuario steady-state, no early adopter"
+14. "Codeco y parlamentos son los espacios donde se toman decisiones estratégicas — necesita datos confiables para esos espacios"
+
+---
+
+## [entrevistas usuarios:clientes/analisis_gemini_entrevistas.md] ⚠️ AI-GENERATED
+- Type: cross_analysis
+- Date: 2026-02-26
+- Source: Gemini (análisis cruzado de las 4 entrevistas)
+- Extracted: 2026-02-26T23:10
+
+### Raw Claims
+1. "TIMining sirve principalmente para visibilizar desviaciones y poner foco en la operación" [AI-SOURCE]
+2. "Puntos fuertes actuales: control de velocidades, adherencia al plan, y visibilidad en tiempo real (especialmente Aware)" [AI-SOURCE]
+3. "Brecha de confianza: los mineros 'de camioneta' o de vieja escuela prefieren confiar en su radio o en el Excel antes que en la plataforma si los datos no cuadran perfectamente" [AI-SOURCE]
+4. "El impacto de TIMining depende directamente de la madurez digital de la compañía minera y de su cultura interna (el 'reportitis')" [AI-SOURCE]
+5. "Perforación y Tronadura (P&T) identificado como 'dolor de cabeza' recurrente — falta visibilidad y control en este proceso crítico que condiciona todo lo demás" [AI-SOURCE]
+6. "Demanda clara por dejar de ver solo 'toneladas' o 'movimientos' y empezar a ver costos y dólares — quieren saber cuánto dinero están perdiendo por una ineficiencia específica" [AI-SOURCE]
+7. "La minería no termina en el botadero — Juan Pablo y Felipe mencionan necesidad de conectar la mina con la alimentación de la planta (mezclas, leyes, stock)" [AI-SOURCE]
+8. "No quieren más dashboards para 'mirar' — quieren un sistema que diga: 'Este es el problema y esta es la acción recomendada para recuperar lo perdido'" [AI-SOURCE]
+9. "Se espera que la herramienta anticipe problemas (amenazas de alimentación, fallas de cumplimiento) antes de que ocurran — 'cerebro' operativo" [AI-SOURCE]
+10. "Integración de la cadena de valor: romper los silos, que la información fluya desde planificación de largo plazo hasta ejecución diaria, incluyendo costos y gestión de personas" [AI-SOURCE]
+11. "Cristián Rozas (Operaciones/Consultoría): 'Optimizar el plan es utópico; minimicemos la desviación'" [AI-SOURCE]
+12. "Joaquín (Adopción/Producto): 'Es difícil medir la pérdida del plan; falta cuantificar el valor'" [AI-SOURCE]
+13. "Juan Pablo Palma (Planificación/Geotecnia): fuerte enfoque en seguridad geotécnica y cumplimiento de mezclas" [AI-SOURCE]
+14. "Felipe Reyes (Innovación/Estrategia): 'TIMining debe hablar el lenguaje del cliente: Costos y Dólares'" [AI-SOURCE]
+15. "Oportunidad de diferenciación: integrar variables económicas — pasar de 'velocidad' a 'costo por combustible/neumático'" [AI-SOURCE]
+16. "Foco en P&T como 'win' más inmediato basado en demanda de usuarios" [AI-SOURCE]
+17. "Aware se usa hoy para 'auditar' datos ajenos pero no se cobra por ello — posible modelo de negocio en validación de datos" [AI-SOURCE]
+18. "UX para el 'no digital': simplificar la interfaz para ganar la confianza del minero que hoy prefiere la radio o el cuaderno" [AI-SOURCE]
+
+### Recomendaciones (reference only — hypothesis from AI, not forwarded as facts to /analyze)
+- Módulo de Costos como diferenciador
+- Vertical P&T como win inmediato
+- Modelo de negocio en validación de datos
+- UX simplificada para perfil no-digital

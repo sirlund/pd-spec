@@ -126,12 +126,12 @@ Ref: Workshop 1/transcript.md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop
 
 ### [IG-SYNTH-09] Perfiles de usuario diferenciados con necesidades distintas
 **Consolidates:** 12+ claims atómicos
-**Convergence:** 13/57 sources
+**Convergence:** 16/65 sources
 **Category:** user-need (current)
-**Voice:** user (workshop), stakeholder (COO, PM)
+**Voice:** user (workshop), stakeholder (COO, PM, implementador, onboarder, superintendente)
 **Authority:** direct-quote, observation
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > **Narrative:** Al menos 4-5 perfiles de usuario claramente diferenciados necesitan información radicalmente distinta: el Despachador necesita control segundo a segundo; el Jefe de Turno necesita alertas tácticas sin pantalla (está en terreno); el Gerente de Mina necesita visión semáforo desde el celular; el Planificador necesita profundidad analítica. Hoy Aware presenta la misma interfaz para todos, "se iluminan/apagan capas" sin diferenciación por perfil.
 
@@ -140,19 +140,22 @@ Status: VERIFIED
 - Operaciones: "Aware como interfaz de capas: misma interfaz para todos, no hay diferenciación por perfil"
 - Workshop: 13 roles distintos en 20 casos de uso
 - Inteligencia Operacional: 4 canales por tipo de usuario (Control, Push, App, Agent)
+- Cristián Rozas: perfil implementador (acompaña implementación, levanta requerimientos, soporte todos los productos)
+- Joaquín: perfil onboarder (roll-out, ve resistencia/aceptación de primera mano)
+- Juan Pablo Palma: perfil superintendente (post-implementación, control, codeco/parlamentos, 3 mineras)
 
-Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/workshop-laminas-*.png (20 láminas), Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, entrevistas iniciales stakeholders/Entrevista Roberto COO.png, entrevistas iniciales stakeholders/Entrevista PM AWARE.png, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png
+Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/Casos de Uso Workshop 01.docx, Workshop 1/workshop-laminas-*.png (20 láminas), Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, Visión Futuro _CORE_/Design Brief_ TIMining CORE.docx, Sello de Experiencia TIMINING.pptx, entrevistas iniciales stakeholders/Entrevista Roberto COO.png, entrevistas iniciales stakeholders/Entrevista PM AWARE.png, entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas usuarios:clientes/entrevista_cristian-rozas.png, entrevistas usuarios:clientes/entrevista_joaquin (interno).png, entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png
 
 ---
 
 ### [IG-SYNTH-11] Curva de aprendizaje y barrera de adopción
 **Consolidates:** 6+ claims atómicos
-**Convergence:** 8/57 sources
+**Convergence:** 9/65 sources
 **Category:** user-need (current)
-**Voice:** stakeholder (PM Orchestra, operaciones), user (indirecto)
+**Voice:** stakeholder (PM Orchestra, operaciones, onboarder), user (indirecto)
 **Authority:** direct-quote, observation
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > **Narrative:** Orchestra tiene un 30% de uso real. Los usuarios no tienen tiempo para la curva de aprendizaje porque "trabajan en mina, constantemente reagendan." La capacitación inicial no alcanza para una interfaz con múltiples capas. El workshop retro pide que la plataforma sea intuitiva sin manuales ni certificaciones, con "capacitación in-app contextual" por perfil de usuario. La nomenclatura misma requiere un experto para entender.
 
@@ -161,8 +164,9 @@ Status: VERIFIED
 - Operaciones: "La capacitación inicial no alcanza para una interfaz con múltiples capas"
 - Operaciones: "Barrera de entrada: el tiempo — trabajan en mina, constantemente reagendan"
 - Retro STOP: "Capacitaciones muy largas", START: "CAPACITACIÓN IN-APP CONTEXTUAL"
+- Joaquín (onboarder TIMining): facilidad de uso, acoplo, tiempo de roll-out como barreras de adopción directamente observadas en despliegue
 
-Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Sello de Experiencia TIMINING.pptx, Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md
+Ref: entrevistas iniciales stakeholders/Entrevista PM Orchestra.png, entrevistas operaciones/analisis reu con operaciones.md, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Workshop 1/KEEP-STOP-START (retro).docx, Workshop 1/analisis(stop)-5.06.38 PM.png, Sello de Experiencia TIMINING.pptx, Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md, entrevistas usuarios:clientes/entrevista_joaquin (interno).png
 
 ---
 
@@ -432,12 +436,12 @@ Ref: entrevistas operaciones/reu_coo_roberto-catalan.md, entrevistas operaciones
 
 ### [IG-SYNTH-18] Seguridad y gestión geotécnica integrada
 **Consolidates:** 8+ claims atómicos
-**Convergence:** 8/54 sources
+**Convergence:** 9/65 sources
 **Category:** constraint (current)
-**Voice:** user (workshop), stakeholder (operaciones)
+**Voice:** user (workshop), stakeholder (operaciones, superintendente)
 **Authority:** direct-quote, observation
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > **Narrative:** La seguridad es prioridad inminente en la operación minera: alertas por incursión en zonas geotécnicas de riesgo, verificación de procedimientos de trabajo, gestión de tronaduras y despejes. El workshop dedicó 3 de 20 casos de uso a seguridad (gestión de alerta geotécnica, procedimientos, tronadura). La integración de ARIS (monitoreo geotécnico con 30+ tipos de instrumentos) en Aware se reconoce como deseable pero compleja: "sería genial integrar pero no sé cómo sin complejizar."
 
@@ -446,8 +450,9 @@ Status: VERIFIED
 - Workshop lámina 10: "Jefe de Turno — ¿Estoy cumpliendo procedimientos de trabajo? Responsabilidad Legal"
 - Operaciones: "ARIS integra 30+ tipos de instrumentos; sería genial integrar en Aware pero no sé cómo"
 - PPT corporativa: "Alertas de seguridad geotécnica por WhatsApp: camión operando en zona de inestabilidad"
+- Juan Pablo Palma (Superintendente Pelambres): seguridad geotécnica como dominio prioritario — enfoque fuerte desde perspectiva de control
 
-Ref: Workshop 1/workshop-laminas-11.02.57 AM.png, Workshop 1/workshop-laminas-11.03.15 AM.png, Workshop 1/workshop-laminas-11.03.23 AM.png, Workshop 1/Casos de Uso Workshop 01.docx, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf
+Ref: Workshop 1/workshop-laminas-11.02.57 AM.png, Workshop 1/workshop-laminas-11.03.15 AM.png, Workshop 1/workshop-laminas-11.03.23 AM.png, Workshop 1/Casos de Uso Workshop 01.docx, entrevistas operaciones/reunion_operaciones (27-01-2026).md, Antecedentes/PPT TIMining - General_ENE 2026_Español.pdf, Visión Futuro _CORE_/Timining_Core_El_Sistema_Nervioso_de_la_Minería.pdf, Visión Futuro _CORE_/Timining_Core_La_Inteligencia_Operacional.pdf, entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png
 
 ---
 
@@ -599,9 +604,9 @@ Related: [IG-SYNTH-10], [IG-SYNTH-16b]
 **Category:** user-need (current)
 **Voice:** stakeholder (Niklas/IDEMAX — presentado y no contradecido por Philip/Carlo)
 **Authority:** observation
-**Convergence:** 3/60 sources
+**Convergence:** 5/65 sources
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > "[Niklas] 'Tercer gap: desconexión mina-planta — información de distintas fuentes — reporting sin valor real — operación y finanzas no se hablan como TIMining podría articular'"
 
@@ -609,8 +614,10 @@ Status: VERIFIED
 - Touchpoint 2026-02-19: identificado en presentación de IDEMAX — Philip/Carlo no lo contradijeron
 - Deck p29-30 (Caso 8): CFO como caso de uso central de la desconexión; "4 KPIs traducidos a dinero" — valida el gap operaciones/finanzas como un caso de uso concreto
 - Deck p24-25 (Caso 6): Gerente de Mina con "respuesta repartida en 4 sistemas" — manifestación directa de la desconexión
+- Juan Pablo Palma: necesidad de conectar mina con alimentación de planta (mezclas, leyes, stock)
+- Felipe Reyes: la minería no termina en el botadero — integración cadena de valor
 
-Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md, Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Ref: Touchpoint 1/Touchpoint_TIMining-IDEMAX _2026-02-19.md, Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf, entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png, entrevistas usuarios:clientes/entrevista_felipe-reyes.png
 Related: [IG-SYNTH-01], [IG-SYNTH-09], [IG-20]
 
 ---
@@ -883,19 +890,20 @@ Related: [IG-06], [IG-SYNTH-06], [IG-16]
 **Category:** user-need (aspirational)
 **Voice:** document (deck presentado a Philip/Carlo — primario)
 **Authority:** vision
-**Convergence:** 2/60 sources
+**Convergence:** 3/65 sources
 Status: VERIFIED
-**Last-updated:** 2026-02-16
+**Last-updated:** 2026-02-26
 
 > "'La mina puede estar generando millones o destruyéndolos — la persona que reporta al directorio es la última en enterarse.' CFO es 'usuario invisible' — caso aspiracional, no validado con usuario real. No necesita acceso a sistemas operativos — necesita la respuesta en su bolsillo, en su idioma. El software aprende a hablar finanzas, no le enseña minería al CFO."
 
 **Evidence trail:**
 - Deck p29-30 (Caso 8): CFO como perfil con necesidad específica, self-identificado como "aspiracional, no validado"
 - Origen declarado en deck: Workshop 01 (gap identificado) + Design Brief (Executive App)
+- Felipe Reyes: "TIMining debe hablar el lenguaje del cliente: Costos y Dólares" — confirma que operaciones también necesita lenguaje financiero, no solo CFO
 
 Nota: authority `vision` — la fuente marca el caso como aspiracional ("no validado con usuario real"), pero CEO (Philip) y CTO (Carlo) lo tienen como apuesta estratégica 2026. Confirmado en contexto externo al transcript. Requiere validación formal con CFO real — ver CF-08.
 **Grounded in:** [IG-06] (desconexión mina-planta), [IG-SYNTH-09] (perfiles diferenciados)
-Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf
+Ref: Touchpoint 1/TIMining-CORE-Presentacion-Light_compressed.pdf, entrevistas usuarios:clientes/entrevista_felipe-reyes.png
 Related: [IG-06], [IG-SYNTH-09], [CF-08]
 
 ---
@@ -1000,6 +1008,127 @@ Status: VERIFIED
 Ref: sesiones-idemax/reunion_ux_timining_prox_pasos_24feb.md
 Note: [INTERNAL] — reporte secondhand. El transcript primario de la entrevista con Felipe Reyes aún no ha sido procesado. Cuando se extraiga, este insight podrá verificarse con evidencia directa.
 Related: [IG-06] (desconexión mina-planta), [IG-20] (CFO como usuario invisible), [CF-08] (datos financieros)
+
+---
+
+## Entrevistas Usuarios/Clientes — Etapa 2 (2026-02, semana 4-5)
+
+### [IG-26] Perforación y Tronadura (P&T) — gap operativo sin visibilidad ni control
+**Category:** user-need (current)
+**Voice:** stakeholder (Felipe Reyes), ai (Gemini)
+**Authority:** observation, hypothesis
+**Convergence:** 2/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "Perforación y Tronadura identificado como 'dolor de cabeza' recurrente — falta visibilidad y control en este proceso crítico que condiciona todo lo demás."
+
+**Evidence trail:**
+- Felipe Reyes (canvas): P&T como preocupación operativa recurrente
+- Gemini (análisis cruzado): "Foco en P&T como 'win' más inmediato basado en demanda de usuarios" [AI-SOURCE]
+
+Ref: entrevistas usuarios:clientes/entrevista_felipe-reyes.png, entrevistas usuarios:clientes/analisis_gemini_entrevistas.md
+Note: Tema nuevo — no cubierto por los 8 casos de uso del Touchpoint 1 ni por los 4 dominios actuales. ¿Pertenece a Dominio A (Crisis) o es un 5to dominio?
+Related: [IG-SYNTH-01] (Geometry Gap), [IG-SYNTH-18] (alertas geotécnicas)
+
+---
+
+### [IG-27] Cuantificación del impacto económico por ineficiencia específica
+**Category:** user-need (aspirational)
+**Voice:** stakeholder (Felipe Reyes, Juan Pablo Palma), ai (Gemini)
+**Authority:** observation, hypothesis
+**Convergence:** 3/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "Demanda clara por dejar de ver solo 'toneladas' o 'movimientos' y empezar a ver costos y dólares — quieren saber cuánto dinero están perdiendo por una ineficiencia específica." Felipe: "la plata" / "hoy no aporta". Juan Pablo: control de gestión financiero.
+
+**Evidence trail:**
+- Felipe Reyes (canvas): "la plata", "hoy no aporta", "qué mínimo le exportó" — valor expresado en lenguaje financiero
+- Juan Pablo Palma (canvas): control de gestión, necesita datos confiables para reportar a codeco
+- Gemini: "Oportunidad de diferenciación: integrar variables económicas — pasar de 'velocidad' a 'costo por combustible/neumático'" [AI-SOURCE]
+
+Ref: entrevistas usuarios:clientes/entrevista_felipe-reyes.png, entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png, entrevistas usuarios:clientes/analisis_gemini_entrevistas.md
+Note: Diferente de [IG-20] (CFO como usuario invisible) — aquí son operaciones pidiendo métricas económicas, no solo ejecutivos.
+Related: [IG-20], [IG-06], [CF-08]
+
+---
+
+### [IG-28] Confianza en los datos como prerrequisito de adopción
+**Category:** user-need (current)
+**Voice:** stakeholder (Juan Pablo Palma, Felipe Reyes), ai (Gemini)
+**Authority:** observation, hypothesis
+**Convergence:** 3/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "Los mineros 'de camioneta' o de vieja escuela prefieren confiar en su radio o en el Excel antes que en la plataforma si los datos no cuadran perfectamente." Juan Pablo: "confianza en los datos como tema crítico — si los datos no son confiables, las decisiones tampoco."
+
+**Evidence trail:**
+- Juan Pablo Palma (canvas): confianza en los datos como tema crítico
+- Felipe Reyes (canvas): "hoy no aporta" cuando los datos no cuadran
+- Gemini: brecha de confianza — mineros prefieren radio/Excel si datos fallan [AI-SOURCE]
+
+Ref: entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png, entrevistas usuarios:clientes/entrevista_felipe-reyes.png, entrevistas usuarios:clientes/analisis_gemini_entrevistas.md
+Note: Diferente de [IG-15] (GPS degradadas — problema técnico específico). IG-28 es más amplio: la confianza general como gate de adopción.
+Related: [IG-15], [IG-05], [IG-04], [CF-13]
+
+---
+
+### [IG-29] Madurez digital y cultura interna determinan impacto de TIMining
+**Category:** constraint (current)
+**Voice:** ai (Gemini)
+**Authority:** hypothesis
+**Convergence:** 1/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "El impacto de TIMining depende directamente de la madurez digital de la compañía minera y de su cultura interna (el 'reportitis')."
+
+**Evidence trail:**
+- Gemini (análisis cruzado): dependencia de madurez digital y cultura organizacional [AI-SOURCE]
+
+Ref: entrevistas usuarios:clientes/analisis_gemini_entrevistas.md
+Note: [AI-SOURCE] — solo fuente AI. Requiere corroboración primaria para VERIFIED. Single-source fragile.
+Related: [IG-SYNTH-11] (curva de aprendizaje), [IG-04] (resistencia operadores)
+
+---
+
+### [IG-30] Control ambiental como dimensión no cubierta por los 4 dominios
+**Category:** user-need (current)
+**Voice:** stakeholder (Juan Pablo Palma)
+**Authority:** observation
+**Convergence:** 1/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "Hace control ambiental — la dimensión ambiental es parte de su rol de superintendencia." Los 4 dominios actuales (Crisis, Anticipación, Asistencia, Alineación) no incluyen explícitamente la dimensión ambiental/regulatoria.
+
+**Evidence trail:**
+- Juan Pablo Palma (canvas): control ambiental como función central de superintendencia, no mapeada en dominios
+
+Ref: entrevistas usuarios:clientes/entrevista_juan-pablo-palma.png
+Note: Single-source. ¿Gap real o subcategoría de Dominio A (Crisis/seguridad)? Requiere validación.
+Related: [IG-18] (4 dominios con pilar líder), [IG-SYNTH-18] (alertas geotécnicas)
+
+---
+
+### [IG-31] Aware como herramienta de auditoría de datos — modelo de negocio potencial
+**Category:** business (current)
+**Voice:** ai (Gemini)
+**Authority:** hypothesis
+**Convergence:** 1/65 sources
+Status: PENDING
+**Last-updated:** 2026-02-26
+
+> "Aware se usa hoy para 'auditar' datos ajenos pero no se cobra por ello — posible modelo de negocio en la validación de datos."
+
+**Evidence trail:**
+- Gemini (análisis cruzado): Joaquín menciona que Aware audita datos de terceros sin monetización [AI-SOURCE]
+
+Ref: entrevistas usuarios:clientes/analisis_gemini_entrevistas.md
+Note: [AI-SOURCE] — solo fuente AI. Requiere validación con equipo comercial TIMining.
+Related: [IG-13] (pricing custom), [IG-SYNTH-10] (portafolio 7 productos)
 
 ---
 

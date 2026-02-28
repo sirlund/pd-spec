@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEMAX Interna — Semana 5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="interna_w5.css">
+</head>
+
+<body>
+
+    <div class="slide-container">
+
+        <!-- SLIDE 1: COVER -->
+        <section class="slide active" id="slide-1">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="cover-content">
+                    <div class="subtitle">ALINEACIÓN INTERNA — SEMANA 5</div>
+                    <h1>DECISIONES<br>POST-TOUCHPOINT 1</h1>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-top: 16px;">Qué cambió, por qué, y qué va en la v2 para TIMining.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: CONTEXTO -->
+        <section class="slide" id="slide-2">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Contexto: Qué Pasó Esta Semana</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="col-12" style="margin-bottom: 8px;">
+                    <p style="font-size: 15px; color: white;">Desde el Touchpoint 1 (19-feb), procesamos feedback y nuevas fuentes.</p>
+                </div>
+
+                <div class="card col-6">
+                    <h3><i class="text-accent fa-solid fa-comments"></i> Fuentes procesadas</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>Sesión interna IDEMAX (24-feb) — destilar feedback Carlos y Philip</li>
+                        <li>4 entrevistas usuarios/clientes (canvas):
+                            <ul style="color: var(--text-muted); font-size: 12px;">
+                                <li>Felipe Reyes (ex-profesional minero)</li>
+                                <li>Juan Pablo Palma (Superintendente Pelambres)</li>
+                                <li>Cristián Rozas</li>
+                                <li>Joaquín (onboarder interno TIMining)</li>
+                            </ul>
+                        </li>
+                        <li>Análisis cruzado Gemini (fuente complementaria AI)</li>
+                    </ul>
+                </div>
+
+                <div class="card col-6">
+                    <h3><i class="text-accent fa-solid fa-diagram-project"></i> Lo que produjimos</h3>
+                    <ul style="line-height: 1.8;">
+                        <li><strong>MATRIZ Dominios × Pilares v1.2</strong> — guía de diseño</li>
+                        <li><strong>3 decisiones estructurales</strong> resueltas con evidencia</li>
+                        <li><strong>1 capa nueva</strong> — prerrequisito de confianza</li>
+                        <li><strong>6 insights nuevos</strong> (PENDING) de entrevistas</li>
+                        <li><strong>5 convergencias</strong> reforzadas en insights existentes</li>
+                    </ul>
+                </div>
+
+                <div class="col-12 mt-sm">
+                    <div class="rec-box">
+                        <span class="rec-title">Observación clave</span>
+                        Las entrevistas con operadores validan los problemas (confianza, costos, adopción) pero <strong>no levantan mirada estratégica</strong>. La matriz se construyó desde Carlos y Philip — y ahí se queda. Las entrevistas la llenan desde abajo, no la reestructuran.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: AE ENVOLVENTE -->
+        <section class="slide" id="slide-3">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Decisión #1: Alineación Estratégica es Envolvente</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="card col-5">
+                    <h3 style="font-size: 14px;"><i class="fa-solid fa-quote-left" style="font-size: 12px;"></i> Evidencia</h3>
+
+                    <div class="evidence-quote">
+                        "De esos cuatro, ese último [Alineación Estratégica] está por encima de los demás."
+                        <span class="evidence-speaker">Carlos (CTO) — Touchpoint 1</span>
+                    </div>
+
+                    <div class="evidence-quote">
+                        "Todo se puede transferir y hablar el lenguaje de dinero — los CFO y controladores lo que les interesa es money."
+                        <span class="evidence-speaker">Felipe Reyes [IG-25] — validación externa parcial</span>
+                    </div>
+
+                    <div class="evidence-quote evidence-quote--warn">
+                        "Quiero ver plata, no toneladas." Demanda desde operaciones, no solo ejecutivos.
+                        <span class="evidence-speaker">Felipe + Juan Pablo [IG-27] — validación bottom-up</span>
+                    </div>
+                </div>
+
+                <div class="col-7">
+                    <div class="arch-diagram">
+                        <div class="arch-label">Alineación Estratégica (envolvente)</div>
+                        <div class="arch-sublabel">"Todo se traduce a valor de negocio"</div>
+
+                        <div class="arch-domains">
+                            <div class="arch-domain">
+                                <h4>A · Crisis</h4>
+                                <div class="arch-pilar">Quiet UI líder</div>
+                            </div>
+                            <div class="arch-domain">
+                                <h4>B · Anticipación</h4>
+                                <div class="arch-pilar">Time Sight líder</div>
+                            </div>
+                            <div class="arch-domain">
+                                <h4>C · Asistencia</h4>
+                                <div class="arch-pilar">Omni Sense líder</div>
+                            </div>
+                        </div>
+
+                        <div class="arch-transversal">
+                            Pilar transversal prioritario: <strong>Omni Sense</strong> — "si no estás en WhatsApp, no existes"
+                        </div>
+                    </div>
+
+                    <div class="arch-prereq">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div class="arch-prereq-text">
+                            <strong>Confianza en Datos</strong> (prerrequisito) [IG-28] — Si el dato no cuadra con terreno, vuelven a la radio y al Excel. Gate de adopción para todo lo anterior.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: MATRIZ DE INTENSIDAD -->
+        <section class="slide" id="slide-4">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Matriz de Intensidad — No es 4×4</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="col-12 mb-sm">
+                    <p class="text-muted" style="font-size: 14px;">Cada dominio tiene pilares líderes y secundarios. No todos los cruces pesan igual. <span class="text-accent">[IG-24]</span></p>
+                </div>
+
+                <div class="card col-7">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th><i class="fa-solid fa-volume-xmark" style="margin-right: 4px;"></i> Quiet UI</th>
+                                <th><i class="fa-solid fa-route" style="margin-right: 4px;"></i> Clear Path</th>
+                                <th><i class="fa-solid fa-clock-rotate-left" style="margin-right: 4px;"></i> Time Sight</th>
+                                <th><i class="fa-solid fa-tower-broadcast" style="margin-right: 4px;"></i> Omni Sense</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>AE</strong> (envolvente)</td>
+                                <td class="matrix-present">●●</td>
+                                <td class="matrix-present">●●</td>
+                                <td class="matrix-leader">●●●</td>
+                                <td class="matrix-leader">●●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>A</strong> · Crisis</td>
+                                <td class="matrix-leader">●●●</td>
+                                <td class="matrix-leader">●●●</td>
+                                <td class="matrix-leader">●●●</td>
+                                <td class="matrix-present">●●</td>
+                            </tr>
+                            <tr>
+                                <td><strong>B</strong> · Anticipación</td>
+                                <td class="matrix-secondary">●○</td>
+                                <td class="matrix-present">●●</td>
+                                <td class="matrix-leader">●●●</td>
+                                <td class="matrix-secondary">●○</td>
+                            </tr>
+                            <tr>
+                                <td><strong>C</strong> · Asistencia</td>
+                                <td class="matrix-secondary">●○</td>
+                                <td class="matrix-present">●●</td>
+                                <td class="matrix-secondary">●○</td>
+                                <td class="matrix-leader">●●●</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-xs text-muted mt-sm font-mono">
+                        <span class="matrix-leader">●●●</span> Líder &nbsp;
+                        <span class="matrix-present">●●</span> Presente &nbsp;
+                        <span class="matrix-secondary">●○</span> Secundario
+                    </div>
+                </div>
+
+                <div class="col-5">
+                    <div class="card" style="margin-bottom: 8px;">
+                        <h3><i class="fa-solid fa-star" style="font-size: 11px;"></i> Crisis es el showcase</h3>
+                        <p style="font-size: 12.5px;">Único dominio donde 3 pilares operan a máxima intensidad. Si hay un solo caso para demostrar el sistema, es el Caso #1.</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 8px;">
+                        <h3><i class="fa-solid fa-tower-broadcast" style="font-size: 11px;"></i> Omni Sense lidera 2 de 4</h3>
+                        <p style="font-size: 12.5px;">Líder en Asistencia + co-líder en Alineación. Carlos lo priorizó post-Touchpoint. La presentación actual lo trata como "cuarto pilar" — debería elevarse.</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fa-solid fa-ban" style="color: #666; font-size: 11px;"></i> Quiet UI × Asistencia = vacío</h3>
+                        <p style="font-size: 12.5px;">La celda más débil. El usuario busca al sistema activamente — no necesita "silencio." Confirma la asimetría [IG-24].</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: LECTURA POR PILAR -->
+        <section class="slide" id="slide-5">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Lectura por Pilar</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="card col-3 pilar-compact" style="text-align: center; padding: 18px 12px;">
+                    <div style="font-size: 24px; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-solid fa-volume-xmark"></i></div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Quiet UI</h4>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Pico en Crisis · Valle en Asistencia</p>
+                    <p style="font-size: 12px; color: #999;">Consola acromática que solo ilumina la anomalía. En Asistencia el usuario busca al sistema — no necesita silencio.</p>
+                    <div style="margin-top: 10px; font-size: 11px; padding: 6px 8px; background: rgba(0,243,255,0.05); border-radius: 4px;">
+                        <strong class="text-accent">Bench v2:</strong> <span style="color: #aaa;">No es solo achromatic — es gestión por excepción</span>
+                    </div>
+                </div>
+
+                <div class="card col-3 pilar-compact" style="text-align: center; padding: 18px 12px;">
+                    <div style="font-size: 24px; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-solid fa-route"></i></div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Clear Path</h4>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Transversal · Nunca lidera solo</p>
+                    <p style="font-size: 12px; color: #999;">Siempre en la etapa R (Recomendación). Sin Clear Path, los otros tres son datos sin prescripción.</p>
+                    <div style="margin-top: 10px; font-size: 11px; padding: 6px 8px; background: rgba(0,243,255,0.05); border-radius: 4px;">
+                        <strong class="text-accent">Rol:</strong> <span style="color: #aaa;">El pegamento del sistema, no el protagonista</span>
+                    </div>
+                </div>
+
+                <div class="card col-3 pilar-compact" style="text-align: center; padding: 18px 12px;">
+                    <div style="font-size: 24px; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Time Sight</h4>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">El más consistente · 3 de 4 dominios</p>
+                    <p style="font-size: 12px; color: #999;">Líder en Anticipación + Alineación. Solo se debilita en Asistencia donde el contexto temporal es complementario.</p>
+                    <div style="margin-top: 10px; font-size: 11px; padding: 6px 8px; background: rgba(0,243,255,0.05); border-radius: 4px;">
+                        <strong class="text-accent">Clave:</strong> <span style="color: #aaa;">Plan vs realidad + predicción</span>
+                    </div>
+                </div>
+
+                <div class="card col-3 pilar-compact" style="text-align: center; padding: 18px 12px; border-color: var(--accent-cyan);">
+                    <div style="font-size: 24px; color: var(--accent-cyan); margin-bottom: 6px;"><i class="fa-solid fa-tower-broadcast"></i></div>
+                    <h4 style="font-size: 14px; margin-bottom: 4px;">Omni Sense</h4>
+                    <p style="font-size: 11px; color: var(--accent-cyan); margin-bottom: 8px;">Líder emergente · Priorizado por CTO</p>
+                    <p style="font-size: 12px; color: #999;">Canal = inteligencia. WhatsApp, radio, IROC. Líder en Asistencia + co-líder en Alineación.</p>
+                    <div style="margin-top: 10px; font-size: 11px; padding: 6px 8px; background: rgba(0,243,255,0.05); border-radius: 4px;">
+                        <strong class="text-accent">Carlos:</strong> <span style="color: #aaa;">"Lo más importante es que le mande la alerta al que tiene que accionar"</span>
+                    </div>
+                </div>
+
+                <div class="col-12" style="margin-top: 10px;">
+                    <div class="rec-box">
+                        <span class="rec-title">Para la v2</span>
+                        El benchmark debe profundizar cada pilar <strong>en su dominio showcase</strong>: Quiet UI × Crisis, Time Sight × Anticipación, Omni Sense × Asistencia. No es un bench genérico por pilar — es un bench por cruce pilar×dominio.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: MEJORAMIENTO CONTINUO -->
+        <section class="slide" id="slide-6">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Decisión #2: Mejoramiento Continuo</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="card col-5">
+                    <h3 style="font-size: 14px;"><i class="fa-solid fa-quote-left" style="font-size: 12px;"></i> Lo que dijo Carlos</h3>
+                    <div class="evidence-quote">
+                        "Muchas veces el plan minero sí lo cumplen, no es que estén desviados. Lo que queremos es que tenga un mejor plan minero — una planificación permanente."
+                        <span class="evidence-speaker">Carlos (CTO) — Touchpoint 1, via Ale (sesión 24-feb)</span>
+                    </div>
+                    <div class="evidence-quote">
+                        "Carlos se mandó un speech bien potente respecto a eso, de qué es un plan minero, cómo se planifica, qué es lo probabilístico."
+                        <span class="evidence-speaker">Nico — sesión interna 24-feb</span>
+                    </div>
+                </div>
+
+                <div class="col-7">
+                    <div class="decision-card" style="margin-bottom: 12px;">
+                        <div class="decision-header">Resolución</div>
+                        <div class="decision-body">
+                            <table class="compare-table">
+                                <thead>
+                                    <tr>
+                                        <th class="compare-before">Antes</th>
+                                        <th class="compare-after">Después</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>"Cumplir el plan minero"</td><td>Mejoramiento continuo del plan</td></tr>
+                                    <tr><td>Garantía de cumplimiento</td><td>Planificación permanente</td></tr>
+                                    <tr><td>Meta fija → adherencia</td><td>Meta adaptativa → optimización</td></tr>
+                                    <tr><td>TIMining verifica</td><td>TIMining mejora</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 14px 16px;">
+                        <h3 style="margin-bottom: 8px;">Dos niveles de valor</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--accent-cyan); margin-bottom: 4px;">CASOS 1–6</div>
+                                <strong style="font-size: 13px;">Mejoramiento continuo</strong>
+                                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">El plan es correcto — optimizar la ejecución turno a turno.</p>
+                            </div>
+                            <div style="flex: 1; padding: 10px; border: 1px solid #ff9800; border-radius: 6px;">
+                                <div style="font-family: var(--font-mono); font-size: 10px; color: #ff9800; margin-bottom: 4px;">CASOS 7–8</div>
+                                <strong style="font-size: 13px;">Reconfiguración estratégica</strong>
+                                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">El plan es incorrecto — detectar y ajustar antes de que el costo sea irrecuperable.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: TIEMPO CERO -->
+        <section class="slide" id="slide-7">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Decisión #3: "Paz Mental" → "Tiempo Cero"</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="card col-5">
+                    <h3 style="font-size: 14px;"><i class="fa-solid fa-ban" style="color: #ff4d4d; font-size: 12px;"></i> Por qué se elimina</h3>
+                    <div class="evidence-quote evidence-quote--alert">
+                        "Paz mental, más bien, es este un mundo... sin tiempo para avanzar."
+                        <span class="evidence-speaker">Carlos (CTO) — Touchpoint 1</span>
+                    </div>
+                    <div class="evidence-quote evidence-quote--alert">
+                        "Yo no le puedo ir a hacer un inception de paz mental a un usuario final."
+                        <span class="evidence-speaker">Philip (CEO) — Touchpoint 1</span>
+                    </div>
+                    <div class="evidence-quote evidence-quote--alert">
+                        "Acuérdense que paz mental está como invalidado por Philip y por Carlos."
+                        <span class="evidence-speaker">Nico — sesión interna 24-feb</span>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;"><strong>[IG-SYNTH-16]</strong> INVALIDATED — concepto válido, nombre rechazado. El eje que validaron es <strong class="text-accent">tiempo</strong>.</p>
+                </div>
+
+                <div class="col-7">
+                    <div class="mantra-card" style="margin-bottom: 14px;">
+                        <div class="mantra-sub">Criterio interno</div>
+                        <h3>TIEMPO CERO</h3>
+                        <p class="mantra-desc">El tiempo entre dato y decisión debe ser cero. El sistema comprime el camino de dato a acción: detecta, analiza y recomienda antes de que el operador levante la radio.</p>
+                    </div>
+
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th class="compare-before">"Paz mental" (abstracto)</th>
+                                <th class="compare-after">"Tiempo Cero" (accionable)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Tranquilidad operativa</td><td>Dato → decisión sin demora</td></tr>
+                            <tr><td>Certeza</td><td>"No tengo tiempo para pensar"</td></tr>
+                            <tr><td>Confianza</td><td>El sistema ya pensó por ti</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+                        <strong>Pendiente:</strong> Propagar a STRATEGIC_VISION.md (actualmente dice "Reducción de Carga Cognitiva"). Actualizar slides 05 y 12 de la presentación v2.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: CONFIANZA EN DATOS -->
+        <section class="slide" id="slide-8">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Capa Nueva: Confianza en Datos</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="col-12" style="margin-bottom: 8px;">
+                    <p style="font-size: 15px; color: white;">De las entrevistas salió un <strong class="text-color-a">prerrequisito</strong> que no teníamos en el framework.</p>
+                </div>
+
+                <div class="card col-6">
+                    <h3><i class="text-color-a fa-solid fa-shield-halved"></i> El problema [IG-28]</h3>
+                    <div class="evidence-quote evidence-quote--warn">
+                        "Confianza en los datos como tema crítico — si los datos no son confiables, las decisiones tampoco."
+                        <span class="evidence-speaker">Juan Pablo Palma — canvas entrevista</span>
+                    </div>
+                    <div class="evidence-quote evidence-quote--warn">
+                        "Hoy no aporta" — cuando los datos no cuadran con lo que ven en terreno.
+                        <span class="evidence-speaker">Felipe Reyes — canvas entrevista</span>
+                    </div>
+                    <p style="font-size: 13px; margin-top: 10px;">Los mineros "de camioneta" prefieren confiar en su experiencia cuando la plataforma muestra algo diferente. <strong>No es un problema de UX — es un problema de credibilidad del dato.</strong></p>
+                </div>
+
+                <div class="card col-6">
+                    <h3><i class="text-accent fa-solid fa-layer-group"></i> Dónde vive en el framework</h3>
+                    <p style="font-size: 13px; margin-bottom: 12px;">No es un pilar ni un dominio. Es el <strong>piso</strong> sobre el que se para toda la matriz. Si falla, el operador vuelve a la radio y al Excel.</p>
+                    <div style="border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; font-size: 12px;">
+                        <div class="text-center text-accent font-mono text-xs mb-sm">FRAMEWORK COMPLETO</div>
+                        <div style="border: 1px solid var(--accent-cyan); border-radius: 4px; padding: 8px; margin-bottom: 6px; text-align: center;">
+                            <span class="text-accent">AE</span> envolvente → <span style="color: #aaa;">Crisis · Anticipación · Asistencia</span>
+                        </div>
+                        <div style="border: 1px dashed #ff9800; border-radius: 4px; padding: 8px; text-align: center; color: #ff9800;">
+                            <i class="fa-solid fa-triangle-exclamation" style="font-size: 10px;"></i>
+                            Confianza en Datos (prerrequisito)
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+                        <strong>Implicancia:</strong> El sistema debe <em>demostrar</em> que sus datos son correctos — mostrar fuente, timestamp, comparación con medición manual.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: ENTREVISTAS -->
+        <section class="slide" id="slide-9">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Entrevistas: Lo Que Entró y Lo Que No</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="card col-12" style="padding: 14px 18px;">
+                    <div class="insight-row">
+                        <span class="insight-id">IG-27</span>
+                        <span style="flex: 1;">"Quiero ver plata, no toneladas" — desde operaciones</span>
+                        <span class="insight-verdict verdict-yes">REFUERZA AE</span>
+                    </div>
+                    <div class="insight-row">
+                        <span class="insight-id">IG-28</span>
+                        <span style="flex: 1;">Confianza en datos como gate de adopción</span>
+                        <span class="insight-verdict verdict-yes">CAPA NUEVA</span>
+                    </div>
+                    <div class="insight-row">
+                        <span class="insight-id">IG-26</span>
+                        <span style="flex: 1;">P&T (Perforación y Tronadura) como dolor operativo no mapeado</span>
+                        <span class="insight-verdict verdict-open">PREGUNTA ABIERTA</span>
+                    </div>
+                    <div class="insight-row">
+                        <span class="insight-id">IG-29</span>
+                        <span style="flex: 1;">Madurez digital determina impacto de TIMining</span>
+                        <span class="insight-verdict verdict-no">AI-ONLY · FRÁGIL</span>
+                    </div>
+                    <div class="insight-row">
+                        <span class="insight-id">IG-30</span>
+                        <span style="flex: 1;">Control ambiental como dimensión no cubierta</span>
+                        <span class="insight-verdict verdict-no">SINGLE-SOURCE</span>
+                    </div>
+                    <div class="insight-row" style="border-bottom: none;">
+                        <span class="insight-id">IG-31</span>
+                        <span style="flex: 1;">Aware como herramienta de auditoría de datos</span>
+                        <span class="insight-verdict verdict-no">AI-ONLY · FRÁGIL</span>
+                    </div>
+                </div>
+
+                <div class="col-6 mt-sm">
+                    <div class="card" style="height: 100%;">
+                        <h3><i class="fa-solid fa-arrow-up" style="font-size: 11px;"></i> Convergencias reforzadas</h3>
+                        <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.7;">
+                            <strong style="color: #ddd;">IG-SYNTH-09</strong> (WhatsApp): 13→16/65<br>
+                            <strong style="color: #ddd;">IG-SYNTH-11</strong> (curva aprendizaje): 8→9/65<br>
+                            <strong style="color: #ddd;">IG-06</strong> (perfiles diferenciados): 3→5/65<br>
+                            <strong style="color: #ddd;">IG-20</strong> (CFO invisible): 2→3/65<br>
+                            <strong style="color: #ddd;">IG-SYNTH-18</strong> (alertas geo): 8→9/65
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-6 mt-sm">
+                    <div class="rec-box" style="height: 100%; border-left-color: #ff9800;">
+                        <span class="rec-title" style="color: #ff9800;">Nota metodológica</span>
+                        Las entrevistas las hace el equipo interno de Idemax. No controlamos el proceso — podemos levantar observaciones posteriores o proponer hacer alguna más. La matriz está cerrada desde arriba (CEO/CTO). Las entrevistas validan desde abajo.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: PROPUESTA V2 -->
+        <section class="slide" id="slide-10">
+            <div class="header">
+                <div class="brand">IDEMAX <span>INTERNA</span></div>
+                <h2 class="slide-title">Propuesta: Qué Va en la v2 para TIMining</h2>
+                <div class="slide-number"></div>
+            </div>
+            <div class="content-grid">
+                <div class="col-12 mb-sm">
+                    <p class="text-muted" style="font-size: 14px;">Follow-up, no redo. "Lo que refinamos con su feedback."</p>
+                </div>
+
+                <div class="card col-12" style="padding: 14px 18px;">
+                    <table class="v2-table">
+                        <thead>
+                            <tr>
+                                <th>Bloque</th>
+                                <th>v1 (Touchpoint 1)</th>
+                                <th>v2 (Follow-up)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Pilares</strong></td>
+                                <td>4 cards genéricos</td>
+                                <td>+ cadena funcional + Omni Sense elevado</td>
+                                <td><span class="v2-tag-update">PROFUNDIZAR</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>"Paz Mental"</strong></td>
+                                <td>Slides 05/12</td>
+                                <td>→ "Tiempo Cero"</td>
+                                <td><span class="v2-tag-replace">REEMPLAZAR</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Benchmark</strong></td>
+                                <td>1 slide por pilar</td>
+                                <td>Bench cruzado pilar × dominio showcase</td>
+                                <td><span class="v2-tag-new">NUEVO</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Dominios</strong></td>
+                                <td>4 pares (slide 13)</td>
+                                <td>AE envolvente + 3 operativos</td>
+                                <td><span class="v2-tag-update">REESTRUCTURAR</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Casos #6-8</strong></td>
+                                <td>Narrativa "cumplir plan"</td>
+                                <td>→ "mejoramiento continuo" / "reconfiguración"</td>
+                                <td><span class="v2-tag-replace">AJUSTAR</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mockups</strong></td>
+                                <td>Vizzes genéricas</td>
+                                <td>Moodboards concretos por pilar×dominio</td>
+                                <td><span class="v2-tag-new">NUEVO</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Confianza</strong></td>
+                                <td>—</td>
+                                <td>Slide prerrequisito de adopción [IG-28]</td>
+                                <td><span class="v2-tag-new">NUEVO</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-12" style="margin-top: 8px; display: flex; gap: 10px;">
+                    <div class="rec-box" style="flex: 1;">
+                        <span class="rec-title">Pedida principal</span>
+                        Profundizar el bench para que cada pilar tenga profundidad conceptual en cada dominio. <strong>Quiet UI no es solo achromatic</strong> — es gestión por excepción, es "el silencio se rompe solo cuando hay que actuar."
+                    </div>
+                    <div class="rec-box" style="flex: 1; border-left-color: #ff9800;">
+                        <span class="rec-title" style="color: #ff9800;">Lo que falta</span>
+                        1. Definir benchmarks cruzados pilar×dominio<br>
+                        2. Moodboards A/B/C por pilar showcase<br>
+                        3. Mockups más concretos (Carlo: "genéricos")
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Cierre Idemax -->
+        <section class="slide slide-idemax" id="slide-11">
+            <div class="slide-content" style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                <img src="logo_idemax.png" alt="IDEMAX" class="idemax-logo-center">
+            </div>
+        </section>
+
+    </div>
+
+    <!-- FOOTER BAR -->
+    <footer class="pres-footer">
+        <button id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro"><i class="fa-solid fa-sun"></i></button>
+        <img src="logo_idemax.png" alt="IDEMAX" class="idemax-logo-nav">
+        <div class="controls">
+            <button class="btn-nav" id="prevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-nav" id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </footer>
+    <script src="app.js"></script>
+</body>
+
+</html>
