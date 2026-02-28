@@ -8,7 +8,11 @@ import base, { type ThemeConfig } from './theme.config.base';
 
 const theme: ThemeConfig = {
   ...base,
-  // Project overrides below ↓
+  title: 'TIMining CORE — Inteligencia Multimodal',
+  lang: 'es',
+  brand: 'TIMining',
+  brandAccent: 'CORE',
+  logo: { src: '/logo_idemax.png', alt: 'IDEMAX' },
 };
 
 export default theme;

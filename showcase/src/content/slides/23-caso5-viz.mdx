@@ -1,0 +1,24 @@
+---
+order: 23
+title: "Caso #5 — Visualización: Copiloto en Terreno"
+slideLayout: "viz"
+---
+import VizSlide from '../../components/snowflakes/VizSlide.astro';
+
+<VizSlide
+  id="slide-23"
+  title="Caso #5 — Visualización: Copiloto en Terreno"
+  active="a"
+  image="viz-05-copiloto.png"
+  imageAlt="Copiloto en Terreno — Análisis: voice assistant en camioneta"
+  momentTitle="Momento: Análisis"
+  momentIcon="fa-solid fa-magnifying-glass-chart"
+  momentDesc='El jefe de turno preguntó por voz "¿cumplo la berma?" El sistema ya cruzó la foto con la normativa Sernageomin. Ahora muestra la <strong>respuesta directa</strong> — cumple o regulariza.'
+  pilarCombo='<i class="fa-solid fa-tower-broadcast" style="font-size: 14px;"></i> Omni Sense + Clear Path'
+  pilarDesc="Interfaz por voz y foto — manos libres en terreno. El sistema escucha la radio, transcribe y prioriza solicitudes. Normativa cruzada automáticamente."
+  referentes={[
+    { stage: 'd', logoUrl: "https://logo.clearbit.com/discord.com", name: "Discord", desc: "canales de voz activos" },
+    { stage: 'a', logoUrl: "https://logo.clearbit.com/gomotive.com", name: "Motive", desc: "cruce multi-sensor" },
+    { stage: 'r', logoUrl: "https://logo.clearbit.com/sentinelone.com", name: "SentinelOne Purple AI", desc: "respuesta directa" }
+  ]}
+/>

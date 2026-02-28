@@ -1,0 +1,65 @@
+---
+order: 9
+title: "Benchmark — Clear Path"
+slideLayout: "bench"
+---
+import Slide from '../../components/Slide.astro';
+import BenchCard from '../../components/snowflakes/BenchCard.astro';
+
+<Slide id="slide-9" title="Benchmark — Clear Path">
+  <div class="col-12" style="margin-bottom: 6px;">
+    <div class="bench-pilar-header">
+      <div class="bench-pilar-icon"><i class="fa-solid fa-route"></i></div>
+      <div>
+        <div class="bench-pilar-name">Cada pantalla termina en una acción</div>
+        <div class="bench-pilar-tagline">D→A→R: Detección, Análisis, Recomendación. El sistema no te deja perdido en un laberinto de datos.</div>
+      </div>
+    </div>
+  </div>
+
+  <BenchCard
+    name="SentinelOne Purple AI"
+    url="https://www.sentinelone.com/platform/purple-ai/"
+    industry="Ciberseguridad / AI SOC"
+    logoUrl="https://logo.clearbit.com/sentinelone.com"
+    screenshot="img/bench/sentinelone-purple.png"
+    factorX='<strong>Triaje automático a velocidad de máquina.</strong> Detecta amenaza, analiza contexto, recomienda acción — el patrón D→A→R exacto.'
+    aplicaciones={[
+      '<strong>D→A→R nativo:</strong> detección + análisis + acción en un solo flujo',
+      '<strong>Confianza en IA:</strong> muestra su razonamiento ("por qué recomiendo esto")',
+      '<strong>Radio de impacto:</strong> "si cae esta pala, qué más se afecta"'
+    ]}
+  />
+
+  <BenchCard
+    name="Vercel v0"
+    url="https://v0.dev"
+    industry="IA / Desarrollo"
+    logoUrl="https://logo.clearbit.com/vercel.com"
+    screenshot="img/bench/vercel-v0.png"
+    factorX="<strong>Generative UI.</strong> La intención se convierte en interfaz ejecutable. La vista óptima para cada situación, no una vista genérica."
+    aplicaciones={[
+      "<strong>Vistas de crisis generadas:</strong> vista específica para ESE evento",
+      "<strong>Interfaz como respuesta:</strong> se adapta a lo que necesitas ahora",
+      "<strong>Interacción conversacional:</strong> describe lo que necesitas, CORE lo muestra"
+    ]}
+  />
+
+  <BenchCard
+    name="Datadog Bits AI"
+    url="https://www.datadoghq.com/product/platform/bits-ai/"
+    industry="Observabilidad / DevOps"
+    logoUrl="https://logo.clearbit.com/datadoghq.com"
+    screenshot="img/bench/datadog-bits.png"
+    factorX='<strong>Recomendaciones proactivas.</strong> Sugiere correcciones antes de que las busques. Archive Search: acceso inmediato a cualquier punto en el tiempo.'
+    aplicaciones={[
+      '<strong>Proactivo:</strong> "esto se puede arreglar así" antes de que lo pidas',
+      '<strong>Archive Search:</strong> "qué pasó el martes a las 3AM" sin esperar',
+      '<strong>Quiet by default:</strong> alertas solo cuando se sale del umbral'
+    ]}
+  />
+
+  <div class="col-12 bench-footer">
+    <p>También: <strong>F1 McLaren Atlas</strong> (The Delta — plan vs real) · <strong>Ramp</strong> (Actionable Automation) · <strong>Flexport</strong> (Threaded Asset Management)</p>
+  </div>
+</Slide>

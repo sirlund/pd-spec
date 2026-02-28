@@ -1,0 +1,66 @@
+---
+order: 14
+title: "Caso #1: Caída de Equipo Crítico"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-14"
+  number={1}
+  title="Caída de Equipo Crítico"
+  dominio="Dominio A: Respuesta a Crisis"
+  roles={["Despachador IROC", "Supervisor de Turno", "Jefe de Turno"]}
+  rolDesc="Mantener continuidad operativa ante fallas no planificadas."
+  necesidad="Información inmediata y opciones viables de respuesta."
+  dolor="Incertidumbre en tiempos de reparación y presión por metas de tonelaje."
+  casosAgrupados={["Despachador", "Falla mecánica", "Pala turno noche", "Pala alimentación"]}
+  contexto='El radio corta el silencio de la sala IROC a las 2:47 AM: "Pala 07 abajo." No es mantención programada — es una caída imprevista. Tres camiones ya circulan hacia un punto de carga muerto. El despachador salta entre el dashboard de despacho, el mapa GPS, la planilla de mantención y el radio — ninguno le dice cuánto durará ni qué alternativa tiene. Cables aéreos restringen la zona. La meta del turno se aleja con cada minuto sin producción.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita más dashboards — necesita una respuesta.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "La pantalla acromática de la sala IROC se ilumina — solo por la anomalía. Antes de que el despachador levante el radio, la alerta ya está en su celular y en la pantalla principal. El silencio se rompe únicamente cuando algo se rompe.",
+      pilarIcon: "fa-solid fa-volume-xmark",
+      pilarName: "Quiet UI",
+      refName: "CrowdStrike",
+      refUrl: "https://www.crowdstrike.com",
+      refIndustry: "Ciberseguridad (SOC / Endpoint)",
+      refFactorX: "Achromatic Design — consola 95% grises, color solo para amenazas activas. Reduce fatiga visual en turnos de 12h.",
+      refAplicaciones: [
+        "<strong>Paleta acromática:</strong> IROC en reposo gris/negro, cyan solo para anomalías",
+        "<strong>Jerarquía por saturación:</strong> más brillante = más urgente",
+        "<strong>Fatiga cero:</strong> consola silenciosa para turnos de 12h"
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Impacto estimado en el tonelaje del turno. Topografía actualizada hace 8 minutos confirma restricciones por cables aéreos. Comparativa con fallas históricas similares — la última vez, la opción 2 ahorró 40 minutos. El despachador no tuvo que cruzar nada.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "SentinelOne Storylines",
+      refUrl: "https://www.sentinelone.com/platform/singularity-xdr/",
+      refIndustry: "Ciberseguridad (XDR)",
+      refFactorX: "Reconstrucción forense narrativa — cadena de eventos como historia: qué pasó, qué causó qué, cómo se propagó.",
+      refAplicaciones: [
+        "<strong>Narrativa causal:</strong> contar la historia, no mostrar un log de eventos",
+        "<strong>Grafo de propagación:</strong> un fallo → múltiples impactos downstream",
+        "<strong>Causa raíz automática:</strong> el sistema propone causa antes de investigar"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "Tres opciones rankeadas por impacto en tonelaje y costo por hora. Un tap. Los tres camiones ya se redirigen. El despachador no interpretó datos — eligió entre alternativas calculadas. Paz mental: la decisión ya fue evaluada antes de que él la tomara.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "Vercel v0",
+      refUrl: "https://v0.dev",
+      refIndustry: "IA / Desarrollo",
+      refFactorX: "Generative UI — la intención se convierte en interfaz ejecutable, vista óptima por situación.",
+      refAplicaciones: [
+        "<strong>Vistas de crisis generadas:</strong> vista específica para ESE evento, no dashboard genérico",
+        "<strong>Interfaz como respuesta:</strong> se adapta a lo que el operador necesita ahora",
+        "<strong>Acción directa:</strong> el operador no interpreta, elige"
+      ]
+    }
+  ]}
+/>

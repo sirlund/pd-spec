@@ -1,0 +1,66 @@
+---
+order: 18
+title: "Caso #3: Anticipación de Cuello de Botella"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-18"
+  number={3}
+  title="Anticipación de Cuello de Botella"
+  dominio="Dominio B: Anticipación Operativa"
+  roles={["Jefe Chancado", "Planificador PyT", "Jefe Operaciones"]}
+  rolDesc="Anticipar problemas y mantener flujo continuo de producción."
+  necesidad="Visibilidad predictiva y capacidad de reasignación rápida de recursos."
+  dolor="Impacto aguas abajo invisible. Silos entre áreas impiden coordinación preventiva."
+  casosAgrupados={["Bloqueo chancador", "Patios sin perforar", "Velocidades", "Mantenciones"]}
+  contexto='Mediodía, turno diurno. La operación parece normal — los números del turno van bien. Pero la velocidad de alimentación al chancador cae lento, constante. Nadie lo nota porque cada área mira su propio dashboard: el jefe de chancado ve su flujo, el planificador ve su plan semanal, el jefe de operaciones ve sus equipos. Cuando el bloqueo ocurra en 45 minutos, las tres áreas se van a enterar por radio — tarde, descoordinadas y sin opciones.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita más reportes por área — necesita coordinación antes del problema.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "Detección predictiva: el patrón de desaceleración se forma antes de que el bloqueo exista. La alerta no espera a que el problema ocurra — se activa cuando la tendencia se confirma. Proyección: bloqueo en 45 minutos.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "Chronosphere",
+      refUrl: "https://chronosphere.io",
+      refIndustry: "Observabilidad / Cloud",
+      refFactorX: "Lens: políticas de retención temporal ajustables durante incidentes activos.",
+      refAplicaciones: [
+        "<strong>Detección de tendencia:</strong> alerta por patrón, no por umbral fijo",
+        "<strong>Countdown visual:</strong> \"45 min para bloqueo\" como cuenta regresiva",
+        "<strong>Zoom temporal:</strong> más resolución cuanto más cerca del evento"
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Impacto aguas abajo calculado antes del bloqueo: tonelaje perdido por hora, costo acumulado, áreas afectadas en cascada. El jefe de chancado ve el flujo declinando. El planificador ve la brecha contra el plan semanal. El jefe de operaciones ve qué equipos quedan sin destino. Todo en una vista — no en tres reportes separados.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "Tesla Fleet",
+      refUrl: "https://www.tesla.com/fleet",
+      refIndustry: "Movilidad Autónoma",
+      refFactorX: "Time Scrubbing: rebobinar incidentes para entender causalidad física exacta.",
+      refAplicaciones: [
+        "<strong>Impacto en cascada:</strong> un bloqueo → N áreas afectadas visualizadas",
+        "<strong>Vista unificada:</strong> chancado + plan + equipos en una pantalla",
+        "<strong>Causalidad física:</strong> de síntoma a origen sin investigar"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "Redistribución de flujo recomendada con equipos reasignables identificados. Tres áreas coordinadas antes de que el problema exista — sin radio, sin silos, sin improvisación.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "Datadog Bits AI",
+      refUrl: "https://www.datadoghq.com/product/platform/bits-ai/",
+      refIndustry: "Observabilidad / DevOps",
+      refFactorX: "Recomendaciones proactivas de corrección. Archive Search sin rehidratar logs.",
+      refAplicaciones: [
+        "<strong>Coordinación pre-problema:</strong> reasignación antes del bloqueo",
+        "<strong>Equipos reasignables:</strong> qué mover y a dónde, priorizado",
+        "<strong>Corrección proactiva:</strong> actuar con margen, no en crisis"
+      ]
+    }
+  ]}
+/>

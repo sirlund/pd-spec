@@ -1,0 +1,50 @@
+---
+order: 5
+title: "Pilares de Diseno"
+slideLayout: "grid"
+---
+import Slide from '../../components/Slide.astro';
+import Card from '../../components/Card.astro';
+import RecBox from '../../components/RecBox.astro';
+
+<Slide id="slide-5" title="Pilares de Diseno">
+  <Card span={12} style="border: none; background: transparent; padding: 0;">
+    <p style="font-size: 15px; color: #ccc; text-align: center; max-width: 700px; margin: 0 auto;">
+      Cuatro principios de diseno que guian todas las decisiones de producto. Cada pilar responde una pregunta operativa fundamental.
+    </p>
+  </Card>
+
+  <Card span={3} class="pilar-compact" style="text-align: center;">
+    <div class="pilar-title"><i class="fa-solid fa-volume-xmark"></i> Quiet UI</div>
+    <p style="font-size: 13px; color: var(--accent-cyan); margin-bottom: 6px;"><strong>Gestion por excepcion</strong></p>
+    <p style="font-size: 12px; color: #aaa;">El silencio es el estado default. El sistema solo habla cuando algo requiere atencion humana. El 95% del ruido desaparece.</p>
+    <div class="pilar-question">¿Necesito prestar atencion?</div>
+  </Card>
+
+  <Card span={3} class="pilar-compact" style="text-align: center;">
+    <div class="pilar-title"><i class="fa-solid fa-route"></i> Clear Path</div>
+    <p style="font-size: 13px; color: var(--accent-cyan); margin-bottom: 6px;"><strong>Cada pantalla &rarr; accion</strong></p>
+    <p style="font-size: 12px; color: #aaa;">Toda pantalla debe terminar en una accion concreta. Sin graficos decorativos: si muestra un problema, ofrece la solucion.</p>
+    <div class="pilar-question">¿Que debo hacer?</div>
+  </Card>
+
+  <Card span={3} class="pilar-compact" style="text-align: center;">
+    <div class="pilar-title"><i class="fa-solid fa-clock-rotate-left"></i> Time Sight</div>
+    <p style="font-size: 13px; color: var(--accent-cyan); margin-bottom: 6px;"><strong>Pasado &middot; Presente &middot; Futuro</strong></p>
+    <p style="font-size: 12px; color: #aaa;">El sistema conecta los tres horizontes temporales: que paso, que esta pasando y que va a pasar. Contexto completo para decidir.</p>
+    <div class="pilar-question">¿Por que paso y que viene?</div>
+  </Card>
+
+  <Card span={3} class="pilar-compact" style="text-align: center;">
+    <div class="pilar-title"><i class="fa-solid fa-tower-broadcast"></i> Omni Sense</div>
+    <p style="font-size: 13px; color: var(--accent-cyan); margin-bottom: 6px;"><strong>Percibe &middot; Comprende &middot; Responde</strong></p>
+    <p style="font-size: 12px; color: #aaa;">La informacion llega al operador por el canal correcto: IROC, WhatsApp, radio, correo. El sistema se adapta al contexto, no al reves.</p>
+    <div class="pilar-question">¿Donde y como me llega?</div>
+  </Card>
+
+  <div class="col-12">
+    <RecBox title="Regla transversal">
+      <p>Cada pilar se valida contra el benchmark inter-industria. Si un patron no tiene referentes reales que lo respalden, se cuestiona antes de implementar.</p>
+    </RecBox>
+  </div>
+</Slide>

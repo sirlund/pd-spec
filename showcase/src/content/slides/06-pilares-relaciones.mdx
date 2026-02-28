@@ -1,0 +1,73 @@
+---
+order: 6
+title: "Como se Conectan los Pilares"
+slideLayout: "grid"
+---
+import Slide from '../../components/Slide.astro';
+import RecBox from '../../components/RecBox.astro';
+
+<Slide id="slide-6" title="Como se Conectan los Pilares">
+  <div class="col-12" style="text-align: center; margin-bottom: 8px;">
+    <p style="font-size: 15px; color: #ccc; max-width: 700px; margin: 0 auto;">
+      Los cuatro pilares no operan en aislamiento. Cada par genera una sinergia especifica que refuerza la experiencia operativa.
+    </p>
+  </div>
+
+  <div class="col-6">
+    <RecBox title="Quiet UI + Clear Path" accentColor="var(--accent-cyan)">
+      <p>El silencio solo tiene sentido si, cuando se rompe, el camino a la accion es inmediato. Quiet UI filtra; Clear Path guia. Juntos eliminan el ruido <strong>y</strong> la indecision.</p>
+    </RecBox>
+  </div>
+
+  <div class="col-6">
+    <RecBox title="Clear Path + Time Sight" accentColor="#ff9800">
+      <p>La recomendacion (Clear Path) gana peso cuando incluye contexto temporal: que paso antes, que viene despues. Time Sight convierte la accion sugerida en una decision informada.</p>
+    </RecBox>
+  </div>
+
+  <div class="col-6">
+    <RecBox title="Time Sight + Omni Sense" accentColor="#ff9800">
+      <p>El horizonte temporal correcto debe llegar por el canal correcto. Una alerta predictiva a 4 horas va al dashboard; una critica a 15 minutos va a WhatsApp o radio.</p>
+    </RecBox>
+  </div>
+
+  <div class="col-6">
+    <RecBox title="Omni Sense + Quiet UI" accentColor="var(--accent-cyan)">
+      <p>El canal correcto refuerza el silencio: si la informacion llega donde debe, no necesita duplicarse en multiples pantallas. Menos canales activos = menos ruido.</p>
+    </RecBox>
+  </div>
+
+  <div class="col-12">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--border-color);">
+          <th style="text-align: left; padding: 8px; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px;">PILAR</th>
+          <th style="text-align: left; padding: 8px; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px;">SENTIDO</th>
+          <th style="text-align: left; padding: 8px; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 11px;">PREGUNTA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 8px; color: #e0e0e0;"><i class="fa-solid fa-volume-xmark" style="margin-right: 6px; color: var(--accent-cyan);"></i>Quiet UI</td>
+          <td style="padding: 8px; color: #aaa;">Gestion por excepcion</td>
+          <td style="padding: 8px; color: #aaa; font-style: italic;">¿Necesito prestar atencion?</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 8px; color: #e0e0e0;"><i class="fa-solid fa-route" style="margin-right: 6px; color: var(--accent-cyan);"></i>Clear Path</td>
+          <td style="padding: 8px; color: #aaa;">Cada pantalla &rarr; accion</td>
+          <td style="padding: 8px; color: #aaa; font-style: italic;">¿Que debo hacer?</td>
+        </tr>
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 8px; color: #e0e0e0;"><i class="fa-solid fa-clock-rotate-left" style="margin-right: 6px; color: var(--accent-cyan);"></i>Time Sight</td>
+          <td style="padding: 8px; color: #aaa;">Pasado &middot; Presente &middot; Futuro</td>
+          <td style="padding: 8px; color: #aaa; font-style: italic;">¿Por que paso y que viene?</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; color: #e0e0e0;"><i class="fa-solid fa-tower-broadcast" style="margin-right: 6px; color: var(--accent-cyan);"></i>Omni Sense</td>
+          <td style="padding: 8px; color: #aaa;">Percibe &middot; Comprende &middot; Responde</td>
+          <td style="padding: 8px; color: #aaa; font-style: italic;">¿Donde y como me llega?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</Slide>
