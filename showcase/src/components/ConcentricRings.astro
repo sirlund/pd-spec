@@ -1,0 +1,44 @@
+---
+/**
+ * Concentric rings — nested layers for visualizing hierarchical concepts.
+ * Each layer renders as a ring with a label and optional pills.
+ * Layers nest from outermost (index 0) to innermost (last).
+ */
+interface Layer {
+  label: string;
+  pills?: string[];
+}
+
+interface Props {
+  layers: Layer[];
+  class?: string;
+}
+
+const { layers, class: className } = Astro.props;
+
+// Generate progressive depth styles: opacity increases, max-width decreases
+const depthStyles = (i: number, total: number) => {
+  const opacity = 0.02 + (i / Math.max(total - 1, 1)) * 0.06;
+  const borderOpacity = 0.15 + (i / Math.max(total - 1, 1)) * 0.2;
+  const maxWidth = 850 - (i * Math.round(200 / Math.max(total - 1, 1)));
+  return `background: rgba(0, 243, 255, ${opacity}); border-color: rgba(0, 243, 255, ${borderOpacity}); max-width: ${maxWidth}px;`;
+};
+---
+
+{layers.length > 0 && (
+  <div class:list={['concentric-rings', className]} style="display: flex; justify-content: center;">
+    {layers.reduceRight((inner: any, layer, i) => {
+      return (
+        <div class="layer-ring" style={depthStyles(i, layers.length)}>
+          <div class="layer-label">{layer.label}</div>
+          {layer.pills && layer.pills.length > 0 && (
+            <div class="layer-pills">
+              {layer.pills.map(pill => <span class="layer-pill">{pill}</span>)}
+            </div>
+          )}
+          {inner}
+        </div>
+      );
+    }, null)}
+  </div>
+)}

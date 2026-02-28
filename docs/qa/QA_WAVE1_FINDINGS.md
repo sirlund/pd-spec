@@ -168,6 +168,23 @@ CLAUDE.md (~4K+ lines) is loaded into every single API call as system context. C
 
 **Improvement:** Checkpoint insight-status changes should be derived from deterministic script output (e.g., `verify-insight.sh` stdout confirms which ID was changed), not from LLM memory of what it asked the script to do.
 
+### OBS-W1-18 — Astro reserves `layout` frontmatter field
+**Found:** BL-102 showcase implementation (2026-02-28). Using `layout` as a content collection schema field causes Astro to interpret it as a layout module path and attempt to import it (e.g., `layout: "cover"` → tries to resolve `cover` as a `.astro` file). Build fails with `Rollup failed to resolve import`.
+**Fix:** Renamed field to `slideLayout` in schema and all MDX frontmatter.
+**Impact:** Low. Caught immediately on first build. Worth documenting because `layout` is an intuitive field name for presentation slides.
+
+### OBS-W1-19 — Astro 5 glob loader changes `render()` API
+**Found:** BL-102 showcase implementation (2026-02-28). With the glob content loader (`loader: glob({...})`), collection entries no longer have a `.render()` method. Must use the named export `render(entry)` from `astro:content` instead. Astro docs may still show the old pattern in some examples.
+**Before:** `const { Content } = await slide.render();`
+**After:** `import { render } from 'astro:content'; const { Content } = await render(slide);`
+**Impact:** Low. Build error is clear. But easy to hit when following older tutorials or AI-generated code.
+
+### OBS-W1-20 — LLM subagents generate invalid `\"` in MDX/JSX attributes
+**Found:** BL-102 showcase implementation (2026-02-28). When 4 parallel subagents generated 32 MDX slide files, 3 files contained `\"` (backslash-escaped quotes) inside double-quoted JSX attributes (e.g., `pilarDesc="...\"ahora\"..."`). This is invalid JSX — the MDX parser sees `\` as an unexpected character in attribute context. The pattern is valid in JSON and JS template strings, so LLMs default to it.
+**Fix:** Changed outer quotes to single quotes: `pilarDesc='..."ahora"...'`.
+**Affected files:** 19-caso3-viz.mdx, 24-caso6-ficha.mdx, 28-caso7-viz.mdx (3/32 = 9% error rate).
+**Impact:** Medium. Silent generation error — only caught at build time. When delegating MDX generation to subagents, explicit instructions about JSX quoting rules would reduce this.
+
 ### OBS-W1-12 — Anthropic tier thresholds
 **Source:** docs.anthropic.com/en/api/rate-limits
 

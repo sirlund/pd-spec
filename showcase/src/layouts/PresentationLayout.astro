@@ -1,0 +1,106 @@
+---
+import theme from '../theme.config';
+
+interface Props {
+  title?: string;
+  lang?: string;
+  logoSrc?: string;
+  logoAlt?: string;
+  storageKey?: string;
+}
+
+const {
+  title = theme.title,
+  lang = theme.lang,
+  logoSrc = theme.logo?.src,
+  logoAlt = theme.logo?.alt ?? '',
+  storageKey = theme.storageKey,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style is:global>
+    @import '../themes/theme_spec.css';
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <slot />
+  </div>
+
+  <footer class="pres-footer">
+    <button id="theme-toggle" data-storage-key={storageKey} aria-label="Toggle theme" title="Toggle light/dark theme">
+      <i class="fa-solid fa-sun"></i>
+    </button>
+    {logoSrc && <img src={logoSrc} alt={logoAlt} class="idemax-logo-nav">}
+    <div class="controls">
+      <button class="btn-nav" id="prevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+      <button class="btn-nav" id="nextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </footer>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const slides = document.querySelectorAll('.slide');
+      const nextBtn = document.getElementById('nextBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const footer = document.querySelector('.pres-footer');
+      let currentSlide = 0;
+
+      const total = slides.length;
+      slides.forEach((slide, i) => {
+        const num = slide.querySelector('.slide-number');
+        if (num) num.textContent = `${String(i + 1).padStart(2, '0')} / ${total}`;
+      });
+
+      function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[index].classList.add('active');
+        if (footer) footer.style.display = slides[index].classList.contains('slide-idemax') ? 'none' : '';
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+      if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 't') document.getElementById('theme-toggle')?.click();
+      });
+    });
+
+    // Theme toggle
+    (function () {
+      var t = document.getElementById('theme-toggle');
+      if (!t) return;
+      var key = t.dataset.storageKey || 'pd-theme';
+      var i = t.querySelector('i'), s = localStorage.getItem(key);
+      if (s === 'light') { document.documentElement.setAttribute('data-theme', 'light'); i.className = 'fa-solid fa-moon'; }
+      t.addEventListener('click', function () {
+        var c = document.documentElement.getAttribute('data-theme');
+        if (c === 'light') { document.documentElement.removeAttribute('data-theme'); localStorage.setItem(key, 'dark'); i.className = 'fa-solid fa-sun'; }
+        else { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem(key, 'light'); i.className = 'fa-solid fa-moon'; }
+      });
+    })();
+  </script>
+</body>
+</html>

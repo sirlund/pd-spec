@@ -1,0 +1,18 @@
+---
+/**
+ * Image with CSS-based fallback instead of fragile onerror innerHTML rebuild.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  fallbackText?: string;
+  class?: string;
+}
+
+const { src, alt, fallbackText = 'PENDING', class: className } = Astro.props;
+---
+
+<div class:list={['image-frame', className]}>
+  <img src={src} alt={alt} onerror="this.parentElement.classList.add('image-frame--failed')">
+  <span class="image-frame-fallback">{fallbackText}</span>
+</div>

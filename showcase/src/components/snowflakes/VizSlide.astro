@@ -1,0 +1,71 @@
+---
+/**
+ * Visualization slide — DAR timeline + mockup image + context sidebar + referent list.
+ */
+import Slide from '../Slide.astro';
+import DarTimeline from './DarTimeline.astro';
+import LogoAvatar from '../atoms/LogoAvatar.astro';
+import ImageFrame from '../atoms/ImageFrame.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  active: 'd' | 'a' | 'r';
+  image: string;
+  imageAlt: string;
+  momentTitle: string;
+  momentIcon: string;
+  momentDesc: string;
+  pilarCombo: string;     // HTML for pillar combination title
+  pilarDesc: string;
+  referentes: {
+    stage: 'd' | 'a' | 'r';
+    logoUrl: string;
+    name: string;
+    desc: string;
+  }[];
+}
+
+const { id, title, active, image, imageAlt, momentTitle, momentIcon, momentDesc, pilarCombo, pilarDesc, referentes } = Astro.props;
+
+const stageColors = { d: '#ff4d4d', a: '#ff9800', r: 'var(--accent-cyan)' };
+const stageLetters = { d: 'D', a: 'A', r: 'R' };
+---
+
+<Slide id={id} title={title}>
+  <DarTimeline active={active} />
+
+  <!-- Mockup -->
+  <div style="grid-column: span 8; border-radius: 8px; overflow: hidden; min-height: 460px;">
+    <ImageFrame src={image} alt={imageAlt} fallbackText="MOCKUP PENDIENTE" />
+  </div>
+
+  <!-- Context sidebar -->
+  <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 14px;">
+    <div class="card" style="border-color: #1a1a1a;">
+      <h3 style="font-size: 16px;">
+        <i class={momentIcon} style="font-size: 20px;"></i> {momentTitle}
+      </h3>
+      <p style="font-size: 14px; line-height: 1.6;" set:html={momentDesc} />
+    </div>
+    <div class="card" style="border-color: #1a1a1a;">
+      <h3 style="font-size: 14px;" set:html={pilarCombo} />
+      <p style="font-size: 14px; line-height: 1.6;">{pilarDesc}</p>
+    </div>
+    <div class="mt-auto">
+      <div style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">
+          <i class="fa-solid fa-compass" style="font-size: 14px; margin-right: 4px;"></i> Referentes por Etapa
+        </div>
+        {referentes.map(ref => (
+          <div style={`display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #111; border-radius: 4px; border-left: 2px solid ${stageColors[ref.stage]};`}>
+            <LogoAvatar src={ref.logoUrl} alt={ref.name} size={20} />
+            <span style="font-family: var(--font-mono); font-size: 12px; color: #ccc;">
+              <strong style={`color: ${stageColors[ref.stage]};`}>{stageLetters[ref.stage]}</strong> {ref.name} — {ref.desc}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Slide>

@@ -1,0 +1,35 @@
+---
+order: 2
+title: "Card Grid"
+slideLayout: "grid"
+---
+import Slide from '../../components/Slide.astro';
+import Card from '../../components/Card.astro';
+import RecBox from '../../components/RecBox.astro';
+
+<Slide id="slide-2" title="Card Grid">
+  <div class="col-4">
+    <Card>
+      <h3><i class="fa-solid fa-lightbulb"></i> Insight Alpha</h3>
+      <h4>Pattern Recognition</h4>
+      <p>Users consistently prefer <strong>fewer options</strong> presented with high confidence over exhaustive lists requiring manual filtering.</p>
+      <RecBox title="Recommendation">Implement a confidence threshold that collapses low-relevance items by default.</RecBox>
+    </Card>
+  </div>
+  <div class="col-4">
+    <Card>
+      <h3><i class="fa-solid fa-chart-line"></i> Insight Beta</h3>
+      <h4>Time Sensitivity</h4>
+      <p>Decision quality degrades <strong>40% after 3 minutes</strong> of continuous data review. Operators develop alert fatigue within the first hour.</p>
+      <RecBox title="Recommendation">Auto-summarize data streams into 30-second digest windows.</RecBox>
+    </Card>
+  </div>
+  <div class="col-4">
+    <Card>
+      <h3><i class="fa-solid fa-users"></i> Insight Gamma</h3>
+      <h4>Role Divergence</h4>
+      <p>Supervisors and operators need the <strong>same data, different views</strong>. Current systems force a single perspective across all roles.</p>
+      <RecBox title="Recommendation">Design role-based lenses that share the data model but filter by decision scope.</RecBox>
+    </Card>
+  </div>
+</Slide>

@@ -1,0 +1,28 @@
+---
+/**
+ * Main presentation page — loads all slides from content collection,
+ * ordered by frontmatter `order`, and renders them in sequence.
+ */
+import PresentationLayout from '../layouts/PresentationLayout.astro';
+import theme from '../theme.config';
+import { getCollection, render } from 'astro:content';
+
+const allSlides = await getCollection('slides');
+const slides = allSlides
+  .filter(s => !s.data.hidden)
+  .sort((a, b) => a.data.order - b.data.order);
+
+// Pre-render all slides
+const rendered = await Promise.all(
+  slides.map(async (slide) => {
+    const { Content } = await render(slide);
+    return { slide, Content };
+  })
+);
+---
+
+<PresentationLayout title={theme.title}>
+  {rendered.map(({ Content }) => (
+    <Content />
+  ))}
+</PresentationLayout>
