@@ -124,7 +124,7 @@ After context compaction, re-read `SESSION_CHECKPOINT.md` (not MEMORY.md) to rec
 
 Mechanical operations (counting, JSON generation, hash computation) → use inline scripts, not LLM reasoning. Scripts are deterministic, faster, token-free. LLM for semantic tasks only (sentence repair, categorization, conflict detection).
 
-**Utility scripts** (`scripts/`): `next-id.sh`, `count-statuses.sh`, `verify-insight.sh`, `resolve-conflict.sh`, `reset.sh`, `integrity-check.sh`, `validate-fixes.sh`. Run `./scripts/<name> --help` for usage.
+**Utility scripts** (`scripts/`): `generate-index.sh`, `next-id.sh`, `count-statuses.sh`, `verify-insight.sh`, `resolve-conflict.sh`, `reset.sh`, `integrity-check.sh`, `validate-fixes.sh`. Run `./scripts/<name> --help` for usage.
 
 ## Current State → PROJECT.md
 

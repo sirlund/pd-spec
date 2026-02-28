@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.26.0] — 2026-02-28 — Index System
+
+Skills now read compact indexes (~5 KB) instead of full data files (~200 KB) for dense projects, cutting token consumption by up to 83% per operation.
+
+<details>
+<summary>Features (1)</summary>
+
+- **Work Layer Index System (BL-101)** — New `generate-index.sh` script generates lightweight indexes for EXTRACTIONS.md, INSIGHTS_GRAPH.md, and normalized transcripts. Three index types (extractions, insights, normalized) with MD5-based staleness detection, 20 KB threshold, and graceful fallback. Six skills updated: `/extract` generates indexes after completion, `/analyze` consumes + regenerates, `/spec` consumes + regenerates, `/audit`, `/ship`, `/visualize` consume. Indexes live in `02_Work/_index/` — auto-generated, safe to delete, regenerated on next skill run.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
 ## [4.25.1] — 2026-02-26 — Slim Core
 
 CLAUDE.md cut from ~8.5K to ~2K tokens per message. Reference content moved to docs/CLAUDE_REFERENCE.md, loaded on demand.

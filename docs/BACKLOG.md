@@ -10,6 +10,268 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-102] Showcase — MDX Presentation System (Astro Submodule)
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** L (v1 only — see phasing below)
+**Origin:** Session 2026-02-27. Analysis of freemode presentation token consumption in pds--timining. index.html (253 KB) + styles.css (68 KB) = ~80,000 tokens per edit. Content, layout, and styles are tangled — editing one slide requires reading the full monolith.
+
+**Problem:** Freemode presentations are HTML monoliths where content is inseparable from presentation. Every edit (even a title change) costs ~63,000 tokens to read the file, find the slide, and make the change. Additionally, presentations can't leverage the Work layer's traceability — [IG-XX] refs are manually pasted text, not linked data.
+
+**Solution — MDX slides + Astro renderer:**
+
+```
+pd-showcase/                    ← git submodule (engine: components, layouts, themes)
+03_Outputs/_showcase/           ← project content (slides, images, theme overrides)
+  decks/
+    main/
+      cover.mdx                 ← ~2 KB per slide
+      pilares.mdx
+      ...
+  theme/
+    overrides.css               ← project theme tokens
+  deck.config.ts                ← deck metadata
+```
+
+Each slide is a ~2 KB MDX file with frontmatter (`order`, `title`, `layout`, `refs`, `notes`, `tags`). Ordering via `order` in frontmatter, not filename. Components are modular: primitives compose freely, patterns are convenience sugar.
+
+#### v1 — Single Deck Migration (Effort: L) ← THIS BL
+
+Scope limited to migrating the main presentation (`index.html`, 35 slides) to MDX. No auto-generation, no multi-deck, no theme generation.
+
+**7 components** (derived from index.html slide analysis):
+
+| Component | Slides using it | Description |
+|---|---|---|
+| `<Card>` | S3-S10, S22-S25 | Content card with icon, title, text. Variants: default, accent, muted |
+| `<BenchCard>` | S11-S18 | Benchmark evidence: overview image (3:2), closeups, industry tag, domain color |
+| `<CaseStudy>` | S19-S21 | Case study: quote + metric cluster + source attribution |
+| `<DarFlow>` | S26-S27 | DAR decision flow: Decision → Alternatives → Rationale |
+| `<RecBox>` | S28-S31 | Recommendation box: numbered rec, priority tag, IG refs |
+| `<LayerDiagram>` | S22 | Stacked layer visualization (3 layers with descriptions) |
+| `<Grid>` | all | CSS grid container (cols: 2-4, gap configurable) |
+
+**Also includes:**
+- `SlideLayout.astro` + `PresentationLayout.astro` (navigation, counter, transitions)
+- `theme_spec.css` extracted from existing `styles.css` (CSS custom properties, not new design)
+- Basic `/showcase` skill: `--init` (creates submodule + content structure) + edit mode (read/edit specific MDX files)
+- `--dev` mode (starts Astro dev server)
+- Single deck only (`main/`)
+
+**v1 acceptance criteria:**
+- [ ] pd-showcase repo with Astro 5 + MDX, 7 components listed above
+- [ ] 35 slides from index.html migrated to individual .mdx files
+- [ ] `theme_spec.css` with tokens extracted from existing styles.css (visual parity with current presentation)
+- [ ] `/showcase --init` creates submodule + content structure from PROJECT.md
+- [ ] `/showcase [deck]` edit mode works (read + edit specific .mdx files)
+- [ ] `npm run dev` renders presentation with working navigation + slide counter
+- [ ] Editing a slide costs <1,000 tokens (vs ~63,000 today)
+
+#### v2 — Multi-Deck + Generation (Effort: M, deferred)
+
+- Multi-deck support (directory-based, per-deck config in `deck.config.ts`)
+- `/showcase --generate [deck]` — auto-generate slides from Work layer data (STRATEGIC_VISION, PROPOSALS, INSIGHTS_GRAPH)
+- Additional pattern components for variant presentations (interna, v2_boceto slide types)
+- PRESENTATION.md as seed for `--generate`
+
+#### v3 — Themes + Traceability + Export (Effort: M, deferred)
+
+- `/showcase --theme` — auto-generate project theme from STRATEGIC_VISION + BENCHMARK_UX context
+- `<InsightRef>` component with build-time data from INSIGHTS_GRAPH_INDEX (depends on BL-101)
+- Presenter mode (speaker notes route)
+- Print CSS for PDF export
+- Mermaid diagram embedding via remark plugin
+
+**Relationship to /ship:** `/ship presentation` → PRESENTATION.md (markdown). `/showcase --generate` (v2) → MDX slides (visual). They coexist.
+
+**User story:**
+> As a UX consultant preparing a client presentation, I can edit slide content in a 2 KB MDX file — seeing hot-reload in my browser — instead of navigating a 253 KB HTML monolith. Each slide traces to verified insights.
+
+**Full plan:** `docs/PLAN_TOKEN_OPTIMIZATION_AND_SHOWCASE.md`
+
+---
+
+### [BL-101] Work Layer Index System — Token Optimization
+
+**Status:** IMPLEMENTED (v4.26.0, 2026-02-28)
+**Priority:** P1
+**Effort:** L
+**Origin:** Session 2026-02-27. pds--timining (densest project: 60+ sources, 199 KB EXTRACTIONS, 68 KB INSIGHTS_GRAPH) consumes ~89,000 tokens per `/analyze` run. 90% of the cost is data reads, not skill instructions.
+
+**Problem:** Skills read full accumulation files regardless of how much data they need. `/analyze` in incremental mode (3 new sections of 65) still reads the entire 199 KB EXTRACTIONS.md to scan timestamps, and the entire 68 KB INSIGHTS_GRAPH.md to check for duplicates.
+
+**Solution — Auto-generated indexes with offset/limit reads:**
+
+```
+02_Work/
+  _index/                          ← auto-generated, safe to delete + regenerate
+    EXTRACTIONS_INDEX.md           ← ~5 KB (section table with line ranges)
+    INSIGHTS_GRAPH_INDEX.md        ← ~5 KB (ID/title/status table with line numbers)
+    {source}_normalized_INDEX.md   ← ~3 KB (topic/chunk table with line ranges)
+```
+
+**Key design decisions:**
+- **Threshold: 20 KB.** Files below this are read directly. Synthesis files (STRATEGIC_VISION, PROPOSALS, RESEARCH_BRIEF) are NOT indexable — their value is in cohesive narrative.
+- **Indexes are optimizations, not requirements.** If missing or stale → skill falls back to full read. No skill depends on index existence.
+- **Staleness detection:** MD5 hash (8 chars) in index header. One shell command, zero tokens.
+- **Script-first:** `generate-index.sh` (bash + awk) generates all index types. 100% deterministic, zero LLM cost.
+- **Skills regenerate indexes after writes:** `/extract` regenerates EXTRACTIONS index, `/analyze` regenerates INSIGHTS_GRAPH index.
+
+**Files that get indexed:** EXTRACTIONS.md (accumulation, discrete claims), INSIGHTS_GRAPH.md (accumulation, discrete entries), _temp/*_normalized.md (transcripts, segment-based).
+
+**Files that do NOT get indexed:** STRATEGIC_VISION.md, PROPOSALS.md, CONFLICTS.md, RESEARCH_BRIEF.md, SYSTEM_MAP.md, IDEAS.md (synthesis files, read in full).
+
+**Estimated savings:**
+
+| Scenario | Current | With indexes | Savings |
+|---|---|---|---|
+| `/analyze` incremental | ~89K tokens | ~15K tokens | ~83% |
+| `/audit` | ~75K tokens | ~12K tokens | ~84% |
+| `/ship prd` | ~75K tokens | ~15K tokens | ~80% |
+
+**Acceptance criteria:**
+- [ ] `generate-index.sh` supporting 3 types (extractions, insights, normalized)
+- [ ] Index line numbers validated against source files (line ranges match actual content)
+- [ ] Staleness detection working (hash mismatch → fallback to full read)
+- [ ] `/extract` generates EXTRACTIONS + normalized indexes after completion
+- [ ] `/analyze` uses indexes with fallback, generates INSIGHTS_GRAPH index after completion
+- [ ] `/spec`, `/audit`, `/ship`, `/visualize` prefer indexes when available
+- [ ] Behavioral equivalence: pipeline with indexes produces same results as without (T-101-05)
+- [ ] Measurable token reduction (>50% for incremental `/analyze`)
+
+**User story:**
+> As a PD-Spec user with a dense project (60+ sources), my session token budget lasts significantly longer because skills read compact indexes (~5 KB) instead of full data files (~200 KB), loading the complete data only when they need specific entries.
+
+**Test plan:** `docs/PLAN_TOKEN_OPTIMIZATION_AND_SHOWCASE.md` §Test Plans
+
+**Full plan:** `docs/PLAN_TOKEN_OPTIMIZATION_AND_SHOWCASE.md`
+
+**⚠️ App Runtime Compatibility — RESOLVED BY BL-80 Phase 1:**
+
+The index system requires `Read(offset, limit)` and `Bash` — capabilities missing from the current custom Agent Runtime. Analysis in session 2026-02-27 identified this as a fundamental gap. BL-80 Phase 1 (SDK migration) resolves this: the Claude Agent SDK provides all required capabilities natively.
+
+**Dependency:** BL-101 can be implemented immediately for CLI use. Full app compatibility arrives with BL-80 Phase 1.
+
+**⚠️ Skill instruction constraint (important for implementation):**
+
+Skill modifications (SKILL.md files) must be **runtime-agnostic**. After BL-80 Phase 1, skills run identically in Claude Code CLI and the Agent SDK in the app. Instructions must NOT reference tool-specific patterns.
+
+| ✗ Don't write | ✓ Write instead |
+|---|---|
+| "Use the Bash tool to run `md5 -q`" | "Run `./scripts/generate-index.sh`" |
+| "Use Read with offset=X, limit=Y" | "Read lines X-Y of the file" |
+| "Call the Grep tool to search" | "Search the file for pattern X" |
+
+The agent resolves these to the correct tool in each runtime. Skills describe *what to do*, not *which tool to use*.
+
+---
+
+### [BL-100] Deliverable Architecture — MASTER + Specific Documents
+
+**Status:** PROPOSED
+**Priority:** P2
+**Origin:** Field experience with TIMining /ship outputs. All deliverable types re-synthesize the same insights independently, producing repetitive, shallow documents that feel interchangeable.
+
+**Problem:**
+1. **Repetition:** Each `/ship [type]` generates a standalone document that re-explains the same IGs, strategic context, and key concepts. A PRD, presentation, and lean canvas for the same project read 70% identical.
+2. **No hierarchy:** Documents are peers with no shared narrative. No single source of truth for "what this project is about" — each document reinvents it.
+3. **One-size-fits-all:** All 10 ship types are available regardless of project context. A B2B SaaS project doesn't need a journey map. A benchmark UX doesn't need personas. The agent should reason about which deliverables are relevant.
+
+**Solution — MASTER + Specifics architecture:**
+
+```
+03_Outputs/
+  MASTER.md              ← executive synthesis, single narrative, references specifics
+  ├─→ PERSONAS.md        ← deep dive (if applicable)
+  ├─→ USER_STORIES.md    ← deep dive (if applicable)
+  ├─→ JOURNEY_MAP.md     ← deep dive (if applicable)
+  ├─→ LEAN_CANVAS.md     ← deep dive (if applicable)
+  └─→ ...
+```
+
+**Key design decisions:**
+- **MASTER replaces PRD.** The current PRD tries to be both executive summary and detailed spec — it does neither well. MASTER is the single narrative document. "PRD" as a term is too dev-centric for a research/strategy tool.
+- **Specifics don't repeat context.** They reference MASTER for shared concepts and go deep on their own domain. A persona doc doesn't re-explain the strategic vision — it links to MASTER §Strategy and focuses on archetypes.
+- **Agent proposes, user decides.** `/ship` with no args → agent analyzes the Work layer and proposes which specifics are relevant (with reasoning). User approves, rejects, or edits the list. `/ship [type]` forces generation of a specific document regardless.
+- **Relevance is semantic.** The agent reasons about project type, insight categories, and conflict themes to recommend specifics. A project heavy on user-need insights gets personas + journey maps. A project heavy on business/strategy gets lean canvas + strategy report.
+
+**Scope:**
+- [ ] Define MASTER.md structure (replaces PRD — executive synthesis with cross-references)
+- [ ] Refactor /ship skill: no-arg mode proposes deliverable set, typed mode forces specific
+- [ ] Specifics reference MASTER instead of re-synthesizing IGs
+- [ ] Agent reasoning for deliverable relevance (which specifics fit this project)
+- [ ] Deprecate `prd` as ship type, migrate to MASTER
+- [ ] Update /ship help and CLAUDE.md skill table
+
+**Open questions:**
+- Should MASTER be generated once and specifics incrementally, or all at once?
+- When the Work layer changes (new insights, resolved conflicts), does MASTER auto-update or require explicit `/ship` re-run?
+
+---
+
+### [BL-99] Improved Conflict Lifecycle — OPEN/NEEDS-*/RESOLVED with IG Actions
+
+**Status:** PROPOSED
+**Priority:** P1
+**Origin:** Field experience with TIMining (13 conflicts). Current model shows "0 PENDING" when 4 conflicts are unresolved (intermediate states split from PENDING). "Resolve with context" saves text but doesn't touch related insights — orphaned field notes with no traceability.
+
+**Problem:**
+1. **Misleading dashboard:** Intermediate states (Flagged, Research) are counted separately from PENDING, so "0 PENDING" lies about project state.
+2. **Orphaned resolutions:** "I have context" writes a note to the CF but takes no action on related IGs. User writes "CTO validated proposal B" thinking it acts as a decision, but IG-A stays VERIFIED and IG-B stays VERIFIED — nothing changes.
+3. **No note accumulation:** Field notes from stakeholder sessions can't be incrementally added to a conflict without closing it.
+
+**Solution — New conflict lifecycle:**
+
+```
+/analyze detects
+       │
+       ▼
+    ┌──────┐
+    │ OPEN │  ← detected, not yet reviewed
+    └──┬───┘
+       │ user reviews
+  ┌────┼──────────┐
+  │    │          │
+  ▼    ▼          ▼
+NEEDS  NEEDS    RESOLVED
+RESEARCH DISCUSSION  (context + IG action)
+  │    │
+  │    │  new info / decision
+  └────┼──────┐
+       │      ▼
+       └─→ RESOLVED
+            (context + IG action)
+```
+
+**4 statuses:**
+| Status | Meaning | Who triggers |
+|---|---|---|
+| `OPEN` | Detected, not reviewed | `/analyze` |
+| `NEEDS-RESEARCH` | Reviewed, needs more data | User via app or /spec |
+| `NEEDS-DISCUSSION` | Reviewed, needs stakeholder decision | User via app or /spec |
+| `RESOLVED` | Closed with mandatory context + IG action | User via app or /spec |
+
+**Key design decisions:**
+- **Notes accumulate.** Adding context to an OPEN or NEEDS-* conflict doesn't close it — it's intelligence gathering. Notes stack chronologically.
+- **Resolution = IG action (always).** Resolving a conflict requires both context text AND an action on related insights (keep A, keep B, merge, invalidate both). No orphaned resolutions.
+- **RESOLVED is atomic:** context + IG action happen in one step. The CF records what was decided and why; the IGs reflect the decision.
+
+**Migration:** Rename existing statuses: PENDING → OPEN, PENDING — Flagged → NEEDS-DISCUSSION, PENDING — Research → NEEDS-RESEARCH, RESOLVED stays RESOLVED. Audit existing RESOLVED CFs for orphaned resolutions (context text but no IG changes).
+
+**Scope:**
+- [ ] Update CONFLICTS.md format and status legend
+- [ ] Update conflict parser (4 statuses, note accumulation)
+- [ ] Update ConflictsView + ConflictCard UI (new badges, note timeline)
+- [ ] Update resolve-conflict.sh (OPEN → NEEDS-*/RESOLVED transitions, IG action enforcement)
+- [ ] Update /analyze skill (new conflicts created as OPEN)
+- [ ] Update /spec skill (new resolution flow with mandatory IG action)
+- [ ] Migrate existing TIMining conflicts
+
+**Future (separate BL):** Auto-resolution — `/analyze` crosses new claims against open CFs and proposes closure when contradiction no longer exists.
+
+---
+
 ### [BL-87] Interactive Insight Actions — Challenge, Reject with Reason, Stale Conflict Warning
 
 **Status:** PARTIALLY IMPLEMENTED (v4.25.2)
@@ -444,39 +706,198 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ---
 
-### [BL-80] LLM Integration in Live Research App — Interactive Actions from Dashboard
+### [BL-80] LLM Integration in Live Research App — Agent Architecture
 
-**Status:** IMPLEMENTED (Wave 1, v4.25.1–v4.25.2)
+**Status:** PHASE 0 COMPLETE (Wave 1, v4.25.1–v4.25.2) · PHASE 1 PROPOSED (SDK migration)
 **Priority:** P1
-**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal.
+**Effort:** Phase 1: M · Phase 2: L · Phase 3: M
+**Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal. Architecture reassessed 2026-02-28 after discovering fundamental limitations in the custom Agent Runtime.
 
-**Implemented (Wave 1):**
-- [x] BYOK settings UI — user enters Claude API key, stored server-side in memory (not persisted between restarts)
+**Phase 0 — PoC Validated (Wave 1, COMPLETE):**
+- [x] BYOK settings UI — user enters Claude API key, stored server-side in memory
 - [x] Q&A mode — text input in app → LLM responds using Work layer context
-- [x] Action mode — approve/reject/invalidate insights from UI → INSIGHTS_GRAPH.md updated via verify-insight.sh
-- [x] Conflict resolution from UI → resolve-conflict.sh called server-side
-- [x] Pipeline execution from app — /extract, /analyze, /spec triggered via UI buttons with progress display
-- [x] WebSocket broadcasts file changes after every LLM/script action
-- [x] Claude API only (BYOK). No Gemini/GPT support — evaluated post-pilot if demanded.
+- [x] Action mode — approve/reject/invalidate insights from UI → verify-insight.sh
+- [x] Conflict resolution from UI → resolve-conflict.sh
+- [x] Pipeline execution from app — /extract, /analyze, /spec triggered via UI
+- [x] WebSocket broadcasts file changes after every action
 
-**Problem:** The Live Research App displays insights, conflicts, and system map, but all actions (approve insight, resolve conflict, ask questions) require leaving the browser and pasting prompts into Claude Code terminal. This is the largest gap between the current MVP and a product usable by non-technical third parties.
+**What Wave 1 validated:** The need is real. Users want to act from the browser. The "flujo roto" pain is gone for basic actions.
 
-**Solution:** Embed an LLM API in the Live Research App backend. Actions in the UI (approve, reject, challenge, ask) trigger server-side LLM calls that modify Work layer files directly.
+**What Wave 1 revealed — the custom Agent Runtime doesn't scale:**
 
-**Architecture:**
-1. BYOK model: user provides their own API key (Claude, Gemini, GPT) via settings UI
-2. `/api/llm/action` endpoint: receives action type + context, calls LLM, writes to Work files
-3. WebSocket broadcasts file changes → UI updates in real-time (existing infrastructure)
-4. Alternatively: platform-provided tokens with usage billing
+The current `agent-runtime.js` is a hand-rolled, limited reimplementation of what Claude Code does:
+
+| Capability | Custom Agent Runtime (current) | Claude Agent SDK |
+|---|---|---|
+| File reads | `read_file` — full file only, no offset/limit | `Read` — offset + limit native |
+| Shell | `run_script` — 6 whitelisted scripts only | `Bash` — full shell (sandboxed) |
+| File search | `search_files` — 5-match limit, basic grep | `Grep` + `Glob` — full regex, patterns |
+| Context mgmt | Manual trimming to 2000 chars/result | Automatic compaction (same as Claude Code) |
+| Model | Hardcoded Sonnet | Configurable (Opus, Sonnet, Haiku) |
+| Subagents | Not supported | `Task` tool native |
+| Sessions | In-memory, 8h TTL, no resume | Persistent with resume/fork |
+| MCP | Not supported | Declarative configuration |
+| Skills | SKILL.md injected as system prompt | Native skill loading from `.claude/skills/` |
+
+**Consequence:** Skills cannot run identically in CLI and app. Every engine improvement (BL-101 indexes, future skills) requires parallel compatibility work or degrades in the app. Scaling this architecture means maintaining two runtimes that drift apart.
+
+**Root cause:** BL-80 Wave 1 was built before the Claude Agent SDK existed as a viable option. The custom runtime was the right call at the time. It's no longer the right foundation for Phases 2+.
+
+---
+
+#### Phase 1 — SDK Migration (Effort: M) ← NEXT
+
+Replace `agent-runtime.js` + agent loop in `claude.js` with Claude Agent SDK (`@anthropic-ai/claude-agent-sdk`).
+
+**What changes:**
+- Agent loop → `query()` async generator with streaming
+- 8 custom tools → SDK built-in tools (Read, Write, Edit, Bash, Glob, Grep)
+- `ask_confirmation`/`ask_selection`/`ask_text` → `canUseTool` callback that routes to WebSocket → frontend InteractionPanel
+- Manual context trimming → SDK automatic compaction
+- SKILL.md injection → native skill loading via `settingSources`
+- BYOK API key → passed to SDK options
+
+**What stays the same:**
+- React frontend (Dashboard, InsightCard, FileBrowser, AgentView)
+- REST API for parsed data (`/api/insights`, `/api/conflicts`, etc.)
+- WebSocket file watcher (chokidar → broadcast changes)
+- BYOK settings UI
+- SSE/WebSocket streaming to client (SDK messages → frontend)
+
+**Design principle — SaaS-ready interfaces, localhost implementations:**
+
+Phase 1 introduces service abstractions designed for multi-tenant SaaS, but implemented simply for localhost. This avoids rewriting when Phase 3 arrives:
+
+| Abstraction | Phase 1 (localhost) | Phase 3 (SaaS) |
+|---|---|---|
+| `WorkspaceService` | Local filesystem path | Isolated container per user/project |
+| `SessionStore` | In-memory Map | Database (Postgres/Redis) with TTL |
+| `ExecutionQueue` | Direct `query()` call | Job queue with concurrency limits |
+| `KeyVault` | Memory (current BYOK) | Encrypted store, BYOK vs platform keys |
+
+The SDK integration goes through these abstractions — never called directly from route handlers. When Phase 3 swaps implementations, the Express routes and frontend don't change.
+
+**Acceptance criteria:**
+- [ ] `agent-runtime.js` replaced by SDK `query()` call via service abstractions
+- [ ] All 3 skills (/extract, /analyze, /spec) execute identically in app and CLI
+- [ ] `canUseTool` callback renders interaction UI (confirmations, selections, text input) in browser
+- [ ] Context compaction handled by SDK (no manual trimming)
+- [ ] Scripts execute via `Bash` tool (no whitelist needed)
+- [ ] BL-101 index system works in app without compatibility workarounds
+- [ ] `WorkspaceService`, `SessionStore`, `ExecutionQueue`, `KeyVault` interfaces defined (simple implementations)
+
+**Risk:** SDK requires Node.js server-side process with filesystem access. Current deployment is localhost (fine). Remote deployment (Wave 3, BL-83) needs sandboxed containers (E2B, Modal, Fly). This is a Phase 3 concern, not a blocker for Phase 1.
+
+#### Phase 2 — Model Routing + Cost Control (Effort: L, deferred)
+
+**Problem:** $1.37 per pipeline operation (observed in pds--timining). As SaaS, cost per operation defines business model viability.
+
+**Solution:** Route tasks by complexity to appropriate models:
+- **Haiku** — classification, counting, simple script decisions (cheap, fast)
+- **Sonnet** — extraction, Q&A, standard analysis (balanced)
+- **Opus** — synthesis, conflict resolution, strategic vision (expensive, highest quality)
+
+The SDK's `model` option is per-query. The orchestrator decides which model based on skill/task type.
+
+**Also addresses:**
+- Cost estimation before execution ("this /analyze run will cost ~$0.40")
+- Usage tracking per session (SDK returns `input_tokens` + `output_tokens`)
+- Foundation for pricing tiers (operations/month, model access level)
+
+**Depends on:** Phase 1 (SDK migration)
+
+#### Phase 3 — Remote Deployment + Multi-Tenant (Effort: M, deferred)
+
+**Problem:** SDK runs as a local process with filesystem access. For remote deployment (BL-83), each user/project needs an isolated environment.
+
+**Architecture options (to evaluate):**
+1. **Ephemeral containers** — one container per session, destroyed on completion (E2B, Modal, Cloudflare Sandboxes)
+2. **Persistent containers** — long-running per user, with session resume (Fly Machines, Daytona)
+3. **Hybrid** — ephemeral for pipeline execution, persistent for Q&A/browsing
+
+**Four multi-tenant concerns** (must be resolved before production SaaS):
+
+1. **Workspace isolation** — each client has their own projects, files, and sessions. A user's `query()` must never access another user's filesystem. Container-per-workspace is the natural boundary.
+2. **API key management** — two models: BYOK (user brings their Anthropic key, we route it) vs platform-provided (we own the key, charge markup). Both must coexist. Key storage must be encrypted at rest.
+3. **Execution queue** — 50 users running `query()` simultaneously is unsustainable without concurrency control. Need: per-user rate limits, global queue with priority, backpressure to the UI ("your job is queued, position 3").
+4. **Result persistence** — agent session state must survive beyond the WebSocket connection lifetime. User closes browser → comes back → sees results. Requires persisting conversation history + Work layer snapshots to database, not just SDK in-memory state.
+
+**Acceptance criteria:**
+- [ ] `WorkspaceService` implementation with container-per-workspace isolation
+- [ ] `KeyVault` implementation with encrypted storage, BYOK + platform key coexistence
+- [ ] `ExecutionQueue` implementation with per-user limits and backpressure UI
+- [ ] `SessionStore` implementation with database persistence and reconnect recovery
+- [ ] At least 2 concurrent users can run pipelines without interference (smoke test)
+- [ ] User closes browser mid-execution, reopens → sees completed results
+
+**Depends on:** Phase 1 + BL-83 (deployment)
+
+---
+
+**Strategic context (from product analysis, 2026-02-28):**
+
+The competitive advantage of PD-Spec as SaaS is NOT the SDK integration or the UI — it's the **orchestration**: the methodological framework that defines what to investigate, in what order, how to validate, and how to synthesize. The SDK is plumbing. The value is in how the plumbing is used.
+
+Architecture layers for future SaaS:
+```
+User (liquid UI)
+    ↓
+PD-Spec Orchestrator (waves, skills, QA — YOUR IP)
+    ↓
+Model abstraction layer (routing, cost control, retry logic)
+    ↓
+Claude Agent SDK → Anthropic API
+```
+
+The model abstraction layer enables future multi-model support if demanded, but Claude-first is the correct default. The quality requirements (no-hallucination, conflict detection, evidence traceability) need a top-tier model under our control.
+
+**🔀 Strategic fork: SaaS standalone vs MCP App (evaluate before Phase 3)**
+
+Two distribution models for PD-Spec, not mutually exclusive:
+
+| | **Route A: SaaS standalone** | **Route B: MCP App** |
+|---|---|---|
+| **What** | Custom web app (current path) | PD-Spec as MCP server that returns interactive UI |
+| **User goes to** | pd-spec.app (your domain) | Claude, ChatGPT, VS Code, any MCP-compatible host |
+| **UI ownership** | Full control (your React frontend) | MCP Apps protocol — iframed components via `ui://` resources |
+| **Multi-host** | Only your app | Any client supporting MCP Apps standard |
+| **Infrastructure** | You own servers, auth, billing, deployment | Host provides infra; you provide the MCP server |
+| **Business model** | SaaS subscription | Marketplace/plugin model, or self-hosted MCP server |
+| **Maturity** | Proven pattern | MCP Apps is new (Jan 2026), protocol still evolving |
+
+Route B is provocative: PD-Spec wouldn't need to be a standalone app. It could be an MCP server with interactive UI that runs *inside* Claude, ChatGPT, or any compatible host. The user doesn't go to "your app" — they use their preferred AI tool and PD-Spec appears as an embedded interactive experience.
+
+MCP Apps will become more powerful with Claude Cowork (Anthropic's multi-step desktop agent) — exactly the kind of orchestrated flow PD-Spec manages.
+
+**This doesn't change Phases 1-2.** The Agent SDK migration and model routing are correct regardless of distribution model. The fork matters at Phase 3: build your own multi-tenant infra (Route A) vs package as MCP server (Route B) vs both (Route A+B).
+
+**Risk assessment for Route B:**
+- MCP Apps is 2 months old (Jan 2026). Protocol may not gain host adoption (Claude, ChatGPT, VS Code need to support it well).
+- Complex multi-step workflows (waves, QA loops, 35-slide presentations) may not fit well inside a chat-embedded iframe — dedicated apps may always be superior for dense UX.
+- Counter-argument: the target is NOT power users. The pitch is accessibility — "open ChatGPT, say 'research my market', PD-Spec appears as interactive experience without the user knowing what an MCP server is." That's lower friction than signing up for pd-spec.app.
+- **Mitigation: don't bet, observe.** Phases 1-2 are route-agnostic. Before Phase 3, evaluate: (1) which hosts adopted MCP Apps, (2) what UX quality is achievable in embedded iframes, (3) whether competitors shipped MCP-based research tools. Decide with data, not intuition.
+
+**Decision point:** Evaluate before committing to Phase 3 infrastructure. By then, MCP Apps maturity and host adoption will be clearer.
 
 **Evidence:**
 - Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
-- Nico: *"Todas esas se traducen en generar un prompt... ese flujo está mapeado como flujo roto"*
 - Hugo: *"Le metería un LLM, eso sí"*
-- Hugo offered to create API key and contribute credits for testing
+- Session 2026-02-27: App Runtime Compatibility Gap discovered — `read_file` has no offset/limit, `generate-index.sh` not whitelisted, 2000-char context trimming
+- Session 2026-02-28: Claude Agent SDK analysis confirms it provides ALL capabilities missing in custom runtime
+- Session 2026-02-28: MCP Apps analysis — protocol enables interactive UI returned from MCP tools, hosted in any compatible client
 
 **User story:**
-> As a researcher reviewing insights in the Live Research App, I can click "Approve" on an insight and have it marked as VERIFIED in INSIGHTS_GRAPH.md without leaving the browser or opening a terminal.
+> As a researcher using PD-Spec in the browser, I get the same analytical power as the CLI — skills run identically, context is managed intelligently, and I can interact with the agent at every decision point through a visual interface instead of a terminal.
+
+**User story (Route B alternative):**
+> As a product researcher using Claude, I connect the PD-Spec MCP server and get an interactive research workspace embedded in my conversation — waves, insights, conflicts, and deliverables — without leaving my AI tool.
+
+**References:**
+- [Agent SDK overview](https://platform.claude.com/docs/en/agent-sdk/overview)
+- [Agent SDK TypeScript reference](https://platform.claude.com/docs/en/agent-sdk/typescript)
+- [CUI — open source web UI for Agent SDK](https://github.com/wbopan/cui)
+- [claude-agent-server — WebSocket wrapper](https://github.com/dzhng/claude-agent-server)
+- [MCP Apps — interactive UI from tools](http://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/)
 
 ---
 

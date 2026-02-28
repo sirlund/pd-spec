@@ -158,6 +158,16 @@ CLAUDE.md (~4K+ lines) is loaded into every single API call as system context. C
 - **Fewer subagents** — use direct Grep/Read instead of Task agents when possible
 - **Layered context** — only load skill-relevant sections of CLAUDE.md per message
 
+### OBS-W1-17 — Checkpoint records wrong insight ID after invalidation
+
+**Found:** Field usage (TIMining, 2026-02-26). User invalidated IG-02 from UI with reason "esto es interno de idemax". Script executed correctly (IG-02 → INVALIDATED in INSIGHTS_GRAPH.md). However, SESSION_CHECKPOINT.md recorded the change as IG-15 instead of IG-02. IG-15 ("GPS degradadas") was never touched and remained VERIFIED.
+
+**Root cause:** The checkpoint is written by the LLM as a narrative summary after actions. The LLM confused the insight ID when summarizing. The script pipeline (`scripts.js` → `verify-insight.sh`) is correct — the file was never wrong, only the checkpoint record.
+
+**Impact:** Medium. Stale/incorrect checkpoint causes confusion on session recovery and integrity checks. Could propagate as incorrect context into future /spec runs.
+
+**Improvement:** Checkpoint insight-status changes should be derived from deterministic script output (e.g., `verify-insight.sh` stdout confirms which ID was changed), not from LLM memory of what it asked the script to do.
+
 ### OBS-W1-12 — Anthropic tier thresholds
 **Source:** docs.anthropic.com/en/api/rate-limits
 

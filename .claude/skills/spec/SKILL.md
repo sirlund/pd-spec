@@ -21,11 +21,11 @@ Previously named `/resolve`. Pipeline: `/extract` → `/analyze` → `/spec` →
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all resolution notes, strategic vision, and proposal content in that language. System IDs and status labels stay in English.
 
-### Phase 1: Load & Analyze
+### Phase 1: Load & Analyze (with Index Optimization)
 
 1. **Load conflicts** — Read `02_Work/CONFLICTS.md` and identify all `PENDING` conflicts.
 
-2. **Load insights** — Read `02_Work/INSIGHTS_GRAPH.md` to understand current insight statuses and relationships.
+2. **Load insights** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists. If it exists, verify freshness by comparing the hash in the index header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`. If fresh → read the index first to get all insight IDs, titles, statuses, categories, and convergence (~5 KB). Only read individual full entries (by line range from L-start) when needed for conflict resolution or status changes. If the index is stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
 
 3. **Load current spec** — Read `02_Work/STRATEGIC_VISION.md` and `02_Work/PROPOSALS.md` to understand current product decisions.
 
@@ -96,7 +96,11 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 
 11. **Ensure traceability** — Every entry in STRATEGIC_VISION.md and PROPOSALS.md must reference at least one `[IG-XX]` insight ID. Flag any entries that lack references.
 
-12. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+12. **Regenerate INSIGHTS_GRAPH index** — After modifying insight statuses, regenerate the index:
+    - Run `./scripts/generate-index.sh insights 02_Work/INSIGHTS_GRAPH.md`
+    - If the script is unavailable, skip silently.
+
+13. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /spec
     - **Request:** [what the user asked]

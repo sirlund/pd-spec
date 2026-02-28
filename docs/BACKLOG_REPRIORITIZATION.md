@@ -165,6 +165,10 @@ El mayor riesgo no es técnico — es que la data del piloto no produzca insight
 2. ~~**Elección de modelo**~~ → **Solo Claude API.** Se evalúa post-piloto si hay demanda de Gemini/GPT.
 3. ~~**Timeline**~~ → **Completado semana del 24 feb.**
 
+### Decidido (Post-Wave 1, 2026-02-28):
+4. **Agent Runtime architecture** → **Migrar a Claude Agent SDK** (`@anthropic-ai/claude-agent-sdk`). El Agent Runtime artesanal (`agent-runtime.js`) no escala — herramientas limitadas, sin offset/limit, sin Bash, contexto truncado a 2000 chars. El SDK provee todas las herramientas de Claude Code como librería embebible, con compactación automática de contexto y `canUseTool` callback para integración con la UI. Ver BL-80 redefinido (Phase 1). El frontend (vistas, data API, WebSocket) se conserva íntegro.
+5. **Cost control como variable de producto** → BL-80 Phase 2 introduce model routing (Haiku/Sonnet/Opus por complejidad de tarea) y estimación de costo pre-ejecución. Crítico para viabilidad SaaS.
+
 ### Decidir para Wave 2:
 4. **Hosted vs. localhost** — ¿Los pilotos de Wave 2 pueden seguir corriendo en localhost, o Hugo/Yoe necesitan una URL?
 5. **Multi-proyecto** — ¿Yoe necesita esto para el piloto, o con un proyecto basta para validar?
