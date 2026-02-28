@@ -26,14 +26,14 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all scorecard labels, descriptions, and recommendations in that language. System IDs and status labels stay in English.
 
-### Phase 1: Load Work Layer
+### Phase 1: Load Work Layer (with Index Optimization)
 
-1. **Read all Work layer files:**
-   - `02_Work/INSIGHTS_GRAPH.md` — parse all `[IG-XX]` entries with status, category, temporal tag, convergence, and source ref.
-   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status.
+1. **Read all Work layer files (prefer indexes when available):**
+   - **INSIGHTS_GRAPH** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read index (~5 KB) to get all IDs, titles, statuses, categories, convergence, and line numbers. Only read individual full entries when needed for specific checks. If stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
+   - **EXTRACTIONS** — Check if `02_Work/_index/EXTRACTIONS_INDEX.md` exists and is fresh. If fresh → read index (~5 KB) to verify extractions exist and get section/claim counts. If stale or missing → read `02_Work/EXTRACTIONS.md` header to check non-empty.
+   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status (no index needed, typically < 20 KB).
    - `02_Work/STRATEGIC_VISION.md` — parse vision, strategy, principles, domains, value props, open questions.
    - `02_Work/PROPOSALS.md` — parse design proposals [DP-XX] (type, domain, status, refs, implications).
-   - `02_Work/EXTRACTIONS.md` — check if extractions exist (non-empty beyond template header).
 
 2. **If no insights exist** (INSIGHTS_GRAPH.md is empty or template-only), report: "Nothing to audit. Run `/extract` then `/analyze` first." Then stop.
 

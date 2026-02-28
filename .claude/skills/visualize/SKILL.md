@@ -29,7 +29,7 @@ Transforms the Work layer (`02_Work/`) into visual Mermaid diagrams rendered as 
    - `conflicts` — Visualize tensions between insights and their resolution status.
    - `all` — Generate all diagrams in a single HTML file.
 
-2. **Load knowledge base** — Read the relevant `02_Work/` files for the target diagram(s).
+2. **Load knowledge base (prefer indexes when available)** — For insight-heavy diagrams (`insights`, `conflicts`, `all`), check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read the index (~5 KB) to get all insight IDs, titles, statuses, categories. Only read individual full entries when the diagram needs detailed content. If stale or missing → read full files. Read other relevant `02_Work/` files for the target diagram(s).
 
 3. **Validate content** — If the target file is empty or has no entries, report this to the user and suggest running `/analyze` or `/spec` first.
 

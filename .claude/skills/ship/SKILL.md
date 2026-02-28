@@ -58,10 +58,10 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
    - `user-stories` → `USER_STORIES.md` — JTBD user stories (bridge to PD-Build)
    - `audit` / `strategy` → `AUDIT.md` / `STRATEGY.md` — Specialized documents
 
-2. **Load knowledge base** — Read:
+2. **Load knowledge base (prefer indexes when available)** — Read:
    - `02_Work/STRATEGIC_VISION.md` for vision, strategy, principles, and domains
    - `02_Work/PROPOSALS.md` for design proposals [DP-XX]
-   - `02_Work/INSIGHTS_GRAPH.md` for verified insights to reference
+   - **INSIGHTS_GRAPH** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read the index (~5 KB) to get all insight IDs, titles, statuses, categories, and convergence. Only read individual full entries (by line range from L-start) when the deliverable needs detailed narrative, quotes, or evidence trails. If stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
 
 3. **Validate readiness** — Check Work layer has sufficient verified content:
    - Are there VERIFIED insights to reference?

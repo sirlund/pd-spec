@@ -758,6 +758,16 @@ Process all files in single pass (step 12 below)
    - **Preserves** `*_normalized.md` (preprocessed sources for Phase 2 redirect)
    - Only runs after all batches complete (or single pass completes)
 
+### Phase 4d: Generate Indexes
+
+16. **Generate indexes for large files** — After extraction is complete, generate lightweight indexes for files over 20 KB. These indexes enable other skills (`/analyze`, `/audit`, `/ship`) to read compact summaries (~5 KB) instead of full data files (~200 KB), significantly reducing token consumption.
+
+   Run `./scripts/generate-index.sh` for each applicable file:
+   - `./scripts/generate-index.sh extractions 02_Work/EXTRACTIONS.md` — generates `02_Work/_index/EXTRACTIONS_INDEX.md`
+   - For each `*_normalized.md` file in `02_Work/_temp/` larger than 20 KB: `./scripts/generate-index.sh normalized 02_Work/_temp/{file}` — generates `02_Work/_index/{file}_INDEX.md`
+
+   The script automatically skips files below 20 KB (exit code 2 — not an error). If the script is unavailable, skip this step silently — indexes are an optimization, not a requirement.
+
 ### Phase 5: Write to MEMORY.md
 
 16. **Append entry to `02_Work/MEMORY.md`:**
