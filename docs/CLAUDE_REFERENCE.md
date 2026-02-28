@@ -27,6 +27,14 @@ The folder name provides context that individual files inherit. The agent valida
 
 **Non-markdown files** (images, PDFs, spreadsheets, .txt, .docx) can't carry internal metadata. Add a `_CONTEXT.md` in the folder to describe them — see `_CONTEXT_TEMPLATE.md` for the format.
 
+**Normalized transcripts** use a `.clean.md` suffix and live next to their raw source file:
+```
+sesiones-idemax/
+  reunion_camila_2026-02-17.md         ← raw transcript
+  reunion_camila_2026-02-17.clean.md   ← normalized version
+```
+Convention: `{original_name}.clean.md`. Glob `*.clean.md` to include/exclude.
+
 ### Source Management
 
 Sources can be added, reclassified, or deleted. The agent validates each operation:
@@ -112,17 +120,32 @@ Deletion is the most destructive operation — it can orphan insights. The agent
 │   │   ├── EXTRACTIONS_INDEX.md        Section table with line ranges (~5 KB)
 │   │   ├── INSIGHTS_GRAPH_INDEX.md     ID/title/status table with line numbers (~5 KB)
 │   │   └── {source}_normalized_INDEX.md  Topic/chunk table with line ranges (~3 KB)
-│   ├── _temp/                 Ephemeral workspace (checkpoints, conversions)
-│   ├── _assets/               External materials intake (not knowledge sources)
-│   │   └── _INTAKE.md         Asset log (filename, origin, date, purpose)
+│   ├── _temp/                 Ephemeral workspace (checkpoints, plans — agent state only)
+│   ├── _assets/               External materials (logos, photos, reference images)
+│   ├── _freemode_generated/   Documents created outside the pipeline (via /freemode or ad-hoc)
 │   └── _README.md            Layer rules for users
 ├── 03_Outputs/                Deliverables (agent-managed, do not edit manually)
 │   ├── _templates/            Legacy HTML templates (kept for future /export)
 │   ├── _schemas/              Legacy JSON schemas (kept for future /export)
 │   ├── PRD.md                 Product Requirements Document (Markdown)
 │   ├── PERSONAS.md            User persona cards (Markdown)
-│   ├── _custom/               Non-pipeline deliverables (freemode outputs)
+│   ├── _custom/               Non-pipeline deliverables (freemode outputs, legacy HTMLs)
 │   └── _README.md            Layer rules for users
+├── showcase/                  Presentation engine (Astro + MDX)
+│   ├── src/
+│   │   ├── components/        Base components (Slide, Card, RecBox, ConcentricRings)
+│   │   │   ├── atoms/         Reusable atoms (ExternalLink, LogoAvatar, BulletList, etc.)
+│   │   │   └── snowflakes/    Project-specific components (not reusable across projects)
+│   │   ├── layouts/           PresentationLayout.astro
+│   │   ├── themes/            theme_spec.css
+│   │   ├── content/slides/    MDX slides (project content on branches, dummy on main)
+│   │   ├── pages/             index.astro (entry point)
+│   │   ├── theme.config.base.ts  Engine defaults (flows from main)
+│   │   └── theme.config.ts       Project overrides (merge=ours protected)
+│   ├── public/                Static assets (logo, images — git add -f on project branches)
+│   ├── scripts/               Export tooling (html2pptx.py, export-pdf.sh)
+│   ├── exports/               Generated binaries output tray (gitignored)
+│   └── IDEAS.md               Showcase-specific ideas & pending
 ├── docs/
 │   ├── BACKLOG.md             Future work proposals
 │   ├── CHANGELOG.md           Internal change log (PD-Spec development)
@@ -346,6 +369,35 @@ Present findings as a compact prefix:
 > ⚑ Self-audit: Homer's Car [N ungrounded elements] · Complexity [OK/flagged] · Gaps [N assumptions]
 
 User can skip with "skip audit" in their request.
+
+## Showcase (Presentation Engine)
+
+Astro + MDX presentation system. Lives at `showcase/` on main (engine), project branches add content.
+
+### Theme Config — Layered Approach
+
+Two files control theming:
+- **`theme.config.base.ts`** — engine defaults (`Brand`, `Product`, `en`). Flows from main via merges.
+- **`theme.config.ts`** — project overrides. Protected by `merge=ours` in `.gitattributes`. Projects edit this file to set brand, language, logo.
+
+Components (`Slide.astro`, `PresentationLayout.astro`) import `theme.config.ts` for defaults. Props can still override per-instance.
+
+### Component Hierarchy
+
+| Level | Location | Examples | Reusable? |
+|---|---|---|---|
+| **Base** | `components/` | Slide, Card, RecBox, ConcentricRings | Yes — vanilla theme |
+| **Atoms** | `components/atoms/` | ExternalLink, LogoAvatar, BulletList, ImageFrame, DarBadge | Yes — generic UI primitives |
+| **Snowflakes** | `components/snowflakes/` | CaseStudy, VizSlide, BenchCard, DarTimeline | No — project-specific, migrate to project branch |
+
+### Assets on Project Branches
+
+`showcase/public/` assets (PNGs, images) are gitignored on main. On project branches, use `git add -f` to track them — once tracked, gitignore no longer applies.
+
+### Export Pipeline (planned)
+
+- `showcase/exports/` — gitignored output tray for generated binaries (PDF, PPTX)
+- `showcase/scripts/` — export tooling (`html2pptx.py`, `export-pdf.sh`)
 
 ## Documentation Guidelines
 

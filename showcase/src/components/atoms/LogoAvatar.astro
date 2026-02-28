@@ -1,0 +1,23 @@
+---
+/**
+ * Small logo/avatar image with fallback on error.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  size?: number;
+  class?: string;
+}
+
+const { src, alt, size = 28, class: className } = Astro.props;
+---
+
+<img
+  src={src}
+  alt={alt}
+  class={className}
+  width={size}
+  height={size}
+  style={`border-radius: 3px;`}
+  onerror="this.style.display='none'"
+>

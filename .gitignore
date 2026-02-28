@@ -28,3 +28,11 @@ dist/
 app/node_modules/
 app/dist/
 app/package-lock.json
+
+# Showcase build artifacts
+showcase/node_modules/
+showcase/dist/
+showcase/package-lock.json
+showcase/.astro/
+showcase/public/*.png
+showcase/public/img/

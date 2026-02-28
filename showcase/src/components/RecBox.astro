@@ -1,0 +1,19 @@
+---
+/**
+ * Recommendation callout box with left accent border.
+ */
+interface Props {
+  title: string;
+  accentColor?: string;
+  style?: string;
+}
+
+const { title, accentColor, style } = Astro.props;
+const borderStyle = accentColor ? `border-left-color: ${accentColor};` : '';
+const combinedStyle = [borderStyle, style].filter(Boolean).join(' ');
+---
+
+<div class="rec-box" style={combinedStyle || undefined}>
+  <span class="rec-title" style={accentColor ? `color: ${accentColor};` : undefined}>{title}</span>
+  <slot />
+</div>

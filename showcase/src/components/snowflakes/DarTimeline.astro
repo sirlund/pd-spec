@@ -1,0 +1,83 @@
+---
+/**
+ * D→A→R timeline bar for visualization slides.
+ * `active` determines which dot is highlighted: 'd', 'a', or 'r'.
+ * `connector` determines where the V-arrow points: 'left', 'center', or 'right'.
+ */
+interface Props {
+  active: 'd' | 'a' | 'r';
+  connector?: 'left' | 'center' | 'right';
+}
+
+const { active, connector = active === 'd' ? 'left' : active === 'a' ? 'center' : 'right' } = Astro.props;
+
+// Color states based on active stage
+const dColor = active === 'd' ? 'var(--color-d)' : 'rgba(255,77,77,0.3)';
+const aColor = active === 'a' ? 'var(--color-a)' : 'rgba(255,152,0,0.3)';
+const rColor = active === 'r' ? 'var(--accent-cyan)' : 'rgba(0,243,255,0.3)';
+
+const dSize = active === 'd' ? 16 : 12;
+const aSize = active === 'a' ? 16 : 12;
+const rSize = active === 'r' ? 16 : 12;
+
+const gradLeft = active === 'd' ? 'var(--color-d)' : 'rgba(255,77,77,0.15)';
+const gradMid = active === 'a' ? 'var(--color-a)' : 'rgba(255,152,0,0.15)';
+const gradRight = active === 'r' ? 'var(--accent-cyan)' : 'rgba(0,243,255,0.15)';
+
+const dGlow = active === 'd' ? `box-shadow: 0 0 16px rgba(255,77,77,0.5); background: ${dColor};` : `background: var(--bg-color); border: 2px solid ${dColor};`;
+const aGlow = active === 'a' ? `box-shadow: 0 0 16px rgba(255,152,0,0.5); background: ${aColor};` : `background: var(--bg-color); border: 2px solid ${aColor};`;
+const rGlow = active === 'r' ? `box-shadow: 0 0 16px rgba(0,243,255,0.5); background: ${rColor};` : `background: var(--bg-color); border: 2px solid ${rColor};`;
+
+const connectorCss = connector === 'left'
+  ? 'left: 0; width: 14px;'
+  : connector === 'center'
+  ? `left: 0; right: calc(50% + 15px);`
+  : 'left: 0; right: 46px;';
+
+const arrowPos = connector === 'left'
+  ? 'left: 14px;'
+  : connector === 'center'
+  ? 'left: calc(50% - 15px);'
+  : 'right: 14px;';
+
+const afterCss = connector === 'left'
+  ? 'left: 46px; right: 0;'
+  : connector === 'center'
+  ? `left: calc(50% + 15px); right: 0;`
+  : 'right: 0; width: 14px;';
+---
+
+<div class="col-12" style="padding: 0 20px; margin-bottom: 0;">
+  <div style="display: flex; margin-bottom: 8px;">
+    <div style="flex: 1;">
+      <span style={`font-family: var(--font-mono); font-size: 16px; color: ${dColor}; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;`}>
+        <i class="fa-solid fa-satellite-dish" style="font-size: 20px; margin-right: 5px;"></i> Detección
+      </span>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <span style={`font-family: var(--font-mono); font-size: 16px; color: ${aColor}; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;`}>
+        <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 20px; margin-right: 5px;"></i> Análisis
+      </span>
+    </div>
+    <div style="flex: 1; text-align: right;">
+      <span style={`font-family: var(--font-mono); font-size: 16px; color: ${rColor}; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;`}>
+        <i class="fa-solid fa-route" style="font-size: 20px; margin-right: 5px;"></i> Recomendación
+      </span>
+    </div>
+  </div>
+  <div style="position: relative; height: 16px;">
+    <div style={`position: absolute; top: 7px; left: 0; right: 0; height: 2px; background: linear-gradient(to right, ${gradLeft}, ${gradMid}, ${gradRight});`}></div>
+    <div style={`position: absolute; left: 0; top: ${(16 - dSize) / 2}px; width: ${dSize}px; height: ${dSize}px; border-radius: 50%; ${dGlow}`}></div>
+    <div style={`position: absolute; left: 50%; transform: translateX(-50%); top: ${(16 - aSize) / 2}px; width: ${aSize}px; height: ${aSize}px; border-radius: 50%; ${aGlow}`}></div>
+    <div style={`position: absolute; right: 0; top: ${(16 - rSize) / 2}px; width: ${rSize}px; height: ${rSize}px; border-radius: 50%; ${rGlow}`}></div>
+  </div>
+</div>
+
+<!-- Bubble connector -->
+<div class="col-12" style="height: 22px; position: relative; overflow: visible;">
+  <div style={`position: absolute; bottom: 0; ${connectorCss} height: 1px; background: #333;`}></div>
+  <svg style={`position: absolute; bottom: 0; ${arrowPos}`} width="30" height="18" viewBox="0 0 30 18" fill="none" overflow="visible">
+    <path d="M 0 18 L 15 3 L 30 18" stroke="#333" stroke-width="1.5" fill="var(--bg-color)" />
+  </svg>
+  <div style={`position: absolute; bottom: 0; ${afterCss} height: 1px; background: #333;`}></div>
+</div>

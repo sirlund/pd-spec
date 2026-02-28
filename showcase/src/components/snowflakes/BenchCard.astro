@@ -1,0 +1,45 @@
+---
+/**
+ * Benchmark company card with logo, screenshot, Factor X, and applications list.
+ */
+import ExternalLink from '../atoms/ExternalLink.astro';
+import LogoAvatar from '../atoms/LogoAvatar.astro';
+import BulletList from '../atoms/BulletList.astro';
+
+interface Props {
+  name: string;
+  url: string;
+  industry: string;
+  logoUrl: string;
+  screenshot?: string;
+  factorX: string;
+  aplicaciones: string[];
+  applyLabel?: string;
+  span?: number;
+}
+
+const { name, url, industry, logoUrl, screenshot, factorX, aplicaciones, applyLabel = 'How It Applies', span = 4 } = Astro.props;
+---
+
+<div class={`bench-card col-${span}`}>
+  <div class="bench-card-header">
+    <LogoAvatar src={logoUrl} alt={name} class="bench-logo" />
+    <div>
+      <div class="bench-name">
+        <ExternalLink href={url}>{name}</ExternalLink>
+      </div>
+      <div class="bench-industry">{industry}</div>
+    </div>
+  </div>
+  {screenshot && (
+    <div class="bench-ui-placeholder">
+      <img src={screenshot} alt={`${name} UI`} onerror="this.dataset.failed=true">
+      <span>UI screenshot</span>
+    </div>
+  )}
+  <div class="bench-factorx" set:html={factorX} />
+  <div>
+    <div class="bench-aplicacion-title">{applyLabel}</div>
+    <BulletList items={aplicaciones} class="bench-steal" />
+  </div>
+</div>

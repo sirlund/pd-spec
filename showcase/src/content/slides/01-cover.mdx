@@ -1,0 +1,14 @@
+---
+order: 1
+title: "Cover"
+slideLayout: "cover"
+---
+import Slide from '../../components/Slide.astro';
+
+<Slide id="slide-1" grid={false} cssClass="slide-cover">
+  <div class="cover-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; gap: 16px;">
+    <h1 style="font-size: 48px; font-weight: 600; background: linear-gradient(180deg, #fff 0%, #666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Spec-ipsum</h1>
+    <p style="font-size: 18px; color: var(--text-muted); max-width: 500px;">A showcase of available components and layouts for PD-Spec presentations.</p>
+    <div style="margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase;">Content-ipsum · Logo-ipsum</div>
+  </div>
+</Slide>

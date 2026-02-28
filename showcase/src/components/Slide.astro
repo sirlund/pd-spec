@@ -1,0 +1,46 @@
+---
+/**
+ * Slide wrapper — generates <section class="slide"> with header.
+ * Set `grid={false}` for slides that don't use content-grid (cover, transition, etc.)
+ */
+import theme from '../theme.config';
+
+interface Props {
+  id: string;
+  title?: string;
+  brand?: string;
+  brandAccent?: string;
+  active?: boolean;
+  cssClass?: string;
+  grid?: boolean;
+}
+
+const {
+  id,
+  title,
+  brand = theme.brand,
+  brandAccent = theme.brandAccent,
+  active = false,
+  cssClass = '',
+  grid = true,
+} = Astro.props;
+
+const classes = ['slide', active ? 'active' : '', cssClass].filter(Boolean).join(' ');
+---
+
+<section class={classes} id={id}>
+  {title !== undefined && (
+    <div class="header">
+      <div class="brand">{brand} <span>{brandAccent}</span></div>
+      {title && <h2 class="slide-title">{title}</h2>}
+      <div class="slide-number"></div>
+    </div>
+  )}
+  {grid ? (
+    <div class="content-grid">
+      <slot />
+    </div>
+  ) : (
+    <slot />
+  )}
+</section>
