@@ -61,7 +61,7 @@ export default function ProposalsView({ onNavigate }) {
                 </span>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                   {dp.type && (
-                    <span className="badge" style={{ fontSize: '0.65rem', opacity: 0.7 }}>{dp.type}</span>
+                    <span className="badge badge-subtle">{dp.type}</span>
                   )}
                   {dp.status && <StatusBadge status={dp.status} />}
                 </div>
