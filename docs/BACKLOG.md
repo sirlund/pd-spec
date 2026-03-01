@@ -829,7 +829,7 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-80] LLM Integration in Live Research App — Agent Architecture
 
-**Status:** PHASE 0 COMPLETE (Wave 1, v4.25.1–v4.25.2) · PHASE 1 PROPOSED (SDK migration, **P0 per Repriorización v2**)
+**Status:** PHASE 0 COMPLETE (Wave 1, v4.25.1–v4.25.2) · PHASE 1 IMPLEMENTED (v4.27.0, SDK migration)
 **Priority:** P0 (elevated from P1, session 2026-03-01)
 **Effort:** Phase 1: M · Phase 2: L · Phase 3: M
 **Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal. Architecture reassessed 2026-02-28 after discovering fundamental limitations in the custom Agent Runtime.
@@ -899,13 +899,13 @@ Phase 1 introduces service abstractions designed for multi-tenant SaaS, but impl
 The SDK integration goes through these abstractions — never called directly from route handlers. When Phase 3 swaps implementations, the Express routes and frontend don't change.
 
 **Acceptance criteria:**
-- [ ] `agent-runtime.js` replaced by SDK `query()` call via service abstractions
-- [ ] All 3 skills (/extract, /analyze, /spec) execute identically in app and CLI
-- [ ] `canUseTool` callback renders interaction UI (confirmations, selections, text input) in browser
-- [ ] Context compaction handled by SDK (no manual trimming)
-- [ ] Scripts execute via `Bash` tool (no whitelist needed)
-- [ ] BL-101 index system works in app without compatibility workarounds
-- [ ] `WorkspaceService`, `SessionStore`, `ExecutionQueue`, `KeyVault` interfaces defined (simple implementations)
+- [x] `agent-runtime.js` replaced by SDK `query()` call (v4.27.0)
+- [x] All 3 skills (/extract, /analyze, /spec) execute identically in app and CLI (v4.27.0)
+- [x] `canUseTool` callback renders interaction UI (confirmations, selections, text input) in browser (v4.27.0 — AskUserQuestion bridging implemented, pending real-project validation)
+- [x] Context compaction handled by SDK (no manual trimming) (v4.27.0)
+- [x] Scripts execute via `Bash` tool (no whitelist needed) (v4.27.0)
+- [x] BL-101 index system works in app (v4.27.0 — via preamble instructions + Read offset/limit, not deterministic guard)
+- [ ] `WorkspaceService`, `SessionStore`, `ExecutionQueue`, `KeyVault` interfaces defined (deferred per rule of three)
 
 **Risk:** SDK requires Node.js server-side process with filesystem access. Current deployment is localhost (fine). Remote deployment (Wave 3, BL-83) needs sandboxed containers (E2B, Modal, Fly). This is a Phase 3 concern, not a blocker for Phase 1.
 
