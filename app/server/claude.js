@@ -122,7 +122,9 @@ export function createClaudeRoutes(projectRoot, broadcast) {
 
       const preamble = `You are running inside the PD-Spec web application.
 You have native filesystem tools: Read, Write, Edit, Bash, Glob, Grep.
-You have interaction tools: AskUserQuestion (for user approval, selection, or free-text input).
+IMPORTANT: When a skill requires user confirmation or selection (gates, approvals,
+choices), you MUST use the AskUserQuestion tool. Do NOT write questions as plain text
+— the user cannot respond to text. Only AskUserQuestion renders an interactive panel.
 
 For utility scripts, run them via Bash: ./scripts/script-name.sh [args]
 IMPORTANT: ALWAYS start /extract by running via Bash: ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
