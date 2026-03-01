@@ -12,9 +12,9 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-102] Showcase — MDX Presentation System (Astro Submodule)
 
-**Status:** PROPOSED
+**Status:** v1 IMPLEMENTED (commit `73c5179`, 2026-02-28) · v2/v3 DEFERRED
 **Priority:** P2
-**Effort:** L (v1 only — see phasing below)
+**Effort:** v1 L (done) · v2 M · v3 M
 **Origin:** Session 2026-02-27. Analysis of freemode presentation token consumption in pds--timining. index.html (253 KB) + styles.css (68 KB) = ~80,000 tokens per edit. Content, layout, and styles are tangled — editing one slide requires reading the full monolith.
 
 **Problem:** Freemode presentations are HTML monoliths where content is inseparable from presentation. Every edit (even a title change) costs ~63,000 tokens to read the file, find the slide, and make the change. Additionally, presentations can't leverage the Work layer's traceability — [IG-XX] refs are manually pasted text, not linked data.
@@ -36,7 +36,7 @@ pd-showcase/                    ← git submodule (engine: components, layouts, 
 
 Each slide is a ~2 KB MDX file with frontmatter (`order`, `title`, `layout`, `refs`, `notes`, `tags`). Ordering via `order` in frontmatter, not filename. Components are modular: primitives compose freely, patterns are convenience sugar.
 
-#### v1 — Single Deck Migration (Effort: L) ← THIS BL
+#### v1 — Single Deck Migration (Effort: L) ✅ IMPLEMENTED
 
 Scope limited to migrating the main presentation (`index.html`, 35 slides) to MDX. No auto-generation, no multi-deck, no theme generation.
 
@@ -59,29 +59,37 @@ Scope limited to migrating the main presentation (`index.html`, 35 slides) to MD
 - `--dev` mode (starts Astro dev server)
 - Single deck only (`main/`)
 
-**v1 acceptance criteria:**
-- [ ] pd-showcase repo with Astro 5 + MDX, 7 components listed above
-- [ ] 35 slides from index.html migrated to individual .mdx files
-- [ ] `theme_spec.css` with tokens extracted from existing styles.css (visual parity with current presentation)
-- [ ] `/showcase --init` creates submodule + content structure from PROJECT.md
-- [ ] `/showcase [deck]` edit mode works (read + edit specific .mdx files)
-- [ ] `npm run dev` renders presentation with working navigation + slide counter
-- [ ] Editing a slide costs <1,000 tokens (vs ~63,000 today)
-
-#### v2 — Multi-Deck + Generation (Effort: M, deferred)
+#### v2 — Multi-Deck + Generation + Legacy Migration (Effort: M, deferred)
 
 - Multi-deck support (directory-based, per-deck config in `deck.config.ts`)
 - `/showcase --generate [deck]` — auto-generate slides from Work layer data (STRATEGIC_VISION, PROPOSALS, INSIGHTS_GRAPH)
 - Additional pattern components for variant presentations (interna, v2_boceto slide types)
 - PRESENTATION.md as seed for `--generate`
+- **Legacy migration:** `interna_w5.html` and `v2_boceto.html` pending Astro migration (currently in `_custom/`)
+- **Molecules layer:** Extract recurring patterns into base components when convergence confirms
 
 #### v3 — Themes + Traceability + Export (Effort: M, deferred)
 
 - `/showcase --theme` — auto-generate project theme from STRATEGIC_VISION + BENCHMARK_UX context
 - `<InsightRef>` component with build-time data from INSIGHTS_GRAPH_INDEX (depends on BL-101)
 - Presenter mode (speaker notes route)
-- Print CSS for PDF export
+- **Export pipeline:** `showcase/scripts/html2pptx.py` + `export-pdf.sh` (build → export → compress via ghostscript). Replaces manual ilovepdf.com workflow. Output to gitignored `showcase/exports/`.
+- CSS variable injection from `theme.config` (colors, fonts, runtime switching beyond light/dark, presets: corporate/minimal/vibrant)
 - Mermaid diagram embedding via remark plugin
+
+#### Future — Slide Comments (visual annotation for batch edits)
+
+- Floating dev-only widget: click any component/slide, leave text annotation
+- Comments saved to `_comments.json` or `COMMENTS.md` (slide ID + component selector + text)
+- `/showcase --apply-comments` — agent reads comments, applies batch changes across MDX files, clears applied
+- Inspired by Figma comments / Google Docs suggestions, for code-rendered presentations
+- Open: per-slide vs per-component granularity, structured JSON vs freeform markdown, ephemeral vs persistent
+
+#### Testing (not yet implemented)
+
+- Currently visual verification + `npx astro build`
+- Consider: Playwright screenshot regression tests per slide
+- Consider: `astro check` / `tsc` for type validation in CI
 
 **Relationship to /ship:** `/ship presentation` → PRESENTATION.md (markdown). `/showcase --generate` (v2) → MDX slides (visual). They coexist.
 
@@ -89,6 +97,102 @@ Scope limited to migrating the main presentation (`index.html`, 35 slides) to MD
 > As a UX consultant preparing a client presentation, I can edit slide content in a 2 KB MDX file — seeing hot-reload in my browser — instead of navigating a 253 KB HTML monolith. Each slide traces to verified insights.
 
 **Full plan:** `docs/PLAN_TOKEN_OPTIMIZATION_AND_SHOWCASE.md`
+**Ideas:** `showcase/IDEAS.md`
+
+---
+
+### [BL-103] Markdown Rendering — Agent View + Interaction Panel
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** OBS-W1-06, OBS-W1-14 (QA Wave 1, 2026-02-26). Session 2026-03-01 formalized as BL.
+
+**Problem:** The Agent view and Interaction panel render raw markdown — `**bold**` appears as literal asterisks, headings as `###` plain text. `formatText()` only converts `[IG-XX]`/`[CF-XX]` to badges but does not render markdown.
+
+**Solution:** `RichText` component (or library integration: `marked`/`react-markdown`) used consistently in Agent log, Interaction panel (`ask_confirmation`, `ask_selection`, `ask_text`), and any surface where the LLM emits text.
+
+**Note post-SDK:** The rendering surface changes (SDK emits messages with different structure than custom SSE), but the underlying problem is identical: render LLM markdown in the UI. The RichText component survives the migration.
+
+**Wave:** 3 (Self-Service). Quick win UX post-SDK.
+
+---
+
+### [BL-104] Agent State Persistence + Response History
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** M
+**Origin:** OBS-W1-08, OBS-W1-08b (QA Wave 1, 2026-02-26). Session 2026-03-01 formalized as BL.
+
+**Problem:** Navigating away from the Agent view (e.g., clicking an `[CF-XX]` badge) unmounts the component and loses all state (log, response, mode). Returning shows a blank view.
+
+**Solution:** (a) Preserve Agent view state in React context (not component-local). (b) Response history as collapsible cards that persist across navigation.
+
+**Note post-SDK:** The agent state model changes with the SDK (sessions, messages, tool results vs. SSE events). Implementation must be redone post-migration, but the UX problem (state lost on navigation) is identical. Formalize after migration when the new data structure is clear.
+
+**Wave:** 3 (Self-Service).
+
+---
+
+### [BL-105] Checkpoint Integrity — Deterministic from Script Output
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** OBS-W1-17 (QA Wave 1, 2026-02-26). Session 2026-03-01 formalized as BL.
+
+**Problem:** SESSION_CHECKPOINT.md recorded a status change as IG-15 instead of IG-02 after an invalidation. The script pipeline was correct — the error was the LLM summarizing narratively which insight changed and getting the ID wrong.
+
+**Root cause:** The checkpoint is written by the LLM as narrative summary. The LLM confused the insight ID.
+
+**Solution:** Insight state changes in checkpoint must derive from deterministic script output (e.g., `verify-insight.sh` stdout confirms which ID was changed), not from LLM narrative memory. Rule 90/10: mechanical data → script, not LLM.
+
+**Note post-SDK:** The SDK has automatic context compaction, which may change how checkpoints are managed. But the principle (deterministic data from scripts, not LLM narrative) applies regardless.
+
+**Wave:** 3 (Self-Service).
+
+---
+
+### [BL-106] MCP App — PD-Spec as MCP Server + Funnelized UI
+
+**Status:** PROPOSED
+**Priority:** P3 (medium term — post Wave 3)
+**Effort:** L
+**Origin:** Session 2026-03-01. MCP Apps spec official (January 2026), adoption confirmed in Claude, ChatGPT, VS Code, Goose.
+
+**Problem:** PD-Spec today is accessible only as (a) CLI via Claude Code or (b) webapp (local/hosted). Both require setup, configuration, and context. The largest market is users already inside Claude, ChatGPT, or VS Code who want to analyze sources without leaving their tool.
+
+**Solution:** PD-Spec as MCP server exposing tools (`/extract`, `/analyze`, `/ship`) with interactive UI via MCP Apps (`@modelcontextprotocol/ext-apps`).
+
+**Two products, two jobs-to-be-done:**
+
+| | Webapp (PD-OS) | MCP App |
+|---|---|---|
+| Experience | Complete — orchestration, project management, dashboard | Entry point — funnel: "upload sources → analyze → generate report" |
+| Target | Teams, consultants adopting PD-Spec as methodology | Anyone in Claude/ChatGPT/VS Code wanting quick analysis |
+| Onboarding | Requires setup, configuration | Zero friction — appears in chat |
+| Skills | Full pipeline with all modes | Subset optimized for linear flow |
+
+**Domain:** Product design research. Not a generic document analyzer. Knows what to look for: pain points, opportunities, contradictions between qualitative and quantitative, gaps between stakeholder requests and user data.
+
+**Value vs. "just ask the model":**
+- **Multi-source conflict detection** — crosses sources and detects contradictions. Average user doesn't know to ask for this.
+- **Structured, actionable output** — not a wall of text but a formatted, prioritized report ready for design decisions.
+
+**Conversion funnel:** User discovers PD-Spec as MCP App → likes it → needs more control/collaboration → upgrade to full webapp.
+
+**Coexistence:** Both tracks advance in parallel without architectural conflict, as long as skills remain the shared layer. The MCP App skills are a subset of PD-Spec skills, optimized for a more constrained experience.
+
+**Depends on:** BL-80 Phase 1 (SDK migration). The modular architecture (skills → orchestrator → Claude module) is prerequisite for exposing the engine as MCP server.
+
+**References:**
+- [MCP Apps spec](https://modelcontextprotocol.io/docs/extensions/apps)
+- [ext-apps SDK](https://github.com/modelcontextprotocol/ext-apps)
+- [UX_CONTRACT.md](UX_CONTRACT.md) — Guided mode IS the MCP App interaction model
+- [BACKLOG_REPRIORITIZATION_V2.md](BACKLOG_REPRIORITIZATION_V2.md) — Full strategic rationale
+
+**Wave:** 4 (MCP App).
 
 ---
 
@@ -708,8 +812,8 @@ Decision deferred — revisit when a real project hits the ceiling.
 
 ### [BL-80] LLM Integration in Live Research App — Agent Architecture
 
-**Status:** PHASE 0 COMPLETE (Wave 1, v4.25.1–v4.25.2) · PHASE 1 PROPOSED (SDK migration)
-**Priority:** P1
+**Status:** PHASE 0 COMPLETE (Wave 1, v4.25.1–v4.25.2) · PHASE 1 PROPOSED (SDK migration, **P0 per Repriorización v2**)
+**Priority:** P0 (elevated from P1, session 2026-03-01)
 **Effort:** Phase 1: M · Phase 2: L · Phase 3: M
 **Origin:** Hugo sync (2026-02-23). Evidenced daily pain: "flujo roto" where users copy prompts from app to Claude terminal. Architecture reassessed 2026-02-28 after discovering fundamental limitations in the custom Agent Runtime.
 
@@ -851,9 +955,9 @@ Claude Agent SDK → Anthropic API
 
 The model abstraction layer enables future multi-model support if demanded, but Claude-first is the correct default. The quality requirements (no-hallucination, conflict detection, evidence traceability) need a top-tier model under our control.
 
-**🔀 Strategic fork: SaaS standalone vs MCP App (evaluate before Phase 3)**
+**🔀 Strategic fork: SaaS standalone + MCP App (DECIDED: coexistence, session 2026-03-01)**
 
-Two distribution models for PD-Spec, not mutually exclusive:
+Two distribution models for PD-Spec — decided as complementary, not mutually exclusive. See BL-106.
 
 | | **Route A: SaaS standalone** | **Route B: MCP App** |
 |---|---|---|
@@ -869,15 +973,11 @@ Route B is provocative: PD-Spec wouldn't need to be a standalone app. It could b
 
 MCP Apps will become more powerful with Claude Cowork (Anthropic's multi-step desktop agent) — exactly the kind of orchestrated flow PD-Spec manages.
 
-**This doesn't change Phases 1-2.** The Agent SDK migration and model routing are correct regardless of distribution model. The fork matters at Phase 3: build your own multi-tenant infra (Route A) vs package as MCP server (Route B) vs both (Route A+B).
+**This doesn't change Phases 1-2.** The Agent SDK migration and model routing are correct regardless of distribution model.
 
-**Risk assessment for Route B:**
-- MCP Apps is 2 months old (Jan 2026). Protocol may not gain host adoption (Claude, ChatGPT, VS Code need to support it well).
-- Complex multi-step workflows (waves, QA loops, 35-slide presentations) may not fit well inside a chat-embedded iframe — dedicated apps may always be superior for dense UX.
-- Counter-argument: the target is NOT power users. The pitch is accessibility — "open ChatGPT, say 'research my market', PD-Spec appears as interactive experience without the user knowing what an MCP server is." That's lower friction than signing up for pd-spec.app.
-- **Mitigation: don't bet, observe.** Phases 1-2 are route-agnostic. Before Phase 3, evaluate: (1) which hosts adopted MCP Apps, (2) what UX quality is achievable in embedded iframes, (3) whether competitors shipped MCP-based research tools. Decide with data, not intuition.
+**Decision (2026-03-01): Coexistence.** Both routes proceed in parallel. The webapp (PD-OS) is the full product for teams/consultants. The MCP App (BL-106) is a funnelized entry point for users already in Claude/ChatGPT/VS Code. Same engine, different experiences. See [BACKLOG_REPRIORITIZATION_V2.md](BACKLOG_REPRIORITIZATION_V2.md) for full rationale.
 
-**Decision point:** Evaluate before committing to Phase 3 infrastructure. By then, MCP Apps maturity and host adoption will be clearer.
+**Risk update (2026-03-01):** MCP Apps adoption confirmed — Claude, ChatGPT, VS Code, Goose all support it. Anthropic + OpenAI collaborated on the spec. The original risk ("protocol may not gain host adoption") has largely dissipated. Remaining risk: complex multi-step UX (conflict resolution, 35-slide presentations) may not fit in chat-embedded iframes. Mitigation: the MCP App is NOT the webapp reduced — it's a simplified funnel designed for that context.
 
 **Evidence:**
 - Nico: *"La única paja que tiene este sistema todavía es que no puedes hacer ninguna acción real acá"*
@@ -885,6 +985,13 @@ MCP Apps will become more powerful with Claude Cowork (Anthropic's multi-step de
 - Session 2026-02-27: App Runtime Compatibility Gap discovered — `read_file` has no offset/limit, `generate-index.sh` not whitelisted, 2000-char context trimming
 - Session 2026-02-28: Claude Agent SDK analysis confirms it provides ALL capabilities missing in custom runtime
 - Session 2026-02-28: MCP Apps analysis — protocol enables interactive UI returned from MCP tools, hosted in any compatible client
+- Session 2026-03-01: OpenClaw case validates vendor lock-in risk. MCP Apps adoption confirmed (Claude, ChatGPT, VS Code, Goose). Skills identified as portable by nature (.md with rules). SDK elevated to P0. UX Contract specified. Coexistence webapp + MCP App formalized. See [BACKLOG_REPRIORITIZATION_V2.md](BACKLOG_REPRIORITIZATION_V2.md)
+
+**Related documents:**
+- [BACKLOG_REPRIORITIZATION_V2.md](BACKLOG_REPRIORITIZATION_V2.md) — Wave 2 plan, acceptance criteria additions, rate limit analysis
+- [UX_CONTRACT.md](UX_CONTRACT.md) — User interaction model (Guided/Pipeline modes, gate policies, SDK requirements)
+- [IDEAS_LLM_QA_PATTERNS.md](IDEAS_LLM_QA_PATTERNS.md) — LLM quality assurance patterns (tool guardrails, critic agent)
+- [qa/SDK_MIGRATION_DISCARDED.md](qa/SDK_MIGRATION_DISCARDED.md) — Items that die with the runtime migration
 
 **User story:**
 > As a researcher using PD-Spec in the browser, I get the same analytical power as the CLI — skills run identically, context is managed intelligently, and I can interact with the agent at every decision point through a visual interface instead of a terminal.
