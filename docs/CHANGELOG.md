@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.27.0] — 2026-03-01 — SDK Migration
+
+The custom agent loop (200-iteration while-loop with `client.messages.create()`) is replaced by Claude Agent SDK's `query()` async generator. The agent now has native Read, Write, Edit, Bash, Glob, Grep with automatic context compaction. Skills run identically in CLI and webapp.
+
+<details>
+<summary>Features (1)</summary>
+
+- **Claude Agent SDK integration (BL-80 Phase 1)** — `agent-runtime.js` (5 custom tools + 3 interaction tools + manual context trimming) deleted. Replaced by SDK `query()` in `claude.js` + `sdk-guards.js` (canUseTool callback + InteractionBridge). Two-layer permission architecture: `disallowedTools` blocks Agent/Skill/etc. at CLI level; `canUseTool` handles Write/Edit path validation, Bash safety, AskUserQuestion interaction bridging, and mode-based denials. SSE bridging transforms SDK messages to existing frontend format — zero changes to rendering. Skill prompts transformed to avoid SDK slash command interception. New `POST /run/respond` endpoint replaces close-reopen SSE pattern for interactions.
+
+</details>
+
+<details>
+<summary>Fixes (1)</summary>
+
+- **BL-101 index redirect moved to system prompt** — Read is auto-approved by the SDK CLI and doesn't pass through `canUseTool`. Index redirect via deterministic guard is not viable. Replaced with preamble instruction to check `02_Work/_index/` before reading large files. The SDK provides Read with offset/limit (the old runtime couldn't), so the agent can now obey index instructions. Dead redirect code removed from `sdk-guards.js`.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
 ## [4.26.0] — 2026-02-28 — Index System
 
 Skills now read compact indexes (~5 KB) instead of full data files (~200 KB) for dense projects, cutting token consumption by up to 83% per operation.
