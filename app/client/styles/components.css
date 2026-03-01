@@ -107,62 +107,73 @@
   gap: 4px;
 }
 
-/* Status badges */
+/* Status badges — border uses fg color at 30% opacity for consistency with ID badges */
 .badge-verified {
   background: var(--verified-bg);
+  border: 1px solid rgba(74, 222, 128, 0.3);
   color: var(--verified-fg);
 }
 
 .badge-pending {
   background: var(--pending-bg);
+  border: 1px solid rgba(251, 191, 36, 0.3);
   color: var(--pending-fg);
 }
 
 .badge-merged {
   background: var(--merged-bg);
+  border: 1px solid rgba(56, 189, 248, 0.3);
   color: var(--merged-fg);
 }
 
 .badge-invalidated {
   background: var(--invalidated-bg);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   color: var(--invalidated-fg);
   text-decoration: line-through;
 }
 
 .badge-frozen {
   background: var(--frozen-bg);
+  border: 1px solid rgba(129, 140, 248, 0.3);
   color: var(--frozen-fg);
 }
 
 .badge-superseded {
   background: var(--superseded-bg);
+  border: 1px solid rgba(136, 136, 136, 0.3);
   color: var(--superseded-fg);
   text-decoration: line-through;
 }
 
 .badge-resolved {
   background: var(--resolved-bg);
+  border: 1px solid rgba(74, 222, 128, 0.3);
   color: var(--resolved-fg);
 }
 
 .badge-flagged {
   background: var(--flagged-bg);
+  border: 1px solid rgba(251, 146, 60, 0.3);
   color: var(--flagged-fg);
 }
 
 .badge-research {
   background: var(--research-bg);
+  border: 1px solid rgba(96, 165, 250, 0.3);
   color: var(--research-fg);
 }
 
 .badge-blocked,
 .badge-critical {
   background: var(--conflict-bg);
+  border: 1px solid rgba(248, 113, 113, 0.3);
   color: var(--conflict-fg);
 }
 
 .badge-ready {
   background: var(--verified-bg);
+  border: 1px solid rgba(74, 222, 128, 0.3);
   color: var(--verified-fg);
 }
 

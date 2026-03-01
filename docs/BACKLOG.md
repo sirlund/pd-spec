@@ -196,6 +196,19 @@ Scope limited to migrating the main presentation (`index.html`, 35 slides) to MD
 
 ---
 
+### [BL-107] Design System Cleanup — Tokenize Inline Styles
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** S
+**Origin:** OBS during BL-86 implementation (2026-03-01). Badge fix exposed scattered inline styles and magic values across JSX components.
+
+**Problem:** Repeated inline styles in JSX (`fontSize: '0.75rem'`, `color: 'var(--text-muted)'`, `fontWeight: 500`) instead of reusable CSS classes. Values are hardcoded, making consistency manual.
+
+**Solution:** Extract repeated inline patterns into CSS utility classes in `components.css` (e.g. `.sub-label`, `.list-muted`). No architecture change — just move inline styles to classes using existing tokens. Modularization (CSS Modules, Tailwind, etc.) only if app complexity demands it later.
+
+---
+
 ### [BL-101] Work Layer Index System — Token Optimization
 
 **Status:** IMPLEMENTED (v4.26.0, 2026-02-28)
