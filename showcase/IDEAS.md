@@ -22,6 +22,18 @@
 - Legacy HTMLs stay in `_custom/` until replaced
 - Other TIMining presentations have extra assets — pending assimilation into Astro
 
+## Slide Comments — Visual Annotation for Agent Batch Edits
+- **Origin:** Astro dev toolbar (floating debug module) inspired the idea of an overlay tool for leaving comments on slides
+- **Concept:** Floating widget (dev-only, not in production build) that lets the user click on any component/slide and leave a text annotation (e.g., "make this title shorter", "swap chart for table", "wrong color")
+- **Storage:** Comments saved to a simple file (`_comments.json` or `COMMENTS.md`) with slide ID + component selector + comment text
+- **Agent workflow:** User runs `/showcase --apply-comments` (or similar) → agent reads the comments file, applies the batch of changes across MDX files, clears applied comments
+- **Key benefit:** Review the presentation visually in the browser, annotate without switching context, then let the agent do all the editing in one pass
+- **Inspiration:** Figma comments, Google Docs suggestions, but for a code-rendered presentation
+- **Open questions:**
+  - Granularity: per-slide vs per-component targeting?
+  - Format: structured JSON vs freeform markdown?
+  - Should comments survive across builds or be ephemeral?
+
 ## Testing
 - No automated tests currently — verification is visual + `npx astro build`
 - Consider: Playwright screenshot regression tests per slide
