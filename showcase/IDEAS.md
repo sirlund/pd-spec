@@ -20,3 +20,9 @@
 - `interna_w5.html` — pending Astro migration
 - `v2_boceto.html` — pending Astro migration
 - Legacy HTMLs stay in `_custom/` until replaced
+- Other TIMining presentations have extra assets — pending assimilation into Astro
+
+## Testing
+- No automated tests currently — verification is visual + `npx astro build`
+- Consider: Playwright screenshot regression tests per slide
+- Consider: astro check / tsc for type validation in CI
