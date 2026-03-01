@@ -1,24 +1,27 @@
 /**
  * Claude API integration — session management + SSE agent endpoint.
+ * Uses Claude Agent SDK for tool execution and context management.
  * BYOK: user provides their own API key, stored in-memory only.
  */
 
+// Allow SDK subprocess to spawn when running inside a Claude Code session
+delete process.env.CLAUDECODE;
+
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { readFile } from 'fs/promises';
-import { resolve } from 'path';
+import { readFile, readdir, mkdir, copyFile, stat } from 'fs/promises';
+import { resolve, join, dirname } from 'path';
 import Anthropic from '@anthropic-ai/sdk';
-import { TOOLS, isInteractionTool, executeTool, backupWorkLayer } from './agent-runtime.js';
+import { query } from '@anthropic-ai/claude-agent-sdk';
+import { InteractionBridge, createCanUseTool } from './sdk-guards.js';
 
 export function createClaudeRoutes(projectRoot, broadcast) {
   const router = Router();
 
-  // In-memory session store: token → { apiKey, createdAt, client }
+  // In-memory session store: token → { apiKey, createdAt, client, sdkSessionId }
   const sessions = new Map();
-  // Conversation state: token → { messages, systemPrompt, mode, aborted, pendingInteraction }
-  const conversations = new Map();
-  // Active abort controllers: token → AbortController
-  const activeStreams = new Map();
+  // Active runs: token → { bridge, abortController, query }
+  const activeRuns = new Map();
 
   const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 hours
 
@@ -28,13 +31,11 @@ export function createClaudeRoutes(projectRoot, broadcast) {
     if (!session) return null;
     if (Date.now() - session.createdAt > SESSION_TTL) {
       sessions.delete(token);
-      conversations.delete(token);
       return null;
     }
     return session;
   }
 
-  // Middleware: validate session token for protected routes
   function requireSession(req, res, next) {
     const token = req.headers['x-session-token'];
     const session = getSession(token);
@@ -44,10 +45,8 @@ export function createClaudeRoutes(projectRoot, broadcast) {
     next();
   }
 
-  /**
-   * POST /api/claude/session — validate key, create session
-   */
-  // Check for env var API key availability
+  // --- Session routes (unchanged) ---
+
   router.get('/env-available', (req, res) => {
     res.json({ available: !!process.env.ANTHROPIC_API_KEY });
   });
@@ -56,11 +55,14 @@ export function createClaudeRoutes(projectRoot, broadcast) {
     const { apiKey: bodyKey, fromEnv } = req.body || {};
     const apiKey = fromEnv ? process.env.ANTHROPIC_API_KEY : bodyKey;
     if (!apiKey || !apiKey.startsWith('sk-ant-')) {
-      return res.status(400).json({ error: fromEnv ? 'ANTHROPIC_API_KEY not set in server environment' : 'Invalid API key format' });
+      return res.status(400).json({
+        error: fromEnv
+          ? 'ANTHROPIC_API_KEY not set in server environment'
+          : 'Invalid API key format',
+      });
     }
 
     try {
-      // Test the key with a minimal request
       const client = new Anthropic({ apiKey });
       await client.messages.create({
         model: 'claude-sonnet-4-20250514',
@@ -69,12 +71,10 @@ export function createClaudeRoutes(projectRoot, broadcast) {
       });
 
       const sessionToken = randomUUID();
-      sessions.set(sessionToken, { apiKey, createdAt: Date.now(), client });
+      sessions.set(sessionToken, { apiKey, createdAt: Date.now(), client, sdkSessionId: null });
 
-      // Schedule eviction
       setTimeout(() => {
         sessions.delete(sessionToken);
-        conversations.delete(sessionToken);
       }, SESSION_TTL);
 
       res.json({ sessionToken, valid: true });
@@ -82,359 +82,327 @@ export function createClaudeRoutes(projectRoot, broadcast) {
       if (err.status === 401) {
         return res.status(401).json({ error: 'Invalid API key' });
       }
-      // Extract human-readable message from Anthropic SDK errors
       const friendlyMessage = err.error?.error?.message || err.message;
       const status = err.status || 500;
       res.status(status).json({ error: friendlyMessage });
     }
   });
 
-  /**
-   * GET /api/claude/session — check if session is valid
-   */
   router.get('/session', (req, res) => {
     const token = req.headers['x-session-token'];
     const session = getSession(token);
     res.json({ valid: !!session });
   });
 
-  /**
-   * DELETE /api/claude/session — destroy session
-   */
   router.delete('/session', (req, res) => {
     const token = req.headers['x-session-token'];
     if (token) {
       sessions.delete(token);
-      conversations.delete(token);
+      const run = activeRuns.get(token);
+      if (run) {
+        run.bridge.cancelAll();
+        run.abortController.abort();
+        activeRuns.delete(token);
+      }
     }
     res.json({ ok: true });
   });
 
-  /**
-   * POST /api/claude/run — SSE agent loop
-   */
+  // --- Build system prompt ---
+
+  async function buildSystemPrompt(mode, skillName, projectRoot) {
+    let projectMd = '';
+    try {
+      projectMd = await readFile(resolve(projectRoot, 'PROJECT.md'), 'utf-8');
+    } catch { /* ok */ }
+
+    if (mode === 'skill') {
+      const skillPath = resolve(projectRoot, `.claude/skills/${skillName}/SKILL.md`);
+      const skillContent = await readFile(skillPath, 'utf-8');
+
+      const preamble = `You are running inside the PD-Spec web application.
+You have native filesystem tools: Read, Write, Edit, Bash, Glob, Grep.
+You have interaction tools: AskUserQuestion (for user approval, selection, or free-text input).
+
+For utility scripts, run them via Bash: ./scripts/script-name.sh [args]
+IMPORTANT: ALWAYS start /extract by running via Bash: ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
+
+Skip writing to 02_Work/MEMORY.md and 02_Work/_temp/SESSION_CHECKPOINT.md.
+The project root is the working directory for all file paths.
+
+INDEX FILES: When reading large Work layer files (EXTRACTIONS.md, INSIGHTS_GRAPH.md),
+check 02_Work/_index/ first for index files (e.g. extractions-index.md). If an index
+exists, read it first to get the table of contents, then use Read with offset/limit
+to access specific sections. This saves tokens on large files.
+
+PROJECT.md contents:
+${projectMd}
+`;
+      return preamble + '\n---\n\n' + skillContent;
+    }
+
+    // Q&A mode — read work layer for context
+    let context = '';
+    const contextFiles = [
+      '02_Work/INSIGHTS_GRAPH.md',
+      '02_Work/CONFLICTS.md',
+      '02_Work/STRATEGIC_VISION.md',
+      '02_Work/PROPOSALS.md',
+    ];
+    for (const f of contextFiles) {
+      try {
+        const content = await readFile(resolve(projectRoot, f), 'utf-8');
+        if (content.length < 50000) {
+          context += `\n--- ${f} ---\n${content}\n`;
+        } else {
+          context += `\n--- ${f} (truncated to 50K chars) ---\n${content.slice(0, 50000)}\n`;
+        }
+      } catch { /* ok */ }
+    }
+
+    return `You are a research assistant for a PD-Spec project. Answer questions about the project based on the Work layer data below. Reference insight IDs as [IG-XX] and conflict IDs as [CF-XX] when relevant.\n\n${context}`;
+  }
+
+  // --- SSE helpers ---
+
+  function setupSSE(res) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    return (data) => {
+      if (!res.writableEnded) {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+      }
+    };
+  }
+
+  function summarizeInput(input) {
+    const result = {};
+    for (const [key, value] of Object.entries(input || {})) {
+      if (typeof value === 'string' && value.length > 200) {
+        result[key] = value.slice(0, 200) + '...';
+      } else {
+        result[key] = value;
+      }
+    }
+    return result;
+  }
+
+  // --- Main run endpoint ---
+
   router.post('/run', requireSession, async (req, res) => {
     const { message } = req.body || {};
     if (!message) return res.status(400).json({ error: 'Missing message' });
 
     const token = req.sessionToken;
-    const { client } = req.session;
-    let conv = conversations.get(token);
+    const session = req.session;
 
-    // --- Mode detection ---
+    // Mode detection
     const skillMatch = message.match(/^\/(extract|analyze|spec)\b/);
-    const isInteractionResponse = conv?.pendingInteraction && !skillMatch;
+    const mode = skillMatch ? 'skill' : 'qa';
+    const skillName = skillMatch ? skillMatch[1] : null;
 
-    if (skillMatch) {
-      // Starting a new skill — reset conversation
-      const skillName = skillMatch[1];
-      const skillPath = resolve(projectRoot, `.claude/skills/${skillName}/SKILL.md`);
-      let skillContent;
-      try {
-        skillContent = await readFile(skillPath, 'utf-8');
-      } catch {
-        return res.status(404).json({ error: `Skill not found: ${skillName}` });
-      }
+    // Build system prompt (throws on missing skill)
+    let systemPrompt;
+    try {
+      systemPrompt = await buildSystemPrompt(mode, skillName, projectRoot);
+    } catch (err) {
+      return res.status(404).json({ error: `Skill not found: ${skillName}` });
+    }
 
-      // Read PROJECT.md for context
-      let projectMd = '';
-      try {
-        projectMd = await readFile(resolve(projectRoot, 'PROJECT.md'), 'utf-8');
-      } catch { /* ok */ }
-
-      const preamble = `You are running inside the PD-Spec web application. You have these tools available:
-
-Filesystem: read_file, write_file, list_files, run_script, search_files
-- Use read_file instead of "Read tool"
-- Use write_file instead of "Write tool" or "Edit tool"
-- Use list_files to explore directories
-- Use run_script for utility scripts (verify-insight.sh, resolve-conflict.sh, count-statuses.sh, next-id.sh, discover-sources.sh)
-
-IMPORTANT: ALWAYS start /extract by running: run_script discover-sources.sh ["01_Sources", "02_Work/SOURCE_MAP.md"]
-This gives you the complete delta (new/modified/deleted/moved files) in one call. Do NOT use list_files for discovery.
-- Use search_files to grep across files
-
-User interaction: ask_confirmation, ask_selection, ask_text
-- When you need user approval or a yes/no decision → ask_confirmation
-- When you need the user to choose from options → ask_selection
-- When you need free-form input from the user → ask_text
-- ALWAYS use these tools for user interaction. Never ask questions in plain text.
-
-Skip writing to 02_Work/MEMORY.md and 02_Work/_temp/SESSION_CHECKPOINT.md.
-The project root is the working directory for all file paths.
-
-PROJECT.md contents:
-${projectMd}
-`;
-
-      // Backup before pipeline
+    // Backup before pipeline
+    if (mode === 'skill') {
       try {
         await backupWorkLayer(projectRoot);
       } catch { /* non-fatal */ }
-
-      conv = {
-        messages: [],
-        systemPrompt: preamble + '\n---\n\n' + skillContent,
-        mode: 'skill',
-        aborted: false,
-        pendingInteraction: null,
-      };
-      conversations.set(token, conv);
-    } else if (isInteractionResponse) {
-      // User is responding to an interaction tool
-      const { toolUseId } = conv.pendingInteraction;
-      conv.messages.push({
-        role: 'user',
-        content: [{ type: 'tool_result', tool_use_id: toolUseId, content: message }],
-      });
-      conv.pendingInteraction = null;
-      conv.aborted = false; // Reset — close of previous SSE set this to true
-    } else if (!conv || conv.mode === 'qa') {
-      // Q&A mode — read work layer for context
-      let context = '';
-      const contextFiles = [
-        '02_Work/INSIGHTS_GRAPH.md',
-        '02_Work/CONFLICTS.md',
-        '02_Work/STRATEGIC_VISION.md',
-        '02_Work/PROPOSALS.md',
-      ];
-      for (const f of contextFiles) {
-        try {
-          const content = await readFile(resolve(projectRoot, f), 'utf-8');
-          if (content.length < 50000) {
-            context += `\n--- ${f} ---\n${content}\n`;
-          } else {
-            context += `\n--- ${f} (truncated to 50K chars) ---\n${content.slice(0, 50000)}\n`;
-          }
-        } catch { /* ok */ }
-      }
-
-      conv = {
-        messages: [],
-        systemPrompt: `You are a research assistant for a PD-Spec project. Answer questions about the project based on the Work layer data below. Reference insight IDs as [IG-XX] and conflict IDs as [CF-XX] when relevant.\n\n${context}`,
-        mode: 'qa',
-        aborted: false,
-        pendingInteraction: null,
-      };
-      conversations.set(token, conv);
     }
 
-    // Append user message (for non-interaction-response cases)
-    if (!isInteractionResponse) {
-      conv.messages.push({ role: 'user', content: message });
-    }
-
-    // --- SSE setup ---
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-
-    const sendSSE = (data) => {
-      if (!res.writableEnded) {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-      }
-    };
-
+    // SSE setup
+    const sendSSE = setupSSE(res);
+    const bridge = new InteractionBridge();
     const abortController = new AbortController();
-    activeStreams.set(token, abortController);
+
+    // Store active run
+    activeRuns.set(token, { bridge, abortController, query: null });
 
     req.on('close', () => {
-      if (conv) conv.aborted = true;
       abortController.abort();
-      activeStreams.delete(token);
+      bridge.cancelAll();
+      activeRuns.delete(token);
     });
 
     try {
-      let iterations = 0;
-      const MAX_ITERATIONS = 200;
+      // Permission architecture:
+      // - Do NOT set permissionMode — default behavior auto-approves safe tools
+      //   (Read, Glob, Grep, safe Bash) and routes dangerous ops through canUseTool.
+      // - canUseTool handles: Write/Edit path validation, Bash safety, interaction
+      //   bridging for AskUserQuestion, and mode-based denials.
+      // - disallowedTools blocks tools at the CLI level that would be auto-approved
+      //   but shouldn't be available (Agent, Skill, etc.).
+      const queryOptions = {
+        model: 'claude-sonnet-4-20250514',
+        cwd: projectRoot,
+        systemPrompt,
+        maxTurns: 200,
+        canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, mode),
+        disallowedTools: mode === 'qa'
+          ? ['Write', 'Edit', 'Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'AskUserQuestion']
+          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate'],
+        env: { ...process.env, ANTHROPIC_API_KEY: session.apiKey },
+        abortController,
+        persistSession: mode === 'qa',
+        settingSources: [],
+      };
 
-      while (iterations < MAX_ITERATIONS && !conv.aborted) {
-        iterations++;
+      // Resume Q&A sessions
+      if (mode === 'qa' && session.sdkSessionId) {
+        queryOptions.resume = session.sdkSessionId;
+      }
 
-        const apiParams = {
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 16384,
-          system: conv.systemPrompt,
-          messages: conv.messages,
-        };
-        if (conv.mode === 'skill') {
-          apiParams.tools = TOOLS;
-        }
+      // For skills, replace "/extract" with a descriptive prompt so the SDK
+      // doesn't intercept it as its own slash command. The system prompt
+      // already contains the full SKILL.md instructions.
+      const sdkPrompt = mode === 'skill'
+        ? `Execute the ${skillName} skill now. Follow the instructions in your system prompt.`
+        : message;
 
-        let response;
-        const MAX_RETRIES = 3;
-        for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-          try {
-            response = await client.messages.create(apiParams, {
-              signal: abortController.signal,
-            });
-            break; // success
-          } catch (err) {
-            if (err.name === 'AbortError' || conv.aborted) {
-              sendSSE({ type: 'aborted' });
-              response = null;
-              break;
-            }
-            // Retry on 429 (rate limit) and 529 (overloaded)
-            if ((err.status === 429 || err.status === 529) && attempt < MAX_RETRIES) {
-              const wait = Math.min(15 * (attempt + 1), 60); // 15s, 30s, 45s
-              sendSSE({ type: 'text', content: `Rate limited — retrying in ${wait}s...` });
-              await new Promise(r => setTimeout(r, wait * 1000));
-              continue;
-            }
-            const friendlyMessage = err.error?.error?.message || err.message;
-            sendSSE({ type: 'error', message: friendlyMessage });
-            response = null;
-            break;
+      const q = query({ prompt: sdkPrompt, options: queryOptions });
+      const run = activeRuns.get(token);
+      if (run) run.query = q;
+
+      // Track tool_use blocks to emit tool_done when we see results
+      const pendingTools = new Map(); // id → { name, startTime }
+
+      for await (const msg of q) {
+        if (abortController.signal.aborted) break;
+
+        // System init — capture session ID
+        if (msg.type === 'system' && msg.subtype === 'init') {
+          if (mode === 'qa') {
+            session.sdkSessionId = msg.session_id;
           }
-        }
-        if (!response) break;
-
-        // Process content blocks
-        const toolResults = [];
-        let hasInteraction = false;
-
-        const assistantContent = response.content;
-        conv.messages.push({ role: 'assistant', content: assistantContent });
-
-        for (const block of assistantContent) {
-          if (conv.aborted) break;
-
-          if (block.type === 'text') {
-            sendSSE({ type: 'text', content: block.text });
-          } else if (block.type === 'tool_use') {
-            if (isInteractionTool(block.name)) {
-              sendSSE({ type: 'interaction', tool: block.name, input: block.input, toolUseId: block.id });
-              conv.pendingInteraction = { toolUseId: block.id, toolName: block.name };
-              hasInteraction = true;
-            } else {
-              // Filesystem tool — auto-execute
-              sendSSE({ type: 'tool_start', tool: block.name, input: summarizeInput(block.input) });
-              try {
-                const result = await executeTool(block.name, block.input, projectRoot);
-                const summary = result.content.length > 500
-                  ? result.content.slice(0, 500) + '...'
-                  : result.content;
-                sendSSE({ type: 'tool_done', tool: block.name, summary });
-                toolResults.push({
-                  type: 'tool_result',
-                  tool_use_id: block.id,
-                  content: result.content,
-                  is_error: result.is_error || false,
-                });
-              } catch (err) {
-                sendSSE({ type: 'tool_done', tool: block.name, summary: `Error: ${err.message}` });
-                toolResults.push({
-                  type: 'tool_result',
-                  tool_use_id: block.id,
-                  content: `Error: ${err.message}`,
-                  is_error: true,
-                });
-              }
-            }
-          }
-        }
-
-        if (conv.aborted) {
-          sendSSE({ type: 'aborted' });
-          break;
-        }
-
-        if (hasInteraction) {
-          sendSSE({ type: 'waiting' });
-          // Save state and close connection — wait for next POST
-          activeStreams.delete(token);
-          res.end();
-          return;
-        }
-
-        if (response.stop_reason === 'tool_use' && toolResults.length > 0) {
-          // Auto-continue with tool results
-          conv.messages.push({ role: 'user', content: toolResults });
-
-          // Trim older tool results to keep conversation context lean
-          // This prevents accumulated read_file contents from exceeding rate limits
-          trimConversationContext(conv);
-
-          sendSSE({ type: 'continuing' });
           continue;
         }
 
-        // end_turn or max_tokens — done
-        sendSSE({
-          type: 'done',
-          usage: response.usage,
-        });
-        break;
-      }
+        // Assistant message — text, tool_use blocks (skip thinking)
+        if (msg.type === 'assistant' && msg.message?.content) {
+          for (const block of msg.message.content) {
+            if (block.type === 'thinking') continue;
+            if (block.type === 'text') {
+              sendSSE({ type: 'text', content: block.text });
+            } else if (block.type === 'tool_use') {
+              // Skip AskUserQuestion — handled in canUseTool
+              if (block.name === 'AskUserQuestion') continue;
 
-      if (iterations >= MAX_ITERATIONS) {
-        sendSSE({ type: 'error', message: 'Max iterations reached (200)' });
-      }
+              sendSSE({
+                type: 'tool_start',
+                tool: block.name,
+                input: summarizeInput(block.input),
+              });
+              pendingTools.set(block.id, { name: block.name, startTime: Date.now() });
+            }
+          }
+          continue;
+        }
 
-      // Cleanup
-      if (conv.mode === 'qa') {
-        conversations.delete(token);
+        // User message (tool results) — match tool_done events
+        if (msg.type === 'user' && msg.message?.content && Array.isArray(msg.message.content)) {
+          for (const block of msg.message.content) {
+            if (block.type === 'tool_result' && pendingTools.has(block.tool_use_id)) {
+              const tool = pendingTools.get(block.tool_use_id);
+              pendingTools.delete(block.tool_use_id);
+              const content = typeof block.content === 'string'
+                ? block.content
+                : JSON.stringify(block.content);
+              const summary = content.length > 500
+                ? content.slice(0, 500) + '...'
+                : content;
+              sendSSE({ type: 'tool_done', tool: tool.name, summary });
+            }
+          }
+          continue;
+        }
+
+        // Result message — done or error
+        if (msg.type === 'result') {
+          if (msg.subtype === 'success') {
+            sendSSE({
+              type: 'done',
+              usage: msg.usage || null,
+            });
+          } else if (msg.subtype === 'error') {
+            sendSSE({
+              type: 'error',
+              message: msg.error || 'Unknown error',
+            });
+          }
+          continue;
+        }
       }
-      activeStreams.delete(token);
     } catch (err) {
-      sendSSE({ type: 'error', message: err.message });
-      activeStreams.delete(token);
+      if (err.name !== 'AbortError' && !abortController.signal.aborted) {
+        sendSSE({ type: 'error', message: err.message });
+      } else {
+        sendSSE({ type: 'aborted' });
+      }
+    } finally {
+      activeRuns.delete(token);
+      if (!res.writableEnded) res.end();
     }
-
-    if (!res.writableEnded) res.end();
   });
 
-  /**
-   * POST /api/claude/run/cancel — abort current run
-   */
+  // --- Interaction response endpoint ---
+
+  router.post('/run/respond', requireSession, (req, res) => {
+    const { toolUseId, response } = req.body || {};
+    if (!toolUseId) return res.status(400).json({ error: 'Missing toolUseId' });
+
+    const run = activeRuns.get(req.sessionToken);
+    if (!run) return res.status(404).json({ error: 'No active run' });
+
+    const ok = run.bridge.respond(toolUseId, response);
+    if (!ok) return res.status(404).json({ error: 'No pending interaction for this toolUseId' });
+
+    res.json({ ok: true });
+  });
+
+  // --- Cancel endpoint ---
+
   router.post('/run/cancel', requireSession, (req, res) => {
     const token = req.sessionToken;
-    const conv = conversations.get(token);
-    if (conv) conv.aborted = true;
-    const controller = activeStreams.get(token);
-    if (controller) controller.abort();
-    activeStreams.delete(token);
-    conversations.delete(token);
+    const run = activeRuns.get(token);
+    if (run) {
+      run.bridge.cancelAll();
+      run.abortController.abort();
+      activeRuns.delete(token);
+    }
     res.json({ ok: true });
   });
 
   return router;
 }
 
-/**
- * Trim conversation context to stay within rate limits.
- * Truncates large tool_result contents in older messages,
- * keeping only the last 2 user/assistant pairs at full fidelity.
- */
-function trimConversationContext(conv) {
-  const MAX_RESULT_CHARS = 2000;
-  const KEEP_RECENT = 4; // keep last 4 messages (2 pairs) untouched
+// --- Utility: backup Work layer before pipeline ---
 
-  const messages = conv.messages;
-  const trimBefore = messages.length - KEEP_RECENT;
+async function backupWorkLayer(projectRoot) {
+  const backupDir = resolve(projectRoot, '02_Work/_temp/backup-pre-pipeline');
+  await mkdir(backupDir, { recursive: true });
 
-  for (let i = 0; i < trimBefore; i++) {
-    const msg = messages[i];
-    if (msg.role === 'user' && Array.isArray(msg.content)) {
-      for (const block of msg.content) {
-        if (block.type === 'tool_result' && typeof block.content === 'string' && block.content.length > MAX_RESULT_CHARS) {
-          block.content = block.content.slice(0, MAX_RESULT_CHARS) + `\n\n[... truncated from ${block.content.length} chars to save context ...]`;
-        }
-      }
-    }
+  const workDir = resolve(projectRoot, '02_Work');
+  let entries;
+  try {
+    entries = await readdir(workDir, { withFileTypes: true });
+  } catch {
+    return; // no Work dir yet
   }
-}
 
-/** Summarize tool input for SSE display (hide large content) */
-function summarizeInput(input) {
-  const result = {};
-  for (const [key, value] of Object.entries(input || {})) {
-    if (typeof value === 'string' && value.length > 200) {
-      result[key] = value.slice(0, 200) + '...';
-    } else {
-      result[key] = value;
-    }
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith('.md')) continue;
+    const src = join(workDir, entry.name);
+    const dst = join(backupDir, entry.name);
+    try {
+      await copyFile(src, dst);
+    } catch { /* skip */ }
   }
-  return result;
 }

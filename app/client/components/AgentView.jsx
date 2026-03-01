@@ -98,7 +98,7 @@ export default function AgentView({ sessionToken, onNavigate }) {
               setInteraction({ tool: event.tool, input: event.input, toolUseId: event.toolUseId });
               break;
             case 'waiting':
-              setRunning(false);
+              // SSE stays open during interactions — don't setRunning(false)
               break;
             case 'continuing':
               break;
@@ -165,10 +165,25 @@ export default function AgentView({ sessionToken, onNavigate }) {
     setQaResponse(null);
   };
 
-  const respondToInteraction = (value) => {
+  const respondToInteraction = async (value) => {
+    const toolUseId = interaction?.toolUseId;
     setInteraction(null);
-    setRunning(true);
-    startSSE({ message: typeof value === 'string' ? value : JSON.stringify(value) });
+    // POST response to the server — the original SSE stream continues
+    try {
+      await fetch('/api/claude/run/respond', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Session-Token': sessionToken,
+        },
+        body: JSON.stringify({
+          toolUseId,
+          response: typeof value === 'string' ? value : JSON.stringify(value),
+        }),
+      });
+    } catch (err) {
+      setLog(prev => [...prev, { type: 'error', content: `Failed to send response: ${err.message}` }]);
+    }
   };
 
   // Group consecutive same-tool entries
@@ -247,7 +262,7 @@ export default function AgentView({ sessionToken, onNavigate }) {
           {groupedLog.map((entry, i) => (
             <LogEntry key={i} entry={entry} onNavigate={onNavigate} />
           ))}
-          {running && (
+          {running && !interaction && (
             <div className="agent-log-entry agent-log-running">
               <span className="agent-spinner" /> Processing...
             </div>

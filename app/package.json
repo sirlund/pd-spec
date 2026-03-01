@@ -9,6 +9,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.63",
     "@anthropic-ai/sdk": "^0.78.0",
     "chokidar": "^4.0.3",
     "express": "^5.1.0",
