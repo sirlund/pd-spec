@@ -166,8 +166,9 @@
   color: var(--verified-fg);
 }
 
-/* ID badges (accent pill) */
-.badge-id {
+/* ID / inline ref badges (unified) */
+.badge-id,
+.badge-insight {
   background: var(--accent-dim);
   border: 1px solid rgba(0, 243, 255, 0.2);
   color: var(--accent-cyan);
@@ -175,16 +176,19 @@
   cursor: pointer;
 }
 
-.badge-id:hover {
+.badge-id:hover,
+.badge-insight:hover {
   text-decoration: underline;
 }
 
-[data-theme="light"] .badge-id {
+[data-theme="light"] .badge-id,
+[data-theme="light"] .badge-insight {
   border-color: rgba(0, 136, 204, 0.3);
 }
 
-/* Conflict ID badge */
-.badge-conflict-id {
+/* Conflict ID / inline ref badges (unified) */
+.badge-conflict-id,
+.badge-conflict {
   background: var(--conflict-bg);
   border: 1px solid rgba(248, 113, 113, 0.2);
   color: var(--conflict-fg);
@@ -192,8 +196,14 @@
   cursor: pointer;
 }
 
-.badge-conflict-id:hover {
+.badge-conflict-id:hover,
+.badge-conflict:hover {
   text-decoration: underline;
+}
+
+[data-theme="light"] .badge-conflict-id,
+[data-theme="light"] .badge-conflict {
+  border-color: rgba(220, 38, 38, 0.3);
 }
 
 /* Category / subtle badges */
@@ -211,39 +221,22 @@
   color: var(--pending-fg);
 }
 
-/* Inline ref badges (from markdown renderer) */
-.badge-insight {
-  background: var(--accent-dim);
-  border: 1px solid rgba(0, 243, 255, 0.2);
-  color: var(--accent-cyan);
+/* (inline ref badges merged into unified .badge-id/.badge-conflict-id above) */
+
+/* ── Count Chip (reusable anywhere) ── */
+.count-chip {
   font-size: 0.7rem;
-  cursor: pointer;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: var(--surface-elevated);
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 22px;
+  text-align: center;
 }
 
-.badge-insight:hover {
-  text-decoration: underline;
-  opacity: 0.9;
-}
-
-.badge-conflict {
-  background: var(--conflict-bg);
-  border: 1px solid rgba(248, 113, 113, 0.2);
-  color: var(--conflict-fg);
-  font-size: 0.7rem;
-  cursor: pointer;
-}
-
-.badge-conflict:hover {
-  text-decoration: underline;
-  opacity: 0.9;
-}
-
-[data-theme="light"] .badge-insight {
-  border-color: rgba(0, 136, 204, 0.3);
-}
-
-[data-theme="light"] .badge-conflict {
-  border-color: rgba(220, 38, 38, 0.3);
+.card-header .count-chip {
+  margin-left: auto;
 }
 
 /* ── Accent Box ── */

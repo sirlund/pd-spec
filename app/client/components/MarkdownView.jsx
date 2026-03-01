@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLiveData } from '../hooks.js';
 import Card from './ui/Card.jsx';
 import { WarningBadge, IdBadge } from './ui/Badge.jsx';
@@ -17,6 +17,54 @@ function InlineRefs({ text, onNavigate }) {
         return <span key={i}>{part}</span>;
       })}
     </>
+  );
+}
+
+function ExtractionCard({ file, onNavigate }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Card>
+      <div
+        className="card-header"
+        onClick={() => setExpanded(!expanded)}
+        style={{ cursor: 'pointer', marginBottom: expanded ? 8 : 0 }}
+      >
+        <Icon
+          name="chevron-down"
+          size={14}
+          style={expanded ? {} : { transform: 'rotate(-90deg)' }}
+        />
+        <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{file.path}</span>
+        {file.tags.map(t => (
+          <WarningBadge key={t}>{t}</WarningBadge>
+        ))}
+        <span className="count-chip">
+          {file.claims.length} claims
+        </span>
+      </div>
+      {expanded && (
+        <>
+          {Object.keys(file.metadata).length > 0 && (
+            <div className="card-meta">
+              {Object.entries(file.metadata).map(([k, v]) => (
+                <span key={k}><strong>{k}:</strong> {v}</span>
+              ))}
+            </div>
+          )}
+          <ol style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 20, margin: 0 }}>
+            {file.claims.map((claim) => (
+              <li key={claim.number} value={claim.number} style={{ marginBottom: 4 }}>
+                <InlineRefs text={claim.text} onNavigate={onNavigate} />
+                {claim.tags.map(t => (
+                  <WarningBadge key={t}>{t}</WarningBadge>
+                ))}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+    </Card>
   );
 }
 
@@ -55,36 +103,7 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
           <h1 className="section-title">{title} ({data.total_claims} claims)</h1>
         </div>
         {data.files.map((file) => (
-          <Card key={file.path}>
-            <div className="card-header">
-              <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{file.path}</span>
-              {file.tags.map(t => (
-                <WarningBadge key={t}>{t}</WarningBadge>
-              ))}
-              <span className="count" style={{ marginLeft: 'auto' }}>
-                {file.claims.length} claims
-              </span>
-            </div>
-
-            {Object.keys(file.metadata).length > 0 && (
-              <div className="card-meta">
-                {Object.entries(file.metadata).map(([k, v]) => (
-                  <span key={k}><strong>{k}:</strong> {v}</span>
-                ))}
-              </div>
-            )}
-
-            <ol style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 20, margin: 0 }}>
-              {file.claims.map((claim) => (
-                <li key={claim.number} value={claim.number} style={{ marginBottom: 4 }}>
-                  <InlineRefs text={claim.text} onNavigate={onNavigate} />
-                  {claim.tags.map(t => (
-                    <WarningBadge key={t}>{t}</WarningBadge>
-                  ))}
-                </li>
-              ))}
-            </ol>
-          </Card>
+          <ExtractionCard key={file.path} file={file} onNavigate={onNavigate} />
         ))}
       </div>
     );
