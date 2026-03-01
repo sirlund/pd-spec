@@ -4,6 +4,9 @@
  * BYOK: user provides their own API key, stored in-memory only.
  */
 
+// Allow SDK subprocess to spawn when running inside a Claude Code session
+delete process.env.CLAUDECODE;
+
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { readFile, readdir, mkdir, copyFile, stat } from 'fs/promises';
@@ -127,6 +130,11 @@ IMPORTANT: ALWAYS start /extract by running via Bash: ./scripts/discover-sources
 Skip writing to 02_Work/MEMORY.md and 02_Work/_temp/SESSION_CHECKPOINT.md.
 The project root is the working directory for all file paths.
 
+INDEX FILES: When reading large Work layer files (EXTRACTIONS.md, INSIGHTS_GRAPH.md),
+check 02_Work/_index/ first for index files (e.g. extractions-index.md). If an index
+exists, read it first to get the table of contents, then use Read with offset/limit
+to access specific sections. This saves tokens on large files.
+
 PROJECT.md contents:
 ${projectMd}
 `;
@@ -225,21 +233,23 @@ ${projectMd}
     });
 
     try {
-      // Determine allowed tools based on mode
-      const allowedTools = mode === 'skill'
-        ? ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'AskUserQuestion']
-        : ['Read', 'Glob', 'Grep']; // Q&A: read-only
-
-      // SDK query options
+      // Permission architecture:
+      // - Do NOT set permissionMode — default behavior auto-approves safe tools
+      //   (Read, Glob, Grep, safe Bash) and routes dangerous ops through canUseTool.
+      // - canUseTool handles: Write/Edit path validation, Bash safety, interaction
+      //   bridging for AskUserQuestion, and mode-based denials.
+      // - disallowedTools blocks tools at the CLI level that would be auto-approved
+      //   but shouldn't be available (Agent, Skill, etc.).
       const queryOptions = {
-        allowedTools,
         model: 'claude-sonnet-4-20250514',
         cwd: projectRoot,
         systemPrompt,
         maxTurns: 200,
-        canUseTool: createCanUseTool(projectRoot, bridge, sendSSE),
-        permissionMode: 'bypassPermissions',
-        env: { ANTHROPIC_API_KEY: session.apiKey },
+        canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, mode),
+        disallowedTools: mode === 'qa'
+          ? ['Write', 'Edit', 'Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'AskUserQuestion']
+          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate'],
+        env: { ...process.env, ANTHROPIC_API_KEY: session.apiKey },
         abortController,
         persistSession: mode === 'qa',
         settingSources: [],
@@ -250,7 +260,14 @@ ${projectMd}
         queryOptions.resume = session.sdkSessionId;
       }
 
-      const q = query({ prompt: message, options: queryOptions });
+      // For skills, replace "/extract" with a descriptive prompt so the SDK
+      // doesn't intercept it as its own slash command. The system prompt
+      // already contains the full SKILL.md instructions.
+      const sdkPrompt = mode === 'skill'
+        ? `Execute the ${skillName} skill now. Follow the instructions in your system prompt.`
+        : message;
+
+      const q = query({ prompt: sdkPrompt, options: queryOptions });
       const run = activeRuns.get(token);
       if (run) run.query = q;
 
@@ -268,9 +285,10 @@ ${projectMd}
           continue;
         }
 
-        // Assistant message — text blocks and tool_use blocks
+        // Assistant message — text, tool_use blocks (skip thinking)
         if (msg.type === 'assistant' && msg.message?.content) {
           for (const block of msg.message.content) {
+            if (block.type === 'thinking') continue;
             if (block.type === 'text') {
               sendSSE({ type: 'text', content: block.text });
             } else if (block.type === 'tool_use') {

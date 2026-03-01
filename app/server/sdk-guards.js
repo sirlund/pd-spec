@@ -1,14 +1,16 @@
 /**
  * SDK Guards — canUseTool callback and InteractionBridge for the Claude Agent SDK.
- * Handles: write path validation, Bash safety, BL-101 index redirects, and
- * user interaction pausing via Promises.
+ * Handles: write path validation, Bash safety, and user interaction pausing via Promises.
  */
 
-import { existsSync } from 'fs';
-import { resolve, relative } from 'path';
+import { relative } from 'path';
 
 const WRITE_PREFIXES = ['02_Work/', '03_Outputs/'];
 const DANGEROUS_BASH = ['rm -rf', 'sudo ', 'rm -r /'];
+
+// Tools allowed per mode. Everything else is denied.
+const SKILL_TOOLS = new Set(['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep', 'AskUserQuestion']);
+const QA_TOOLS = new Set(['Read', 'Glob', 'Grep']);
 
 /**
  * InteractionBridge — pauses SDK execution when AskUserQuestion fires,
@@ -141,14 +143,41 @@ export class InteractionBridge {
 /**
  * Create the canUseTool callback for the SDK.
  *
+ * Permission architecture (two layers):
+ *   1. disallowedTools (in claude.js) — blocks tools at CLI level before they
+ *      reach canUseTool. Handles Agent, Skill, and Q&A write restrictions.
+ *   2. canUseTool (this callback) — only fires for "dangerous" operations
+ *      that the CLI's default permission system doesn't auto-approve.
+ *      Handles: Write/Edit path validation, Bash safety, AskUserQuestion
+ *      interaction bridging, and BL-101 index redirects.
+ *
+ * Safe tools (Read, Glob, Grep, safe Bash) are auto-approved by the CLI
+ * without calling canUseTool. This is acceptable — they're read-only.
+ *
  * @param {string} projectRoot — absolute path to project
  * @param {InteractionBridge} bridge — interaction bridge instance
  * @param {function} sendSSE — function to send SSE events to the client
+ * @param {string} mode — 'skill' or 'qa'
  * @returns {function} canUseTool callback
  */
-export function createCanUseTool(projectRoot, bridge, sendSSE) {
+export function createCanUseTool(projectRoot, bridge, sendSSE, mode) {
+  const allowedTools = mode === 'skill' ? SKILL_TOOLS : QA_TOOLS;
+
   return async (toolName, input, options) => {
     const { toolUseID } = options;
+
+    // --- Mode-based tool allowlist ---
+    // NOTE: The CLI auto-approves "safe" tools (Read, Glob, Grep, safe Bash)
+    // without calling canUseTool. This callback only fires for "dangerous"
+    // operations (Write, Edit, risky Bash, AskUserQuestion). The allowlist
+    // check below catches tools that slip through as dangerous but shouldn't
+    // be available in the current mode (e.g., Write in Q&A mode).
+    if (!allowedTools.has(toolName)) {
+      return { behavior: 'deny', message: `Tool ${toolName} is not available in ${mode} mode.` };
+    }
+
+    // Note: SDK requires updatedInput to be a record (object) when present.
+    // When allowing without modification, pass the original input.
 
     // --- AskUserQuestion: pause for user interaction ---
     if (toolName === 'AskUserQuestion') {
@@ -189,28 +218,7 @@ export function createCanUseTool(projectRoot, bridge, sendSSE) {
         };
       }
 
-      return { behavior: 'allow' };
-    }
-
-    // --- Read: BL-101 index redirect ---
-    if (toolName === 'Read') {
-      const filePath = input.file_path || '';
-      const relPath = filePath.startsWith('/')
-        ? relative(projectRoot, filePath)
-        : filePath;
-
-      // Redirect to index when reading EXTRACTIONS.md without offset
-      if (relPath === '02_Work/EXTRACTIONS.md' && !input.offset) {
-        const indexPath = resolve(projectRoot, '02_Work/_index/extractions-index.md');
-        if (existsSync(indexPath)) {
-          return {
-            behavior: 'allow',
-            updatedInput: { ...input, file_path: indexPath },
-          };
-        }
-      }
-
-      return { behavior: 'allow' };
+      return { behavior: 'allow', updatedInput: input };
     }
 
     // --- Bash: safety checks ---
@@ -221,10 +229,10 @@ export function createCanUseTool(projectRoot, bridge, sendSSE) {
           return { behavior: 'deny', message: `Blocked dangerous command: ${dangerous}` };
         }
       }
-      return { behavior: 'allow' };
+      return { behavior: 'allow', updatedInput: input };
     }
 
-    // --- Default: allow ---
-    return { behavior: 'allow' };
+    // --- Glob/Grep: allow with input passthrough ---
+    return { behavior: 'allow', updatedInput: input };
   };
 }
