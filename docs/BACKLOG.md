@@ -623,18 +623,18 @@ Or in dashboard JSON:
 
 ### [BL-66] Extractions Collapse/Expand per Source
 
-**Status:** Proposed
+**Status:** IMPLEMENTED (v4.27.0, 2026-03-01, commit `923912e`)
 **Priority:** P3
 **Origin:** QA v7, OBS-10. 1200+ claims fully expanded is inutilizable. User feedback: "extractions está buenísimo" but needs navigability.
 
 **Problem:** All claims shown expanded. Scrolling through 54 source sections with 1200+ claims is impractical.
 
-**Solution:** Show first 3-5 claims per source collapsed, with "Show N more" expand button. Source header always visible with file name + claim count.
+**Solution:** `ExtractionCard` component in `MarkdownView.jsx`. Cards collapsed by default with chevron toggle, source path, tags, and claim count chip. Click to expand full claims list.
 
 **Acceptance criteria:**
-- [ ] Claims collapsed by default (3-5 visible per source)
-- [ ] "Show N more" button expands full list
-- [ ] Source headers always visible with claim count
+- [x] Claims collapsed by default
+- [x] Click to expand full list
+- [x] Source headers always visible with claim count
 
 ---
 
@@ -754,21 +754,25 @@ MEMORY.md tries to be both audit trail and recovery mechanism. It fails at both 
 
 ### [BL-86] UI Styling Consistency — Mono Badges, Chips, Counts
 
-**Status:** Proposed
+**Status:** PARTIALLY IMPLEMENTED (2026-03-01, commits `923912e`, `73d6c2c`)
 **Priority:** P4
 **Origin:** QA v7, OBS-41/42/43/44/45. Multiple minor styling inconsistencies across the Live Research App: badge fonts not uniformly mono, count chips inconsistent between views, category headers use different weight/size conventions.
 
 **Problem:** Each component was built independently; styling conventions drifted. Not a functional bug, but creates a "homemade" feel that undermines credibility during stakeholder demos.
 
-**Solution:** Audit all badge/chip/count/header components and unify:
-- All badges: `var(--font-mono)`, consistent padding/border-radius
-- Count chips: same size/color across Sidebar, headers, and cards
+**Done:**
+- Unified `.badge-id`/`.badge-insight` and `.badge-conflict-id`/`.badge-conflict` CSS (eliminated duplicates)
+- Added `.count-chip` reusable utility class
+- Status badges now have consistent 1px borders (30% fg opacity)
+- Fixed bare badge on proposal type → `badge-subtle`
+
+**Remaining (→ BL-107):**
+- Extract repeated inline styles to CSS utility classes
 - Category headers: consistent `text-transform`, `font-weight`, `letter-spacing`
-- Create shared CSS custom properties for common patterns
 
 **Acceptance criteria:**
-- [ ] All badges use `var(--font-mono)` consistently
-- [ ] Count chips uniform across views
+- [x] All badges use `var(--font-mono)` consistently
+- [x] Count chips uniform across views
 - [ ] No visual regressions (Playwright snapshots)
 
 ---
