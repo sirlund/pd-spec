@@ -26,6 +26,12 @@ const MIME_TYPES = {
   '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 };
 
+// Files excluded from source counts — must match scripts/discover-sources.sh EXCLUDE_NAMES
+const EXCLUDED_SOURCE_NAMES = new Set([
+  '_SOURCE_TEMPLATE.md', '_CONTEXT_TEMPLATE.md', '_FIELD_NOTES_TEMPLATE.md',
+  '_CONTEXT.md', '_README.md', '.gitkeep',
+]);
+
 export function createApi(projectRoot) {
   const router = Router();
   const parseCache = new Map();
@@ -255,7 +261,7 @@ export function createApi(projectRoot) {
 
         for (const entry of entries) {
           if (entry.name.startsWith('.')) continue;
-          if (entry.name.startsWith('_')) continue;
+          if (EXCLUDED_SOURCE_NAMES.has(entry.name)) continue;
           const fullPath = join(dir, entry.name);
           const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
@@ -471,7 +477,7 @@ export function createApi(projectRoot) {
       try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
       for (const entry of entries) {
         if (entry.name.startsWith('.')) continue;
-        if (entry.name.startsWith('_')) continue;
+        if (EXCLUDED_SOURCE_NAMES.has(entry.name)) continue;
         const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
           await walk(join(dir, entry.name), rel);
