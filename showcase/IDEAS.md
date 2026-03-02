@@ -1,5 +1,16 @@
 # Showcase — Ideas & Pending
 
+## Image Optimization Pipeline (freemode)
+- **Concept:** Automated PNG→WebP conversion as part of the showcase build/CI pipeline
+- **Trigger:** On `git add` or pre-commit hook — detect new PNG/large images in `public/`
+- **Action:** `cwebp -q 85` conversion, update MDX references, remove originals
+- **Scope:** All images in `showcase/public/` (bench, mocks, viz, etc.)
+- **Result:** 95% size reduction (57MB PNG → 2.7MB WebP in initial migration)
+- **Open questions:**
+  - Pre-commit hook vs standalone script (`scripts/optimize-images.sh`)?
+  - Auto-detect misnamed files (e.g., AVIF with .png extension)?
+  - Quality threshold: 85 default, configurable per directory?
+
 ## Export Pipeline
 - **`showcase/exports/`** — gitignored output tray for generated binaries (PDF, PPTX)
 - **`html2pptx.py`** → migrate to `showcase/scripts/html2pptx.py` (engine tool, tracked)

@@ -34,5 +34,4 @@ showcase/node_modules/
 showcase/dist/
 showcase/package-lock.json
 showcase/.astro/
-showcase/public/*.png
-showcase/public/img/
+showcase/public/img/mocks/PROMPTS.md
