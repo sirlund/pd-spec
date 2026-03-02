@@ -207,9 +207,10 @@ ${projectMd}
     const session = req.session;
 
     // Mode detection
-    const skillMatch = message.match(/^\/(extract|analyze|spec)\b/);
+    const skillMatch = message.match(/^\/(extract|analyze|spec)\b(.*)/);
     const mode = skillMatch ? 'skill' : 'qa';
     const skillName = skillMatch ? skillMatch[1] : null;
+    const skillArgs = skillMatch ? skillMatch[2].trim() : '';
 
     // Build system prompt (throws on missing skill)
     let systemPrompt;
@@ -281,7 +282,7 @@ ${projectMd}
       // doesn't intercept it as its own slash command. The system prompt
       // already contains the full SKILL.md instructions.
       const sdkPrompt = mode === 'skill'
-        ? `Execute the ${skillName} skill now. Follow the instructions in your system prompt.`
+        ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt.`
         : message;
 
       const q = query({ prompt: sdkPrompt, options: queryOptions });
