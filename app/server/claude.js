@@ -256,7 +256,9 @@ ${projectMd}
       // - disallowedTools blocks tools at the CLI level that would be auto-approved
       //   but shouldn't be available (Agent, Skill, etc.).
       const queryOptions = {
-        model: 'claude-sonnet-4-20250514',
+        model: mode === 'qa'
+          ? 'claude-haiku-4-5-20251001'
+          : 'claude-sonnet-4-20250514',
         cwd: projectRoot,
         systemPrompt,
         maxTurns: 200,
