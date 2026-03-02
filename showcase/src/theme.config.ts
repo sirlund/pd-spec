@@ -12,7 +12,7 @@ const theme: ThemeConfig = {
   lang: 'es',
   brand: 'TIMining',
   brandAccent: 'CORE',
-  logo: { src: '/logo_idemax.png', alt: 'IDEMAX' },
+  logo: { src: '/shared/logo_idemax.png', alt: 'IDEMAX' },
 };
 
 export default theme;

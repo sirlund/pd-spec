@@ -34,4 +34,4 @@ showcase/node_modules/
 showcase/dist/
 showcase/package-lock.json
 showcase/.astro/
-showcase/public/img/mocks/PROMPTS.md
+showcase/public/decks/v2-boceto/mocks/PROMPTS.md
