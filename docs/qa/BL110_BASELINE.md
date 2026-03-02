@@ -103,6 +103,14 @@
 - Pass C + extraction + writes: $0.75 (71%)
 - For comparison: agent direct test (no Phase 1.5): ~$0.07/file (48 claims)
 
+**Full pipeline cost (extract + analyze): $1.64** ← first run (pre-hotfix, analyze re-executed)
+
+**Full pipeline cost (extract + analyze) — FINAL (post-hotfix): $2.04**
+- /extract: $1.05 (131 claims, Phase 1.5 full)
+- /analyze: $0.99 (131 claims → 23 atomic → 3 SYNTH, 3 conflicts validated, 3 gaps)
+- Console range: $10.31 → $11.30
+- Re-execution: NONE (hotfix `e54aa7b` confirmed working)
+
 **OBS-BL110-01: Phase 1.5 cost overhead on single file.**
 $0.30 just for preprocessing (discovery + normalization + speaker detection + phonetic correction) before any claims are extracted. For comparison, the direct agent test (no SDK, no Phase 1.5) processed the same file end-to-end for ~$0.07. Phase 1.5 adds ~4x cost overhead on a per-file basis. On a full 16-file express run ($1.18 total = ~$0.07/file), the preprocessing cost is amortized. But for `--file` mode (single file re-extraction), Phase 1.5 dominates cost.
 
@@ -114,6 +122,15 @@ $1.05 for 1 file (131 claims) vs ~$0.07 (48 claims). Breakdown: Phase 1.5 discov
 
 **OBS-BL110-04: Phase 1.5 sub-passes should be optional (advanced mode).**
 Sentence repair (Pass C) and speaker detection (Pass A) are expensive and not always needed. Proposal: make them opt-in via flags or an "advanced preprocessing" mode. Default /extract would only run discover-sources.sh normalization (mechanical line-splitting) + Pass B (phonetic correction, cheap). Full preprocessing available via `--preprocess` or similar flag. This would bring --file cost closer to $0.07-0.15 range while keeping the option for deep preprocessing when needed. → Backlog candidate.
+
+**OBS-BL110-05: Skill re-execution after AskUserQuestion approval.**
+After `/analyze` completed and wrote 9 SYNTH insights, the agent re-launched a full `/analyze` from scratch within the same SDK session. Root cause: `maxTurns: 200` left ~170 unused turns, and the SDK prompt had no stop instruction. The second run created 114 atomic insights (one per claim) on top of the 9 consolidated ones, totaling 123 entries in INSIGHTS_GRAPH.md. Hotfix: explicit "execute ONCE, then STOP" in SDK prompt + maxTurns reduced to 80 for skills, 30 for Q&A (`e54aa7b`). **Verified: post-hotfix `/analyze` completed and stopped cleanly.**
+
+**OBS-BL110-06: TodoWrite leaks through disallowedTools.**
+`TaskCreate` and `TaskUpdate` are blocked but `TodoWrite` is a separate SDK tool name that isn't in the list. Agent uses it for internal task tracking during skills — wastes tokens, no user-visible benefit. Should add to `disallowedTools` for skills.
+
+**OBS-BL110-07: /analyze consolidation varies significantly between runs.**
+First run (pre-hotfix): 131 claims → 114 atomic + 9 SYNTH (over-extraction). Second run (post-hotfix): 131 claims → 23 atomic → 3 SYNTH (much tighter). Same data, different consolidation. The SKILL.md instructions and available turns influence how aggressively the agent consolidates. Neither is "wrong" — just different strategies. 3 SYNTH may be under-consolidated for 131 claims.
 
 ## How to re-test from app
 
