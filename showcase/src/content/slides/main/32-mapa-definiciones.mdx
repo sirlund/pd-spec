@@ -1,0 +1,54 @@
+---
+order: 32
+title: "Mapa de Definiciones"
+slideLayout: "grid"
+---
+import Slide from '../../../components/Slide.astro';
+import ConcentricRings from '../../../components/ConcentricRings.astro';
+
+<Slide id="slide-32" title="Mapa de Definiciones">
+  <div class="col-12">
+    <ConcentricRings layers={[
+      { label: 'Omni Sense' },
+      { label: 'Time Sight' },
+      { label: 'Quiet UI', pills: ['Clear Path'] },
+    ]} />
+  </div>
+
+  <div class="col-12">
+    <div class="dar-pipeline-bar">
+      <div class="dar-pipeline-step dar-pipeline-step--d">
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span>Detectar</span>
+      </div>
+      <div class="dar-pipeline-arrow"></div>
+      <div class="dar-pipeline-step dar-pipeline-step--a">
+        <i class="fa-solid fa-magnifying-glass-chart"></i>
+        <span>Analizar</span>
+      </div>
+      <div class="dar-pipeline-arrow"></div>
+      <div class="dar-pipeline-step dar-pipeline-step--r">
+        <i class="fa-solid fa-route"></i>
+        <span>Recomendar</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="card" style="border-color: #1a1a1a;">
+      <h3 style="font-size: 14px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px;">
+        <i class="fa-solid fa-rocket" style="margin-right: 6px;"></i> Horizonte de Evolución
+      </h3>
+      <p style="font-size: 14px; line-height: 1.6;">De asistente inteligente a cerebro autónomo. La plataforma evoluciona de recomendar a decidir y actuar — manteniendo al humano en control de las decisiones críticas.</p>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="card" style="border-color: #1a1a1a;">
+      <h3 style="font-size: 14px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px;">
+        <i class="fa-solid fa-arrow-right" style="margin-right: 6px;"></i> Siguiente Paso
+      </h3>
+      <p style="font-size: 14px; line-height: 1.6;">Validar estos lineamientos con stakeholders técnicos y de negocio. Priorizar los casos de uso por impacto y factibilidad. Definir MVP de experiencia.</p>
+    </div>
+  </div>
+</Slide>

@@ -1,0 +1,328 @@
+/* v2_boceto.css — TIMining CORE v2 Boceto Follow-up */
+/* Unique classes for the boceto/follow-up presentation */
+
+/* Status Tags */
+.tag-new, .tag-update, .tag-same, .tag-replace {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.tag-new { background: rgba(0, 255, 0, 0.1); color: #0f0; }
+.tag-update { background: var(--accent-dim); color: var(--accent-cyan); }
+.tag-same { background: rgba(255, 255, 255, 0.05); color: #555; }
+.tag-replace { background: rgba(255, 152, 0, 0.1); color: var(--color-a); }
+
+/* Placeholder slides */
+.placeholder-content {
+    grid-column: span 12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.placeholder-content .placeholder-icon {
+    font-size: 40px;
+    color: #333;
+}
+
+.placeholder-content .placeholder-text {
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+    max-width: 500px;
+}
+
+.placeholder-content .placeholder-sub {
+    font-size: 12px;
+    color: #333;
+    font-family: var(--font-mono);
+}
+
+/* Benchmark Domain Card */
+.bench-domain {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.bench-domain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.bench-domain-pilar {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent-cyan);
+    text-transform: uppercase;
+}
+
+.bench-domain-dominio {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Content title tags */
+.content-title .tag-new,
+.content-title .tag-update,
+.content-title .tag-same,
+.content-title .tag-replace {
+    font-size: 9px;
+    vertical-align: middle;
+}
+
+/* Bench Evidence & Pattern Slides */
+.bench-image-placeholder {
+    width: 100%;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+
+.bench-image-placeholder.bench-overview {
+    aspect-ratio: 3 / 2;
+    height: auto;
+    overflow: hidden;
+}
+
+.bench-image-placeholder.bench-overview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: zoom-in;
+}
+
+.bench-image-placeholder:not(.bench-overview) {
+    overflow: hidden;
+}
+
+.bench-image-placeholder:not(.bench-overview) img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.3);
+    border-radius: 5px;
+    cursor: zoom-in;
+}
+
+.bench-image-placeholder i {
+    font-size: 24px;
+    color: #333;
+}
+
+.bench-image-placeholder span {
+    color: #444;
+}
+
+.bench-industry {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.bench-domain-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+.bench-domain-tag[data-domain="crisis"] {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--color-d);
+}
+
+.bench-domain-tag[data-domain="anticipacion"] {
+    background: rgba(0, 243, 255, 0.08);
+    color: var(--accent-cyan);
+}
+
+.bench-domain-tag[data-domain="asistencia"] {
+    background: rgba(255, 152, 0, 0.08);
+    color: var(--color-a);
+}
+
+.bench-domain-tag[data-domain="alineacion"] {
+    background: rgba(255, 255, 255, 0.06);
+    color: #aaa;
+}
+
+/* --- Bench Patterns Carousel Layout --- */
+.bench-patterns {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    grid-column: span 12;
+    height: 100%;
+    min-height: 0;
+}
+
+.bench-patterns-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.bench-pattern-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    opacity: 0.55;
+}
+
+.bench-pattern-card:hover {
+    opacity: 0.8;
+}
+
+.bench-pattern-card.active {
+    opacity: 1;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.08);
+}
+
+.bench-pattern-card.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent-cyan);
+    border-radius: 8px 0 0 8px;
+}
+
+.bench-pattern-card h3 {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.bench-pattern-card .text-sm {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-muted);
+}
+
+.bench-patterns-viewer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+}
+
+.bench-patterns-viewer img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 16px;
+    transition: opacity 0.3s ease;
+}
+
+.bench-patterns-viewer .bench-viewer-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #444;
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+.bench-patterns-viewer .bench-viewer-empty i {
+    font-size: 32px;
+    color: #333;
+}
+
+/* Light mode — bench patterns */
+[data-theme="light"] .bench-pattern-card {
+    background: #fff;
+    border-color: #ddd;
+}
+
+[data-theme="light"] .bench-pattern-card.active {
+    border-color: #0077b6;
+    box-shadow: 0 0 8px rgba(0, 119, 182, 0.1);
+}
+
+[data-theme="light"] .bench-pattern-card.active::before {
+    background: #0077b6;
+}
+
+[data-theme="light"] .bench-patterns-viewer {
+    background: #fff;
+    border-color: #ddd;
+}
+
+/* Light mode */
+[data-theme="light"] .tag-new { background: rgba(0, 128, 0, 0.1); color: #0a7a0a; }
+[data-theme="light"] .tag-same { background: rgba(0, 0, 0, 0.04); color: #999; }
+[data-theme="light"] .tag-replace { background: rgba(255, 152, 0, 0.1); color: #c66900; }
+[data-theme="light"] .bench-domain { border-color: var(--border-color); }
+[data-theme="light"] .bench-domain-dominio { background: rgba(0, 0, 0, 0.04); color: #666; }
+
+[data-theme="light"] .bench-image-placeholder {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: #ddd;
+}
+
+[data-theme="light"] .bench-image-placeholder i,
+[data-theme="light"] .bench-image-placeholder span {
+    color: #999;
+}
+
+[data-theme="light"] .bench-domain-tag[data-domain="crisis"] {
+    background: rgba(200, 0, 0, 0.08);
+    color: #c00;
+}
+
+[data-theme="light"] .bench-domain-tag[data-domain="anticipacion"] {
+    background: rgba(0, 100, 150, 0.08);
+    color: #006496;
+}
+
+[data-theme="light"] .bench-domain-tag[data-domain="asistencia"] {
+    background: rgba(200, 100, 0, 0.08);
+    color: #c66900;
+}
+
+[data-theme="light"] .bench-domain-tag[data-domain="alineacion"] {
+    background: rgba(0, 0, 0, 0.04);
+    color: #666;
+}

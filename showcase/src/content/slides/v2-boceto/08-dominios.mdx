@@ -1,0 +1,64 @@
+---
+order: 8
+title: "Arquitectura de Dominios"
+slideLayout: "content"
+---
+import Slide from '../../../components/Slide.astro';
+
+<Slide id="slide-8" title="Arquitectura de Dominios">
+  <h1 class="content-title">Arquitectura de Dominios <span class="tag-update">REESTRUCTURADO</span></h1>
+  <div class="col-12 mb-sm">
+    <p style="font-size: 14px; color: white;">Los 4 dominios <strong>no son pares</strong>. Alineación Estratégica envuelve a los demás — todo se traduce a valor de negocio.</p>
+  </div>
+  <div class="col-7">
+    <div class="arch-diagram">
+      <div class="arch-label">Alineación Estratégica (envolvente)</div>
+      <div class="arch-sublabel">"¿Cómo mejoramos el plan?" — Todo se traduce a valor de negocio</div>
+      <div class="arch-domains">
+        <div class="arch-domain">
+          <h4>A · Crisis</h4>
+          <small>Quiet UI líder</small>
+          <p style="font-size: 10px; color: #555; margin-top: 4px;">"Algo se rompió"</p>
+        </div>
+        <div class="arch-domain">
+          <h4>B · Anticipación</h4>
+          <small>Time Sight líder</small>
+          <p style="font-size: 10px; color: #555; margin-top: 4px;">"Va a fallar"</p>
+        </div>
+        <div class="arch-domain">
+          <h4>C · Asistencia</h4>
+          <small>Omni Sense líder</small>
+          <p style="font-size: 10px; color: #555; margin-top: 4px;">"Procesa esto por mí"</p>
+        </div>
+      </div>
+      <div class="arch-transversal">Pilar transversal prioritario: <strong>Omni Sense</strong></div>
+    </div>
+    <div class="arch-prereq">
+      <i class="fa-solid fa-triangle-exclamation" style="color: #ff9800; margin-right: 6px;"></i>
+      <strong>Confianza en Datos</strong> — prerrequisito. Si falla, nada funciona.
+    </div>
+  </div>
+  <div class="col-5">
+    <div class="card" style="margin-bottom: 8px;">
+      <h3 class="text-color-a"><i class="fa-solid fa-arrow-right"></i> Cambio vs v1</h3>
+      <table class="compare-table">
+        <tr>
+          <td class="compare-before">4 dominios pares</td>
+          <td class="compare-after">AE envuelve a 3 operativos</td>
+        </tr>
+        <tr>
+          <td class="compare-before">"¿Cómo vamos contra plan?"</td>
+          <td class="compare-after">"¿Cómo mejoramos el plan?"</td>
+        </tr>
+        <tr>
+          <td class="compare-before">Multi-pilar (genérico)</td>
+          <td class="compare-after">Time Sight + Omni Sense co-lideran</td>
+        </tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3><i class="text-accent fa-solid fa-users"></i> Validación</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">Felipe Reyes (externo) validó los 4 dominios sin que se los dijeran. Enfatizó: "todo se puede transferir y hablar el lenguaje de dinero."</p>
+    </div>
+  </div>
+</Slide>

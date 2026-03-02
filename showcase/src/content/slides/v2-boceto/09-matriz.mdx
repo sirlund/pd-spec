@@ -1,0 +1,73 @@
+---
+order: 9
+title: "Matriz de Intensidad"
+slideLayout: "content"
+---
+import Slide from '../../../components/Slide.astro';
+
+<Slide id="slide-9" title="Matriz de Intensidad">
+  <h1 class="content-title">Matriz de Intensidad <span class="tag-new">NUEVO</span></h1>
+  <div class="col-12" style="margin-bottom: 4px;">
+    <p class="text-muted" style="font-size: 14px;">No todos los cruces pilar × dominio pesan igual. Esta matriz guía qué profundizar en diseño.</p>
+  </div>
+  <div class="card col-8">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th><i class="fa-solid fa-volume-xmark"></i> Quiet UI</th>
+          <th><i class="fa-solid fa-route"></i> Clear Path</th>
+          <th><i class="fa-solid fa-clock-rotate-left"></i> Time Sight</th>
+          <th><i class="fa-solid fa-tower-broadcast"></i> Omni Sense</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>AE</strong> envolvente</td>
+          <td class="matrix-present">●●</td>
+          <td class="matrix-present">●●</td>
+          <td class="matrix-leader">●●●</td>
+          <td class="matrix-leader">●●●</td>
+        </tr>
+        <tr>
+          <td><strong>A</strong> · Crisis</td>
+          <td class="matrix-leader">●●●</td>
+          <td class="matrix-leader">●●●</td>
+          <td class="matrix-leader">●●●</td>
+          <td class="matrix-present">●●</td>
+        </tr>
+        <tr>
+          <td><strong>B</strong> · Anticipación</td>
+          <td class="matrix-secondary">●○</td>
+          <td class="matrix-present">●●</td>
+          <td class="matrix-leader">●●●</td>
+          <td class="matrix-secondary">●○</td>
+        </tr>
+        <tr>
+          <td><strong>C</strong> · Asistencia</td>
+          <td class="matrix-secondary">●○</td>
+          <td class="matrix-present">●●</td>
+          <td class="matrix-secondary">●○</td>
+          <td class="matrix-leader">●●●</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; font-family: var(--font-mono);">
+      <span class="matrix-leader">●●●</span> Líder · <span class="matrix-present">●●</span> Presente · <span class="matrix-secondary">●○</span> Secundario
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card" style="margin-bottom: 6px; border-color: var(--accent-cyan);">
+      <h3><i class="text-accent fa-solid fa-star"></i> Crisis = Showcase</h3>
+      <p class="text-sm">Único dominio con 3 pilares en ●●●. <strong>El caso #1 demuestra el sistema completo.</strong></p>
+    </div>
+    <div class="card mb-sm">
+      <h3><i class="text-accent fa-solid fa-tower-broadcast"></i> Omni Sense: 2/4</h3>
+      <p class="text-sm">Líder en C + co-líder en AE. Presencia en los 4 dominios.</p>
+    </div>
+    <div class="card">
+      <h3><i class="fa-solid fa-ban" style="color: #555;"></i> Celda vacía</h3>
+      <p class="text-sm">Quiet UI × Asistencia: el usuario busca al sistema, no necesita silencio.</p>
+    </div>
+  </div>
+</Slide>

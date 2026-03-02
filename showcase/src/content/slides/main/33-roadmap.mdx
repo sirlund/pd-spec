@@ -1,0 +1,61 @@
+---
+order: 33
+title: "Hoja de Ruta — Plan Idemax (10 semanas)"
+slideLayout: "grid"
+---
+import Slide from '../../../components/Slide.astro';
+import Card from '../../../components/Card.astro';
+import RecBox from '../../../components/RecBox.astro';
+
+<Slide id="slide-33" title="Hoja de Ruta — Plan Idemax (10 semanas)">
+  <div class="col-12">
+    <div style="display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 16px; background: #111;">
+      <div style="flex: 1; background: var(--accent-cyan); opacity: 0.7;"></div>
+      <div style="flex: 2; background: #ff9800; opacity: 0.7;"></div>
+      <div style="flex: 6; background: var(--accent-cyan); opacity: 1;"></div>
+      <div style="flex: 1; background: #333;"></div>
+    </div>
+  </div>
+
+  <Card span={3} style="border-color: var(--accent-cyan); opacity: 0.7;">
+    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Etapa 1 — Inmersión</div>
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-bottom: 8px;">SEM 1</div>
+    <span style="font-family: var(--font-mono); font-size: 10px; background: rgba(0,232,255,0.15); color: var(--accent-cyan); padding: 2px 8px; border-radius: 3px;">COMPLETADA</span>
+    <p style="font-size: 13px; margin-top: 10px; line-height: 1.5;">Entrevistas, inmersión en terreno, análisis de sistemas existentes. Base de conocimiento construida.</p>
+  </Card>
+
+  <Card span={3} style="border-color: #ff9800;">
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #ff9800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Etapa 2 — Experiencia</div>
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-bottom: 8px;">SEM 2 – 3</div>
+    <span style="font-family: var(--font-mono); font-size: 10px; background: rgba(255,152,0,0.15); color: #ff9800; padding: 2px 8px; border-radius: 3px;">PARCIAL</span>
+    <p style="font-size: 13px; margin-top: 10px; line-height: 1.5;">Benchmark, pilares de diseño, casos de uso. Falta: validación con usuarios finales en terreno.</p>
+    <p style="font-size: 12px; color: #ff9800; margin-top: 6px;"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 4px;"></i> Gap: validación en terreno pendiente</p>
+  </Card>
+
+  <Card span={3} style="border-color: var(--accent-cyan);">
+    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Etapa 3 — Lineamientos</div>
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-bottom: 8px;">SEM 3 – 8</div>
+    <span style="font-family: var(--font-mono); font-size: 10px; background: rgba(0,232,255,0.15); color: var(--accent-cyan); padding: 2px 8px; border-radius: 3px;">EN CURSO — SEM 4</span>
+    <p style="font-size: 13px; margin-top: 10px; line-height: 1.5;">Visión estratégica, arquitectura de información, sistema de diseño, prototipos de alta fidelidad.</p>
+  </Card>
+
+  <Card span={3} style="border-color: #333;">
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Etapa 4 — Comunicación</div>
+    <div style="font-family: var(--font-mono); font-size: 11px; color: #666; margin-bottom: 8px;">SEM 9 – 10</div>
+    <span style="font-family: var(--font-mono); font-size: 10px; background: rgba(255,255,255,0.05); color: #555; padding: 2px 8px; border-radius: 3px;">PENDIENTE</span>
+    <p style="font-size: 13px; margin-top: 10px; line-height: 1.5;">Documentación final, presentación a stakeholders, handoff a desarrollo.</p>
+  </Card>
+
+  <div class="col-12" style="display: flex; gap: 16px;">
+    <div style="flex: 1;">
+      <RecBox title="Siguiente paso inmediato">
+        <p>Validar pilares y casos de uso con stakeholders técnicos de TIMining. Confirmar priorización de dominios para prototipos.</p>
+      </RecBox>
+    </div>
+    <div style="flex: 1;">
+      <RecBox title="Riesgo a mitigar" accentColor="#ff9800">
+        <p>Validación en terreno pendiente (Etapa 2). Sin feedback de usuarios finales, los prototipos pueden no reflejar la realidad operativa.</p>
+      </RecBox>
+    </div>
+  </div>
+</Slide>

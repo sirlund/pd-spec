@@ -1,0 +1,58 @@
+---
+order: 31
+title: "Horizonte de Evolución"
+slideLayout: "grid"
+---
+import Slide from '../../../components/Slide.astro';
+import Card from '../../../components/Card.astro';
+
+<Slide id="slide-31" title="Horizonte de Evolución">
+  <div class="col-12" style="text-align: center; margin-bottom: 8px;">
+    <span class="domain-tag">HORIZONTE</span>
+    <h3 style="font-size: 26px; margin: 8px 0 4px;">CORE como cerebro de la mina</h3>
+    <p style="font-size: 15px; color: #666;">De herramienta de soporte a sistema nervioso central de la operación.</p>
+  </div>
+
+  <Card span={4} class="horizon-card">
+    <div class="horizon-step-number">1</div>
+    <h3><i class="fa-solid fa-tower-broadcast" style="color: var(--accent-cyan);"></i> Percibe</h3>
+    <p>Analiza la situación completa de la mina — sensores, equipos, personas, clima, geología — en tiempo real y sin intervención.</p>
+    <p class="horizon-detail">Fusión de datos multimodal: radar, GPS, cámaras, radio, ERP. Un solo modelo de contexto.</p>
+  </Card>
+
+  <Card span={4} class="horizon-card">
+    <div class="horizon-step-number">2</div>
+    <h3><i class="fa-solid fa-code-branch" style="color: var(--accent-cyan);"></i> Decide</h3>
+    <p>N simulaciones en paralelo — evalúa escenarios, anticipa consecuencias, selecciona la mejor estrategia.</p>
+    <p class="horizon-detail">Optimización multi-objetivo: tonelaje, costo, seguridad, desgaste. No una métrica — todas.</p>
+  </Card>
+
+  <Card span={4} class="horizon-card">
+    <div class="horizon-step-number">3</div>
+    <h3><i class="fa-solid fa-satellite-dish" style="color: var(--accent-cyan);"></i> Actúa</h3>
+    <p>De sugerencia a instrucción directa — CORE comunica decisiones a equipos, sistemas y personas automáticamente.</p>
+    <p class="horizon-detail">Machine-to-Machine: despacho autónomo, reasignación de flota, ajuste de plan sin intervención humana.</p>
+  </Card>
+
+  <div class="col-12">
+    <div class="horizon-ladder">
+      <div class="horizon-ladder-step horizon-ladder-step--active">
+        <div class="horizon-ladder-dot"></div>
+        <div class="horizon-ladder-label">Hoy</div>
+        <div class="horizon-ladder-desc">Asistente inteligente — detecta, analiza, recomienda. El humano decide.</div>
+      </div>
+      <div class="horizon-ladder-connector"></div>
+      <div class="horizon-ladder-step">
+        <div class="horizon-ladder-dot"></div>
+        <div class="horizon-ladder-label">Corto plazo</div>
+        <div class="horizon-ladder-desc">Copiloto autónomo — ejecuta decisiones rutinarias, escala las críticas.</div>
+      </div>
+      <div class="horizon-ladder-connector"></div>
+      <div class="horizon-ladder-step">
+        <div class="horizon-ladder-dot"></div>
+        <div class="horizon-ladder-label">Horizonte</div>
+        <div class="horizon-ladder-desc">Cerebro de la mina — percibe, decide y actúa. La operación se auto-optimiza.</div>
+      </div>
+    </div>
+  </div>
+</Slide>

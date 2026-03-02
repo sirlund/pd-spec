@@ -1,0 +1,65 @@
+---
+order: 11
+title: "Benchmark — Omni Sense"
+slideLayout: "bench"
+---
+import Slide from '../../../components/Slide.astro';
+import BenchCard from '../../../components/snowflakes/BenchCard.astro';
+
+<Slide id="slide-11" title="Benchmark — Omni Sense">
+  <div class="col-12" style="margin-bottom: 6px;">
+    <div class="bench-pilar-header">
+      <div class="bench-pilar-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+      <div>
+        <div class="bench-pilar-name">El sistema percibe, comprende y responde</div>
+        <div class="bench-pilar-tagline">Múltiples sentidos, un cerebro. El canal no es accesorio — el canal ES la inteligencia.</div>
+      </div>
+    </div>
+  </div>
+
+  <BenchCard
+    name="Motive"
+    url="https://gomotive.com"
+    industry="Logística / Flotas"
+    logoUrl="https://logo.clearbit.com/gomotive.com"
+    screenshot="img/bench/motive-omni.png"
+    factorX='<strong>"Hey Motive".</strong> Voz + cámaras + telemática integrada. Múltiples sentidos alimentan una sola plataforma.'
+    aplicaciones={[
+      '<strong>Voz en terreno:</strong> "Hey TIM, ¿cumple esta berma?" — manos libres',
+      "<strong>Fusión sensorial:</strong> cámara + GPS + radio = contexto completo",
+      "<strong>Una plataforma:</strong> múltiples inputs, un solo sistema"
+    ]}
+  />
+
+  <BenchCard
+    name="Discord"
+    url="https://discord.com"
+    industry="Comunicaciones / Voz"
+    logoUrl="https://logo.clearbit.com/discord.com"
+    screenshot="img/bench/discord.png"
+    factorX="<strong>Canales de voz siempre activos + PTT.</strong> Múltiples canales simultáneos. Referente directo para el triage de radio IROC."
+    aplicaciones={[
+      "<strong>Triage por canales:</strong> emergencias, operaciones, mantención",
+      "<strong>Push-to-Talk:</strong> habla → el sistema transcribe + clasifica",
+      "<strong>Presencia visual:</strong> quién está disponible sin preguntar"
+    ]}
+  />
+
+  <BenchCard
+    name="Samsara"
+    url="https://www.samsara.com"
+    industry="Operaciones / IoT"
+    logoUrl="https://logo.clearbit.com/samsara.com"
+    screenshot="img/bench/samsara.png"
+    factorX="<strong>Connected Workflows.</strong> Dashboard holístico: GPS, cámaras, sensores ambientales, clima — en flujos automatizados."
+    aplicaciones={[
+      "<strong>Flujos automatizados:</strong> sensor detecta X → sistema ejecuta Y",
+      "<strong>Weather Intelligence:</strong> clima en las decisiones operacionales",
+      "<strong>Briefing contextual:</strong> resumen de turno llega automáticamente"
+    ]}
+  />
+
+  <div class="col-12 bench-footer">
+    <p>También: <strong>Anduril Lattice OS</strong> (Spatial Intelligence, fusión autónoma) · <strong>Slack</strong> (Threads como modelo de comunicación) · <strong>Garmin G3000</strong> (Visión sintética 3D en misión crítica)</p>
+  </div>
+</Slide>

@@ -1,0 +1,65 @@
+---
+order: 10
+title: "Benchmark — Time Sight"
+slideLayout: "bench"
+---
+import Slide from '../../../components/Slide.astro';
+import BenchCard from '../../../components/snowflakes/BenchCard.astro';
+
+<Slide id="slide-10" title="Benchmark — Time Sight">
+  <div class="col-12" style="margin-bottom: 6px;">
+    <div class="bench-pilar-header">
+      <div class="bench-pilar-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      <div>
+        <div class="bench-pilar-name">Pasado, presente y futuro en una sola mirada</div>
+        <div class="bench-pilar-tagline">Hindsight / Insight / Foresight. La misma interfaz, tres profundidades temporales.</div>
+      </div>
+    </div>
+  </div>
+
+  <BenchCard
+    name="Tesla Fleet"
+    url="https://www.tesla.com/fleet"
+    industry="Telemetría / Flotas EV"
+    logoUrl="https://logo.clearbit.com/tesla.com"
+    screenshot="img/bench/tesla-fleet.png"
+    factorX='<strong>Time Scrubbing.</strong> "Rebobinar" incidentes para entender causalidad física exacta — segundo a segundo. DVR para la operación.'
+    aplicaciones={[
+      '<strong>Slider temporal:</strong> "qué hacía el camión a las 3:42 AM?" — arrastrar y ver',
+      "<strong>Correlación sincronizada:</strong> GPS + velocidad + payload en un timeline",
+      "<strong>Post-mortem visual:</strong> entender por qué pararon los autónomos"
+    ]}
+  />
+
+  <BenchCard
+    name="SentinelOne Storylines"
+    url="https://www.sentinelone.com/platform/singularity-xdr/"
+    industry="Ciberseguridad / XDR"
+    logoUrl="https://logo.clearbit.com/sentinelone.com"
+    screenshot="img/bench/sentinelone-storylines.png"
+    factorX="<strong>Reconstrucción forense narrativa.</strong> La cadena de eventos como historia: qué pasó, qué causó qué, cómo se propagó."
+    aplicaciones={[
+      "<strong>Narrativa causal:</strong> contar la historia, no mostrar un log",
+      "<strong>Grafo de propagación:</strong> un fallo → múltiples impactos downstream",
+      "<strong>Causa raíz automática:</strong> el sistema propone causa antes de investigar"
+    ]}
+  />
+
+  <BenchCard
+    name="Chronosphere Lens"
+    url="https://chronosphere.io"
+    industry="Observabilidad / Infra"
+    logoUrl="https://logo.clearbit.com/chronosphere.io"
+    screenshot="img/bench/chronosphere.png"
+    factorX="<strong>Retención temporal ajustable.</strong> Más detalle durante crisis, menos en operación normal. Zoom temporal inteligente."
+    aplicaciones={[
+      "<strong>Zoom temporal:</strong> 1s durante crisis, 5min en operación normal",
+      '<strong>Tendencia vs puntual:</strong> "1 bloqueo" vs "3 esta semana"',
+      "<strong>Costo-beneficio:</strong> el sistema decide qué retener"
+    ]}
+  />
+
+  <div class="col-12 bench-footer">
+    <p>También: <strong>Foxglove</strong> (Multicanal sincronizado para robótica) · <strong>Axiom</strong> (Ingesta ilimitada, busca después) · <strong>Adobe Premiere</strong> (Timeline como paradigma de navegación)</p>
+  </div>
+</Slide>

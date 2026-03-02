@@ -16,6 +16,17 @@
 - **Molecules layer** — wait for convergence, extract when patterns repeat
 - **DAR Pipeline Bar** — used in slide 32, potential base component
 
+## Deck Index — Presentation Landing Page
+- **Concept:** A styled landing page (PD-Spec branded) at `/` that lists all available decks
+- **Content per deck:** title, description, version, last-updated date, slide count, thumbnail
+- **Behavior:** Click a deck → navigates to `/{deck-name}` (existing multi-deck routing)
+- **Data source:** Derive from frontmatter + filesystem (auto-discovered decks), optionally enriched with a `_deck.yaml` or frontmatter in a deck's `01-cover.mdx`
+- **Current `/`** would become the `main` deck route only (no longer the fallback)
+- **Open questions:**
+  - Metadata format: per-deck `_deck.yaml` vs extended cover frontmatter?
+  - Versioning: git-derived (last commit date) vs manual field?
+  - Visual style: card grid vs list?
+
 ## Legacy Migration
 - `interna_w5.html` — pending Astro migration
 - `v2_boceto.html` — pending Astro migration

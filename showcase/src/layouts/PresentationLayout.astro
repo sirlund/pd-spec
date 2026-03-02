@@ -30,6 +30,7 @@ const {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style is:global>
     @import '../themes/theme_spec.css';
+    @import '../themes/v2_boceto.css';
   </style>
 </head>
 <body>
@@ -102,6 +103,43 @@ const {
         if (c === 'light') { document.documentElement.removeAttribute('data-theme'); localStorage.setItem(key, 'dark'); i.className = 'fa-solid fa-sun'; }
         else { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem(key, 'light'); i.className = 'fa-solid fa-moon'; }
       });
+    })();
+
+    // Bench Patterns Carousel
+    (function () {
+      document.querySelectorAll('.bench-patterns').forEach(function (carousel) {
+        var cards = carousel.querySelectorAll('.bench-pattern-card');
+        var viewer = carousel.querySelector('.bench-patterns-viewer');
+        cards.forEach(function (card) {
+          card.addEventListener('click', function () {
+            cards.forEach(function (c) { c.classList.remove('active'); });
+            card.classList.add('active');
+            var imgSrc = card.getAttribute('data-img');
+            if (imgSrc) {
+              viewer.innerHTML = '<img src="' + imgSrc + '" alt="' + (card.querySelector('h3')?.textContent || '') + '">';
+            } else {
+              viewer.innerHTML = '<div class="bench-viewer-empty"><i class="fa-solid fa-pen-ruler"></i><span>Wireframe pendiente</span></div>';
+            }
+          });
+        });
+      });
+    })();
+
+    // Lightbox for bench images
+    (function () {
+      var lb = document.createElement('div');
+      lb.id = 'lightbox';
+      lb.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);cursor:zoom-out;align-items:center;justify-content:center;';
+      var lbImg = document.createElement('img');
+      lbImg.style.cssText = 'max-width:94vw;max-height:94vh;object-fit:contain;border-radius:4px;';
+      lb.appendChild(lbImg);
+      document.body.appendChild(lb);
+      document.addEventListener('click', function (e) {
+        var img = e.target.closest('.bench-image-placeholder img');
+        if (img) { lb.style.display = 'flex'; lbImg.src = img.src; }
+      });
+      lb.addEventListener('click', function () { lb.style.display = 'none'; });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lb.style.display = 'none'; });
     })();
   </script>
 </body>

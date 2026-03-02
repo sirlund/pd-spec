@@ -1,0 +1,24 @@
+---
+order: 19
+title: "Caso #3 — Visualización: Anticipación de Cuello de Botella"
+slideLayout: "viz"
+---
+import VizSlide from '../../../components/snowflakes/VizSlide.astro';
+
+<VizSlide
+  id="slide-19"
+  title="Caso #3 — Visualización: Anticipación de Cuello de Botella"
+  active="a"
+  image="viz-03-anticipacion.png"
+  imageAlt="Anticipación — Análisis: timeline predictivo 45 min"
+  momentTitle="Momento: Análisis"
+  momentIcon="fa-solid fa-magnifying-glass-chart"
+  momentDesc='El sistema ya detectó que en 45 min se bloquea el chancador. Ahora muestra el <strong>impacto aguas abajo</strong> — tonelaje, dinero, áreas afectadas — y la causa raíz específica.'
+  pilarCombo='<i class="fa-solid fa-clock-rotate-left" style="font-size: 14px;"></i> Time Sight + <i class="fa-solid fa-route" style="font-size: 14px; margin-left: 4px;"></i> Clear Path'
+  pilarDesc='Timeline predictivo del turno con marcador "ahora" y proyección amber. Flujo de tonelaje declinando hacia el punto de bloqueo. Impacto cascada en planta y KPI.'
+  referentes={[
+    { stage: 'd', logoUrl: "https://logo.clearbit.com/chronosphere.io", name: "Chronosphere", desc: "alerta predictiva" },
+    { stage: 'a', logoUrl: "https://logo.clearbit.com/tesla.com", name: "Tesla Fleet", desc: "time scrubbing" },
+    { stage: 'r', logoUrl: "https://logo.clearbit.com/datadoghq.com", name: "Datadog Bits AI", desc: "recomendación contextual" }
+  ]}
+/>
