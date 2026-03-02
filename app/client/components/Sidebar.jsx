@@ -10,7 +10,7 @@ const SECTION_LABELS = {
 
 const SECTION_ORDER = ['research', 'structure', 'tools', 'browse'];
 
-export default function Sidebar({ views, activeView, onNavigate, counts, decisionCount }) {
+export default function Sidebar({ views, activeView, onNavigate, counts, decisionCount, agentNotification }) {
   const grouped = {};
   for (const v of views) {
     if (!grouped[v.section]) grouped[v.section] = [];
@@ -39,6 +39,9 @@ export default function Sidebar({ views, activeView, onNavigate, counts, decisio
                     <span>{v.label}</span>
                     {count != null && count > 0 && (
                       <span className="count">{count}</span>
+                    )}
+                    {v.id === 'agent' && agentNotification && (
+                      <span className="agent-dot" />
                     )}
                   </div>
                 );

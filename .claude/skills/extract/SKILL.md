@@ -657,7 +657,7 @@ Process all files in single pass (step 12 below)
    **Timestamp rule:** Always include the `Extracted: YYYY-MM-DDTHH:MM` metadata line with the current timestamp when writing or updating a section. This enables `/analyze` incremental mode to skip unchanged extractions.
 
    - Preserve the header and description at the top of the file.
-   - **Checkpoint after each folder.** Write (or append) results to EXTRACTIONS.md after completing each subfolder, not at the end. This ensures that if context compaction occurs mid-extraction, the already-processed folders are safely on disk. After compaction, read EXTRACTIONS.md to see what's already written, then continue with the remaining folders.
+   - **CRITICAL: Write in batches, NEVER all at once.** A single Write/Edit call with all extractions WILL hit the output token limit and hang. Write (or append) results to EXTRACTIONS.md after completing each subfolder (or every 3-5 files if a folder has many files). After each write, continue with the next batch. This also protects against context compaction: already-written folders survive on disk.
    - **Source path rule:** The section header (`## [source-folder/filename.ext]`) must ALWAYS reference the original file path in `01_Sources/`, never a temporary conversion path (e.g., `02_Work/_temp/file.txt`). When a file is converted via textutil, markitdown, sips, or Python zipfile to a temporary file, the extraction header must use the original source filename and path.
 
 ### Phase 4: Report (Validation First)
