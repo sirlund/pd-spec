@@ -33,6 +33,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 - [ ] Switching tabs during a running skill does NOT abort the SDK query
 - [ ] Returning to Agent tab shows the accumulated log
 - [ ] If the run completes while on another tab, the log shows "Done" when the user returns
+- [ ] After connection loss (WiFi, sleep, crash), reconnecting shows a recovery log of the previous run — what was executed, where it stopped, and whether it completed or failed. The user should never have to guess.
 
 ---
 
