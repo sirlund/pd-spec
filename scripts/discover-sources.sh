@@ -191,7 +191,7 @@ echo "---"
 echo "NEW:"
 if (( n_new > 0 )); then
   for f in "${new_files[@]}"; do
-    echo "  ${new_details[$f]}"
+    echo "  ${new_details[$f]}  ${current_hash[$f]}"
   done
 else
   echo "  (none)"
@@ -200,7 +200,7 @@ fi
 echo "MODIFIED:"
 if (( n_mod > 0 )); then
   for f in "${modified_files[@]}"; do
-    echo "  ${modified_details[$f]}"
+    echo "  ${modified_details[$f]}  ${current_hash[$f]}"
   done
 else
   echo "  (none)"
@@ -227,7 +227,7 @@ fi
 echo "RETRY:"
 if (( n_ret > 0 )); then
   for f in "${retry_files[@]}"; do
-    echo "  ${retry_details[$f]}"
+    echo "  ${retry_details[$f]}  ${current_hash[$f]}"
   done
 else
   echo "  (none)"
