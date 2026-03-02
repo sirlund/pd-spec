@@ -262,7 +262,7 @@ ${projectMd}
           : 'claude-sonnet-4-20250514',
         cwd: projectRoot,
         systemPrompt,
-        maxTurns: 200,
+        maxTurns: mode === 'skill' ? 80 : 30,
         canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, mode),
         disallowedTools: mode === 'qa'
           ? ['Write', 'Edit', 'Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'AskUserQuestion']
@@ -282,7 +282,7 @@ ${projectMd}
       // doesn't intercept it as its own slash command. The system prompt
       // already contains the full SKILL.md instructions.
       const sdkPrompt = mode === 'skill'
-        ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt.`
+        ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt. IMPORTANT: Execute the skill exactly ONCE. After completing all phases and reporting results, STOP. Do not re-execute, verify, or start over.`
         : message;
 
       const q = query({ prompt: sdkPrompt, options: queryOptions });
