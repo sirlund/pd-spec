@@ -95,15 +95,15 @@ EVERY file discovered in Phase 1 MUST be:
    TOTAL_TO_PROCESS: <count>
    ---
    NEW:
-     <relative-path>  <ext>  <human-size>
+     <relative-path>  <ext>  <human-size>  <md5-hash>
    MODIFIED:
-     <relative-path>  <ext>  <human-size>
+     <relative-path>  <ext>  <human-size>  <md5-hash>
    MOVED:
      <old-path> → <new-path>
    DELETED:
      <relative-path>
    RETRY:
-     <relative-path>  <ext>  <human-size>
+     <relative-path>  <ext>  <human-size>  <md5-hash>
    ```
    Each section lists `(none)` if empty. `TOTAL_TO_PROCESS` = NEW + MODIFIED + RETRY.
    Detail lines are indented with 2 spaces, fields separated by 2+ spaces.
@@ -712,7 +712,7 @@ Process all files in single pass (step 12 below)
    **For each file processed:**
    - Extract format from file extension (md, png, pdf, docx, etc.)
    - Count claims extracted (number of lines in the `### Raw Claims` section)
-   - Compute or reuse the md5 hash from discover-sources.sh
+   - Use the md5 hash from discover-sources.sh output (4th field in the file listing). Do NOT compute hashes separately or generate placeholder values.
    - Set timestamp to current time (ISO format: YYYY-MM-DDTHH:MM)
    - Set status:
      - `processed` — file was successfully extracted
@@ -723,9 +723,9 @@ Process all files in single pass (step 12 below)
    ```markdown
    | File | Format | Status | Claims | Hash | Last Processed |
    |---|---|---|---|---|---|
-   | entrevistas/entrevista-01.md | md | processed | 45 | a1b2c3d4e5f6 | 2026-02-15T14:30 |
-   | workshop/foto-01.jpg | jpg | processed | 8 | f6e5d4c3b2a1 | 2026-02-15T14:31 |
-   | docs/brief.pdf | pdf | error | 0 | 1234567890ab | 2026-02-15T14:31 |
+   | entrevistas/entrevista-01.md | md | processed | 45 | <hash-from-script> | 2026-02-15T14:30 |
+   | workshop/foto-01.jpg | jpg | processed | 8 | <hash-from-script> | 2026-02-15T14:31 |
+   | docs/brief.pdf | pdf | error | 0 | <hash-from-script> | 2026-02-15T14:31 |
    ```
 
    **For DELETED files** (from discover-sources.sh):
