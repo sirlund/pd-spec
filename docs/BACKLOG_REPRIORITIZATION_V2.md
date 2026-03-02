@@ -251,7 +251,7 @@ Sin cambios. Ver [Repriorización v1](BACKLOG_REPRIORITIZATION.md#-wave-1-flujo-
 
 **Acceptance criteria adicionales para BL-80 Phase 1 (complementan los del BL original):**
 
-- [ ] `canUseTool` index guardrail: cuando el agente llama `Read` sobre un archivo que tiene índice (`02_Work/_index/`) sin especificar offset → redirigir al archivo de índice automáticamente. El agente recibe el índice (~5 KB) en vez del archivo completo. Reads con offset/limit pasan sin intercepción. Determinístico, zero costo de tokens, sin dependencia de comportamiento LLM. Ver [IDEAS_LLM_QA_PATTERNS.md](IDEAS_LLM_QA_PATTERNS.md) Patrón 1.
+- [x] ~~`canUseTool` index guardrail~~ **DESCARTADO**: el SDK auto-aprueba `Read` sin pasar por `canUseTool` — el redirect determinístico no es viable con la API actual. **Mitigación implementada:** instrucciones de índice en el preamble de `buildSystemPrompt` (Pattern 2, no determinístico). El agente puede y generalmente obedece, pero no está forzado. Ver [IDEAS_LLM_QA_PATTERNS.md](IDEAS_LLM_QA_PATTERNS.md) Patrón 1 → OBS. Deuda técnica abierta — revisar si existe mecanismo alternativo en futuras versiones del SDK.
 - [ ] UX Contract support: el setup del SDK no debe impedir ejecución secuencial de skills, intercepción de gates, ni comportamiento basado en modo como se especifica en [UX_CONTRACT.md](UX_CONTRACT.md).
 
 **Decisiones de arquitectura para Wave 2:**
