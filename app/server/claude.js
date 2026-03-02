@@ -266,7 +266,7 @@ ${projectMd}
         canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, mode),
         disallowedTools: mode === 'qa'
           ? ['Write', 'Edit', 'Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'AskUserQuestion']
-          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate'],
+          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'TodoWrite'],
         env: { ...process.env, ANTHROPIC_API_KEY: session.apiKey },
         abortController,
         persistSession: mode === 'qa',
