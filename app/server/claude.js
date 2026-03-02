@@ -124,6 +124,10 @@ export function createClaudeRoutes(projectRoot, broadcast) {
 
       const preamble = `You are running inside the PD-Spec web application.
 You have native filesystem tools: Read, Write, Edit, Bash, Glob, Grep.
+NOTE: The Read tool has a 2000-line default limit and truncates lines longer than 2000
+characters. For source files, discover-sources.sh creates normalized versions of files with
+oversized lines in 02_Work/_temp/ — check the NORMALIZED section of its output and use those
+paths when reading. For files over 1800 lines, use Read with offset/limit in chunks of 1500.
 IMPORTANT: When a skill requires user confirmation or selection (gates, approvals,
 choices), you MUST use the AskUserQuestion tool. Do NOT write questions as plain text
 — the user cannot respond to text. Only AskUserQuestion renders an interactive panel.
