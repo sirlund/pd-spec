@@ -20,8 +20,10 @@ export function createClaudeRoutes(projectRoot, broadcast) {
 
   // In-memory session store: token → { apiKey, createdAt, client, sdkSessionId }
   const sessions = new Map();
-  // Active runs: token → { bridge, abortController, query }
+  // Active runs: token → { bridge, abortController, query, eventLog, sseConnected }
   const activeRuns = new Map();
+  // Completed runs (for recovery after disconnect): token → { log, completedAt }
+  const completedRuns = new Map();
 
   const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 hours
 
@@ -220,18 +222,25 @@ ${projectMd}
       } catch { /* non-fatal */ }
     }
 
-    // SSE setup
-    const sendSSE = setupSSE(res);
+    // SSE setup with event buffering (BL-108)
+    const eventLog = [];
+    const rawSendSSE = setupSSE(res);
+    const sendSSE = (data) => {
+      eventLog.push(data);
+      rawSendSSE(data);
+    };
     const bridge = new InteractionBridge();
     const abortController = new AbortController();
 
     // Store active run
-    activeRuns.set(token, { bridge, abortController, query: null });
+    activeRuns.set(token, { bridge, abortController, query: null, eventLog, sseConnected: true });
 
     req.on('close', () => {
-      abortController.abort();
-      bridge.cancelAll();
-      activeRuns.delete(token);
+      const run = activeRuns.get(token);
+      if (run) {
+        run.sseConnected = false;
+        // DON'T abort — let the query finish. Events buffer in eventLog.
+      }
     });
 
     try {
@@ -349,6 +358,12 @@ ${projectMd}
         sendSSE({ type: 'aborted' });
       }
     } finally {
+      const run = activeRuns.get(token);
+      if (run && !run.sseConnected) {
+        // Client disconnected — keep log for recovery (BL-108)
+        completedRuns.set(token, { log: run.eventLog, completedAt: Date.now() });
+        setTimeout(() => completedRuns.delete(token), 5 * 60 * 1000); // 5min TTL
+      }
       activeRuns.delete(token);
       if (!res.writableEnded) res.end();
     }
@@ -367,6 +382,31 @@ ${projectMd}
     if (!ok) return res.status(404).json({ error: 'No pending interaction for this toolUseId' });
 
     res.json({ ok: true });
+  });
+
+  // --- Run status endpoint (BL-108: recovery after disconnect) ---
+
+  router.get('/run/status', requireSession, (req, res) => {
+    const token = req.sessionToken;
+    const active = activeRuns.get(token);
+    if (active) {
+      const pending = active.bridge.getPending();
+      return res.json({
+        active: true,
+        log: active.eventLog,
+        interaction: pending ? {
+          tool: InteractionBridge.transformForFrontend(pending.input).tool,
+          input: InteractionBridge.transformForFrontend(pending.input).input,
+          toolUseId: pending.toolUseId,
+        } : null,
+      });
+    }
+    const completed = completedRuns.get(token);
+    if (completed) {
+      completedRuns.delete(token); // one-time recovery
+      return res.json({ active: false, log: completed.log });
+    }
+    res.json({ active: false, log: [] });
   });
 
   // --- Cancel endpoint ---
