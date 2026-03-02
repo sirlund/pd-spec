@@ -39,6 +39,7 @@ export default function App() {
   const [highlightId, setHighlightId] = useState(null);
   const [sessionToken, setSessionToken] = useState(() => localStorage.getItem('pd-session-token'));
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [agentNotification, setAgentNotification] = useState(false);
 
   // FileBrowser state preservation (BL-90: back/forward memory)
   const viewContextRef = useRef(null); // current FileBrowser's selectedFile
@@ -66,6 +67,7 @@ export default function App() {
       setRestoredFile(null);
     }
     setViewRaw(newView);
+    if (newView === 'agent') setAgentNotification(false);
     if (!opts.fromPopState) {
       history.pushState({ view: newView, highlightId: opts.highlightId || null }, '');
     }
@@ -160,12 +162,7 @@ export default function App() {
       case 'add-context':
         return <AddContextView projectName={project.data?.name} />;
       case 'agent':
-        return (
-          <AgentView
-            sessionToken={sessionToken}
-            onNavigate={navigateTo}
-          />
-        );
+        return null; // AgentView always mounted outside renderView()
       case 'sources':
         return <FileBrowser key="sources" root="01_Sources" title="Sources" onNavigate={navigateTo} onFileSelect={handleFileSelect} initialFile={restoredFile} />;
       case 'work':
@@ -209,10 +206,19 @@ export default function App() {
         onNavigate={setView}
         counts={counts}
         decisionCount={decisionCount}
+        agentNotification={agentNotification}
       />
 
       <main className="app-main">
         {renderView()}
+        <AgentView
+          sessionToken={sessionToken}
+          onNavigate={navigateTo}
+          visible={view === 'agent'}
+          onStatusChange={(status) => {
+            if (status === 'done' && view !== 'agent') setAgentNotification(true);
+          }}
+        />
       </main>
 
       <SettingsPanel

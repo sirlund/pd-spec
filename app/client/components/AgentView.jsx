@@ -19,7 +19,7 @@ const SKILLS = [
   { id: 'spec', label: '/spec', icon: 'sitemap' },
 ];
 
-export default function AgentView({ sessionToken, onNavigate }) {
+export default function AgentView({ sessionToken, onNavigate, visible, onStatusChange }) {
   const [mode, setMode] = useState(null); // null | 'qa' | 'skill'
   const [skill, setSkill] = useState(null);
   const [log, setLog] = useState([]);
@@ -31,8 +31,25 @@ export default function AgentView({ sessionToken, onNavigate }) {
   const abortRef = useRef(null);
 
   useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [log, interaction]);
+    if (visible) logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [log, interaction, visible]);
+
+  // Recovery: check for active/completed runs on mount (BL-108)
+  useEffect(() => {
+    if (!sessionToken) return;
+    fetch('/api/claude/run/status', {
+      headers: { 'X-Session-Token': sessionToken },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.log?.length) return;
+        setLog(data.log);
+        setRunning(data.active);
+        if (data.active) setMode('skill');
+        if (data.interaction) setInteraction(data.interaction);
+      })
+      .catch(() => {});
+  }, [sessionToken]);
 
   const startSSE = useCallback((body) => {
     setRunning(true);
@@ -105,14 +122,17 @@ export default function AgentView({ sessionToken, onNavigate }) {
             case 'done':
               setRunning(false);
               setLog(prev => [...prev, { type: 'done', usage: event.usage }]);
+              onStatusChange?.('done');
               break;
             case 'aborted':
               setRunning(false);
               setLog(prev => [...prev, { type: 'aborted' }]);
+              onStatusChange?.('aborted');
               break;
             case 'error':
               setRunning(false);
               setLog(prev => [...prev, { type: 'error', content: event.message }]);
+              onStatusChange?.('error');
               break;
           }
         }
@@ -226,7 +246,7 @@ export default function AgentView({ sessionToken, onNavigate }) {
   }
 
   return (
-    <div className="agent-view">
+    <div className="agent-view" style={visible === false ? { display: 'none' } : undefined}>
       <div className="section-header">
         <h1 className="section-title">Agent</h1>
         {log.length > 0 && (
