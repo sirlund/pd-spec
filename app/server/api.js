@@ -510,8 +510,11 @@ export function createApi(projectRoot) {
       }
 
       // Cross-reference filesystem vs SOURCE_MAP (normalize for comparison)
-      const mapPaths = new Set((sourceMap.sources || []).map(s => s.path.normalize('NFC').trim()));
-      const untracked = fsSourcePaths.filter(p => !mapPaths.has(p.normalize('NFC').trim())).length;
+      // U+202F (NARROW NO-BREAK SPACE) and similar exotic whitespace in macOS filenames
+      // must be normalized to regular space to match SOURCE_MAP entries.
+      const normalizePath = (p) => p.normalize('NFC').replace(/[\u00A0\u202F\u2009\u2008\u200A\u205F]/g, ' ').trim();
+      const mapPaths = new Set((sourceMap.sources || []).map(s => normalizePath(s.path)));
+      const untracked = fsSourcePaths.filter(p => !mapPaths.has(normalizePath(p))).length;
 
       // Pipeline progress — use real filesystem count for total sources
       const pipeline = {

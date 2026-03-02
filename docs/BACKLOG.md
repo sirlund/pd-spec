@@ -10,6 +10,57 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-108] Agent View State Persistence — Survive Tab Switches
+
+**Status:** PROPOSED
+**Priority:** P1
+**Effort:** M
+**Origin:** QA session 2026-03-01. Switching tabs in the app unmounts AgentView, losing the log and aborting the running SDK query. User lost a $5+ /extract run mid-execution.
+
+**Problem:** AgentView stores all state (log, running, interaction) in React useState. When the user navigates to Dashboard or Browse and comes back, the component remounts with empty state. Worse: the SSE fetch is aborted on unmount, which triggers `req.on('close')` on the server → `abortController.abort()` → the SDK query is killed. Partial results are on disk but the task doesn't complete.
+
+**Impact:** Users cannot check dashboard progress during a long /extract without killing the run. This makes the app unreliable for pipeline operations.
+
+**Fix options:**
+
+| Option | Approach | Effort |
+|--------|----------|--------|
+| 1 (recommended) | Lift SSE connection + log state to App level. AgentView renders from shared state. Tab switches don't unmount the connection. | M |
+| 2 | Keep AgentView state but prevent unmount (CSS `display:none` instead of conditional rendering) | S — but hacky |
+| 3 | Server-side run persistence — runs continue regardless of client connection. Client reconnects and replays log from server buffer. | L — most robust, needed for BL-83 SaaS |
+
+**Acceptance criteria:**
+- [ ] Switching tabs during a running skill does NOT abort the SDK query
+- [ ] Returning to Agent tab shows the accumulated log
+- [ ] If the run completes while on another tab, the log shows "Done" when the user returns
+- [ ] After connection loss (WiFi, sleep, crash), reconnecting shows a recovery log of the previous run — what was executed, where it stopped, and whether it completed or failed. The user should never have to guess.
+
+---
+
+### [BL-109] Image Read Cost — Model Routing for Visual Extraction
+
+**Status:** PROPOSED (subitem of BL-80-P2)
+**Priority:** P2
+**Effort:** S
+**Origin:** QA session 2026-03-01. 31 image files (26 PNG + 5 HEIC) drove ~60% of the $5.64 extract cost. Each image read costs ~1-2K input tokens for visual processing, and accumulated history compounds per turn.
+
+**Problem:** All file reads (text and images) use Sonnet. For text files, Haiku would give ~95% equivalent results at 10x lower cost. For images, the quality tradeoff is less clear.
+
+**Analysis:**
+
+| File type | Haiku quality vs Sonnet | Recommendation |
+|-----------|----------------------|----------------|
+| `.md`, `.txt`, `.csv` | ~98% — text is text | Use Haiku |
+| Screenshots, diagrams | ~90% — clear text/structure | Use Haiku |
+| Workshop photos (post-its, whiteboards) | ~70-80% — loses small text, subtle spatial relationships | Keep Sonnet |
+| HEIC/JPG (variable quality) | Depends on content | Keep Sonnet for safety |
+
+**Conservative approach:** Haiku for text reads only, Sonnet for all images. Still saves significantly on the 12+ MD files per project. More aggressive routing (Haiku for simple images) can be tested empirically.
+
+**Depends on:** BL-80-P2 (Model Routing infrastructure). Could be implemented as part of the subagent `reader` approach.
+
+---
+
 ### [BL-102] Showcase — MDX Presentation System (Astro Submodule)
 
 **Status:** v1 IMPLEMENTED (commit `73c5179`, 2026-02-28) · v2/v3 DEFERRED
