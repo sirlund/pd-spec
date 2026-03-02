@@ -132,6 +132,32 @@ After `/analyze` completed and wrote 9 SYNTH insights, the agent re-launched a f
 **OBS-BL110-07: /analyze consolidation varies significantly between runs.**
 First run (pre-hotfix): 131 claims → 114 atomic + 9 SYNTH (over-extraction). Second run (post-hotfix): 131 claims → 23 atomic → 3 SYNTH (much tighter). Same data, different consolidation. The SKILL.md instructions and available turns influence how aggressively the agent consolidates. Neither is "wrong" — just different strategies. 3 SYNTH may be under-consolidated for 131 claims.
 
+## QA Effort Pivot (2026-03-02)
+
+**Decision:** Pause intensive SDK QA after this session. Current state is "beta funcional" — pipeline works end-to-end with known rough edges. Remaining E2E tests (spec, ship) deferred to next session.
+
+**Rationale:**
+- SDK integration bugs are small (2-5 line fixes) but discovery is expensive (full QA sessions)
+- Each session finds 2-3 new integration bugs — diminishing returns without real users
+- The product value is in skills + content quality, not SDK polish
+- Target user (Product Designer) needs a working app, not a perfect one
+
+**Next steps (this week):**
+1. Complete E2E: test /spec and /ship from app
+2. **SDK beta light optimization session** — make SDK mode sustainable:
+   - Topes por tamaño/líneas para archivos que disparan costos (>50KB, >1000 lines)
+   - Phase 1.5 optional by default (skip Pass A/C unless `--preprocess`)
+   - Claim cap before /analyze (e.g., warn if >80 claims from single source)
+   - Fallback: user can always type commands directly in Agent chat
+3. Declare beta, stop hunting bugs, wait for real user signal
+
+**Key commits from this session:**
+- `1ef2179` fix(engine): BL-110 — SDK Read compatibility
+- `5b84266` feat(app): BL-109 — Q&A Haiku routing
+- `76f08f5` fix(app): skill args passthrough
+- `e54aa7b` fix(app): prevent skill re-execution (maxTurns + STOP instruction)
+- `99cc280` fix(app): block TodoWrite in skill mode
+
 ## How to re-test from app
 
 1. Reset Work layer: `./scripts/reset.sh --work` (in pd-spec--qa)
