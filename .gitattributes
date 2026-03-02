@@ -17,3 +17,7 @@ PROJECT.md merge=ours
 
 # Custom freemode outputs (preserved across engine merges)
 03_Outputs/_custom/** merge=ours
+
+# Showcase theme config — project overrides protected from engine merges
+# Base config (theme.config.base.ts) flows normally from main with new defaults.
+showcase/src/theme.config.ts merge=ours

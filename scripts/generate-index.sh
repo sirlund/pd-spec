@@ -1,0 +1,465 @@
+#!/bin/bash
+# generate-index.sh — Generate lightweight indexes for Work layer files
+# Part of BL-101: Token Optimization via Index System
+#
+# Usage: ./scripts/generate-index.sh <type> <source-file> [output-file]
+#
+# Types:
+#   extractions    Parse ## [section] headers, metadata, claim counts
+#   insights       Parse ### [IG-XX] entries, status, category, convergence, voice
+#   normalized     Parse ## headers or chunk by 100-line blocks
+#
+# If output-file is omitted, writes to 02_Work/_index/{TYPE}_INDEX.md
+# For normalized files, writes to 02_Work/_index/{basename}_INDEX.md
+#
+# Exit codes:
+#   0  Index generated successfully
+#   1  Source file not found or invalid arguments
+#   2  Source file below threshold (< 20KB) — no index needed
+#
+# Examples:
+#   ./scripts/generate-index.sh extractions 02_Work/EXTRACTIONS.md
+#   ./scripts/generate-index.sh insights 02_Work/INSIGHTS_GRAPH.md
+#   ./scripts/generate-index.sh normalized 02_Work/_temp/touchpoint_normalized.md
+#   ./scripts/generate-index.sh extractions 02_Work/EXTRACTIONS.md /tmp/test_index.md
+
+set -euo pipefail
+
+# --- Args ---
+TYPE="${1:-}"
+SOURCE="${2:-}"
+OUTPUT="${3:-}"
+
+if [ -z "$TYPE" ] || [ -z "$SOURCE" ]; then
+  echo "Usage: ./scripts/generate-index.sh <type> <source-file> [output-file]"
+  echo "Types: extractions, insights, normalized"
+  exit 1
+fi
+
+if [ ! -f "$SOURCE" ]; then
+  echo "ERROR: Source file not found: $SOURCE"
+  exit 1
+fi
+
+# --- Threshold check (20KB) ---
+FILE_SIZE=$(wc -c < "$SOURCE" | tr -d ' ')
+THRESHOLD=20480
+
+if [ "$FILE_SIZE" -lt "$THRESHOLD" ]; then
+  echo "SKIP: $SOURCE is ${FILE_SIZE} bytes (< 20KB threshold). No index needed."
+  exit 2
+fi
+
+# --- Compute hash and line count ---
+if command -v md5 &>/dev/null; then
+  SOURCE_HASH=$(md5 -q "$SOURCE" | cut -c1-8)
+elif command -v md5sum &>/dev/null; then
+  SOURCE_HASH=$(md5sum "$SOURCE" | cut -c1-8)
+else
+  echo "ERROR: No md5 or md5sum available"
+  exit 1
+fi
+
+SOURCE_LINES=$(wc -l < "$SOURCE" | tr -d ' ')
+GENERATED=$(date '+%Y-%m-%dT%H:%M')
+
+# --- Determine output path ---
+determine_output() {
+  local type="$1"
+  local source="$2"
+  local output="$3"
+
+  if [ -n "$output" ]; then
+    echo "$output"
+    return
+  fi
+
+  # Find project root: walk up from source to find 02_Work
+  local dir
+  dir=$(cd "$(dirname "$source")" && pwd)
+  local index_dir=""
+
+  while [ "$dir" != "/" ]; do
+    if [ -d "$dir/02_Work" ]; then
+      index_dir="$dir/02_Work/_index"
+      break
+    fi
+    # Check if we ARE inside 02_Work
+    if [[ "$dir" == */02_Work* ]]; then
+      # Walk up to find 02_Work root
+      local parent="$dir"
+      while [[ "$parent" == */02_Work* ]] && [ "$parent" != "/" ]; do
+        if [[ "$(basename "$parent")" == "02_Work" ]]; then
+          index_dir="$parent/_index"
+          break
+        fi
+        parent=$(dirname "$parent")
+      done
+      if [ -n "$index_dir" ]; then break; fi
+    fi
+    dir=$(dirname "$dir")
+  done
+
+  if [ -z "$index_dir" ]; then
+    # Fallback: put index next to source
+    index_dir="$(dirname "$source")/_index"
+  fi
+
+  mkdir -p "$index_dir"
+
+  case "$type" in
+    extractions)
+      echo "$index_dir/EXTRACTIONS_INDEX.md"
+      ;;
+    insights)
+      echo "$index_dir/INSIGHTS_GRAPH_INDEX.md"
+      ;;
+    normalized)
+      local base
+      base=$(basename "$source" .md)
+      echo "$index_dir/${base}_INDEX.md"
+      ;;
+  esac
+}
+
+OUTPUT_FILE=$(determine_output "$TYPE" "$SOURCE" "$OUTPUT")
+
+# --- Extractions index ---
+generate_extractions_index() {
+  local source="$1"
+  local output="$2"
+
+  # Parse sections: lines starting with ## [
+  # Extract: section name, type, extracted date, claim count, line start, line end
+  awk '
+  BEGIN {
+    section_count = 0
+    total_claims = 0
+    # Print table rows to a temp array
+  }
+
+  /^## \[/ {
+    # Close previous section
+    if (section_count > 0) {
+      sections[section_count, "l_end"] = NR - 1
+    }
+    section_count++
+    # Extract section name from ## [name]
+    name = $0
+    sub(/^## \[/, "", name)
+    sub(/\].*$/, "", name)
+    sections[section_count, "name"] = name
+    sections[section_count, "l_start"] = NR
+    sections[section_count, "type"] = ""
+    sections[section_count, "extracted"] = ""
+    sections[section_count, "claims"] = 0
+    next
+  }
+
+  section_count > 0 && /^- Type:/ {
+    val = $0
+    sub(/^- Type: */, "", val)
+    sections[section_count, "type"] = val
+    next
+  }
+
+  section_count > 0 && /^- Extracted:/ {
+    val = $0
+    sub(/^- Extracted: */, "", val)
+    sections[section_count, "extracted"] = val
+    next
+  }
+
+  section_count > 0 && /^[0-9]+\./ {
+    sections[section_count, "claims"]++
+    total_claims++
+  }
+
+  END {
+    # Close last section
+    if (section_count > 0) {
+      sections[section_count, "l_end"] = NR
+    }
+
+    # Output header
+    print "# Extractions Index"
+    print "> Auto-generated by generate-index.sh. Do not edit manually."
+    print "> Source: " FILENAME
+    print "> Generated: " generated
+    print "> Source lines: " source_lines " | Source hash: " source_hash
+    print "> Sections: " section_count " | Total claims: " total_claims
+    print ""
+    print "| Section | Type | Extracted | Claims | L-start | L-end |"
+    print "|---|---|---|---|---|---|"
+
+    for (i = 1; i <= section_count; i++) {
+      printf "| %s | %s | %s | %d | %d | %d |\n", \
+        sections[i, "name"], \
+        sections[i, "type"], \
+        sections[i, "extracted"], \
+        sections[i, "claims"], \
+        sections[i, "l_start"], \
+        sections[i, "l_end"]
+    }
+  }
+  ' generated="$GENERATED" source_lines="$SOURCE_LINES" source_hash="$SOURCE_HASH" "$source" > "$output"
+
+  local section_count
+  section_count=$(grep -c '^|' "$output" | tr -d ' ')
+  section_count=$((section_count - 2))  # subtract header rows
+  echo "OK: Extractions index generated ($section_count sections) → $output"
+}
+
+# --- Insights index ---
+generate_insights_index() {
+  local source="$1"
+  local output="$2"
+
+  awk '
+  BEGIN {
+    count = 0
+    verified = 0; pending = 0; merged = 0; invalidated = 0; frozen = 0; superseded = 0
+  }
+
+  /^### \[IG-/ {
+    # Close previous entry
+    if (count > 0 && entries[count, "status"] == "") {
+      entries[count, "status"] = "UNKNOWN"
+    }
+
+    count++
+    # Extract ID and title
+    line = $0
+    sub(/^### /, "", line)
+
+    # Get ID: everything in first [...]
+    id = line
+    sub(/\].*$/, "]", id)
+    sub(/^\[/, "", id)
+    sub(/\]$/, "", id)
+
+    # Get title: everything after [ID]
+    title = line
+    sub(/^\[[^\]]*\] */, "", title)
+
+    entries[count, "id"] = id
+    entries[count, "title"] = title
+    entries[count, "l_start"] = NR
+    entries[count, "status"] = ""
+    entries[count, "category"] = ""
+    entries[count, "convergence"] = ""
+    entries[count, "voice"] = ""
+    next
+  }
+
+  count > 0 && /^Status:/ {
+    val = $0
+    sub(/^Status: */, "", val)
+    # Remove any markdown formatting
+    gsub(/\*\*/, "", val)
+    # Take first word (status might have " → [IG-XX]" suffix for MERGED/SUPERSEDED)
+    split(val, parts, " ")
+    entries[count, "status"] = parts[1]
+
+    if (parts[1] == "VERIFIED") verified++
+    else if (parts[1] == "PENDING") pending++
+    else if (parts[1] == "MERGED") merged++
+    else if (parts[1] == "INVALIDATED") invalidated++
+    else if (parts[1] == "FROZEN") frozen++
+    else if (parts[1] == "SUPERSEDED") superseded++
+    next
+  }
+
+  count > 0 && /^\*\*Category:\*\*/ {
+    val = $0
+    sub(/^\*\*Category:\*\* */, "", val)
+    entries[count, "category"] = val
+    next
+  }
+
+  count > 0 && /^\*\*Convergence:\*\*/ {
+    val = $0
+    sub(/^\*\*Convergence:\*\* */, "", val)
+    entries[count, "convergence"] = val
+    next
+  }
+
+  count > 0 && /^\*\*Voice:\*\*/ {
+    val = $0
+    sub(/^\*\*Voice:\*\* */, "", val)
+    # Truncate to first voice type for compactness
+    voice = val
+    if (index(voice, ",") > 0) {
+      voice = substr(voice, 1, index(voice, ",") - 1)
+      voice = voice "..."
+    }
+    entries[count, "voice"] = voice
+    next
+  }
+
+  END {
+    # Output header
+    print "# Insights Graph Index"
+    print "> Auto-generated by generate-index.sh. Do not edit manually."
+    print "> Source: " FILENAME
+    print "> Generated: " generated
+    print "> Source lines: " source_lines " | Source hash: " source_hash
+    print "> Total: " count " | VERIFIED: " verified " | PENDING: " pending " | MERGED: " merged " | INVALIDATED: " invalidated " | FROZEN: " frozen " | SUPERSEDED: " superseded
+    print ""
+    print "| ID | Title | Status | Category | Convergence | Voice | L-start |"
+    print "|---|---|---|---|---|---|---|"
+
+    for (i = 1; i <= count; i++) {
+      printf "| %s | %s | %s | %s | %s | %s | %d |\n", \
+        entries[i, "id"], \
+        entries[i, "title"], \
+        entries[i, "status"], \
+        entries[i, "category"], \
+        entries[i, "convergence"], \
+        entries[i, "voice"], \
+        entries[i, "l_start"]
+    }
+  }
+  ' generated="$GENERATED" source_lines="$SOURCE_LINES" source_hash="$SOURCE_HASH" "$source" > "$output"
+
+  local entry_count
+  entry_count=$(grep -c '^|' "$output" | tr -d ' ')
+  entry_count=$((entry_count - 2))
+  echo "OK: Insights index generated ($entry_count entries) → $output"
+}
+
+# --- Normalized index ---
+generate_normalized_index() {
+  local source="$1"
+  local output="$2"
+
+  # Check if file has ## headers
+  local header_count
+  header_count=$(grep -c '^## ' "$source" 2>/dev/null || true)
+  header_count=${header_count:-0}
+  # Trim whitespace
+  header_count=$(echo "$header_count" | tr -d '[:space:]')
+
+  if [ "$header_count" -gt 1 ]; then
+    # Header-based indexing
+    awk '
+    BEGIN {
+      count = 0
+      # Extract speakers from early lines
+      speakers = ""
+    }
+
+    NR <= 20 && /[Aa]sistentes|[Pp]articipants|[Ss]peakers|SPEAKER/ {
+      # Try to capture speaker info from header
+      if (speakers == "") speakers = "(see header)"
+    }
+
+    /^## / {
+      if (count > 0) {
+        sections[count, "l_end"] = NR - 1
+      }
+      count++
+      title = $0
+      sub(/^## */, "", title)
+      sections[count, "title"] = title
+      sections[count, "l_start"] = NR
+      sections[count, "speakers"] = ""
+      next
+    }
+
+    # Detect speakers within sections
+    count > 0 && /^\[SPEAKER:/ {
+      val = $0
+      sub(/^\[SPEAKER: */, "", val)
+      sub(/\].*$/, "", val)
+      # Simplify: just first name
+      split(val, parts, " ")
+      if (sections[count, "speakers"] == "") {
+        sections[count, "speakers"] = parts[1]
+      } else if (index(sections[count, "speakers"], parts[1]) == 0) {
+        sections[count, "speakers"] = sections[count, "speakers"] ", " parts[1]
+      }
+    }
+
+    count > 0 && /^[A-ZÁ-Ú][a-záéíóúñ]+:/ {
+      # Speaker line like "Camila: ..."
+      speaker = $0
+      sub(/:.*$/, "", speaker)
+      if (length(speaker) < 30 && sections[count, "speakers"] == "") {
+        sections[count, "speakers"] = speaker
+      }
+    }
+
+    END {
+      if (count > 0) {
+        sections[count, "l_end"] = NR
+      }
+
+      print "# Normalized File Index"
+      print "> Auto-generated by generate-index.sh. Do not edit manually."
+      print "> Source: " FILENAME
+      print "> Generated: " generated
+      print "> Source lines: " source_lines " | Source hash: " source_hash
+      print "> Sections: " count " | Index mode: headers"
+      print ""
+      print "| Section/Topic | Speaker(s) | L-start | L-end |"
+      print "|---|---|---|---|"
+
+      for (i = 1; i <= count; i++) {
+        spk = sections[i, "speakers"]
+        if (spk == "") spk = "—"
+        printf "| %s | %s | %d | %d |\n", \
+          sections[i, "title"], spk, sections[i, "l_start"], sections[i, "l_end"]
+      }
+    }
+    ' generated="$GENERATED" source_lines="$SOURCE_LINES" source_hash="$SOURCE_HASH" "$source" > "$output"
+  else
+    # Chunk-based indexing (100-line blocks)
+    local total_chunks=$(( (SOURCE_LINES + 99) / 100 ))
+    {
+      echo "# Normalized File Index"
+      echo "> Auto-generated by generate-index.sh. Do not edit manually."
+      echo "> Source: $SOURCE"
+      echo "> Generated: $GENERATED"
+      echo "> Source lines: $SOURCE_LINES | Source hash: $SOURCE_HASH"
+      echo "> Chunks: $total_chunks | Index mode: 100-line blocks"
+      echo ""
+      echo "| Chunk | L-start | L-end |"
+      echo "|---|---|---|"
+
+      local chunk=1
+      local l_start=1
+      while [ "$l_start" -le "$SOURCE_LINES" ]; do
+        local l_end=$((l_start + 99))
+        if [ "$l_end" -gt "$SOURCE_LINES" ]; then
+          l_end=$SOURCE_LINES
+        fi
+        echo "| Chunk $chunk | $l_start | $l_end |"
+        chunk=$((chunk + 1))
+        l_start=$((l_end + 1))
+      done
+    } > "$output"
+  fi
+
+  local section_count
+  section_count=$(grep -c '^|' "$output" | tr -d ' ')
+  section_count=$((section_count - 2))
+  echo "OK: Normalized index generated ($section_count sections) → $output"
+}
+
+# --- Dispatch ---
+case "$TYPE" in
+  extractions)
+    generate_extractions_index "$SOURCE" "$OUTPUT_FILE"
+    ;;
+  insights)
+    generate_insights_index "$SOURCE" "$OUTPUT_FILE"
+    ;;
+  normalized)
+    generate_normalized_index "$SOURCE" "$OUTPUT_FILE"
+    ;;
+  *)
+    echo "ERROR: Unknown type '$TYPE'. Use: extractions, insights, normalized"
+    exit 1
+    ;;
+esac

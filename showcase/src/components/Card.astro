@@ -1,0 +1,26 @@
+---
+/**
+ * Content card with optional icon, title, and body.
+ * Maps to `.card .col-{span}` in the original CSS.
+ */
+interface Props {
+  span?: number;     // grid column span (3, 4, 6, 12)
+  icon?: string;     // FontAwesome icon class (e.g., "fa-solid fa-bullseye")
+  title?: string;
+  style?: string;
+  class?: string;
+}
+
+const { span = 4, icon, title, style, class: className } = Astro.props;
+const classes = ['card', `col-${span}`, className].filter(Boolean).join(' ');
+---
+
+<div class={classes} style={style}>
+  {title && (
+    <h3>
+      {icon && <i class={icon} style="color: var(--accent-cyan);"></i>}
+      {title}
+    </h3>
+  )}
+  <slot />
+</div>

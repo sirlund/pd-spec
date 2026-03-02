@@ -87,6 +87,36 @@ export function useWebSocket(onMessage) {
   }, []);
 }
 
+/** Hook: execute script actions (verify-insight, resolve-conflict) */
+export function useScriptAction() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const execute = useCallback(async (endpoint, body) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/scripts/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const clearError = useCallback(() => setError(null), []);
+
+  return { execute, loading, error, clearError };
+}
+
 /** Hook: live data that refetches on file changes (debounced) */
 export function useLiveData(path, watchPatterns = []) {
   const api = useApi(path);

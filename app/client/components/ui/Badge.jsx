@@ -5,7 +5,11 @@ const STATUS_CLASS = {
   PENDING: 'badge-pending',
   MERGED: 'badge-merged',
   INVALIDATED: 'badge-invalidated',
+  FROZEN: 'badge-frozen',
+  SUPERSEDED: 'badge-superseded',
   RESOLVED: 'badge-resolved',
+  FLAGGED: 'badge-flagged',
+  RESEARCH: 'badge-research',
   BLOCKED: 'badge-blocked',
   READY: 'badge-ready',
   Critical: 'badge-critical',
@@ -13,7 +17,7 @@ const STATUS_CLASS = {
 };
 
 export function StatusBadge({ status }) {
-  const cls = STATUS_CLASS[status] || 'badge-subtle';
+  const cls = STATUS_CLASS[status] || STATUS_CLASS[status?.toUpperCase()] || 'badge-subtle';
   return <span className={`badge ${cls}`}>{status}</span>;
 }
 

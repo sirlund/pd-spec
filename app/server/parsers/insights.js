@@ -6,7 +6,7 @@
  * followed by Narrative blockquote, Evidence trail, and Ref line.
  */
 
-const INSIGHT_ID = /^### \[(IG-[A-Z0-9-]+)\]\s*(.*)/;
+const INSIGHT_ID = /^### \[(IG-[A-Za-z0-9-]+)\]\s*(.*)/;
 
 function parseInsightHeader(line) {
   const m = line.match(INSIGHT_ID);
@@ -32,6 +32,7 @@ export function parseInsights(content) {
   const lines = content.split('\n');
   const insights = [];
   let currentCategory = null;
+  let prevThematicCategory = null;
   let current = null;
   let section = null; // 'fields' | 'narrative' | 'evidence' | 'after'
 
@@ -49,7 +50,17 @@ export function parseInsights(content) {
     if (line.startsWith('## ') && !line.startsWith('### ')) {
       flush();
       current = null;
-      currentCategory = line.replace(/^## /, '').trim();
+      const rawCategory = line.replace(/^## /, '').trim();
+      // Skip session headers injected by --file mode (contain dates or "--file mode")
+      const isSessionHeader = /\(\d{4}-\d{2}-\d{2}/.test(rawCategory) ||
+        /--file mode/i.test(rawCategory);
+      if (!isSessionHeader) {
+        currentCategory = rawCategory;
+        prevThematicCategory = rawCategory;
+      } else {
+        // Keep previous thematic category — don't pollute category list
+        currentCategory = prevThematicCategory;
+      }
       continue;
     }
 
@@ -70,6 +81,7 @@ export function parseInsights(content) {
         authority: null,
         status: 'PENDING',
         ai_generated: false,
+        last_updated: null,
         narrative: '',
         evidence: [],
         named_concept_origin: null,
@@ -105,6 +117,9 @@ export function parseInsights(content) {
 
       const status = line.match(/^Status:\s*(\w+)/);
       if (status) { current.status = status[1].toUpperCase(); continue; }
+
+      const lastUpdated = line.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+      if (lastUpdated) { current.last_updated = lastUpdated[1]; continue; }
 
       const aiTag = line.match(/\[AI-GENERATED/);
       if (aiTag) { current.ai_generated = true; continue; }

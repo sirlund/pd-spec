@@ -2,57 +2,45 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Icon from './ui/Icon.jsx';
 import { StatusBadge, IdBadge } from './ui/Badge.jsx';
 
+const CATEGORIES = [
+  { key: 'insights', label: 'Insights', icon: 'diamond', nav: (r) => r.id },
+  { key: 'conflicts', label: 'Conflicts', icon: 'bolt', nav: (r) => r.id },
+  { key: 'proposals', label: 'Proposals', icon: 'layout-list', nav: () => 'proposals' },
+  { key: 'claims', label: 'Extractions', icon: 'list-details', nav: () => 'extractions' },
+  { key: 'sources', label: 'Sources', icon: 'folders', nav: () => 'sources' },
+];
+
 export default function SearchBar({ value, onChange, onNavigate }) {
   const [focused, setFocused] = useState(false);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const inputRef = useRef(null);
   const debounceRef = useRef(null);
 
   const doSearch = useCallback(async (query) => {
-    if (!query || query.length < 2) { setResults([]); return; }
+    if (!query || query.length < 2) { setResults(null); return; }
 
-    const idMatch = query.match(/\b(IG-[A-Z0-9-]+|CF-\d+)\b/gi);
+    // Direct ID navigation
+    const idMatch = query.match(/\b(IG-[A-Za-z0-9-]+|CF-\d+)\b/gi);
     if (idMatch) {
-      setResults(idMatch.map(m => ({
-        id: m.toUpperCase(),
-        type: m.toUpperCase().startsWith('IG') ? 'insight' : 'conflict',
-        text: `Go to ${m.toUpperCase()}`,
-      })));
+      setResults({
+        insights: idMatch.filter(m => m.toUpperCase().startsWith('IG')).map(m => ({
+          id: m.toUpperCase(), text: `Go to ${m.toUpperCase()}`,
+        })),
+        conflicts: idMatch.filter(m => m.toUpperCase().startsWith('CF')).map(m => ({
+          id: m.toUpperCase(), text: `Go to ${m.toUpperCase()}`,
+        })),
+        modules: [], claims: [], sources: [],
+      });
       return;
     }
 
     setSearching(true);
     try {
-      const [insightsRes, conflictsRes] = await Promise.all([
-        fetch('/api/insights').then(r => r.json()),
-        fetch('/api/conflicts').then(r => r.json()),
-      ]);
-
-      const q = query.toLowerCase();
-      const matches = [];
-
-      for (const ig of (insightsRes.insights || [])) {
-        const searchable = [ig.id, ig.title, ig.concept, ig.narrative, ig.category, ig.voice]
-          .filter(Boolean).join(' ').toLowerCase();
-        if (searchable.includes(q)) {
-          matches.push({ id: ig.id, type: 'insight', text: ig.title || ig.concept || ig.id, status: ig.status });
-        }
-        if (matches.length >= 8) break;
-      }
-
-      for (const cf of (conflictsRes.conflicts || [])) {
-        const searchable = [cf.id, cf.title, cf.description, cf.claims?.join(' ')]
-          .filter(Boolean).join(' ').toLowerCase();
-        if (searchable.includes(q)) {
-          matches.push({ id: cf.id, type: 'conflict', text: cf.title || cf.description || cf.id, status: cf.status });
-        }
-        if (matches.length >= 10) break;
-      }
-
-      setResults(matches);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      setResults(await res.json());
     } catch {
-      setResults([]);
+      setResults(null);
     } finally {
       setSearching(false);
     }
@@ -64,9 +52,17 @@ export default function SearchBar({ value, onChange, onNavigate }) {
     return () => clearTimeout(debounceRef.current);
   }, [value, doSearch]);
 
+  // Flatten results for keyboard navigation
+  const flatResults = results
+    ? CATEGORIES.flatMap(cat =>
+        (results[cat.key] || []).map(r => ({ ...r, category: cat }))
+      )
+    : [];
+
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && results.length > 0) {
-      onNavigate(results[0].id);
+    if (e.key === 'Enter' && flatResults.length > 0) {
+      const first = flatResults[0];
+      onNavigate(first.category.nav(first));
       onChange('');
       inputRef.current?.blur();
     }
@@ -75,6 +71,8 @@ export default function SearchBar({ value, onChange, onNavigate }) {
       inputRef.current?.blur();
     }
   };
+
+  const hasResults = flatResults.length > 0;
 
   return (
     <div className="search-container">
@@ -89,7 +87,7 @@ export default function SearchBar({ value, onChange, onNavigate }) {
           ref={inputRef}
           type="text"
           className="search-input"
-          placeholder="Search insights, conflicts..."
+          placeholder="Search insights, conflicts, sources..."
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
@@ -98,24 +96,44 @@ export default function SearchBar({ value, onChange, onNavigate }) {
         />
       </div>
 
-      {focused && results.length > 0 && (
+      {focused && hasResults && (
         <div className="search-dropdown">
-          {results.map(r => (
-            <div
-              key={r.id}
-              className="search-result"
-              onMouseDown={() => { onNavigate(r.id); onChange(''); }}
-            >
-              <IdBadge id={r.id} />
-              <span style={{
-                color: 'var(--text-muted)', flex: 1,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>
-                {r.text}
-              </span>
-              {r.status && <StatusBadge status={r.status} />}
-            </div>
-          ))}
+          {CATEGORIES.map(cat => {
+            const items = results?.[cat.key] || [];
+            if (items.length === 0) return null;
+            return (
+              <div key={cat.key}>
+                <div className="search-category">
+                  <Icon name={cat.icon} size={12} />
+                  {cat.label}
+                </div>
+                {items.map((r, i) => (
+                  <div
+                    key={`${cat.key}-${i}`}
+                    className="search-result"
+                    onMouseDown={() => { onNavigate(cat.nav(r)); onChange(''); }}
+                  >
+                    {(cat.key === 'insights' || cat.key === 'conflicts') && r.id
+                      ? <IdBadge id={r.id} />
+                      : <Icon name={cat.icon} size={14} />
+                    }
+                    <span style={{
+                      color: 'var(--text-muted)', flex: 1, minWidth: 0,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {r.text}
+                    </span>
+                    {r.source && (
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                        {r.source.split('/').pop()}
+                      </span>
+                    )}
+                    {r.status && <StatusBadge status={r.status} />}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

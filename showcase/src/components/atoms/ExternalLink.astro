@@ -1,0 +1,16 @@
+---
+/**
+ * External link with security attributes and optional icon.
+ */
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+---
+
+<a href={href} target="_blank" rel="noopener noreferrer" class={className}>
+  <slot />
+  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+</a>

@@ -16,9 +16,18 @@ const renderer = new marked.Renderer();
 
 // Add PD-Spec badge processing to text
 function processPdSpecTokens(text) {
+  // Bracket-format multi-refs: [IG-01, CF-02, IG-03] → individual badges
+  text = text.replace(
+    /\[(((?:IG-[A-Za-z0-9-]+|CF-\d+)(?:\s*,\s*(?:IG-[A-Za-z0-9-]+|CF-\d+))+))\]/g,
+    (_, inner) => inner.split(/\s*,\s*/).map(ref => {
+      const cls = ref.startsWith('IG') ? 'badge-insight' : 'badge-conflict';
+      return `<span class="badge ${cls}" data-ref="${ref}" role="link" tabindex="0">${ref}</span>`;
+    }).join(' ')
+  );
+
   // [IG-XX] → blue badge
   text = text.replace(
-    /\[(IG-[A-Z0-9-]+)\]/g,
+    /\[(IG-[A-Za-z0-9-]+)\]/g,
     '<span class="badge badge-insight" data-ref="$1" role="link" tabindex="0">$1</span>'
   );
 
@@ -61,6 +70,17 @@ renderer.text = function({ text }) {
   return originalText ? originalText.call(this, { text }) : text;
 };
 
+// Fix BUG-02: strong/em tokens must wrap contents properly
+renderer.strong = function({ text }) {
+  const inner = typeof text === 'string' ? processPdSpecTokens(text) : text;
+  return `<strong>${inner}</strong>`;
+};
+
+renderer.em = function({ text }) {
+  const inner = typeof text === 'string' ? processPdSpecTokens(text) : text;
+  return `<em>${inner}</em>`;
+};
+
 const markedOptions = {
   renderer,
   gfm: true,
@@ -69,8 +89,12 @@ const markedOptions = {
 
 export function renderMarkdown(content) {
   if (!content) return '';
-  const html = marked(content, markedOptions);
-  return processPdSpecTokens(html);
+  let html = marked(content, markedOptions);
+  // Catch any **bold** or *italic* markers that survived marked's inline lexer
+  // (happens in <li><p> content in some marked versions)
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+  return html;
 }
 
 /**

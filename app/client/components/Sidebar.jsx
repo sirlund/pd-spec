@@ -5,10 +5,10 @@ const SECTION_LABELS = {
   research: 'Research',
   structure: 'Structure',
   tools: 'Tools',
-  deliverables: 'Deliverables',
+  browse: 'Browse',
 };
 
-const SECTION_ORDER = ['research', 'structure', 'tools', 'deliverables'];
+const SECTION_ORDER = ['research', 'structure', 'tools', 'browse'];
 
 export default function Sidebar({ views, activeView, onNavigate, counts, decisionCount }) {
   const grouped = {};
@@ -49,7 +49,7 @@ export default function Sidebar({ views, activeView, onNavigate, counts, decisio
       })}
 
       {decisionCount > 0 && (
-        <div className="nav-footer">
+        <div className="nav-footer" onClick={() => onNavigate('agent')} style={{ cursor: 'pointer' }}>
           <Icon name="check" size={14} />
           <span>{decisionCount} decision{decisionCount !== 1 ? 's' : ''} pending</span>
         </div>

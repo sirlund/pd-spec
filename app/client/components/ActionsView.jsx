@@ -12,7 +12,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
   const conflictActions = Object.entries(conflictDecisions);
 
   const generate = () => {
-    const lines = ['/synthesis with these inputs:'];
+    const lines = ['/spec with these inputs:'];
     lines.push('');
 
     if (approvals.length > 0) {
@@ -41,7 +41,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
       lines.push('');
     }
 
-    lines.push('After processing, update SYSTEM_MAP.md with any new verified insights.');
+    lines.push('After processing, update STRATEGIC_VISION.md and PROPOSALS.md with any new verified insights.');
 
     setGenerated(lines.join('\n'));
   };
@@ -53,7 +53,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
       </div>
 
       <AccentBox>
-        Generate a <code>/synthesis</code> prompt from your accumulated decisions.
+        Generate a <code>/spec</code> prompt from your accumulated decisions.
         This captures insight approvals, rejections, and conflict resolutions into
         a single prompt you paste into your agent session.
       </AccentBox>
@@ -95,7 +95,7 @@ export default function ActionsView({ insightDecisions, conflictDecisions, decis
             style={decisionCount === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
           >
             <Icon name="send" size={14} />
-            Generate /synthesis Prompt
+            Generate /spec Prompt
           </button>
         </div>
       </Card>

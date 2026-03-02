@@ -39,6 +39,8 @@ export function parseConflicts(content) {
         title: (headerMatch[2] || '').trim(),
         description: headerMatch[3].trim(),
         status: 'PENDING',
+        intermediate: null,
+        intermediate_note: null,
         type: null,
         related_insights: [],
         claims: [],
@@ -54,15 +56,29 @@ export function parseConflicts(content) {
 
     // Field lines
     if (section === 'fields' || section === 'claims') {
-      const status = line.match(/^Status:\s*(\w+)/);
-      if (status) { current.status = status[1].toUpperCase(); continue; }
+      const status = line.match(/^Status:\s*(\w+)(?:\s*—\s*(.+))?/);
+      if (status) {
+        current.status = status[1].toUpperCase();
+        if (status[2]) {
+          const suffix = status[2].trim();
+          const noteMatch = suffix.match(/^\w+\s*\((.+)\)\s*$/);
+          if (suffix.startsWith('Flagged')) {
+            current.intermediate = 'FLAGGED';
+            current.intermediate_note = noteMatch?.[1] || '';
+          } else if (suffix.startsWith('Research')) {
+            current.intermediate = 'RESEARCH';
+            current.intermediate_note = noteMatch?.[1] || '';
+          }
+        }
+        continue;
+      }
 
       const type = line.match(/^Type:\s*(.+)/);
       if (type) { current.type = type[1].trim(); continue; }
 
       const related = line.match(/^Related insights:\s*(.+)/);
       if (related) {
-        current.related_insights = related[1].match(/\[IG-[A-Z0-9-]+\]/g) || [];
+        current.related_insights = related[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || [];
         current.related_insights = current.related_insights.map(r => r.replace(/[\[\]]/g, ''));
         continue;
       }
@@ -112,7 +128,9 @@ export function parseConflicts(content) {
 
   const summary = {
     total: conflicts.length,
-    pending: conflicts.filter(c => c.status === 'PENDING').length,
+    pending: conflicts.filter(c => c.status === 'PENDING' && !c.intermediate).length,
+    flagged: conflicts.filter(c => c.intermediate === 'FLAGGED').length,
+    research: conflicts.filter(c => c.intermediate === 'RESEARCH').length,
     resolved: conflicts.filter(c => c.status === 'RESOLVED').length,
   };
 

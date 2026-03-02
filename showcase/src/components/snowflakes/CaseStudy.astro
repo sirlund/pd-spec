@@ -1,0 +1,122 @@
+---
+/**
+ * Case study slide — the "ficha" pattern.
+ * Left panel: case info (number, title, profile, grouped cases).
+ * Right panel: D→A→R flow with context and benchmark references.
+ */
+import Slide from '../Slide.astro';
+import ExternalLink from '../atoms/ExternalLink.astro';
+import BulletList from '../atoms/BulletList.astro';
+
+interface Props {
+  id: string;
+  number: number;
+  title: string;
+  dominio: string;
+  roles: string[];
+  rolDesc: string;
+  necesidad: string;
+  dolor: string;
+  casosAgrupados: string[];
+  contexto: string;   // HTML string for the narrative paragraph
+  /** Optional: "Origen" text instead of "Casos Agrupados" (for synthesized cases) */
+  origen?: string;
+  stages: {
+    type: 'd' | 'a' | 'r';
+    descripcion: string;
+    pilarIcon: string;
+    pilarName: string;
+    refName: string;
+    refUrl: string;
+    refIndustry: string;
+    refFactorX: string;
+    refAplicaciones: string[];
+  }[];
+}
+
+const { id, number, title, dominio, roles, rolDesc, necesidad, dolor, casosAgrupados, contexto, origen, stages } = Astro.props;
+
+const stageLabels = { d: 'E1: Detección', a: 'E2: Análisis', r: 'E3: Recomendación' };
+const stageIcons = { d: 'fa-solid fa-satellite-dish', a: 'fa-solid fa-magnifying-glass-chart', r: 'fa-solid fa-route' };
+const dotClasses = { d: 'case-dot-d', a: 'case-dot-a', r: 'case-dot-r' };
+const labelClasses = { d: 'case-stage-label-d', a: 'case-stage-label-a', r: 'case-stage-label-r' };
+---
+
+<Slide id={id} title={`Caso #${number}: ${title}`} grid={false}>
+  <div class="case-dominio">{dominio}</div>
+
+  <div class="case-body">
+    <div class="case-left">
+      <div>
+        <div class="case-caso-label">
+          <i class="fa-solid fa-hashtag" style="font-size: 10px; margin-right: 4px;"></i> Caso #{number}
+        </div>
+        <div class="case-caso-titulo">{title}</div>
+      </div>
+
+      <hr class="case-divider" />
+
+      <div>
+        <div class="case-section-label"><i class="fa-solid fa-user"></i> Perfil</div>
+        <div class="case-roles">
+          {roles.map(r => <span class="cluster-role">{r}</span>)}
+        </div>
+        <div class="case-perfil-item"><strong>Rol:</strong> {rolDesc}</div>
+        <div class="case-perfil-item"><strong>Necesidad:</strong> {necesidad}</div>
+        <div class="case-perfil-item"><strong>Dolor:</strong> {dolor}</div>
+      </div>
+
+      <hr class="case-divider" />
+
+      {origen ? (
+        <div>
+          <div class="case-section-label"><i class="fa-solid fa-seedling"></i> Origen</div>
+          <p class="case-contexto" style="font-size: 12.5px;">{origen}</p>
+        </div>
+      ) : (
+        <div>
+          <div class="case-section-label"><i class="fa-solid fa-layer-group"></i> Casos Agrupados</div>
+          <div class="case-agrupados">
+            {casosAgrupados.map(c => <span>{c}</span>)}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div class="case-right">
+      <div class="case-right-header">
+        <div class="case-flujo-title"><i class="fa-solid fa-route"></i> Flujo de la Experiencia</div>
+        <div class="case-ctx-label"><i class="fa-solid fa-crosshairs"></i> Contexto</div>
+      </div>
+      <div class="case-contexto-bajada">
+        <p set:html={contexto} />
+      </div>
+
+      <div class="case-timeline">
+        {stages.map(stage => (
+          <div class="case-stage">
+            <div class={`case-dot ${dotClasses[stage.type]}`}></div>
+            <div class={`case-stage-label ${labelClasses[stage.type]}`}>
+              <i class={stageIcons[stage.type]} style="font-size: 20px; margin-right: 5px;"></i>
+              {stageLabels[stage.type]}
+            </div>
+            <p class="case-descripcion">{stage.descripcion}</p>
+            <div class="case-pilar">
+              <i class={stage.pilarIcon} style="font-size: 14px; margin-right: 5px; opacity: 0.6;"></i>
+              Pilar: <span class="case-pilar-name">{stage.pilarName}</span>
+            </div>
+            <div class="case-referente">
+              <div class="case-ref-name">
+                <ExternalLink href={stage.refUrl}>{stage.refName}</ExternalLink>
+              </div>
+              <div class="case-ref-industry">{stage.refIndustry}</div>
+              <div class="case-ref-factorx">{stage.refFactorX}</div>
+              <div class="case-ref-robar-title">Cómo Aplica a CORE</div>
+              <BulletList items={stage.refAplicaciones} class="case-ref-robar-list" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Slide>

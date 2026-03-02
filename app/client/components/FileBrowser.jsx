@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useLiveData, useApi } from '../hooks.js';
 import Icon from './ui/Icon.jsx';
 import { StatusBadge } from './ui/Badge.jsx';
@@ -7,43 +7,73 @@ const FORMAT_ICONS = {
   md: 'file-text', pdf: 'file', docx: 'file', pptx: 'file', xlsx: 'file',
   png: 'photo', jpg: 'photo', jpeg: 'photo', heic: 'photo', gif: 'photo', webp: 'photo',
   svg: 'photo', txt: 'file', csv: 'file', mp4: 'file', mov: 'file',
-  html: 'file-export',
+  html: 'file-export', css: 'file', js: 'file', json: 'file',
 };
 
 const IMAGE_EXTS = new Set(['png', 'jpg', 'jpeg', 'heic', 'gif', 'webp', 'svg']);
 const MD_EXTS = new Set(['md', 'txt', 'csv']);
+const PDF_EXTS = new Set(['pdf']);
 const OPENABLE_EXTS = new Set(['html']);
 
-export default function FileBrowser({ root, title }) {
+// Map root prop to API path prefix
+const ROOT_PREFIX = {
+  '01_Sources': '01_Sources/',
+  '02_Work': '02_Work/',
+  '03_Outputs': '',
+};
+
+export default function FileBrowser({ root, title, onNavigate, onFileSelect, initialFile }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [collapsedFolders, setCollapsedFolders] = useState({});
   const [preview, setPreview] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  // Different data sources for Sources vs Outputs
   const isSources = root === '01_Sources';
-  const files = useLiveData(
-    isSources ? '/source-files' : '/outputs',
-    [isSources ? '01_Sources/' : '03_Outputs/']
-  );
+  const isWork = root === '02_Work';
+  const isOutputs = root === '03_Outputs';
+
+  const apiEndpoint = isSources ? '/source-files' : isWork ? '/work-files' : '/outputs';
+  const watchKey = isSources ? '01_Sources/' : isWork ? '02_Work/' : '03_Outputs/';
+
+  const files = useLiveData(apiEndpoint, [watchKey]);
   const sourceMap = useLiveData('/sources', ['SOURCE_MAP']);
 
-  // Build status lookup
+  // Build status lookup (normalized paths for matching)
   const statusMap = {};
   if (isSources && sourceMap.data?.sources) {
     for (const s of sourceMap.data.sources) {
-      statusMap[s.path] = s;
+      statusMap[s.path.normalize('NFC').trim()] = s;
     }
   }
 
-  // Build folder tree
-  const folders = {};
-  const fileList = isSources ? files.data?.files : files.data?.outputs;
+  // Build nested folder tree — supports paths like "a/b/c" (BL-84)
+  const rootFiles = [];
+  const folderTree = {}; // nested: { [name]: { files: [], children: {} } }
+  const fileList = isSources ? files.data?.files : isWork ? files.data?.files : files.data?.outputs;
   if (fileList) {
     for (const f of fileList) {
-      const folder = isSources ? (f.folder || '(root)') : (f.path.includes('/') ? f.path.split('/').slice(1, -1).join('/') || '(root)' : '(root)');
-      if (!folders[folder]) folders[folder] = [];
-      folders[folder].push(f);
+      let folder;
+      if (isOutputs) {
+        const parts = f.path.replace('03_Outputs/', '').split('/');
+        folder = parts.length > 1 ? parts.slice(0, -1).join('/') : null;
+      } else {
+        folder = f.folder;
+      }
+
+      if (folder === null || folder === undefined) {
+        rootFiles.push(f);
+      } else {
+        const parts = folder.split('/');
+        let node = folderTree;
+        for (const part of parts) {
+          if (!node[part]) node[part] = { files: [], children: {} };
+          if (part === parts[parts.length - 1]) {
+            node[part].files.push(f);
+          } else {
+            node = node[part].children;
+          }
+        }
+      }
     }
   }
 
@@ -51,11 +81,18 @@ export default function FileBrowser({ root, title }) {
     setCollapsedFolders(prev => ({ ...prev, [folder]: !prev[folder] }));
   };
 
+  const getFilePath = useCallback((file) => {
+    if (isOutputs) return file.path;
+    const prefix = isSources ? '01_Sources/' : '02_Work/';
+    return `${prefix}${file.path}`;
+  }, [isSources, isOutputs]);
+
   const handleFileClick = useCallback(async (file) => {
-    const path = isSources ? `01_Sources/${file.path}` : file.path;
+    const path = getFilePath(file);
     const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
 
     setSelectedFile(path);
+    if (onFileSelect) onFileSelect(path);
     setPreview(null);
     setPreviewLoading(true);
 
@@ -66,9 +103,10 @@ export default function FileBrowser({ root, title }) {
         setPreview({ type: 'markdown', data });
       } else if (IMAGE_EXTS.has(ext)) {
         setPreview({ type: 'image', path: `/api/raw/${path}` });
+      } else if (PDF_EXTS.has(ext)) {
+        setPreview({ type: 'pdf', path: `/api/raw/${path}` });
       } else if (OPENABLE_EXTS.has(ext)) {
-        // For outputs, use the existing /outputs route
-        if (!isSources) {
+        if (isOutputs) {
           const url = '/' + file.path.replace('03_Outputs/', 'outputs/');
           setPreview({ type: 'external', url, name: file.name });
         } else {
@@ -82,7 +120,7 @@ export default function FileBrowser({ root, title }) {
     } finally {
       setPreviewLoading(false);
     }
-  }, [isSources]);
+  }, [getFilePath, isOutputs]);
 
   const handleOpenExternal = async (path) => {
     try {
@@ -94,6 +132,14 @@ export default function FileBrowser({ root, title }) {
     } catch { /* ignore */ }
   };
 
+  // Restore file selection from navigation history (BL-90: back/forward memory)
+  useEffect(() => {
+    if (!initialFile || selectedFile) return;
+    if (!fileList) return;
+    const file = fileList.find(f => getFilePath(f) === initialFile);
+    if (file) handleFileClick(file);
+  }, [initialFile, fileList, selectedFile, getFilePath, handleFileClick]);
+
   const totalFiles = fileList?.length || 0;
   const processedCount = isSources ? (sourceMap.data?.summary?.processed || 0) : 0;
 
@@ -102,19 +148,87 @@ export default function FileBrowser({ root, title }) {
   }
 
   if (totalFiles === 0) {
+    const emptyMsg = isSources
+      ? <>Add research files to <code>01_Sources/</code> to begin.</>
+      : isWork
+        ? <>Run <code>/extract</code> to generate work layer files.</>
+        : <>Run <code>/ship [type]</code> to generate deliverables.</>;
+
     return (
       <div className="empty-state">
-        <Icon name={isSources ? 'folders' : 'file-export'} size={48} className="empty-state-icon" />
-        <div className="empty-state-title">No {isSources ? 'source' : 'output'} files</div>
-        <div className="empty-state-text">
-          {isSources
-            ? <>Add research files to <code>01_Sources/</code> to begin.</>
-            : <>Run <code>/ship [type]</code> to generate deliverables.</>
-          }
-        </div>
+        <Icon name={isSources ? 'folders' : isWork ? 'flask' : 'file-export'} size={48} className="empty-state-icon" />
+        <div className="empty-state-title">No {isSources ? 'source' : isWork ? 'work' : 'output'} files</div>
+        <div className="empty-state-text">{emptyMsg}</div>
       </div>
     );
   }
+
+  // Render a single file row
+  const renderFileRow = (file) => {
+    const path = getFilePath(file);
+    const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
+    const normalizedPath = file.path.normalize('NFC').trim();
+    const mapEntry = isSources ? statusMap[normalizedPath] : null;
+    const status = mapEntry?.status || '';
+    const statusClass = status === 'processed' ? 'processed' :
+      status.startsWith('pending') ? 'pending' : 'unsupported';
+    const iconName = FORMAT_ICONS[ext] || 'file';
+
+    return (
+      <div
+        key={path}
+        className={`file-item ${selectedFile === path ? 'active' : ''}`}
+        onClick={() => handleFileClick(file)}
+      >
+        {isSources && <span className={`file-status-dot ${statusClass}`} title={status} />}
+        <Icon name={iconName} size={14} />
+        <span className="file-item-name">{file.name}</span>
+        <span className="file-item-meta">{ext}</span>
+      </div>
+    );
+  };
+
+  // Recursive folder renderer (BL-84: nested folders)
+  const renderFolderTree = (tree, parentPath) => {
+    return Object.entries(tree).sort(([a], [b]) => a.localeCompare(b)).map(([name, node]) => {
+      const fullPath = parentPath ? `${parentPath}/${name}` : name;
+      const isCollapsed = collapsedFolders[fullPath];
+      const totalFiles = countTreeFiles(node);
+      const hasChildren = Object.keys(node.children).length > 0;
+
+      return (
+        <div key={fullPath} className="file-folder">
+          <div
+            className={`file-folder-name ${isCollapsed ? 'collapsed' : ''}`}
+            onClick={() => toggleFolder(fullPath)}
+          >
+            <Icon name="chevron-down" size={14} />
+            <Icon name={isCollapsed ? 'folder' : 'folder-open'} size={14} />
+            <span style={{ flex: 1 }}>{name}</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              {totalFiles}
+            </span>
+          </div>
+
+          {!isCollapsed && (
+            <>
+              {node.files.map(renderFileRow)}
+              {hasChildren && renderFolderTree(node.children, fullPath)}
+            </>
+          )}
+        </div>
+      );
+    });
+  };
+
+  // Count all files in a tree node (recursive)
+  const countTreeFiles = (node) => {
+    let count = node.files.length;
+    for (const child of Object.values(node.children)) {
+      count += countTreeFiles(child);
+    }
+    return count;
+  };
 
   return (
     <div className="file-browser-view">
@@ -135,47 +249,11 @@ export default function FileBrowser({ root, title }) {
             {root}
           </div>
 
-          {Object.entries(folders).sort(([a], [b]) => a.localeCompare(b)).map(([folder, folderFiles]) => {
-            const isCollapsed = collapsedFolders[folder];
-            return (
-              <div key={folder} className="file-folder">
-                <div
-                  className={`file-folder-name ${isCollapsed ? 'collapsed' : ''}`}
-                  onClick={() => toggleFolder(folder)}
-                >
-                  <Icon name="chevron-down" size={14} />
-                  <Icon name="folder" size={14} />
-                  <span style={{ flex: 1 }}>{folder}</span>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {folderFiles.length}
-                  </span>
-                </div>
+          {/* Root-level files (flat, no collapsible container) */}
+          {rootFiles.map(renderFileRow)}
 
-                {!isCollapsed && folderFiles.map((file) => {
-                  const path = isSources ? `01_Sources/${file.path}` : file.path;
-                  const ext = (file.format || file.name?.split('.').pop() || '').toLowerCase();
-                  const mapEntry = isSources ? statusMap[file.path] : null;
-                  const status = mapEntry?.status || '';
-                  const statusClass = status === 'processed' ? 'processed' :
-                    status.startsWith('pending') ? 'pending' : 'unsupported';
-                  const iconName = FORMAT_ICONS[ext] || 'file';
-
-                  return (
-                    <div
-                      key={path}
-                      className={`file-item ${selectedFile === path ? 'active' : ''}`}
-                      onClick={() => handleFileClick(file)}
-                    >
-                      {isSources && <span className={`file-status-dot ${statusClass}`} title={status} />}
-                      <Icon name={iconName} size={14} />
-                      <span className="file-item-name">{file.name}</span>
-                      <span className="file-item-meta">{ext}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+          {/* Recursive folder tree (BL-84) */}
+          {renderFolderTree(folderTree, '')}
         </div>
 
         {/* Right: Preview pane */}
@@ -193,11 +271,33 @@ export default function FileBrowser({ root, title }) {
             <div className="file-preview-empty">Loading preview...</div>
           )}
 
-          {preview && !previewLoading && (
+          {preview && !previewLoading && (() => {
+            // Lookup extraction status for current file
+            const selNorm = selectedFile?.replace('01_Sources/', '').normalize('NFC').trim();
+            const mapEntry = isSources && selNorm ? statusMap[selNorm] : null;
+            return (
             <>
               <div className="file-preview-header">
                 <span className="file-preview-title">{selectedFile?.split('/').pop()}</span>
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  {isSources && mapEntry?.status === 'processed' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--verified-fg)' }}>
+                      <span className="file-status-dot processed" />
+                      Processed — {mapEntry.claims || 0} claim{mapEntry.claims !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                  {isSources && !mapEntry && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span className="file-status-dot unsupported" />
+                      Not extracted
+                    </span>
+                  )}
+                  {isSources && mapEntry && mapEntry.status !== 'processed' && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.75rem', color: 'var(--pending-fg)' }}>
+                      <span className="file-status-dot pending" />
+                      {mapEntry.status}
+                    </span>
+                  )}
                   {preview.type === 'external' && (
                     <a
                       href={preview.url}
@@ -208,19 +308,17 @@ export default function FileBrowser({ root, title }) {
                       <Icon name="external-link" size={14} /> Open in Browser
                     </a>
                   )}
-                  {preview.type === 'binary' && (
-                    <button
-                      className="btn btn-sm"
-                      onClick={() => handleOpenExternal(preview.path)}
-                    >
-                      <Icon name="external-link" size={14} /> Open with System App
-                    </button>
-                  )}
                 </div>
               </div>
 
               {preview.type === 'markdown' && preview.data?.html && (
-                <div className="md-content" dangerouslySetInnerHTML={{ __html: preview.data.html }} />
+                <div className="md-content" onClick={(e) => {
+                  const badge = e.target.closest('[data-ref]');
+                  if (badge) {
+                    const ref = badge.getAttribute('data-ref');
+                    if (ref && onNavigate) onNavigate(ref);
+                  }
+                }} dangerouslySetInnerHTML={{ __html: preview.data.html }} />
               )}
 
               {preview.type === 'markdown' && !preview.data?.html && preview.data?.raw && (
@@ -231,6 +329,10 @@ export default function FileBrowser({ root, title }) {
 
               {preview.type === 'image' && (
                 <img src={preview.path} alt="" className="file-preview-image" />
+              )}
+
+              {preview.type === 'pdf' && (
+                <iframe src={preview.path} style={{ width: '100%', flex: 1, border: 'none', borderRadius: 'var(--radius)' }} />
               )}
 
               {preview.type === 'external' && (
@@ -271,7 +373,8 @@ export default function FileBrowser({ root, title }) {
                 </div>
               )}
             </>
-          )}
+          );
+          })()}
         </div>
       </div>
     </div>

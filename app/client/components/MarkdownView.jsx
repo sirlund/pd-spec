@@ -1,8 +1,72 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLiveData } from '../hooks.js';
 import Card from './ui/Card.jsx';
-import { WarningBadge } from './ui/Badge.jsx';
+import { WarningBadge, IdBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
+
+// Render text with inline [IG-XX] / [CF-XX] as clickable badges
+function InlineRefs({ text, onNavigate }) {
+  const parts = text.split(/(\[(?:IG-[A-Za-z0-9-]+|CF-\d+)\])/g);
+  return (
+    <>
+      {parts.map((part, i) => {
+        const match = part.match(/^\[(IG-[A-Za-z0-9-]+|CF-\d+)\]$/);
+        if (match) {
+          return <IdBadge key={i} id={match[1]} onClick={() => onNavigate?.(match[1])} />;
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
+function ExtractionCard({ file, onNavigate }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Card>
+      <div
+        className="card-header"
+        onClick={() => setExpanded(!expanded)}
+        style={{ cursor: 'pointer', marginBottom: expanded ? 8 : 0 }}
+      >
+        <Icon
+          name="chevron-down"
+          size={14}
+          style={expanded ? {} : { transform: 'rotate(-90deg)' }}
+        />
+        <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{file.path}</span>
+        {file.tags.map(t => (
+          <WarningBadge key={t}>{t}</WarningBadge>
+        ))}
+        <span className="count-chip">
+          {file.claims.length} claims
+        </span>
+      </div>
+      {expanded && (
+        <>
+          {Object.keys(file.metadata).length > 0 && (
+            <div className="card-meta">
+              {Object.entries(file.metadata).map(([k, v]) => (
+                <span key={k}><strong>{k}:</strong> {v}</span>
+              ))}
+            </div>
+          )}
+          <ol style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 20, margin: 0 }}>
+            {file.claims.map((claim) => (
+              <li key={claim.number} value={claim.number} style={{ marginBottom: 4 }}>
+                <InlineRefs text={claim.text} onNavigate={onNavigate} />
+                {claim.tags.map(t => (
+                  <WarningBadge key={t}>{t}</WarningBadge>
+                ))}
+              </li>
+            ))}
+          </ol>
+        </>
+      )}
+    </Card>
+  );
+}
 
 export default function MarkdownView({ path, title, parsed, onNavigate }) {
   const { data, loading } = useLiveData(path, ['02_Work/']);
@@ -39,36 +103,7 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
           <h1 className="section-title">{title} ({data.total_claims} claims)</h1>
         </div>
         {data.files.map((file) => (
-          <Card key={file.path}>
-            <div className="card-header">
-              <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{file.path}</span>
-              {file.tags.map(t => (
-                <WarningBadge key={t}>{t}</WarningBadge>
-              ))}
-              <span className="count" style={{ marginLeft: 'auto' }}>
-                {file.claims.length} claims
-              </span>
-            </div>
-
-            {Object.keys(file.metadata).length > 0 && (
-              <div className="card-meta">
-                {Object.entries(file.metadata).map(([k, v]) => (
-                  <span key={k}><strong>{k}:</strong> {v}</span>
-                ))}
-              </div>
-            )}
-
-            <ol style={{ fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: 20, margin: 0 }}>
-              {file.claims.map((claim) => (
-                <li key={claim.number} value={claim.number} style={{ marginBottom: 4 }}>
-                  {claim.text}
-                  {claim.tags.map(t => (
-                    <WarningBadge key={t}>{t}</WarningBadge>
-                  ))}
-                </li>
-              ))}
-            </ol>
-          </Card>
+          <ExtractionCard key={file.path} file={file} onNavigate={onNavigate} />
         ))}
       </div>
     );
@@ -76,13 +111,15 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
 
   // Rendered markdown view
   if (data?.html) {
+    // Strip duplicate h1 if it matches the view title
+    const html = data.html.replace(/^<h1[^>]*>.*?<\/h1>\s*/, '');
     return (
       <div>
         <div className="section-header">
           <h1 className="section-title">{title}</h1>
         </div>
         <Card>
-          <div className="md-content" onClick={handleClick} dangerouslySetInnerHTML={{ __html: data.html }} />
+          <div className="md-content" onClick={handleClick} dangerouslySetInnerHTML={{ __html: html }} />
         </Card>
       </div>
     );

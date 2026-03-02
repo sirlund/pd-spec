@@ -1,267 +1,367 @@
 ---
 name: ship
-description: Generate HTML deliverables in 03_Outputs/ from verified insights. Types: prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy.
+description: Generate Markdown deliverables in 03_Outputs/ from verified insights. Types: prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write
 argument-hint: "[prd|presentation|report|benchmark-ux|persona|journey-map|lean-canvas|user-stories|audit|strategy]"
 ---
 
-# /ship — Deliverable Generation
+# /ship — Deliverable Generation (Markdown-First)
 
 ## What this skill does
 
-Generates or updates HTML deliverables in `03_Outputs/` with full traceability to verified insights. Default target is `PRD.html`.
+Generates or updates Markdown deliverables in `03_Outputs/` with full traceability to verified insights. Default target is `PRD.md`.
 
-## Architecture: Template + JSON
+## Architecture: Markdown-First
 
-Each output is a single HTML file that contains:
-1. A **static template** (HTML + CSS + JS) from `03_Outputs/_templates/` — handles all rendering
-2. A **JSON data block** in `<script id="pd-data" type="application/json">` — the agent writes this
+Each output is a **structured Markdown file** that:
+1. Renders natively in the Live Research App (via `parsers/markdown.js` + `MarkdownView`)
+2. Is human-editable in any text editor
+3. Renders in GitHub, VS Code, and any Markdown viewer
+4. Has `[IG-XX]` / `[CF-XX]` refs auto-converted to clickable badges by the app
 
-The agent's job is: read Work layer → produce JSON → inject into template. The agent does **not** write CSS, HTML structure, or JS. It only writes JSON data.
+The agent writes Markdown directly — no JSON schemas, no HTML templates, no inlining step.
 
-**JSON schemas** are in `03_Outputs/_schemas/` for reference. Use them to validate structure.
+### Output format convention
+
+Every deliverable starts with a metadata header:
+
+```markdown
+# Document Title — ProjectName
+
+> vX.Y | YYYY-MM-DD | N insights, M conflicts | Language
+
+## Section Heading
+...content with [IG-XX] refs...
+```
+
+The `> vX.Y | ...` blockquote line serves as version metadata. The app renders it as a styled subtitle.
 
 ## Instructions
 
 ### Phase 0: Session Resume & Integrity Check
 
-0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found (manual edits, unexpected files), report them to the user before proceeding.
+0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found, report them before proceeding.
 
-**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If PROJECT.md is missing, default to `en` / "Untitled Project" and suggest running `/kickoff`. Write all deliverable content (headings, body text, callouts, table labels) in that language. Do not mix languages within a document — if `output_language` is `es`, all visible text must be in Spanish. System IDs (`[IG-XX]`, `[CF-XX]`) and schema field names stay in English. Set `meta.language` and `meta.project` in the JSON to the values from PROJECT.md.
+**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If missing, default to `en` / "Untitled Project" and suggest `/kickoff`. Write all deliverable content in that language. System IDs (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`) stay in English.
 
 ### Phase 1: Load & Validate
 
-1. **Determine target** — Default: `PRD.html`. If the user passes an argument, generate that document type instead:
-   - `prd` — Product Requirements Document (default).
-   - `presentation` — Reveal.js slide deck with key insights and decisions.
-   - `report` — A4 formatted report for stakeholders (PDF-ready via Print > Save as PDF).
-   - `benchmark-ux` — Inter-industry design referents. NOT competitive analysis.
-   - `persona` — User persona cards grounded in verified insights.
-   - `journey-map` — User journey map with phases, touchpoints, emotions, and pain points.
-   - `lean-canvas` — Business model synthesis on one page.
-   - `user-stories` — JTBD-framed user stories with acceptance criteria (bridge to PD-Build).
-   - `audit` / `strategy` — Specialized documents.
-   - `benchmark` — **Deprecated.** See step 19 note.
+1. **Determine target** — Default: `PRD.md`. If the user passes an argument, generate that type:
+   - `prd` → `PRD.md` — Product Requirements Document (default)
+   - `presentation` → `PRESENTATION.md` — Slide deck (sections separated by `---`)
+   - `report` → `REPORT.md` — Stakeholder report
+   - `benchmark-ux` → `BENCHMARK_UX.md` — Inter-industry design referents (NOT competitive analysis)
+   - `persona` → `PERSONAS.md` — User persona cards
+   - `journey-map` → `JOURNEY_MAP.md` — User journey map
+   - `lean-canvas` → `LEAN_CANVAS.md` — Business model synthesis
+   - `user-stories` → `USER_STORIES.md` — JTBD user stories (bridge to PD-Build)
+   - `audit` / `strategy` → `AUDIT.md` / `STRATEGY.md` — Specialized documents
 
-2. **Load knowledge base** — Read:
-   - `02_Work/SYSTEM_MAP.md` for product architecture and decisions.
-   - `02_Work/INSIGHTS_GRAPH.md` for verified insights to reference.
+2. **Load knowledge base (prefer indexes when available)** — Read:
+   - `02_Work/STRATEGIC_VISION.md` for vision, strategy, principles, and domains
+   - `02_Work/PROPOSALS.md` for design proposals [DP-XX]
+   - **INSIGHTS_GRAPH** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read the index (~5 KB) to get all insight IDs, titles, statuses, categories, and convergence. Only read individual full entries (by line range from L-start) when the deliverable needs detailed narrative, quotes, or evidence trails. If stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
 
-3. **Validate readiness** — Check that the Work layer has sufficient verified content:
+3. **Validate readiness** — Check Work layer has sufficient verified content:
    - Are there VERIFIED insights to reference?
-   - Is the SYSTEM_MAP populated with traceable decisions?
-   - Are there unresolved PENDING conflicts that could affect the deliverable?
-   - **If the knowledge base is insufficient**, report what's missing and suggest running `/analyze` or `/synthesis` first.
+   - Is STRATEGIC_VISION populated with traceable decisions?
+   - Are there design proposals in PROPOSALS.md?
+   - Are there unresolved PENDING conflicts affecting the deliverable?
+   - **If insufficient**, report gaps and suggest `/analyze` or `/spec` first.
 
 ### Phase 2: Propose (User Approval)
 
 4. **Present deliverable outline** — Before generating, show:
-   - Document type and target file.
-   - Proposed section structure (as a list of section IDs and headings).
-   - Key insights that will be referenced (by ID).
-   - Any gaps where sections lack sufficient insight backing.
+   - Document type and target file
+   - Proposed section structure (headings list)
+   - Key insights to reference (by ID)
+   - Any gaps where sections lack sufficient insight backing
    - **Wait for user approval before generating.**
 
-### Phase 3: Generate (After Approval) — Template + JSON
+### Phase 3: Generate (After Approval) — Write Markdown
 
-5. **Read the template** — Read the appropriate template from `03_Outputs/_templates/`:
-   - `prd` → `_templates/prd.html`
-   - `report` → `_templates/report.html`
-   - `presentation` → `_templates/presentation.html`
-   - `benchmark-ux` → `_templates/benchmark-ux.html`
-   - `persona` → `_templates/persona.html`
-   - `journey-map` → `_templates/journey-map.html`
-   - `lean-canvas` → `_templates/lean-canvas.html`
-   - `user-stories` → `_templates/user-stories.html`
-   - `audit` / `strategy` → `_templates/prd.html` (use PRD template, adapt sections)
+5. **Write the Markdown file** to `03_Outputs/TYPE.md`. Follow these structural conventions:
 
-6. **Generate the JSON data object** — Build the JSON according to the schema in `03_Outputs/_schemas/`. The JSON has this structure:
+#### General conventions (all types)
 
-   ```json
-   {
-     "meta": {
-       "type": "prd",
-       "version": "v1.0",
-       "generated": "YYYY-MM-DD",
-       "language": "en",
-       "project": "ProjectName",
-       "snapshot": {
-         "insights_total": 0,
-         "insights_verified": 0,
-         "conflicts_pending": 0,
-         "outputs_count": 0
-       },
-       "changelog": [
-         {"version": "v1.0", "date": "YYYY-MM-DD", "description": "Initial version"}
-       ]
-     },
-     "title": "Document Title",
-     "sections": [
-       {
-         "id": "section-id",
-         "heading": "Section Heading",
-         "type": "text|callout|table|module-list|open-questions|gap",
-         "content": "Text content...",
-         "refs": ["IG-01", "IG-05"]
-       }
-     ]
-   }
-   ```
+- **Version header** — First line after `# Title`: `> vX.Y | YYYY-MM-DD | snapshot summary`
+  - First generation: `v1.0`. Incremental: `v1.1`, `v1.2`. Major rewrite: `v2.0`.
+- **Traceability** — Every section must contain `[IG-XX]` references inline. If a section has no insight backing, add a `> **[GAP]** — explanation` blockquote.
+- **Insight summary table** — Include a `## Insights Summary` section with a table listing key insights used.
+- **No redundancy** — Each fact appears once, in the most relevant section.
+- **Emoji policy** — Only functional: ✓ ✗ (matrices), ⚠️ (warnings), 🔴🟠🟢 (severity), ▲▼ (trend). No decorative emojis.
 
-   **Section types:**
-   - `"text"` — Paragraph content with optional refs.
-   - `"callout"` — Highlighted insight or finding. Uses `content` and `refs`.
-   - `"table"` — Uses `headers` (array of strings) and `rows` (array of string arrays).
-   - `"module-list"` — Uses `items` array with objects: `{name, status, refs, implications: [{text, ref}]}`.
-   - `"open-questions"` — Uses `items` array of strings or `{text}` objects.
-   - `"gap"` — Section without source backing. Uses `content` for explanation.
+#### PRD structure (`/ship prd`)
 
-   **For presentations**, add `"notes"` field to sections for speaker notes.
+```markdown
+# Product Requirements Document — ProjectName
 
-7. **Document versioning** — The version metadata lives in `meta`:
-   - **Check existing output** — If `03_Outputs/TYPE.html` already exists, read it to extract the current JSON data's `meta.version` and `meta.changelog`.
-   - **Increment version** — First generation: `v1.0`. Each regeneration: increment minor (`v1.1`, `v1.2`). Major increment (`v2.0`) only if the user requests a full rewrite.
-   - **Changelog entries** describe what changed in the document (added sections, updated insights, removed modules) — not internal pipeline details.
-   - **Rationale:** Outputs may be shared with stakeholders. If the document changes without visible versioning, stakeholders lose trust.
-   - **Applies to ALL output types.** No exceptions.
+> v1.0 | 2026-02-23 | 24 insights, 4 conflicts pending
 
-8. **Inject JSON into template** — Read the template file, find the `<script id="pd-data" type="application/json">` tag, and replace its contents with the generated JSON. For the final output file:
-   - **Inline CSS and JS** — Read `_templates/_base.css` and `_templates/_base.js`, then replace the `<link rel="stylesheet" href="_base.css">` with an inline `<style>` tag and `<script src="_base.js">` with an inline `<script>` tag. This makes the output file self-contained and portable.
-   - **Exception:** Presentation template links to Reveal.js CDN — keep those as external links.
-   - Write the combined file to `03_Outputs/TYPE.html` (e.g., `PRD.html`, `REPORT.html`, `PRESENTATION.html`).
+## Executive Summary
+...overview with key [IG-XX] refs...
 
-**Emoji policy** — Only functional emojis in JSON content: ✓ ✗ (matrices), ⚠️ (real warnings), 🔴🟠🟢 (severity/priority traffic light), ▲▼ (trend). Prohibited: decorative emojis that are redundant with text or purely ornamental.
+## Problem Statement
+...core problem with evidence [IG-01], [IG-02]...
 
-**No redundancy** — Do not repeat the same information in different sections. Each fact or claim should appear once, in the most relevant section.
+## Value Proposition
+...what the product offers, grounded in [IG-XX]...
 
-9. **Ensure traceability** — Every section's `refs` array must contain `[IG-XX]` source IDs. If a section has no insight references, either find relevant insights or use section type `"gap"` with content explaining the gap. Sections without refs and without type `"gap"` are not acceptable. Include a section of type `"table"` as an Insights Summary listing the key insights used.
+## User Profiles
+| Profile | Key Need | Evidence |
+|---|---|---|
+| Dispatcher | Real-time control | [IG-09] |
 
-10. **Cross-referencing** — The templates handle converting `[IG-XX]` and `[CF-XX]` text in JSON content to clickable `STATUS.html#ID` links automatically via `_base.js`. The agent just writes plain `[IG-XX]` references in JSON string values. For presentations, the template uses `target="_blank"` on ref links.
+## System Architecture
+### Module Name
+**Status:** Ready | Blocked
+...description with [IG-XX] refs...
+**Implications:**
+- Implication text [IG-XX]
 
-11. **For presentation** (`/ship presentation`):
-   - Output: `03_Outputs/PRESENTATION.html`
-   - Structure: Title slide (auto from `title` + `meta`) → sections become slides.
-   - Keep slides minimal — one idea per slide, large text, insight callouts.
-   - Include `"notes"` field per section for speaker notes.
-   - Navigation: arrow keys, presenter mode (press `S`).
+## Design Principles
+1. **Principle Name** — description [IG-XX]
 
-12. **For report** (`/ship report`):
-    - Output: `03_Outputs/REPORT.html`
-    - Structure: Cover page (auto from `title` + `meta`) → Table of Contents (auto from sections) → sections.
-    - Optimized for Print → Save as PDF: template handles page breaks between sections.
-    - Target audience: stakeholders who don't use GitHub or the pipeline.
+## Business Model
+...pricing, metrics, channels [IG-XX]...
 
-13. **For benchmark-ux** (`/ship benchmark-ux`):
-    - Output: `03_Outputs/BENCHMARK_UX.html` (via Template+JSON)
-    - The agent uses web search to find real design referents from **other industries** — this is NOT a competitive analysis.
-    - Structure per referent:
-      - Name and industry (e.g., "Compound Finance — DeFi")
-      - Screenshot or description of the relevant pattern
-      - "Factor X" — what makes this referent relevant (1 sentence)
-      - Applicable pattern — how this could apply to the current project
-      - Linked Design Principle from SYSTEM_MAP `[IG-XX]`
-    - Group referents by design category (Data Visualization, Navigation, Onboarding, etc.)
-    - Include 8–15 referents total.
-    - **Anti-hallucination:** every referent must be a real product the agent can verify via web search. If unsure, skip it.
-    - JSON uses `categories` array (not `sections`) — see `_schemas/benchmark-ux.schema.json`.
+## Constraints & Risks
+...limitations with [IG-XX] and [CF-XX] refs...
 
-14. **For persona** (`/ship persona`):
-    - Output: `03_Outputs/PERSONAS.html`
-    - Template: `_templates/persona.html`
-    - Schema: `_schemas/persona.schema.json`
-    - **JSON structure uses `personas` array instead of `sections`** — see schema for details.
-    - Derive personas from user-need insights in `INSIGHTS_GRAPH.md`:
-      - Filter for insights about user behaviors, needs, frustrations, goals, and context.
-      - Group related insights to form distinct archetype clusters.
-    - Each persona includes:
-      - `name` — Realistic name (not stereotypical).
-      - `role` — Job title or role description.
-      - `quote` — Representative quote traced to a real source insight.
-      - `goals` — What they want to achieve. Array of `{text, ref}` where `ref` is an `[IG-XX]`.
-      - `frustrations` — What blocks them. Array of `{text, ref}`.
-      - `context` — Work environment, tools, constraints. Array of `{text, ref}`.
-      - `behaviors` — How they currently work. Array of `{text, ref}`.
-    - Generate **3–5 personas** — enough to cover the insight space without overlap.
-    - Each persona must be grounded in **at least 3 verified insights**.
-    - If insufficient user-need insights exist, use `[GAP]` markers in the relevant fields and flag the gap to the user.
-    - The **Propose phase** (step 4) should present: persona names, roles, key insight clusters per persona, and any gaps.
+## Open Questions
+- Question text [CF-XX] or [GAP]
 
-15. **For journey-map** (`/ship journey-map`):
-    - Output: `03_Outputs/JOURNEY_MAP.html` (via Template+JSON)
-    - Template: `_templates/journey-map.html`
-    - Schema: `_schemas/journey-map.schema.json`
-    - Derive journey from user-need and constraint insights in `02_Work/INSIGHTS_GRAPH.md`.
-    - Structure: phases (columns) × layers (rows)
-      - **Phases** (e.g., Awareness, Onboarding, Daily Use, Advanced Use, Support) — derive from actual product context.
-      - **Layers per phase:** User Actions, Touchpoints, Emotions, Pain Points, Opportunities.
-    - Each cell's `content` references `[IG-XX]` insights. Cells without insight backing use `[GAP]` marker.
-    - Highlight critical pain points (negative emotions) and moments of delight (positive emotions).
-    - If personas exist (from `/ship persona`), link journey to the primary persona in the `persona` field of the JSON.
-    - JSON structure uses a `phases` array where each phase has a `layers` object keyed by layer type.
+## Insights Summary
+| ID | Concept | Status | Convergence |
+|---|---|---|---|
+| [IG-SYNTH-01] | Geometry Gap | VERIFIED | 15/54 |
+```
 
-16. **For lean-canvas** (`/ship lean-canvas`):
-    - Output: `03_Outputs/LEAN_CANVAS.html` (via Template+JSON)
-    - Template: `_templates/lean-canvas.html`
-    - Schema: `_schemas/lean-canvas.schema.json`
-    - Uses a `canvas` object instead of `sections` — each key is a canvas block with `items` (array of strings), `refs` (array of `[IG-XX]`), and optional `gap: true`.
-    - Derive from business and constraint insights in `INSIGHTS_GRAPH.md`:
-      1. **Problem** (top 3 problems) — from user-need insights.
-      2. **Solution** (top 3 features) — from system map modules.
-      3. **Key Metrics** — from business insights.
-      4. **Unique Value Proposition** — from business + user-need insights.
-      5. **Unfair Advantage** — from technical/business insights.
-      6. **Channels** — from business insights or mark `gap: true`.
-      7. **Customer Segments** — from user-need insights (link to personas if available).
-      8. **Cost Structure** — from business/constraint insights or mark `gap: true`.
-      9. **Revenue Streams** — from business insights or mark `gap: true`.
-    - Each block must reference `[IG-XX]` or use `gap: true` marker.
-    - One-page format optimized for print.
+#### Persona structure (`/ship persona`)
 
-17. **For user-stories** (`/ship user-stories`):
-    - Output: `03_Outputs/USER_STORIES.html` (via Template+JSON)
-    - Template: `_templates/user-stories.html`
-    - Schema: `_schemas/user-stories.schema.json`
-    - **JSON structure uses `modules` array (not `sections`)** — each module groups related stories by product module or user flow.
-    - Derive stories from:
-      - **Personas** — from `/ship persona` output (`03_Outputs/PERSONAS.html`), if available. Extract persona IDs to link stories.
-      - **User-need insights** in `INSIGHTS_GRAPH.md` — the primary source for JTBD statements.
-      - **Modules and design implications** in `SYSTEM_MAP.md` — the primary source for acceptance criteria and story grouping.
-    - **JTBD format:** Each story uses a `jtbd` object with three fields:
-      - `situation` — "When [triggering context]"
-      - `motivation` — "I want to [user action]"
-      - `outcome` — "So I can [expected benefit]"
-    - Each story includes:
-      - `id` — Story ID (`US-XX`)
-      - `persona` — Which persona this story serves (P-XX reference or descriptive label)
-      - `jtbd` — JTBD statement object (situation, motivation, outcome)
-      - `acceptance_criteria` — Array of `{text, ref}` objects derived from SYSTEM_MAP design implications
-      - `priority` — `High` / `Medium` / `Low` based on insight convergence and business weight
-      - `refs` — Array of `[IG-XX]` references backing this story
-    - **Grouping:** Organize stories by module or user flow. Each module has an `id`, `name`, and `stories` array.
-    - **If personas don't exist yet:** derive user context directly from user-need insights. Use a descriptive label (e.g., "Operations team") instead of P-XX reference.
-    - **Traceability matrix:** Include a `traceability` array in the JSON — each entry maps `story_id` → `insights` → `sources` (source file names that back the referenced insights).
-    - **Priority logic:**
-      - `High` — story backed by 3+ converging insights or directly tied to a business-critical constraint.
-      - `Medium` — story backed by 1–2 insights with clear user need.
-      - `Low` — story inferred from a single insight or gap-filling.
-    - **Scope boundary:** This is PD-Spec's output (strategy), not PD-Build's input (execution). Stories describe *what* and *why*, never *how* to implement. No technical implementation details, no sprint estimates, no component names.
-    - The **Propose phase** (step 4) should present: module groupings, story count per module, persona coverage, key insights used, and any gaps.
+```markdown
+# User Personas — ProjectName
 
-18. **For other document types** (audit, strategy):
-    - Use `_templates/prd.html` template.
-    - Adapt the section structure in JSON to the document type.
-    - Maintain the same traceability requirements.
+> v1.0 | 2026-02-23 | 5 personas, 20 insight refs
 
-19. **Note on `audit`:** See `/audit` skill (`.claude/skills/audit/SKILL.md`) for the dedicated quality gate. `/ship audit` generates a formatted report; `/audit` runs the validation checks.
+## P-01: PersonaName — Role Title
 
-20. **Note on `benchmark`:** The `/ship benchmark` type is deprecated and replaced by `/ship benchmark-ux`. If the user requests `/ship benchmark`, redirect them to `/ship benchmark-ux` which focuses on inter-industry design referents, not competitor claims. If the user insists on competitive benchmarks, apply the anti-hallucination rule: **every claim about a competitor or external product must reference a verified `[IG-XX]` insight backed by a real source file. No invented market data, no fabricated competitor features, no assumed pricing.** Sections that lack source-backed claims must use the `"gap"` section type.
+> "Representative quote from source" — [IG-XX]
 
-21. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+**Goals:**
+- Goal text [IG-XX]
+
+**Frustrations:**
+- Frustration text [IG-XX]
+
+**Context:**
+- Work environment detail [IG-XX]
+
+**Behaviors:**
+- Current workflow behavior [IG-XX]
+
+---
+
+## P-02: NextPersona — Role Title
+...
+```
+
+Generate **3–5 personas** grounded in user-need insights. Each persona backed by **at least 3 verified insights**. Use `[GAP]` markers where evidence is insufficient.
+
+#### Journey Map structure (`/ship journey-map`)
+
+```markdown
+# User Journey Map — ProjectName
+
+> v1.0 | 2026-02-23 | Persona: P-01 PersonaName
+
+## Phase 1: PhaseName
+
+**User Actions:** description [IG-XX]
+**Touchpoints:** description [IG-XX]
+**Emotions:** 🟢 Positive / 🟠 Neutral / 🔴 Negative — description [IG-XX]
+**Pain Points:** description [IG-XX]
+**Opportunities:** description [IG-XX]
+
+---
+
+## Phase 2: PhaseName
+...
+```
+
+#### Lean Canvas structure (`/ship lean-canvas`)
+
+```markdown
+# Lean Canvas — ProjectName
+
+> v1.0 | 2026-02-23 | 12 insight refs
+
+| Block | Content | Evidence |
+|---|---|---|
+| **Problem** | Top 3 problems | [IG-XX], [IG-XX] |
+| **Solution** | Top 3 features | [IG-XX] |
+| **Key Metrics** | Success measures | [IG-XX] |
+| **Unique Value Prop** | One sentence | [IG-XX] |
+| **Unfair Advantage** | Moat | [IG-XX] |
+| **Channels** | Distribution | [GAP] |
+| **Customer Segments** | Target users | [IG-XX] |
+| **Cost Structure** | Main costs | [IG-XX] |
+| **Revenue Streams** | Pricing model | [IG-XX] |
+
+### Problem (detail)
+1. Problem statement [IG-XX]
+...expanded with narrative per block...
+```
+
+#### User Stories structure (`/ship user-stories`)
+
+```markdown
+# User Stories — ProjectName
+
+> v1.0 | 2026-02-23 | X stories across Y modules
+
+## Module: ModuleName
+
+### US-01 — Story Title
+**Persona:** P-01 PersonaName
+**JTBD:**
+- **When** triggering context [IG-XX]
+- **I want to** user action
+- **So I can** expected benefit
+
+**Acceptance Criteria:**
+- [ ] Criterion text [IG-XX]
+- [ ] Criterion text [IG-XX]
+
+**Priority:** High | Medium | Low
+**Refs:** [IG-XX], [IG-XX]
+
+---
+
+### US-02 — Story Title
+...
+```
+
+Priority logic: **High** = 3+ converging insights or business-critical. **Medium** = 1–2 insights. **Low** = single insight or gap-filling.
+
+#### Presentation structure (`/ship presentation`)
+
+```markdown
+# Presentation — ProjectName
+
+> v1.0 | 2026-02-23 | N slides
+
+---
+
+## Slide Title
+
+Content — one idea per slide, minimal text.
+
+Key insight: [IG-XX]
+
+<!-- Speaker notes: detailed context for presenter -->
+
+---
+
+## Next Slide Title
+...
+```
+
+Slides separated by `---`. Speaker notes in HTML comments. For Reveal.js rendering, use future `/export html` command.
+
+#### Report structure (`/ship report`)
+
+Standard Markdown with clear section hierarchy. Optimized for stakeholders who don't use the pipeline. Include a Table of Contents at the top:
+
+```markdown
+# Report — ProjectName
+
+> v1.0 | 2026-02-23
+
+## Table of Contents
+1. [Executive Summary](#executive-summary)
+2. [Key Findings](#key-findings)
+...
+
+## Executive Summary
+...
+```
+
+#### Benchmark UX structure (`/ship benchmark-ux`)
+
+```markdown
+# Benchmark UX — ProjectName
+
+> v1.0 | 2026-02-23 | N referents across M categories
+
+## Category: CategoryName
+
+### ReferentName — Industry
+**Factor X:** What makes this relevant (1 sentence)
+**Pattern:** How this applies to ProjectName
+**Design Principle:** [IG-XX]
+
+...8–15 referents total...
+```
+
+**Anti-hallucination:** Every referent must be a real product verifiable via web search. If unsure, skip it.
+
+6. **Document versioning** — If the target file already exists:
+   - Read it to extract current version from the `> vX.Y | ...` line
+   - Increment: minor for updates (`v1.1`), major for rewrites (`v2.0`)
+   - The agent may add a changelog section at the bottom for multi-version documents
+
+7. **Ensure traceability** — Every section must contain `[IG-XX]` inline refs. Sections without refs must use `> **[GAP]** — explanation` blockquote. Include an Insights Summary table.
+
+8. **Cross-referencing** — Write `[IG-XX]` and `[CF-XX]` as plain text. The Live Research App's markdown parser (`parsers/markdown.js`) automatically converts them to clickable badges with `data-ref` attributes. No special formatting needed.
+
+### Phase 4: Post-Generation
+
+9. **Write to project memory** — Append to `02_Work/MEMORY.md`:
    ```markdown
-   ## [YYYY-MM-DDTHH:MM] /ship
+   ## [YYYY-MM-DDTHH:MM] /ship TYPE
    - **Request:** [what the user asked]
-   - **Actions:** [deliverable generated/updated, sections written, JSON data size]
-   - **Result:** [file created, insights referenced count]
+   - **Actions:** [deliverable generated/updated, sections written]
+   - **Result:** [file created, insights referenced count, gaps marked]
    - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
    ```
+
+10. **Update session checkpoint** — Overwrite `02_Work/_temp/SESSION_CHECKPOINT.md`.
+
+### `/ship all` — Batch Generation
+
+When the user runs `/ship all`, generate all applicable output types in a single session.
+
+**Dependency layers** — outputs are generated in order to allow cross-referencing:
+- **L0 (foundation):** `persona`, `lean-canvas` — no dependencies on other outputs
+- **L1 (research):** `benchmark-ux`, `strategy` — may reference personas
+- **L2 (specification):** `prd`, `user-stories`, `journey-map` — reference everything above
+- **L3 (presentation):** `presentation`, `report` — synthesize all above
+
+Generate each layer sequentially. Within a layer, outputs can be generated in any order.
+
+**Cost awareness:** Each output reads the same primary sources (INSIGHTS_GRAPH, STRATEGIC_VISION, PROPOSALS). The agent should read these once at the start and reference them throughout, rather than re-reading per output.
+
+### `/ship update [type]` — Incremental Update
+
+When the user runs `/ship update [type]`, update an existing output rather than regenerating from scratch.
+
+1. **Read existing output** — Load the current file from `03_Outputs/`.
+2. **Diff insight references** — Compare `[IG-XX]` refs in the output against the current state of `INSIGHTS_GRAPH.md`. Identify:
+   - New VERIFIED insights not yet referenced in the output.
+   - INVALIDATED or SUPERSEDED insights still referenced in the output.
+   - Changed STRATEGIC_VISION or PROPOSALS entries since last generation.
+3. **Propose updates** — Present a summary of what would change:
+   - Sections to add (from new insights).
+   - Sections to remove or revise (from invalidated insights).
+   - Sections to update (from changed spec entries).
+4. **Apply after approval** — Write changes to the output file after user confirms.
+
+This is faster and cheaper than full regeneration when only a few insights have changed.
+
+## Migration from Template+JSON
+
+Previous versions generated HTML files with embedded JSON data (`<script id="pd-data">`). Existing `.html` outputs in project branches remain valid — the Live Research App serves them via the Outputs FileBrowser. New `/ship` runs generate `.md` files alongside any existing `.html` files.
+
+The `_templates/` and `_schemas/` directories are preserved for a future `/export` command (BL-56) that will convert `.md` → self-contained HTML/DOCX/PPTX.

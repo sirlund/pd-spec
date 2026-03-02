@@ -1,0 +1,15 @@
+---
+/**
+ * Bullet list that renders HTML items. Reusable for bench-steal and case-ref patterns.
+ */
+interface Props {
+  items: string[];
+  class?: string;
+}
+
+const { items, class: className = 'bullet-list' } = Astro.props;
+---
+
+<ul class={className}>
+  {items.map(item => <li set:html={item} />)}
+</ul>

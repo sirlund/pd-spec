@@ -1,5 +1,306 @@
 # Changelog
 
+## [4.27.1] — 2026-03-01 — Extract Cost Optimization
+
+Extract SKILL.md rewritten to eliminate redundant agent turns. Discovery + delta now handled by a single `discover-sources.sh` call instead of 5-8 turns of Glob/ls/md5/classification.
+
+<details>
+<summary>Performance (1)</summary>
+
+- **Extract skill turn reduction** — Phase 1 + 1b rewritten: `discover-sources.sh` is the single source of truth for file discovery and delta classification. Script output format documented inline so the agent can parse without extra tool calls. Parallel Read rule added to Phase 2 (up to 8 concurrent reads per turn). All stale Phase 1b references updated. Expected ~30-40% turn reduction (and proportional cost savings) for typical extract runs.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
+## [4.27.0] — 2026-03-01 — SDK Migration
+
+The custom agent loop (200-iteration while-loop with `client.messages.create()`) is replaced by Claude Agent SDK's `query()` async generator. The agent now has native Read, Write, Edit, Bash, Glob, Grep with automatic context compaction. Skills run identically in CLI and webapp.
+
+<details>
+<summary>Features (1)</summary>
+
+- **Claude Agent SDK integration (BL-80 Phase 1)** — `agent-runtime.js` (5 custom tools + 3 interaction tools + manual context trimming) deleted. Replaced by SDK `query()` in `claude.js` + `sdk-guards.js` (canUseTool callback + InteractionBridge). Two-layer permission architecture: `disallowedTools` blocks Agent/Skill/etc. at CLI level; `canUseTool` handles Write/Edit path validation, Bash safety, AskUserQuestion interaction bridging, and mode-based denials. SSE bridging transforms SDK messages to existing frontend format — zero changes to rendering. Skill prompts transformed to avoid SDK slash command interception. New `POST /run/respond` endpoint replaces close-reopen SSE pattern for interactions.
+
+</details>
+
+<details>
+<summary>Fixes (1)</summary>
+
+- **BL-101 index redirect moved to system prompt** — Read is auto-approved by the SDK CLI and doesn't pass through `canUseTool`. Index redirect via deterministic guard is not viable. Replaced with preamble instruction to check `02_Work/_index/` before reading large files. The SDK provides Read with offset/limit (the old runtime couldn't), so the agent can now obey index instructions. Dead redirect code removed from `sdk-guards.js`.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
+## [4.26.0] — 2026-02-28 — Index System
+
+Skills now read compact indexes (~5 KB) instead of full data files (~200 KB) for dense projects, cutting token consumption by up to 83% per operation.
+
+<details>
+<summary>Features (1)</summary>
+
+- **Work Layer Index System (BL-101)** — New `generate-index.sh` script generates lightweight indexes for EXTRACTIONS.md, INSIGHTS_GRAPH.md, and normalized transcripts. Three index types (extractions, insights, normalized) with MD5-based staleness detection, 20 KB threshold, and graceful fallback. Six skills updated: `/extract` generates indexes after completion, `/analyze` consumes + regenerates, `/spec` consumes + regenerates, `/audit`, `/ship`, `/visualize` consume. Indexes live in `02_Work/_index/` — auto-generated, safe to delete, regenerated on next skill run.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
+## [4.25.1] — 2026-02-26 — Slim Core
+
+CLAUDE.md cut from ~8.5K to ~2K tokens per message. Reference content moved to docs/CLAUDE_REFERENCE.md, loaded on demand.
+
+<details>
+<summary>Features (0)</summary>
+
+No features in this release.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (3)</summary>
+
+- **Core+Reference split (OBS-W1-16)** — CLAUDE.md slimmed to ~135 lines (core rules only). Moved 11 reference sections (source organization, maturity levels, sources of truth, folder structure, worktrees, engine dev workflow, CHANGELOG format, freemode protocol, documentation guidelines, script detail, pre-commit verification) to `docs/CLAUDE_REFERENCE.md`. Saves ~65% input tokens per message (~275K tokens over a 50-message session).
+- **Reference gate** — New Session Protocol step 4: "Before engine dev, release, or custom/ad-hoc work (freemode) → read docs/CLAUDE_REFERENCE.md first." Converts passive footer pointer into active trigger for the 3 highest-risk scenarios.
+- **Anti-pattern clarifications** — Engine files defined explicitly (docs/, scripts/, .claude/, root config). New rule: project ideas/bugs go in `02_Work/IDEAS.md`, never edit `docs/BACKLOG.md` from project branches. Checkpoint schema hint added (context, snapshot, goals, decisions, pending work).
+
+</details>
+
+## [4.25.0] — 2026-02-25 — Architecture & Lifecycle
+
+Three architecture decisions, five utility scripts, insight lifecycle with six statuses, and the rename from /resolve to /spec. The biggest structural release since v4.0.
+
+<details>
+<summary>Features (11)</summary>
+
+- **Architecture decisions (BL-92+73+95+93)** — Three architecture conversations formalized: hybrid execution model (scripts + agents), Strategic Vision + Design Proposals replacing System Map, insight lifecycle state machine with six statuses
+- **/resolve → /spec rename (BL-73)** — Pipeline renamed: /extract → /analyze → /spec → /ship. SYSTEM_MAP.md replaced by STRATEGIC_VISION.md + PROPOSALS.md with new parsers and app views
+- **Design Proposals [DP-XX] (BL-95)** — New entity type with domain/module/feature taxonomy. PROPOSALS.md structure, parser, API endpoint, and dedicated app view
+- **Utility scripts (BL-92)** — Five bash 3 scripts: next-id.sh, count-statuses.sh, verify-insight.sh, resolve-conflict.sh, reset.sh. Shared execution layer for app + skills. /reset skill deprecated
+- **Insight lifecycle (BL-93)** — Six statuses (PENDING → VERIFIED → FROZEN / INVALIDATED / MERGED / SUPERSEDED), freshness indicator (green/yellow/red), Last-updated field, cascade protection in verify-insight.sh
+- **ID convention detection (BL-67)** — /analyze now scans existing IDs and continues the series using next-id.sh. No more mixed conventions in a project
+- **Moved file detection (BL-57)** — /extract detects renamed/moved sources by MD5 hash cross-reference before re-extracting
+- **Source deletion impact (BL-97)** — /extract warns about impacted insights before deleting sources. Source Management docs added to CLAUDE.md
+- **Referential integrity in /audit (BL-94)** — Check 8: integrity-check.sh validates insight refs against extractions. Scoring updated to 8 checks
+- **/ship all + /ship update (BL-88)** — Batch generation with dependency layers (L0→L3), incremental updates by diffing [IG-XX] refs against current knowledge base
+- **Browser navigation + nested folders (BL-90+84)** — pushState-based back/forward, recursive folder tree in file browser with aggregated counts
+
+</details>
+
+<details>
+<summary>Fixes (2)</summary>
+
+- **Legacy templates removed (BL-15)** — Deleted all HTML templates and JSON schemas from 03_Outputs/. Directories preserved with .gitkeep for future /export
+- **Convergence bar removed (BL-59)** — ProgressBar visualization removed from InsightCard. Convergence numbers kept in card metadata
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
+## [4.24.0] — 2026-02-24
+
+### Highlights
+
+**Authority gate in `/resolve`.** Insights backed exclusively by `[INTERNAL]` or `[AI-SOURCE]` evidence can no longer silently reach VERIFIED. The system now blocks promotion and offers options: keep PENDING or add external corroboration. User override preserved — the system warns but obeys human decisions. (OBS-67)
+
+**Re-processing safety for consolidated projects.** Running `/extract --full` on a project with >10 VERIFIED insights now triggers a warning with impact context and recommends surgical `/extract --file` instead. You can still proceed — but not accidentally. (BL-97, partial)
+
+**Freemode self-audit.** Before presenting any freemode proposal, the agent now runs an internal Homer's Car + complexity + gap check and shows findings as a compact prefix. Skip with "skip audit" in your request. (BL-98)
+
+**Orphan detection script.** New `scripts/integrity-check.sh` checks each insight's `Ref:` paths against EXTRACTIONS.md section headers. Reports orphans in table format with exit codes for CI. Section-level only — claim-level and semantic checks are future work. (BL-94, partial)
+
+**App: session headers no longer pollute category filters.** The insights parser now detects `--file` mode session headers (containing dates or "--file mode" text) and skips them as category values. Category chips in the Insights view stay clean. (OBS-70)
+
+### Changes
+
+- **OBS-70** — `insights.js` parser: `isSessionHeader` detection, `prevThematicCategory` fallback
+- **OBS-67** — `/resolve` SKILL.md step 8: authority gate sub-step before VERIFIED marking
+- **BL-97** — `/extract` SKILL.md step 7: safety gate for `--full` on consolidated projects (>10 VERIFIED)
+- **BL-98** — `CLAUDE.md` Freemode Protocol: new "Proposal Self-Audit" subsection
+- **BL-94** — `scripts/integrity-check.sh`: section-level orphan detection (bash 3 compatible)
+- **QA v8** — `docs/qa/QA_V8_PLAN.md` + `scripts/validate-fixes.sh` (6 mechanical checks)
+
+## [4.23.0] — 2026-02-24
+
+### Highlights
+
+**Cross-category dedup protection in `/analyze`.** A `design-framework` claim is no longer collapsed against a `user-need` insight about the same topic. "Users want the system to only show what's critical" (user-need) and "Quiet UI: absorb visual complexity, exception-based management" (design-framework) are now correctly recognized as separate insights — one is the evidence, the other is the design decision.
+
+**`Grounded in:` field for design-framework insights.** Every `design-framework` insight now requires explicit references to the user-need, business, or technical insights that justify it. A design principle without evidence backing fails the Homer's Car gate.
+
+**Source onboarding guide.** `01_Sources/_README.md` now includes a readiness checklist (metadata, dates, participants), guidance for undated sources, and a field notes practice guide for capturing decisions that transcripts miss.
+
+### Changes
+
+- **`/analyze` SKILL.md** — Dedup rule: same category required for duplicate match. Cross-category example (Quiet UI user-need vs design-framework). `Grounded in:` field mandatory for `design-framework` insights with Homer's Car enforcement.
+- **`01_Sources/_README.md`** — Source readiness checklist, undated source handling table, field notes practice with confidence levels and template.
+- **`01_Sources/_SOURCE_TEMPLATE.md`** — Date field hint for approximate dates.
+- **Backlog** — BL-94 (Referential Integrity), BL-95 (Design Proposals layer) proposed.
+
+## [4.22.0] — 2026-02-24
+
+### Highlights
+
+**`/analyze` fixed — design pillars can now enter the knowledge base.** Added a 5th insight category `design-framework` for design principles, UX patterns, product pillars, and naming conventions. Previously, claims like "Quiet UI absorbs visual complexity" had no category and were silently dropped. (BL-91)
+
+**Express mode deprecated.** Phase 3 (synthesis) now always runs regardless of project size. Express mode was skipping consolidation and causing aggressive over-compression (85 claims → 7 insights). Removed entirely — `--full` flag still controls incremental vs full extraction processing.
+
+**`/synthesis` renamed to `/resolve`.** The old name confused everyone: `/analyze` Phase 3 is called "Synthesis" and produces `IG-SYNTH-XX` tags, while the *skill* resolved conflicts and updated SYSTEM_MAP. Now `/resolve` does what the name says — resolve conflicts, verify insights, update system map.
+
+**`--file` flag for `/analyze`.** New surgical mode: `/analyze --file "Section Name" [section2 ...]` processes only named extraction sections. Useful for re-analyzing after source corrections without waiting for full incremental scan.
+
+### Changes
+
+- **BL-91** — `design-framework` category added to `/analyze` SKILL.md (Phase 2 categorization + Phase 3 synthesis)
+- **BL-91** — Express mode removed: Phase 1b reduced to logging, Phase 3 always runs
+- **Rename** — `/synthesis` → `/resolve` across 16 files (skill, CLAUDE.md, README, app components, all referencing skills)
+- **`--file` flag** — `/analyze --file` mode in SKILL.md: skip timestamp filter, process named sections only
+- **Backlog** — BL-92 (Script-First Skill Decomposition), BL-93 (Insight Lifecycle) proposed
+- **QA v7** — OBS-56 through OBS-62, BUG-13 documented. OBS-62 chain analysis: `/analyze` → `/ship` bypass
+
+## [4.21.0] — 2026-02-24
+
+### Highlights
+
+**Pre-QA pipeline fixes.** Three fixes that unblock the QA v7 pipeline run on TIMining.
+
+**Badge regex fix.** Insight IDs with lowercase suffixes (e.g., `[IG-SYNTH-16b]`) now render as clickable badges instead of plain text. Fixed across all 7 app files (11 occurrences).
+
+**Preprocessing bug fixes (BL-68).** Pass A now respects a metadata boundary — speaker normalization only applies below the `Transcript:` marker, preserving title/date/attendees. Pass C no longer injects editorial comments ("No es fuente") into normalized files. Participant lists prioritized over calendar invitees for speaker attribution.
+
+**`--file` mode for /extract.** New `/extract --file path1 [path2 ...]` mode: skips discovery and delta, deletes stale `_normalized.md`, forces fresh preprocessing for specific files. Ideal for re-extracting after a bug fix or adding a single new source.
+
+### Changes
+
+- **Badge regex** — `[A-Z0-9-]` → `[A-Za-z0-9-]` in `markdown.js`, `insights.js`, `conflicts.js`, `system-map.js`, `MarkdownView.jsx`, `SearchBar.jsx`, `SystemMapView.jsx`
+- **BL-68** — Metadata boundary protection (OBS-25), no-editorial-content rule (OBS-24), participant priority (OBS-30/31) in `/extract` SKILL.md
+- **`--file` mode** — New extraction mode in SKILL.md: skip Phase 1/1b, delete stale normalizeds, process specific files only
+- **Backlog** — BL-85 (STT glossary), BL-86 (UI styling), BL-87 (insight actions) created. BL-68 priority → P1
+- **QA v7 plan** — Fase 1b added with test cases T25-T28
+
+## [4.20.0] — 2026-02-23
+
+### Highlights
+
+**Three app features + architecture shift.** The Live Research App gets cross-navigation, global search, and PDF preview. Plus: `/ship` now generates Markdown instead of HTML+JSON — simpler, human-editable, and auto-rendered by the app.
+
+**Cross-navigation everywhere (BL-58).** `[IG-XX]` and `[CF-XX]` badges are now clickable in the FileBrowser markdown preview and Extractions parsed mode. Click any badge → jump to the Insights or Conflicts view. Works across Sources, Work, and Outputs browsers.
+
+**Global search (BL-71).** The search bar now searches across all Work layer data: insights, conflicts, system map modules, extraction claims (1200+), and source filenames. Results are organized by category with labeled headers. Server-side `/api/search` endpoint handles the heavy lifting.
+
+**PDF preview (BL-74).** PDFs now render inline via iframe in the FileBrowser — no more "can't preview" message.
+
+**Markdown-first outputs (BL-79).** `/ship` generates `.md` files instead of Template+JSON HTML. The app already renders Markdown beautifully — tables, badges, blockquotes all styled. `[IG-XX]` refs are automatically clickable. Templates and schemas demoted to legacy for future `/export` command.
+
+### Changes
+
+- **BL-74** — PDF ext detection + iframe preview in FileBrowser. (`FileBrowser.jsx`)
+- **BL-58** — Click delegation on `data-ref` badges in FileBrowser markdown preview. `InlineRefs` component for Extractions claims. `onNavigate` prop passed to all 3 FileBrowser instances. (`FileBrowser.jsx`, `MarkdownView.jsx`, `app.jsx`)
+- **BL-71** — `GET /api/search?q=` endpoint: searches insights, conflicts, system map modules, extraction claims, source filenames. Categorized results with 5-per-category limit. SearchBar rewritten with category headers. (`api.js`, `SearchBar.jsx`, `components.css`)
+- **BL-79** — `/ship` SKILL.md rewritten for Markdown generation. CLAUDE.md Sources of Truth updated (`.md` outputs). Templates/schemas demoted to legacy. (`SKILL.md`, `CLAUDE.md`, `BACKLOG.md`)
+
+<details>
+<summary>Verification</summary>
+
+Playwright automated checks against TIMining dataset: PDF preview renders in iframe (PASS), [IG-XX] badge click in Work browser navigates to Insights (PASS), search "geometry" returns Insights + System Map + Extractions categories (PASS), search "entrevista" returns source filenames (PASS).
+
+</details>
+
+## [4.19.0] — 2026-02-23
+
+### Highlights
+
+**Demo polish — 6 visual fixes in one session.** Badges now render consistently in monospace across the entire app. System Map cards show real status colors (green for Ready, red for Blocked). Source ref chips on insights show filenames only and click through to the Sources browser. The preview header tells you extraction status at a glance ("Processed — 71 claims"). Search input fills available space. The "decisions pending" footer navigates to Actions.
+
+### Changes
+
+- **BL-61 — Mono font consistency.** `font-family: var(--font-mono)` on `.badge` base class. Redundant `font-family` removed from 4 child classes. Folder names in file tree set to mono. `badge-subtle` no longer uppercases file refs. (`app/client/styles/components.css`)
+- **BL-69 — Search input width.** `.search-container` gets `flex: 1; min-width: 200px; max-width: 360px`. (`app/client/styles/components.css`)
+- **BL-63 — Decisions footer clickable.** Click "N decisions pending" → navigates to Actions view. (`app/client/components/Sidebar.jsx`)
+- **BL-64 — StatusBadge case fix.** Case-insensitive lookup with `toUpperCase()` fallback. Ready=green, Blocked=red. (`app/client/components/ui/Badge.jsx`)
+- **BL-60 — Ref chips filename-only.** Folder path removed, cursor pointer added, click → Sources view. `navigateTo` extended to accept view IDs. (`app/client/components/InsightCard.jsx`, `app/client/app.jsx`)
+- **BL-62 — Preview header status.** Shows extraction status badge (dot + text + claim count) for Sources. "Open with System App" removed from header. (`app/client/components/FileBrowser.jsx`)
+
+<details>
+<summary>Verification</summary>
+
+Playwright automated tests: 10/10 PASS against TIMining dataset (54 sources, 24 insights, 11 conflicts, 7 modules). Full 12-view visual walkthrough captured.
+
+</details>
+
+## [4.18.0] — 2026-02-23
+
+### Highlights
+
+**19 fixes from QA v7.** Full bugfix blitz across the Live Research App — 8 bugs and 11 UX observations addressed in one session. Cache staleness, broken markdown rendering, missing file badges, phantom folders, hidden metadata files, clipped search results, and more. Verified against the TIMining dataset (54 sources, 24 insights, 11 conflicts).
+
+**Work layer now browseable.** New "Work" section in the sidebar lets you inspect normalized transcripts, session memory, and captured ideas without leaving the app. Speaker attributions, phonetic corrections, and sentence repairs are visible in-context.
+
+**Sidebar reorganized.** "Deliverables" section renamed to "Browse" with three file browsers: Sources, Work, and Outputs. Root-level files appear flat (no more "(root)" pseudo-folder). Folder icons show open/closed state.
+
+### Changes
+
+- **BUG-06 — parseCache stale after /synthesis.** Switched from per-path `delete()` to `clear()` on any file change. Path normalization added to watcher. (`app/server/watcher.js`, `app/server/index.js`)
+- **BUG-02 — Bold markdown in list items.** Added `renderer.strong` and `renderer.em` to the marked.js chain, plus regex post-processing fallback for `<li><p>` edge cases. (`app/server/parsers/markdown.js`)
+- **BUG-07 — Touchpoint missing "processed" badge.** NFC Unicode normalization + trim on both SOURCE_MAP and filesystem paths before comparison. (`app/client/components/FileBrowser.jsx`)
+- **BUG-08 — Preview panel persists across views.** React `key` prop on FileBrowser forces remount on view switch. (`app/client/app.jsx`)
+- **BUG-05 — /analyze offered STATUS.html (legacy).** Removed Phase 5 (auto-generate dashboard) from /analyze skill. (`.claude/skills/analyze/SKILL.md`)
+- **OBS-01+02 — Dashboard shows 100% with untracked sources.** Filesystem scan of `01_Sources/` cross-referenced against SOURCE_MAP. Amber warning when untracked files exist. (`app/server/api.js`, `app/client/components/Dashboard.jsx`)
+- **OBS-04+08 — "(root)" pseudo-folder.** Root files (`folder: null`) rendered flat before folder groups in Sources, Work, and Outputs. (`app/server/api.js`, `app/client/components/FileBrowser.jsx`)
+- **OBS-05+06 — Dotfiles visible, metadata hidden.** Targeted exclusion: dotfiles and TEMPLATE files hidden; `_CONTEXT.md` and `_FIELD_NOTES.md` visible. (`app/server/api.js`)
+- **OBS-07 — Outputs only showed .html.** Removed file-type restriction from outputs endpoint. All files visible (templates and schemas still excluded). (`app/server/api.js`)
+- **OBS-37 — Search dropdown clips titles.** Input widened to 500px, dropdown to `min(600px, 90vw)`. Flex layout prevents title truncation. (`app/client/styles/components.css`, `app/client/components/SearchBar.jsx`)
+- **OBS-38 — Insight/conflict refs not clickable.** Added `.badge-insight` (teal) and `.badge-conflict` (red) CSS with hover effects. Multi-ref brackets `[IG-01, CF-02]` now parse correctly. (`app/client/styles/components.css`, `app/server/parsers/markdown.js`)
+- **OBS-35 — Evidence Gaps badge mismatch.** Gap count now includes all types (claim-level + category + source-diversity), not just claim-level. (`app/server/api.js`)
+- **OBS-36 — Duplicate heading in Research Brief.** First `<h1>` stripped when it matches view title. (`app/client/components/MarkdownView.jsx`)
+- **OBS-14 — Decision counter duplicated.** Removed from System Map header; kept in footer only. (`app/client/app.jsx`)
+- **OBS-19 — Misleading convergence bar for single-source insights.** Amber indicator for 1/1 convergence with "single source" warning. (`app/client/components/InsightCard.jsx`)
+- **OBS-20 — Long ref paths.** Compact chips (folder + filename), collapsed behind "+N more" when >3 refs. (`app/client/components/InsightCard.jsx`)
+- **OBS-21 — Category filter pills truncated.** Full text shown with wrapping, tooltip on hover. (`app/client/components/InsightsView.jsx`)
+- **OBS-22 — Folder icons static.** `folder` → `folder-open` icon on expand. (`app/client/components/FileBrowser.jsx`)
+- **NEW — Work layer file browser.** `/api/work-files` endpoint + sidebar "Work" view for normalized transcripts, MEMORY.md, IDEAS.md. (`app/server/api.js`, `app/client/app.jsx`)
+
+<details>
+<summary>Backlog updates</summary>
+
+- **BL-57 PROPOSED** — Moved Source Detection: hash-based path reconciliation in /extract when files are moved after extraction.
+
+</details>
+
 ## [4.17.1] — 2026-02-22
 
 **Live updates actually work now.** A spread-order bug in the WebSocket broadcast meant file changes never reached the client — the chokidar event's `type: 'change'` silently overwrote the required `type: 'file-change'`. One-line fix, caught by QA v6.
@@ -744,171 +1045,4 @@ EXTRACTIONS  INSIGHTS     SYSTEM_MAP     HTML outputs
 
 ---
 
-## [3.2.0] — 2026-02-14
-
-### Highlights
-
-**Quality pass.** First systematic QA review of all skills against real data (TIMining, 63 source files). 29 findings fixed across `/ship`, `/analyze`, `/synthesis`, and `/kickoff`. Outputs are now more reliable, consistent, and honest about gaps.
-
-### Fixed
-
-#### Outputs (`/ship`)
-- **Language consistency** — `<title>` tag, headings, labels, all visible text now respect `output_language`. No more English titles in Spanish projects.
-- **Traceability enforced** — every section must have `[IG-XX]` refs or an explicit `[GAP]` marker. No silent gaps.
-- **No redundancy** — same information can't repeat across sections of a document.
-- **Emoji policy** — only functional emojis (✓ ✗ ⚠️ 🔴🟠🟢 ▲▼). Decorative ones prohibited.
-- **PDF export** — multi-page outputs use proper page breaks for clean Print > Save as PDF.
-- **Document versioning** — `doc-meta` with changelog now mandatory for ALL output types.
-- **Benchmark deprecated** — `/ship benchmark` replaced by `/ship benchmark-ux` (coming in v4.0). Anti-hallucination rule for any competitor claims.
-
-#### Analysis (`/analyze`)
-- **Stronger cross-referencing** — actively seeks contradictions and tensions, not just obvious opposites.
-- **Evidence trail** — every insight now requires a 1-2 sentence key quote from the source.
-- **Atomicity** — "a list of 10 needs = 10 insights, not 1". Clear guidance on when to split vs. consolidate.
-- **Conflict format** — both sides must reference `[IG-XX]` IDs.
-
-#### Other skills
-- `/synthesis` validates that referenced IDs actually exist before processing.
-- `/kickoff` unified redundant Project Context and Project Settings sections.
-- Session timestamps enforced as ISO `YYYY-MM-DDTHH:MM` across all skills.
-
-### Added
-- **Temporal tags** on insights — `(current)` vs `(aspirational)` to distinguish present state from desired future.
-- **Memorable Design Principle names** — e.g., "Quiet UI", "The Delta" alongside `[IG-XX]` refs.
-- **Multimodal source reading** — `/analyze` can now read images (PNG, JPG, whiteboard photos) and PDFs directly.
-
-<details>
-<summary>QA reference numbers</summary>
-
-- /ship: QA-30 to QA-61 (8 fix categories)
-- /analyze: QA-01 to QA-29 (7 fix categories)
-- /synthesis: QA-24
-- /kickoff + CLAUDE.md: QA-02, QA-06, QA-07, QA-10, QA-11
-
-</details>
-
----
-
-## [3.1.0] — 2026-02-11
-
-### Highlights
-
-**Multi-language support and interactive decisions.** PD-Spec now generates all content in your chosen language. The STATUS dashboard became an interactive workbench where you approve insights and resolve conflicts directly in the browser.
-
-### New capabilities
-
-- **`/kickoff`** — project setup wizard. Three questions (name, language, one-liner) and you're configured. Detects existing settings and asks before overwriting.
-- **`output_language`** — set to `en` or `es` in Project Settings. All Work layer content and Output deliverables follow this setting. System IDs always stay in English.
-- **Interactive STATUS dashboard** — insight cards with approve/reject buttons, conflict cards with Flag/Research/Context options, and an action bar that generates a `/synthesis` prompt from your decisions. Copy-paste into the agent and go.
-- **Cross-referencing** — all `[IG-XX]` and `[CF-XX]` references in outputs are clickable links to `STATUS.html`. Click a reference in your PRD → land on the exact insight card with a yellow highlight.
-
----
-
-## [3.0.0] — 2025-02-10
-
-### Highlights
-
-**PD-Spec is born.** Renamed from ProductLM to PD-Spec — the Strategy & Intelligence layer of ProductDesign OS. What started as "I'll build my own NotebookLM" is now half of a two-repo ecosystem.
-
-### What's new
-
-- **PD-OS ecosystem** — PD-Spec (strategy: sources → insights → deliverables) + PD-Build (execution: design briefs → components → shipped product). Two repos, one architecture.
-- **Interface Contract** — `DESIGN_BRIEF.md` format defines how PD-Spec outputs feed into PD-Build. Format over transport.
-- **Document versioning** — every HTML output carries a visible version header with date, snapshot, and changelog. Stakeholders always know what version they're reading.
-- **Two-log separation** — `02_Work/MEMORY.md` (project usage, written by skills) vs `docs/CHANGELOG.md` (PD-Spec development, written by humans). Different audiences, different logs.
-
-<details>
-<summary>Architecture decisions (v2.1–v3.0)</summary>
-
-**Adopted:**
-- 3-layer stack (Sources → Work → Outputs) with unidirectional data flow
-- 4 skills with propose-before-execute pattern
-- 7 agent mandates in CLAUDE.md
-- MEMORY.md for session continuity + manual edit detection
-- _CONTEXT.md system for non-markdown source files
-- PD-OS as two-repo ecosystem
-- DESIGN_BRIEF.md as the contract between repos
-- TRACED vs HYPOTHESIS data labeling in PD-Build
-- IDE-first rendering before expanding to other tools
-
-**Rejected (Homer's Car Detector):**
-- 00_Config as 4th layer — CLAUDE.md handles config
-- Rename 02_Work → 02_System — cosmetic, high migration cost
-- _CONTEXT.yaml — stays in markdown ecosystem
-- Separate /present, /report, /design-specs skills — scoped to /ship types
-- 4 rendering layers simultaneously — start with one, prove it, expand
-- .pd-build-ignore custom format — .gitignore already handles it
-
-</details>
-
----
-
-## [2.4.0] — 2025-02-10
-
-### Highlights
-
-**More ways to share your research.** Three new output formats: Reveal.js presentations with speaker notes, A4 reports optimized for PDF export, and Mermaid diagrams for visualizing your knowledge base.
-
-### New capabilities
-
-- **`/visualize`** — generates interactive Mermaid diagrams from your Work layer (system map, insights, conflicts). Outputs to `DIAGRAMS.html`.
-- **`/ship presentation`** — Reveal.js slide deck. One idea per slide, speaker notes, keyboard navigation, presenter mode (press `S`).
-- **`/ship report`** — A4 formatted report with cover page, table of contents, executive summary. Print > Save as PDF for stakeholders.
-
----
-
-## [2.3.0] — 2025-02-10
-
-### Highlights
-
-**The agent remembers.** Project Memory means the agent picks up where it left off across sessions. It also detects if you edited files manually between sessions and tells you what changed.
-
-### New capabilities
-
-- **Project Memory** (`02_Work/MEMORY.md`) — skills log what they did after each run. The agent reads this at session start to resume context without you re-explaining.
-- **Manual edit detection** — if you change an insight or conflict between sessions, the agent notices and reports the discrepancy before proceeding.
-- **`_CONTEXT.md`** — describe non-markdown sources (images, PDFs, spreadsheets) with a simple metadata file in the folder. The agent uses these descriptions during analysis.
-- **Layer signage** — `_README.md` in each layer folder explains what it is and what you should (not) do with it.
-
----
-
-## [2.2.0] — 2025-02-10
-
-### Highlights
-
-**The agent asks before acting.** All skills now present draft findings and wait for your approval before writing to files. Seven mandates govern agent behavior — from hallucination prevention to complexity detection.
-
-### New capabilities
-
-- **Propose-before-execute** — every insight extraction, conflict resolution, and deliverable generation is a draft first. You approve, reject, or adjust before anything is written.
-- **7 agent mandates** — No Hallucination, Transparency & Control, Homer's Car Detector, Proactive Gap Detection, Source Organization Validation, Uncertainty Management, Silence is Gold.
-- **Source organization** — subfolders in `01_Sources/` by milestone or category. The agent validates that files match their folder context.
-
----
-
-## [2.1.0] — 2025-02-10
-
-### Highlights
-
-**Architecture-first documentation.** README rewritten to explain the problem, the 3-layer invariant, and design principles before "Getting Started". PD-Spec positioned as a product architecture reference, not just a template.
-
----
-
-## [2.0.0] — 2025-02-09
-
-### Highlights
-
-**The pivot.** From consultant proposal template to Product Knowledge OS. Makefile and init.sh replaced by Claude Code skills. The 3-layer architecture and traceable insights system started here.
-
-### What was built
-
-- **3-layer architecture** — `01_Sources/` (read-only) → `02_Work/` (knowledge base) → `03_Outputs/` (deliverables)
-- **3 skills** — `/analyze` (extract insights), `/synthesis` (resolve conflicts), `/ship` (generate PRD)
-- **Traceable insights** — every claim gets an `[IG-XX]` ID linked to a source file. Every conflict gets a `[CF-XX]` ID.
-- **3 mandates** — No Hallucination, Homer's Car Detector, Silence is Gold
-- **Maturity model** — Seed → Validation → Ecosystem
-
-### What was removed
-- `init.sh`, `Makefile`, `docs/PANDOC_SETUP.md` — replaced by Claude Code skills
-- `Propuesta_Master.html`, `Presentacion.html` — replaced by traceable `PRD.html`
-- `BACKLOG.md` — replaced by `CONFLICTS.md` contradiction log
+> **Previous versions (v2.0–v3.2):** See [CHANGELOG_ARCHIVE.md](CHANGELOG_ARCHIVE.md)

@@ -22,7 +22,7 @@ PD-Spec replaces that workflow with a single rule: **every claim in every delive
 |---|---|
 | Research grounded but not structured | `01_Sources/` + `/extract` + `/analyze` with explicit `[IG-XX]` refs |
 | Scattered AI conversations | `02_Work/MEMORY.md` + session continuity |
-| AI silently resolves contradictions | `CONFLICTS.md` + `/synthesis` with explicit user approval |
+| AI silently resolves contradictions | `CONFLICTS.md` + `/spec` with explicit user approval |
 | Deliverables without traceability | `03_Outputs/` with clickable `[IG-XX]` links to STATUS dashboard |
 | "Where was that decision made?" | `MEMORY.md` + integrity check at every session start |
 
@@ -38,7 +38,7 @@ This isn't unique to Product Design. It happens wherever multiple sources of evi
 
 ```
 01_Sources/  →  Raw input. Read-only after capture. The ground truth.
-02_Work/     →  Knowledge base. Insights, conflicts, system map. Derived from sources.
+02_Work/     →  Knowledge base. Insights, conflicts, strategic vision, proposals. Derived from sources.
 03_Outputs/  →  Deliverables. Derived from Work. Never authored directly.
 ```
 
@@ -54,7 +54,8 @@ Information flows in one direction: Sources → Work → Outputs. This is the co
 - `EXTRACTIONS.md` — Raw claims extracted from sources by `/extract`. Input for `/analyze`.
 - `INSIGHTS_GRAPH.md` — Atomic insights processed from extractions, each with an `[IG-XX]` ID, a status (PENDING → VERIFIED/MERGED/INVALIDATED), and a source reference.
 - `CONFLICTS.md` — Contradictions between insights. Two sources disagree? It gets logged here with a `[CF-XX]` ID and stays PENDING until explicitly resolved.
-- `SYSTEM_MAP.md` — Product architecture decisions with design implications. Every entry references the insights that justify it.
+- `STRATEGIC_VISION.md` — Vision, strategy, design principles, operational domains. Every entry references the insights that justify it.
+- `PROPOSALS.md` — Design proposals `[DP-XX]` organized by domain. Each grounded in verified insights.
 - `RESEARCH_BRIEF.md` — Auto-generated narrative summary (executive summary, thematic grouping, timeline, actors, evidence gaps). Written by `/analyze`.
 - `MEMORY.md` — Session log and state tracker. Written after every skill execution, read at session start to resume context and detect manual edits.
 
@@ -68,23 +69,23 @@ Ten Claude Code skills form the pipeline:
 /kickoff              →  Project setup — name, language (en/es), description
 /extract [folder]     →  Read sources, convert non-markdown files, write raw claims to EXTRACTIONS.md
 /analyze              →  Process extractions into insights, detect contradictions, auto-generate STATUS.html
-/synthesis            →  Resolve conflicts, update system map with design implications
+/spec               →  Resolve conflicts, build strategic vision + design proposals
 /ship [type]          →  Generate deliverables (9 output types — see below)
 /audit                →  Quality gate — evaluate Work layer readiness before /ship
-/visualize [target]   →  Generate Mermaid diagrams (system-map, insights, conflicts, all)
+/visualize [target]   →  Generate Mermaid diagrams (strategic-vision, proposals, insights, conflicts, all)
 /reset [scope]        →  Reset generated layers to template state (preserves sources)
 /seed [domain]        →  Generate synthetic sources for testing and onboarding
 ```
 
-The core pipeline is: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/synthesis` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
+The core pipeline is: `/extract` → `/analyze` (interactive + auto-dashboard) → optional `/spec` → `/ship`. Each skill reads from the layer below it and writes to its own layer. The pipeline is idempotent — running `/analyze` twice on the same sources won't duplicate insights.
 
 | Skill | Reads | Writes |
 |---|---|---|
 | `/extract` | `01_Sources/*` | `02_Work/EXTRACTIONS.md`, `02_Work/MEMORY.md` |
 | `/analyze` | `02_Work/EXTRACTIONS.md`, `01_Sources/*` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/CONFLICTS.md`, `02_Work/RESEARCH_BRIEF.md`, `03_Outputs/STATUS.html`, `02_Work/MEMORY.md` |
-| `/synthesis` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
-| `/ship` | `02_Work/SYSTEM_MAP.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
-| `/audit` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/SYSTEM_MAP.md`, `02_Work/CONFLICTS.md` | `02_Work/MEMORY.md` (report in conversation) |
+| `/spec` | `02_Work/CONFLICTS.md`, `02_Work/INSIGHTS_GRAPH.md` | `02_Work/STRATEGIC_VISION.md`, `02_Work/PROPOSALS.md`, `02_Work/CONFLICTS.md`, `02_Work/MEMORY.md` |
+| `/ship` | `02_Work/STRATEGIC_VISION.md`, `02_Work/PROPOSALS.md`, `02_Work/INSIGHTS_GRAPH.md` | `03_Outputs/*`, `02_Work/MEMORY.md` |
+| `/audit` | `02_Work/INSIGHTS_GRAPH.md`, `02_Work/STRATEGIC_VISION.md`, `02_Work/PROPOSALS.md`, `02_Work/CONFLICTS.md` | `02_Work/MEMORY.md` (report in conversation) |
 | `/visualize` | `02_Work/*` | `03_Outputs/DIAGRAMS*.html`, `02_Work/MEMORY.md` |
 | `/reset` | `02_Work/*`, `03_Outputs/*` | `02_Work/*` (templates), `03_Outputs/*` (clean) |
 | `/seed` | — | `01_Sources/seed-*` (synthetic data) |
@@ -118,7 +119,7 @@ The system adapts behavior based on the project's knowledge density:
 |---|---|---|
 | **Seed** | Initial brief only | Basic definitions, skeleton PRD, surfaces open questions |
 | **Validation** | Brief + interviews/data | Cross-referencing active, contradictions surfacing |
-| **Ecosystem** | Multiple source types | Full contradiction detection, rich traceable system map |
+| **Ecosystem** | Multiple source types | Full contradiction detection, rich traceable strategic vision |
 
 You don't configure the level — the system infers it from the number and diversity of sources.
 
@@ -141,7 +142,7 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 │   ├── kickoff/SKILL.md          /kickoff — project setup wizard
 │   ├── extract/SKILL.md          /extract — read sources, extract raw claims
 │   ├── analyze/SKILL.md          /analyze — process extractions into insights
-│   ├── synthesis/SKILL.md        /synthesis — resolve conflicts, update system map
+│   ├── spec/SKILL.md             /spec — resolve conflicts, build product specification
 │   ├── ship/SKILL.md             /ship — generate deliverables (9 output types)
 │   ├── audit/SKILL.md            /audit — quality gate before /ship
 │   ├── visualize/SKILL.md        /visualize — generate Mermaid diagrams
@@ -154,7 +155,8 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 ├── 02_Work/                       Agent-managed knowledge base
 │   ├── EXTRACTIONS.md             Raw claims from sources (input for /analyze)
 │   ├── INSIGHTS_GRAPH.md          [IG-XX] atomic insights
-│   ├── SYSTEM_MAP.md              Product architecture decisions
+│   ├── STRATEGIC_VISION.md         Vision, strategy, principles, domains
+│   ├── PROPOSALS.md               Design proposals [DP-XX]
 │   ├── CONFLICTS.md               [CF-XX] contradiction log
 │   ├── RESEARCH_BRIEF.md          Auto-generated narrative summary
 │   ├── MEMORY.md                  Session log & state tracker
@@ -196,7 +198,7 @@ cd my-project
 # 4. Run the pipeline
 /extract                # Read sources, extract raw claims
 /analyze                # Process into insights, detect contradictions
-/synthesis              # Resolve conflicts, update system map
+/spec                 # Resolve conflicts, build strategic vision + proposals
 /audit                  # (Optional) Check readiness before shipping
 /ship                   # Generate PRD
 /ship presentation      # Generate slide deck
@@ -215,11 +217,11 @@ PD-Spec is the intelligence layer of **ProductDesign OS (PD-OS)**, a framework t
 
 ```
 PD-Spec (this repo)                         PD-Build (in product repo)
-Research → Insights → System Map →          Contract → Definitions → Drivers
+Research → Insights → Strategic Vision →     Contract → Definitions → Drivers
 01_Sources/ → 02_Work/ → 03_Outputs/        01_Contract/ → 02_Definitions/ → 03_Drivers/
 ```
 
-**PD-Spec** is a standalone strategy repo (private, consultancy/discovery). It processes research and business objectives into a traceable knowledge base — insights, conflicts, system map — and generates deliverables (PRDs, reports, presentations) with full `[IG-XX]` traceability.
+**PD-Spec** is a standalone strategy repo (private, consultancy/discovery). It processes research and business objectives into a traceable knowledge base — insights, conflicts, strategic vision, proposals — and generates deliverables (PRDs, reports, presentations) with full `[IG-XX]` traceability.
 
 **PD-Build** lives inside the product's repository (like Storybook). It consumes PD-Spec's output and transforms it into a **headless design system** — tool-agnostic definitions (tokens, component specs, patterns) that AI agents (Cursor, Claude Code) and tools (Figma, Storybook) use to produce visually coherent output.
 
@@ -235,7 +237,7 @@ Research → Insights → System Map →          Contract → Definitions → D
 
 PD-Spec connects to PD-Build through its output layer. The contract evolves with maturity:
 
-- **Today:** PD-Build reads PD-Spec's Work layer directly (`SYSTEM_MAP.md` + `INSIGHTS_GRAPH.md`) to extract design definitions.
+- **Today:** PD-Build reads PD-Spec's Work layer directly (`STRATEGIC_VISION.md` + `PROPOSALS.md` + `INSIGHTS_GRAPH.md`) to extract design definitions.
 - **Future:** PD-Spec produces `[US-XX]` user stories (JTBD framing with `[IG-XX]` refs) as a formal handoff format. Every definition in PD-Build traces back to a user story, which traces back to an insight, which traces back to a source.
 
 ### Two Modes

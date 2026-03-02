@@ -2,7 +2,7 @@
 name: audit
 description: Quality gate — evaluates Work layer readiness before /ship. Checks traceability, completeness, and consistency.
 user-invocable: true
-allowed-tools: Read, Grep, Glob
+allowed-tools: Read, Grep, Glob, Bash
 argument-hint: ""
 ---
 
@@ -15,7 +15,7 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 ## When to use
 
 - Before `/ship` — to verify the knowledge base is solid enough for deliverables.
-- After `/synthesis` — to confirm that conflict resolution improved quality.
+- After `/spec` — to confirm that conflict resolution improved quality.
 - Anytime — as a health check on research progress.
 
 ## Instructions
@@ -26,13 +26,14 @@ Evaluates the quality and readiness of the Work layer (`02_Work/`) before genera
 
 **Language** — Check `output_language` in `PROJECT.md`. If PROJECT.md is missing, default to `en` and suggest running `/kickoff`. Write all scorecard labels, descriptions, and recommendations in that language. System IDs and status labels stay in English.
 
-### Phase 1: Load Work Layer
+### Phase 1: Load Work Layer (with Index Optimization)
 
-1. **Read all Work layer files:**
-   - `02_Work/INSIGHTS_GRAPH.md` — parse all `[IG-XX]` entries with status, category, temporal tag, convergence, and source ref.
-   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status.
-   - `02_Work/SYSTEM_MAP.md` — parse vision, modules (name, status, refs, design implications), design principles, open questions.
-   - `02_Work/EXTRACTIONS.md` — check if extractions exist (non-empty beyond template header).
+1. **Read all Work layer files (prefer indexes when available):**
+   - **INSIGHTS_GRAPH** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read index (~5 KB) to get all IDs, titles, statuses, categories, convergence, and line numbers. Only read individual full entries when needed for specific checks. If stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
+   - **EXTRACTIONS** — Check if `02_Work/_index/EXTRACTIONS_INDEX.md` exists and is fresh. If fresh → read index (~5 KB) to verify extractions exist and get section/claim counts. If stale or missing → read `02_Work/EXTRACTIONS.md` header to check non-empty.
+   - `02_Work/CONFLICTS.md` — parse all `[CF-XX]` entries with status (no index needed, typically < 20 KB).
+   - `02_Work/STRATEGIC_VISION.md` — parse vision, strategy, principles, domains, value props, open questions.
+   - `02_Work/PROPOSALS.md` — parse design proposals [DP-XX] (type, domain, status, refs, implications).
 
 2. **If no insights exist** (INSIGHTS_GRAPH.md is empty or template-only), report: "Nothing to audit. Run `/extract` then `/analyze` first." Then stop.
 
@@ -42,11 +43,11 @@ Run each check and compute a score (0–100%). Present results per check.
 
 #### Check 1: Traceability Completeness
 
-Every system map module must have `[IG-XX]` refs. Every design implication must reference an insight.
+Every design proposal must have `[IG-XX]` refs (Grounded in:). Every strategic vision entry must reference insights.
 
-- Count modules with refs vs. modules without refs.
-- Count design implications with refs vs. without refs.
-- **Score:** % of entries (modules + implications) that have at least one `[IG-XX]` reference.
+- Count proposals with refs vs. proposals without refs.
+- Count strategic vision entries (principles, domains) with refs vs. without refs.
+- **Score:** % of entries (proposals + principles + domains) that have at least one `[IG-XX]` reference.
 - **Pass threshold:** 100% — traceability is binary, any untraced entry is a gap.
 
 #### Check 2: Insight Coverage
@@ -81,20 +82,20 @@ What percentage of insights have convergence > 1 source?
 
 How many known gaps exist? Are they documented?
 
-- Count open questions in SYSTEM_MAP.md (unchecked `- [ ]` items).
+- Count open questions in STRATEGIC_VISION.md (unchecked `- [ ]` items).
 - Check if source diversity gaps are documented (from previous `/analyze` runs — look for gap mentions in INSIGHTS_GRAPH.md or EXTRACTIONS.md).
 - **Score:** Inverse scale — 100% if 0–2 gaps, 75% if 3–5, 50% if 6–10, 25% if >10.
 - Gaps are not inherently bad (they show awareness), but many unaddressed gaps signal the knowledge base needs more work.
 
-#### Check 6: System Map Completeness
+#### Check 6: Specification Completeness
 
-Does the system map have substantive content?
+Do STRATEGIC_VISION.md and PROPOSALS.md have substantive content?
 
 Checklist:
-- [ ] Vision statement exists (not placeholder text)
-- [ ] At least one module is defined
-- [ ] At least one module has design implications
-- [ ] Design principles are defined (at least one)
+- [ ] Vision statement exists in STRATEGIC_VISION.md (not placeholder text)
+- [ ] At least one design principle is defined
+- [ ] At least one operational domain is defined
+- [ ] At least one design proposal [DP-XX] exists in PROPOSALS.md
 - [ ] Open questions are tracked
 
 - **Score:** (checked items / 5) × 100%.
@@ -110,10 +111,20 @@ Mix of `(current)` vs `(aspirational)` insights.
 - Ideal range: 30–70% current, 30–70% aspirational.
 - **Score:** 100% if within ideal range, 75% if within 20–80%, 50% if within 10–90%, 25% if all one type.
 
+#### Check 8: Referential Integrity
+
+Run `./scripts/integrity-check.sh` (with the project path as argument) to verify that every insight's `Ref:` line points to a source file that has a matching extraction section in EXTRACTIONS.md.
+
+- **Pass (2/2):** All insights have valid source references with matching extractions.
+- **Partial (1/2):** Some insights have orphaned references (source exists but no extraction section found). These may indicate sources that were re-extracted or renamed.
+- **Fail (0/2):** Multiple orphaned references found. Run `/extract` to update extractions, or investigate missing sources.
+
+Tip: Run `./scripts/integrity-check.sh [project_path]` manually to see the full orphan report.
+
 ### Phase 3: Report
 
 3. **Compute overall readiness:**
-   - Average all 7 check scores.
+   - Average all 8 check scores.
    - **Ready** (green): average ≥ 80% and no check below 50%.
    - **Needs Work** (amber): average ≥ 60% or any check below 50%.
    - **Not Ready** (red): average < 60%.
@@ -132,8 +143,9 @@ Mix of `(current)` vs `(aspirational)` insights.
    | 3 | Conflict Resolution      | XX%   | ✓ / ✗  |
    | 4 | Source Backing            | XX%   | ✓ / ✗  |
    | 5 | Evidence Gaps            | XX%   | ✓ / ✗  |
-   | 6 | System Map Completeness  | XX%   | ✓ / ✗  |
+   | 6 | Specification Completeness | XX% | ✓ / ✗  |
    | 7 | Temporal Balance         | XX%   | ✓ / ✗  |
+   | 8 | Referential Integrity    | XX%   | ✓ / ✗  |
 
    ### Failing Checks
 
@@ -141,13 +153,14 @@ Mix of `(current)` vs `(aspirational)` insights.
    ```
 
 5. **For each failing check**, provide a specific remediation action:
-   - Traceability: "Add `[IG-XX]` references to untraced modules in SYSTEM_MAP.md. Run `/synthesis` to update."
+   - Traceability: "Add `[IG-XX]` references to untraced proposals in PROPOSALS.md. Run `/spec` to update."
    - Insight Coverage: "Missing [category] insights. Run `/extract` on sources that cover [category], then `/analyze`."
-   - Conflict Resolution: "N conflicts still PENDING. Run `/synthesis` to resolve them."
+   - Conflict Resolution: "N conflicts still PENDING. Run `/spec` to resolve them."
    - Source Backing: "N insights rely on a single source. Add more sources covering these topics and re-run `/extract` + `/analyze`."
-   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/synthesis` to discuss them."
-   - System Map Completeness: "Missing: [list]. Run `/synthesis` to fill in the system map."
+   - Evidence Gaps: "N open questions unaddressed. Consider adding sources or running `/spec` to discuss them."
+   - Specification Completeness: "Missing: [list]. Run `/spec` to fill in the strategic vision and proposals."
    - Temporal Balance: "All insights are [current/aspirational]. Add sources that cover [the missing perspective]."
+   - Referential Integrity: "N insights have orphaned source references. Run `/extract` to regenerate extractions, or check that source files haven't been renamed or removed."
 
 6. **Closing note:**
    > This is a diagnostic snapshot. You decide whether to proceed with `/ship` despite any warnings. Run `/audit` again after addressing issues to verify improvement.
