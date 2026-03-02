@@ -909,23 +909,33 @@ The SDK integration goes through these abstractions — never called directly fr
 
 **Risk:** SDK requires Node.js server-side process with filesystem access. Current deployment is localhost (fine). Remote deployment (Wave 3, BL-83) needs sandboxed containers (E2B, Modal, Fly). This is a Phase 3 concern, not a blocker for Phase 1.
 
-#### Phase 2 — Model Routing + Cost Control (Effort: L, deferred)
+#### Phase 2 — Model Routing + Cost Control (BL-80-P2)
 
-**Problem:** $1.37 per pipeline operation (observed in pds--timining). As SaaS, cost per operation defines business model viability.
+**Status:** PROPOSED
+**Priority:** HIGH
+**Depends on:** BL-80 Phase 1 (IMPLEMENTED)
 
-**Solution:** Route tasks by complexity to appropriate models:
-- **Haiku** — classification, counting, simple script decisions (cheap, fast)
-- **Sonnet** — extraction, Q&A, standard analysis (balanced)
-- **Opus** — synthesis, conflict resolution, strategic vision (expensive, highest quality)
+**Problem:** /extract costs $1.77 per full run (43 files, 151 claims). ~96% of cost is accumulated history per turn, not system prompt. SKILL.md optimization (v4.27.1) gave ~24% reduction but hit diminishing returns.
 
-The SDK's `model` option is per-query. The orchestrator decides which model based on skill/task type.
+**SDK findings (2026-03-01):**
+- `query.setModel()` exists — changes model mid-session, requires streaming input mode
+- `agents` option supports subagents with independent `model: 'haiku'`
+- Model per query is trivial (1-line change) but doesn't help within a single skill run
+
+**Options (ordered by recommendation):**
+
+| Option | Approach | Diff | Effort | Impact |
+|--------|----------|------|--------|--------|
+| 1 (recommended) | Subagent `reader` with `model: 'haiku'` for discovery/reading. Main agent (Sonnet) only synthesizes | ~50-80 lines in claude.js | 1 day | High — Haiku 10x cheaper per turn for reads |
+| 2 | `setModel()` mid-session — refactor to streaming input mode for full per-turn control | ~200-300 lines | 2-3 days | High — granular control |
+| 3 | Model per mode (Haiku for Q&A, Sonnet for skills) — trivial but doesn't reduce cost within skills | 1 line | trivial | Low for pipeline skills |
+
+**Target:** Reduce /extract cost to <$0.50 per full run.
 
 **Also addresses:**
 - Cost estimation before execution ("this /analyze run will cost ~$0.40")
 - Usage tracking per session (SDK returns `input_tokens` + `output_tokens`)
 - Foundation for pricing tiers (operations/month, model access level)
-
-**Depends on:** Phase 1 (SDK migration)
 
 #### Phase 3 — Remote Deployment + Multi-Tenant (Effort: M, deferred)
 

@@ -255,12 +255,11 @@ export function createApi(projectRoot) {
 
         for (const entry of entries) {
           if (entry.name.startsWith('.')) continue;
-          if (entry.name.includes('TEMPLATE') || entry.name === '_README.md') continue;
+          if (entry.name.startsWith('_')) continue;
           const fullPath = join(dir, entry.name);
           const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
           if (entry.isDirectory()) {
-            if (entry.name.startsWith('_')) continue;
             await scanDir(fullPath, relativePath);
           } else {
             const stats = await stat(fullPath);
@@ -465,7 +464,6 @@ export function createApi(projectRoot) {
   // Helper: scan 01_Sources/ filesystem for actual file count
   async function scanSourceFiles() {
     const sourceDir = resolve(projectRoot, '01_Sources');
-    const HIDDEN = new Set(['_SOURCE_TEMPLATE.md', '_CONTEXT_TEMPLATE.md', '_README.md']);
     const paths = [];
 
     async function walk(dir, prefix = '') {
@@ -473,10 +471,9 @@ export function createApi(projectRoot) {
       try { entries = await readdir(dir, { withFileTypes: true }); } catch { return; }
       for (const entry of entries) {
         if (entry.name.startsWith('.')) continue;
-        if (HIDDEN.has(entry.name)) continue;
+        if (entry.name.startsWith('_')) continue;
         const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
         if (entry.isDirectory()) {
-          if (entry.name.startsWith('_')) continue;
           await walk(join(dir, entry.name), rel);
         } else {
           paths.push(rel);

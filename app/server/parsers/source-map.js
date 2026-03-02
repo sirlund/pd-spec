@@ -17,8 +17,7 @@ export function parseSourceMap(content) {
 
   for (const line of lines) {
     if (!line.startsWith('|')) {
-      if (inTable) break; // table ended
-      continue;
+      continue; // skip blank lines, comments, etc. — table may have gaps
     }
 
     // Skip separator row (|---|---|...)
