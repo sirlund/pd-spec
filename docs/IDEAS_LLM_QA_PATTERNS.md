@@ -48,6 +48,22 @@ if (toolName === 'Read' && !input.offset) {
 
 **What this does NOT cover:** The agent could still misinterpret the index, request the wrong section, or draw wrong conclusions from correctly-read data. Guardrails ensure correct data access, not correct reasoning.
 
+### OBS (2026-03-01): canUseTool does NOT intercept Read
+
+**Finding:** The Claude Agent SDK auto-approves Read, Glob, Grep, and safe Bash calls — `canUseTool` is never fired for them. Only "dangerous" operations (Write, Edit, unrestricted Bash) go through the callback. This means the implementation sketch above is dead code — the redirect never executes.
+
+**Current mitigation:** Pattern 2 (preamble instructions in `buildSystemPrompt` in claude.js). The agent is instructed to check `02_Work/_index/` before reading large files and use offset/limit. This works most of the time but is non-deterministic ("can" ≠ "will").
+
+**Open question:** Is this a fundamental SDK design decision (Read is always safe, no interception needed) or is there an alternative mechanism we haven't found? Possibilities not yet explored:
+- SDK configuration to make Read go through `canUseTool`
+- Middleware or hook at the transport level (before the SDK sees the tool call)
+- Custom tool that wraps Read with index logic (register a `ReadWithIndex` tool?)
+- Future SDK versions exposing Read in `canUseTool`
+
+**Status:** Deferred as technical debt. The upgrade from "agent couldn't use indexes at all" (no offset/limit in custom runtime) to "agent can and usually does" (SDK + preamble instructions) is still a significant improvement. Deterministic enforcement remains the goal when a viable mechanism is found.
+
+**Impact:** Pattern 1 is downgraded from "deterministic, zero cost" to "best-effort via Pattern 2." The acceptance criteria in BACKLOG_REPRIORITIZATION_V2.md should reflect this.
+
 ---
 
 ## Pattern 2: Self-Reflection / Chain-of-Verification (same agent)

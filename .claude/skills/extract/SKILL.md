@@ -67,11 +67,58 @@ EVERY file discovered in Phase 1 MUST be:
 
 ### Phase 1: Discover Sources
 
-1. **Discover sources** — Glob `01_Sources/` recursively for all files except `_SOURCE_TEMPLATE.md`, `_CONTEXT_TEMPLATE.md`, `_FIELD_NOTES_TEMPLATE.md`, `_CONTEXT.md`, `_README.md`, and `.gitkeep`. Sources may be organized in subfolders by milestone or category.
+1. **Run discover-sources.sh** — A single Bash call handles all discovery, hash computation, SOURCE_MAP parsing, and delta classification:
 
-   If an argument was provided (e.g., `/extract benchmark-inicial`), only process files within `01_Sources/[argument]/`. If the folder doesn't exist, report the error and stop.
+   ```bash
+   ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
+   ```
 
-2. **Read folder context** — For each subfolder, check for a `_CONTEXT.md` file. If present:
+   If an argument was provided (e.g., `/extract benchmark-inicial`):
+   ```bash
+   ./scripts/discover-sources.sh "01_Sources/benchmark-inicial" "02_Work/SOURCE_MAP.md"
+   ```
+
+   If the folder doesn't exist, the script exits with code 2. Report the error and stop.
+
+   **Do NOT run Glob, ls, find, or md5 commands on `01_Sources/`.** The script is the single source of truth. It already discovers all files (excluding templates, `.gitkeep`, `_CONTEXT.md`, `_README.md`), reads SOURCE_MAP.md, computes MD5 hashes, classifies files, and detects moves.
+
+   **Script output format (parse directly — no extra tool calls needed):**
+   ```
+   === DISCOVER SOURCES ===
+   NEW: <count>
+   MODIFIED: <count>
+   MOVED: <count>
+   UNCHANGED: <count>
+   RETRY: <count>
+   PENDING_HEAVY: <count>
+   DELETED: <count>
+   TOTAL_TO_PROCESS: <count>
+   ---
+   NEW:
+     <relative-path>  <ext>  <human-size>
+   MODIFIED:
+     <relative-path>  <ext>  <human-size>
+   MOVED:
+     <old-path> → <new-path>
+   DELETED:
+     <relative-path>
+   RETRY:
+     <relative-path>  <ext>  <human-size>
+   ```
+   Each section lists `(none)` if empty. `TOTAL_TO_PROCESS` = NEW + MODIFIED + RETRY.
+   Detail lines are indented with 2 spaces, fields separated by 2+ spaces.
+   Paths are relative to `01_Sources/`.
+
+   **Build processing queue** from the output:
+   - NEW + MODIFIED + RETRY → process these files
+   - MOVED → already handled (no re-extraction)
+   - UNCHANGED → skip
+   - DELETED → handle in Phase 1b (deletion impact)
+   - PENDING_HEAVY → include only in Heavy-only or Full mode
+
+   If `TOTAL_TO_PROCESS` is 0 and no DELETED files, report "No changes detected" and stop.
+
+2. **Read folder context** — For each subfolder containing files in the processing queue, check for a `_CONTEXT.md` file. Read all `_CONTEXT.md` files in parallel (one turn, multiple Read calls). If present:
    - Use it to understand non-markdown files (images, PDFs, spreadsheets, .txt) that can't carry their own metadata.
    - **Validate structure** — `_CONTEXT.md` must follow `01_Sources/_CONTEXT_TEMPLATE.md` structure (Type, Date, Participants, Context, Files table). Flag deviations.
    - **No insight derivation** — `_CONTEXT.md` describes files, it does NOT interpret or derive conclusions from them. If a `_CONTEXT.md` contains analysis, opinions, or derived insights (e.g., "this shows that users prefer X"), flag it as a source organization issue.
@@ -88,18 +135,18 @@ EVERY file discovered in Phase 1 MUST be:
    - Does the file follow `_SOURCE_TEMPLATE.md` structure? If not, flag it.
    - **If inconsistencies are found:** report them to the user and ask for confirmation before proceeding. Do not move or reclassify files without explicit approval.
 
-4. **Report progress** — Log overall scope before starting:
-   - "Starting extraction: X folders, Y total files"
+4. **Report progress** — The script output already contains counts. Log:
+   - "Delta: {NEW} new, {MODIFIED} modified, {RETRY} retry, {UNCHANGED} unchanged → {TOTAL_TO_PROCESS} to process"
 
 5. **File classification & mode filtering:**
 
-   Classify all discovered files:
+   Using the extension and size from the script output, classify files in the processing queue:
    - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
    - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
 
    **Apply mode filter (from Phase 0b):**
    - **Express mode:** Remove heavy files from processing queue. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process, {heavy_count} heavy files deferred (pending-heavy)`
-   - **Heavy-only mode:** Read SOURCE_MAP.md, select ONLY files with status `pending-heavy`. If no pending-heavy files found, report "No heavy files pending — run /extract first" and stop.
+   - **Heavy-only mode:** Use PENDING_HEAVY count and files from script output. If none found, report "No heavy files pending — run /extract first" and stop.
    - **Full mode:** Process all files (no filtering).
 
 5b. **Oversized line detection** — For each file in the processing queue:
@@ -136,94 +183,35 @@ EVERY file discovered in Phase 1 MUST be:
      Skip mid-skill checkpoints (task is small enough to complete safely)
    Log: `💾 Preventive checkpoint written (${file_count} files, ${est_size}KB)`
 
-### Phase 1b: Compute Delta (Incremental Extraction)
+### Phase 1b: Delta Adjustments
 
-**Purpose:** Only process new, modified, or failed files. Skip unchanged files to save time.
+**Note:** Delta computation (hashing, classification, move detection, reporting) is handled by `discover-sources.sh` in step 1. This phase handles only the cases requiring agent judgment or user interaction.
 
-7. **Check for full re-extract flag** — If user passed `--full`:
-
-   **Safety gate (consolidated project):**
+7. **--full safety gate** — If user passed `--full`:
    Count VERIFIED insights: `grep -c 'Status: VERIFIED' 02_Work/INSIGHTS_GRAPH.md`
-   IF count > 10 (consolidated project threshold):
-     Warn user: "⚠️ --full re-extraction on consolidated project (N VERIFIED insights).
-     All claims will be replaced — insights may lose their evidence trail.
-     Recommended: use `/extract --file [source]` for surgical re-extraction.
-     Proceed with --full? [confirm/cancel]"
-     Wait for explicit confirmation before continuing. If cancelled, abort with no changes.
+   IF count > 10 (consolidated project):
+     Warn: "⚠️ --full re-extraction on consolidated project (N VERIFIED insights). All claims will be replaced — insights may lose their evidence trail. Recommended: `/extract --file [source]` for surgical re-extraction. Proceed? [confirm/cancel]"
+     Wait for explicit confirmation. If cancelled, abort with no changes.
    IF count ≤ 10: proceed silently.
+   Skip delta and process all files from step 1.
 
-   Skip delta computation and process all files discovered in Phase 1 (after mode filtering).
-
-8. **Read SOURCE_MAP.md** — Check if `02_Work/SOURCE_MAP.md` exists:
-   - If missing → treat all files as NEW, proceed to Phase 2
-   - If exists → parse the table to build a map of known files with their status and hash
-
-**Validate SOURCE_MAP Integrity:**
-
-Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
-1. Read `02_Work/EXTRACTIONS.md`
-2. For each entry in SOURCE_MAP with status=`processed`:
-   - Check if corresponding `## [filename]` section exists in EXTRACTIONS.md
-   - If missing: change status to `error` with reason "missing from EXTRACTIONS (possible interruption)"
-3. Count corrupted entries
-4. If corrupted entries found, report to user:
-   ```
-   ⚠️ SOURCE_MAP corruption detected: X files marked 'processed' but missing from EXTRACTIONS.md
-   These files will be re-processed.
-   ```
-5. Add corrupted files to RETRY queue
-
-9. **Compute file hashes** — For each file discovered in Phase 1, compute md5 hash:
+8. **SOURCE_MAP integrity check** — Quick validation that previously processed files actually exist in EXTRACTIONS.md (catches interrupted extractions):
    ```bash
-   md5 -q "path/to/file"
+   grep '| processed |' 02_Work/SOURCE_MAP.md 2>/dev/null | awk -F'|' '{gsub(/^ +| +$/, "", $2); print $2}' | while read f; do
+     grep -q "## \[$f\]" 02_Work/EXTRACTIONS.md 2>/dev/null || echo "MISSING: $f"
+   done
    ```
-   - On macOS, `md5` is native (zero deps)
-   - Store in memory: `{file_path: hash}`
+   If MISSING files found, add them to the RETRY queue. Log: `⚠️ SOURCE_MAP corruption: X files marked 'processed' but missing from EXTRACTIONS.md — will re-process`
 
-10. **Classify files** — Compare discovered files against SOURCE_MAP:
-   - **NEW** — file not in SOURCE_MAP → process
-   - **UNCHANGED** — file in map, hash matches → skip (preserve existing claims in EXTRACTIONS.md)
-   - **MODIFIED** — file in map, hash differs → reprocess (replace section in EXTRACTIONS.md)
-   - **RETRY** — file in map with status=`error` → reprocess
-   - **PENDING-HEAVY** — file in map with status=`pending-heavy` → process only in Heavy-only or Full mode, skip in Express mode
-   - **DELETED** — file in map but not discovered → run source deletion impact analysis (step 10a) before removing
-
-10a. **Source deletion impact** — When a source file has been deleted (present in SOURCE_MAP.md but no longer in `01_Sources/`):
+9. **Source deletion impact** — For files listed under DELETED in the script output (step 1):
    1. Search `02_Work/INSIGHTS_GRAPH.md` for insights whose `Ref:` line references this source file.
-   2. If impacted insights are found, warn the user:
-      - List each impacted insight ID and title.
-      - For insights with only ONE source ref (this deleted file), flag as CRITICAL: `[IG-XX] has no remaining source — will become an orphan.`
-      - For insights with multiple source refs, flag as WARNING: `[IG-XX] loses one of N source refs — still grounded.`
-   3. **Double confirmation for deletions with CRITICAL impact:** `Deleting this source will orphan N insights. Type 'confirm' to proceed or 'skip' to keep the source in SOURCE_MAP.`
-   4. If the user confirms, mark the source as `DELETED` in SOURCE_MAP.md and remove its section from EXTRACTIONS.md. Do NOT automatically invalidate the impacted insights — that's a `/spec` decision.
-   5. If the user types 'skip', keep the source entry in SOURCE_MAP.md with status `missing` (file gone but tracked). Remove it from the DELETED list so it does not participate in moved file detection.
-   6. If no impacted insights are found, proceed with deletion silently (remove from EXTRACTIONS.md, mark as `DELETED` in SOURCE_MAP.md).
-
-10b. **Moved file detection** — After building the list of NEW and DELETED sources (from SOURCE_MAP.md hash comparison), cross-reference them:
-   - For each NEW file, compare its MD5 hash (computed in step 9) against DELETED files' stored hashes from SOURCE_MAP.md.
-   - If a NEW file's hash matches a DELETED file's hash → the file was **MOVED** (renamed or relocated). Report: `MOVED: old/path → new/path`. Update SOURCE_MAP.md with the new path but preserve the extraction state (status, timestamp, claims). No re-extraction needed — remove the file from the processing queue and the DELETED list.
-   - If a NEW file has the same filename (basename) as a DELETED file but a different hash → ask the user: `Same filename but different content: old/path vs new/path. Is this the same file (updated), or a new file?`
-     - If "same file (updated)" → treat as MODIFIED (reprocess, replace section in EXTRACTIONS.md under new path)
-     - If "new file" → treat as NEW (process normally) and proceed with DELETED cleanup for the old path
-   - This prevents unnecessary re-extraction when files are reorganized within `01_Sources/`.
-
-11. **Report delta to user** — Before processing, show:
-   ```
-   Delta computation complete:
-   - NEW: 3 files (will process)
-   - MODIFIED: 1 file (will reprocess)
-   - MOVED: 0 files (path updated, no re-extraction)
-   - UNCHANGED: 53 files (will skip)
-   - RETRY: 0 files (errors from last run)
-   - DELETED: 0 files (orphaned)
-
-   Total to process: 4 files
-   ```
-   Wait for user confirmation before proceeding.
-
-12. **Build processing queue** — Only files marked as NEW, MODIFIED, or RETRY go to Phase 2. In Heavy-only mode, also include PENDING-HEAVY files.
-
-**REMOVED:** Large Project Strategy moved to mandatory batch detection (step 5)
+   2. If impacted insights found:
+      - For insights with only ONE source ref: CRITICAL — `[IG-XX] has no remaining source — will become an orphan.`
+      - For insights with multiple refs: WARNING — `[IG-XX] loses one of N source refs — still grounded.`
+   3. **Double confirmation for CRITICAL impact:** `Deleting this source will orphan N insights. Type 'confirm' to proceed or 'skip' to keep in SOURCE_MAP.`
+   4. If confirmed: mark as `DELETED` in SOURCE_MAP.md, remove section from EXTRACTIONS.md. Do NOT invalidate impacted insights — that's a `/spec` decision.
+   5. If 'skip': keep entry in SOURCE_MAP.md with status `missing`.
+   6. If no impacted insights: proceed silently.
 
 ### Phase 1.5: Smart Source Preprocessing
 
@@ -380,6 +368,8 @@ Before trusting SOURCE_MAP.md entries, validate against EXTRACTIONS.md:
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
 
+**Parallel Read rule:** When multiple files need to be read, batch them into parallel Read calls in a single turn. For example, if 5 NEW files need processing, issue 5 Read calls in one message instead of 5 sequential turns. This dramatically reduces turn count and cost. Each file still gets its own extraction section — parallel reads are about I/O batching, not merging extractions. Limit to 8 parallel reads per turn to stay within tool call limits.
+
 **Extraction Methodology:**
 
 When processing a document, apply these criteria for claim extraction:
@@ -502,13 +492,13 @@ For each Heavy file (one at a time):
 
 Process all files in single pass (step 12 below)
 
-12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from Phase 1b), read it and extract raw claims and factual statements.
+12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from discover-sources.sh), read it and extract raw claims and factual statements.
 
    **Preprocessing redirect:** Before reading a source file, check if Phase 1.5 created a normalized version in `02_Work/_temp/{filename}_normalized.md`. If a redirect exists, read from the `_temp/` path instead of the original. The section header (`## [folder/file.ext]`) must still reference the original `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
 
-   **If Phase 1b was skipped** (--full flag or SOURCE_MAP missing), process all files from Phase 1.
+   **If --full flag was used**, process all files from the script output (step 1), ignoring delta classification.
 
-   **MANDATORY: NEVER SKIP FILES.** Every file discovered in Phase 1 must be either (a) processed with claims extracted, or (b) explicitly listed in the final report as unprocessable with a reason. The agent must NOT silently omit files. If context window pressure builds, process files in batches (by folder) — write partial results to EXTRACTIONS.md between batches — but never skip. The Glob results from Phase 1 are the authoritative file list; every path in that list must appear in the output or the unprocessable report.
+   **MANDATORY: NEVER SKIP FILES.** Every file in the processing queue (from discover-sources.sh output) must be either (a) processed with claims extracted, or (b) explicitly listed in the final report as unprocessable with a reason. The agent must NOT silently omit files. If context window pressure builds, process files in batches (by folder) — write partial results to EXTRACTIONS.md between batches — but never skip. The script output is the authoritative file list; every path in it must appear in the output or the unprocessable report.
 
    - Each extracted claim is a verbatim quote or close factual paraphrase — **NO interpretation, NO categorization, NO judgment**.
    - Include ALL claims, even seemingly minor ones — `/analyze` decides relevance.
@@ -641,7 +631,7 @@ Process all files in single pass (step 12 below)
    **If full re-extract** (--full flag or SOURCE_MAP missing):
    - Replace EXTRACTIONS.md entirely with new extraction (same as before)
 
-   **If incremental extraction** (delta computed in Phase 1b):
+   **If incremental extraction** (delta from discover-sources.sh):
    - **Read existing EXTRACTIONS.md** to understand current structure
    - **For NEW files** — append new sections to EXTRACTIONS.md
    - **For MODIFIED files** — use Edit tool to replace the existing `## [file-path]` section with updated claims
@@ -680,7 +670,7 @@ Process all files in single pass (step 12 below)
    grep -c '^[0-9]\+\.' 02_Work/EXTRACTIONS.md  # claim count
    ```
    4. Build list of processed files from section headers
-   5. Compare against Phase 1 discovery list (Glob results stored in memory)
+   5. Compare against the processing queue from discover-sources.sh output
    6. Identify discrepancies:
       - Files discovered but missing from EXTRACTIONS.md
       - Files in EXTRACTIONS.md but not in discovery list (orphans)
@@ -722,7 +712,7 @@ Process all files in single pass (step 12 below)
    **For each file processed:**
    - Extract format from file extension (md, png, pdf, docx, etc.)
    - Count claims extracted (number of lines in the `### Raw Claims` section)
-   - Compute or reuse the md5 hash from Phase 1b
+   - Compute or reuse the md5 hash from discover-sources.sh
    - Set timestamp to current time (ISO format: YYYY-MM-DDTHH:MM)
    - Set status:
      - `processed` — file was successfully extracted
@@ -738,10 +728,10 @@ Process all files in single pass (step 12 below)
    | docs/brief.pdf | pdf | error | 0 | 1234567890ab | 2026-02-15T14:31 |
    ```
 
-   **For DELETED files** (from Phase 1b):
+   **For DELETED files** (from discover-sources.sh):
    - Keep the row but change status to `orphan` — this indicates the file was processed before but is now missing from disk
 
-   **For UNCHANGED files** (from Phase 1b):
+   **For UNCHANGED files** (from discover-sources.sh):
    - Keep the existing row unchanged (no need to update)
 
    **Use Edit tool** to update individual rows or append new ones. Do not rewrite the entire table unless necessary.
