@@ -255,12 +255,11 @@ export function createApi(projectRoot) {
 
         for (const entry of entries) {
           if (entry.name.startsWith('.')) continue;
-          if (entry.name.includes('TEMPLATE') || entry.name === '_README.md') continue;
+          if (entry.name.startsWith('_')) continue;
           const fullPath = join(dir, entry.name);
           const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
 
           if (entry.isDirectory()) {
-            if (entry.name.startsWith('_')) continue;
             await scanDir(fullPath, relativePath);
           } else {
             const stats = await stat(fullPath);
