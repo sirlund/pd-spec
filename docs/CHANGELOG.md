@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.27.1] — 2026-03-01 — Extract Cost Optimization
+
+Extract SKILL.md rewritten to eliminate redundant agent turns. Discovery + delta now handled by a single `discover-sources.sh` call instead of 5-8 turns of Glob/ls/md5/classification.
+
+<details>
+<summary>Performance (1)</summary>
+
+- **Extract skill turn reduction** — Phase 1 + 1b rewritten: `discover-sources.sh` is the single source of truth for file discovery and delta classification. Script output format documented inline so the agent can parse without extra tool calls. Parallel Read rule added to Phase 2 (up to 8 concurrent reads per turn). All stale Phase 1b references updated. Expected ~30-40% turn reduction (and proportional cost savings) for typical extract runs.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
 ## [4.27.0] — 2026-03-01 — SDK Migration
 
 The custom agent loop (200-iteration while-loop with `client.messages.create()`) is replaced by Claude Agent SDK's `query()` async generator. The agent now has native Read, Write, Edit, Bash, Glob, Grep with automatic context compaction. Skills run identically in CLI and webapp.
