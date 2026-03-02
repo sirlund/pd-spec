@@ -16,6 +16,6 @@
 
 - **Maturity:** Level 0 (Empty)
 - **Last updated:** 2026-03-01
-- **Status:** Fresh QA environment. 6 source files (2 png, 2 md, 1 docx, 1 transcript).
+- **Status:** Fresh QA environment. 46 source files (26 png, 12 md, 5 heic, 3 docx).
 - **Insights count:** 0
 - **Conflicts count:** 0
