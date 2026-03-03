@@ -9,7 +9,7 @@
 - **project_type:** [Set by /kickoff]
 - **team:** [Set by /kickoff]
 - **started:** [Set by /kickoff]
-- **engine_version:** v4.26.0
+- **engine_version:** v4.27.2
 
 ## Current State
 
