@@ -18,7 +18,7 @@ const base: ThemeConfig = {
   brand: 'Brand',
   brandAccent: 'Product',
   storageKey: 'pd-theme',
-  logo: { src: '/shared/logo.svg', alt: 'Logo' },
+  logo: { src: '/logo.svg', alt: 'Logo' },
 };
 
 export default base;

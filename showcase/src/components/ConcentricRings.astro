@@ -16,12 +16,13 @@ interface Props {
 
 const { layers, class: className } = Astro.props;
 
-// Generate progressive depth styles: opacity increases, max-width decreases
+// Generate progressive depth styles via CSS custom properties.
+// --ring-opacity and --ring-border-opacity drive rgba(var(--accent-rgb), ...) in CSS.
 const depthStyles = (i: number, total: number) => {
   const opacity = 0.02 + (i / Math.max(total - 1, 1)) * 0.06;
   const borderOpacity = 0.15 + (i / Math.max(total - 1, 1)) * 0.2;
   const maxWidth = 850 - (i * Math.round(200 / Math.max(total - 1, 1)));
-  return `background: rgba(0, 243, 255, ${opacity}); border-color: rgba(0, 243, 255, ${borderOpacity}); max-width: ${maxWidth}px;`;
+  return `--ring-opacity: ${opacity}; --ring-border-opacity: ${borderOpacity}; max-width: ${maxWidth}px;`;
 };
 ---
 
