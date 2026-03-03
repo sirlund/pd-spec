@@ -94,9 +94,22 @@
 - Transición: "4 Pilares · 4 Dominios · 12 Cruces → 8 casos de uso"
 
 **Light mode fix:**
-- CSS overrides en `v2_boceto.css` para todos los `rgba(255,255,255,...)` inline
+- CSS overrides movidos a `theme_spec.css` (engine global) para todos los `rgba(255,255,255,...)` inline
 - Cubre: frame borders, sidebar dividers, placeholder text, corner labels
 - Pattern: `[data-theme="light"] .slide [style*="..."]` con `!important`
+
+**Síntesis concéntrica (s07a) — rediseño:**
+- Reemplaza flat pills monocolor → concentric ring diagram con SVG curved text
+- 3 anillos (Why/Where/How) con colores distintos (purple/gold/cyan)
+- "Alineación Estratégica" como SVG curved text a lo largo del anillo medio
+- Domain badges como círculos en triángulo isósceles
+- Pilares en puntos cardinales fuera del anillo con FA icon boxes
+- Crosshair connector lines + center glow + backdrop-filter blur progresivo
+- Banner "Confianza en Datos" full-width pinned sobre footer
+
+**Slide slug (engine):**
+- Footer muestra nombre de archivo MDX junto al número de slide
+- `.no-export` oculta el slug en PDF/print
 
 **Slides ocultos (hidden: true):**
 - 07b-sintesis-capas.mdx, 07c-sintesis-orbital.mdx (alternativas no elegidas)
@@ -113,11 +126,18 @@
 
 ### Contenido visual
 - [ ] **Moodboard images** — Los 12 cruces tienen frames vacíos. Llenar con wireframes, referencias visuales o mockups.
-- [ ] **Verificar viz images** — Las 8 imágenes de visualización están en `/decks/main/viz/`. Confirmar que renderizan correctamente en `/v2-boceto`.
+- [ ] **Closeups bench** — Motive×2, Chronosphere×2, Tesla×2, SentinelOne×2, Discord×2, Samsara×2, Ramp×2, CrowdStrike×1.
+- [ ] **Mockups S14, S16, S18** — Patrones de Time Sight, Omni Sense, Multi-pilar.
 
-### Tracking
-- [ ] **Commit pendiente** — Todos los cambios de esta sesión (frames, light mode, cierre, 16 cases, reorder).
-- [ ] **Archivo fuente** — `01_Sources/sesiones-idemax/toque-idemax(fri27feb).md` sigue untracked. Decidir si incluir en repo.
+### Pipeline PD-Spec
+- [ ] **`/extract`** — Nueva fuente: `sesiones-idemax/toque-idemax(fri27feb).md`
+- [ ] **`/spec`** — Integrar 6 insights PENDING (IG-26 a IG-31)
+- [ ] **Propagar "Tiempo Cero"** a STRATEGIC_VISION.md (reemplazar "Reducción de Carga Cognitiva")
+- [ ] **`/ship`** — Actualizar PRD.md, SYSTEM_MAP.md, PRESENTATION.md
+- [ ] **CF-08** — Financial case
+
+### Entrega
+- [ ] **Traspaso a Google Slides** — Equipo IDEMAX
 
 ## Fuentes de Cambios
 - Transcript IDEMAX: `01_Sources/sesiones-idemax/toque-idemax(fri27feb).md`
