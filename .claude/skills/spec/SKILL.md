@@ -2,7 +2,7 @@
 name: spec
 description: Resolve pending conflicts, update insight statuses, and build STRATEGIC_VISION.md + PROPOSALS.md from verified insights. Was /resolve — renamed in v4.25.
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion
 ---
 
 # /spec — Product Specification & Conflict Resolution
@@ -76,21 +76,72 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
    - **Update `Last-updated: YYYY-MM-DD`** on every insight touched.
    - Use `./scripts/verify-insight.sh` for mechanical status changes when available.
 
-9. **Write Strategic Vision** — In `02_Work/STRATEGIC_VISION.md`:
-   - Product Vision — if core assumptions changed.
-   - Product Strategy — market positioning, differentiation, business model.
-   - **Design Principles** — product-level principles only. Source exclusively from insights with category `design-framework`. Internal methodology concepts (Homer's Car, D→A→R, etc.) are NOT product principles — list them in a separate "Internal Design Criteria" subsection if relevant. Each principle gets:
+9. **Propose structure** — Before writing STRATEGIC_VISION.md, read `project_type`
+   from PROJECT.md and propose which structural elements to include.
+
+   **Fallback for missing project_type:** If `project_type` is missing or `[Set by /kickoff]`,
+   infer type from insight categories: majority `user-need` + `design-framework` → Digital product;
+   majority `business` → Business strategy; mixed with few `technical` → Consulting / research.
+   If ambiguous, ask the user via AskUserQuestion.
+
+   **Available structure elements:**
+
+   | Element | What it organizes | When to use |
+   |---|---|---|
+   | Design Principles | Guiding principles from design-framework insights | Product has design decisions grounded in evidence |
+   | Operational Domains | Functional territory groupings | Product covers multiple functional areas |
+   | Strategic Axes | High-level strategic themes/directions | Project defines strategic direction, not buildable modules |
+   | Prioritized Recommendations | Actionable findings ranked by impact | Project delivers analysis/advice, not a product |
+
+   **Pre-filtered recommendations by project type:**
+
+   | Project type | Recommended elements |
+   |---|---|
+   | Digital product | Design Principles + Operational Domains |
+   | Consulting / research | Strategic Axes + Prioritized Recommendations |
+   | Redesign / improvement | Design Principles + Operational Domains |
+   | Business strategy | Strategic Axes |
+   | (not set) | Infer from insight categories, ask user |
+
+   **Proposal flow:**
+   1. Select recommended elements based on project_type
+   2. Present via AskUserQuestion: "Based on [project_type] and [N] insights,
+      I recommend organizing the vision with [elements]. Adjust?"
+      Options: "Approve", "Add [other element]", "Change structure"
+   3. If user wants to change, present the full menu
+   4. Proceed with approved structure
+
+   **Universal sections (always include regardless of structure):**
+   - Product Vision
+   - Product Strategy
+   - Value Propositions
+   - Open Questions
+
+   **Rules for each element:**
+   - **Design Principles** — product-level principles only. Source exclusively from
+     insights with category `design-framework`. Internal methodology concepts
+     (Homer's Car, etc.) are NOT product principles — list them in a separate
+     "Internal Design Criteria" subsection if relevant. Each principle gets:
      - A **memorable name** — use the name from the source insight, don't rename or invent.
-     - **Operates at:** which layers of the conceptual tree (Strategic / Structural / Behavioral / Materialization).
      - **Description:** what it means, how it guides decisions.
      - **Refs:** `[IG-XX]` references that ground it.
-   - **Operational Domains** — high-level functional territory groupings. Each domain has a lead principle.
-   - **Value Propositions** — user outcomes grounded in insights.
-   - **Open Questions** — new questions surfaced during spec work.
+   - **Operational Domains** — functional territory groupings. No mandatory "lead
+     principle" per domain — include one only if the evidence suggests it.
+   - **Strategic Axes** — thematic directions grounded in `[IG-XX]` refs. Each gets:
+     name, description, supporting evidence, implications.
+   - **Prioritized Recommendations** — ranked by impact × evidence strength. Each gets:
+     recommendation, rationale with `[IG-XX]` refs, priority level, dependencies.
+   - **Quantity is emergent** — let the number of principles, domains, axes, etc. be
+     determined by insight evidence. Do NOT default to any fixed count.
+
+9b. **Write Strategic Vision** — After user approves structure, write
+    `02_Work/STRATEGIC_VISION.md` using only the approved elements as `## Section` headers.
+    Include the universal sections (Product Vision, Product Strategy, Value Propositions,
+    Open Questions) plus the approved structural elements.
 
 10. **Write Design Proposals** — In `02_Work/PROPOSALS.md`:
-    - Organize by operational domain.
-    - Each proposal `[DP-XX]` includes: type (module/feature), domain, status, grounded-in refs, parent (for features), design implications, acceptance criteria, open questions.
+    - Organize by the grouping structure approved in step 9 (domains, strategic axes, or flat list if no grouping applies).
+    - Each proposal `[DP-XX]` includes: type (module/feature/recommendation), group, status, grounded-in refs, parent (for features), design implications, acceptance criteria, open questions.
     - Use `./scripts/next-id.sh dp` for the next available DP ID.
     - Every proposal MUST have `Grounded in:` references — Homer's Car gate applies.
 
@@ -128,8 +179,8 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 
 ```markdown
 ### [DP-XX] [Name]
-**Type:** module | feature
-**Domain:** [domain name]
+**Type:** module | feature | recommendation
+**Group:** [approved grouping name]
 **Status:** PROPOSED | VALIDATED | BUILDING | SHIPPED
 **Grounded in:** [IG-XX], [IG-XX]
 **Parent:** [DP-XX] (features point to their module)
