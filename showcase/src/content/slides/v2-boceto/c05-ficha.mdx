@@ -1,0 +1,66 @@
+---
+order: 30
+title: "Caso #5: Copiloto en Terreno"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-22"
+  number={5}
+  title="Copiloto en Terreno"
+  dominio="Dominio C: Asistencia Inteligente"
+  roles={["Jefe de Turno", "Despachador"]}
+  rolDesc="Resolver dudas operacionales y gestionar flujo de comunicaciones por radio."
+  necesidad="Respuesta inmediata, manos libres. Voz y foto como interfaz primaria."
+  dolor="Radio saturada con múltiples solicitudes. Normas inaccesibles en terreno. Manos ocupadas."
+  casosAgrupados={["Cumplimiento legal Sernageomin", "Saturación de radio y triage"]}
+  contexto='El jefe de turno frena la camioneta junto a una berma. Algo no se ve bien — la altura parece insuficiente. La normativa de Sernageomin está en un PDF en la oficina, a 20 minutos de camino. La radio suena con tres solicitudes simultáneas: un camión pide autorización, mantención pregunta por un equipo, seguridad reporta un incidente menor. Las manos están en el volante y la radio. No hay cómo consultar, priorizar ni responder en paralelo.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita un manual — necesita una respuesta directa, manos libres.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "Consulta directa: foto de la berma + pregunta por voz. El sistema recibe por el canal que el usuario tenga disponible — voz, imagen, texto. La radio se transcribe automáticamente, las solicitudes se identifican y se ponen en cola.",
+      pilarIcon: "fa-solid fa-tower-broadcast",
+      pilarName: "Omni Sense",
+      refName: "Discord",
+      refUrl: "https://discord.com",
+      refIndustry: "Comunicación",
+      refFactorX: "Canales de voz siempre activos. Push-to-Talk como referente para triage de radio.",
+      refAplicaciones: [
+        "<strong>Multimodal:</strong> voz, foto y texto como canales de entrada",
+        "<strong>Cola inteligente:</strong> solicitudes de radio identificadas y priorizadas",
+        "<strong>Push-to-Talk:</strong> interacción manos libres en terreno"
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Cruce instantáneo con normativa vigente: Sernageomin, prevención de riesgos, procedimientos de faena. Las tres solicitudes de radio priorizadas por urgencia, cada una con contexto suficiente para decidir.",
+      pilarIcon: "fa-solid fa-tower-broadcast",
+      pilarName: "Omni Sense",
+      refName: "Motive",
+      refUrl: "https://gomotive.com",
+      refIndustry: "Fleet Management / IoT",
+      refFactorX: "Edge AI filtra 99% de alertas falsas. Asistente de voz + cámaras + telemática integrada.",
+      refAplicaciones: [
+        "<strong>Cruce normativo:</strong> foto → compliance check instantáneo",
+        "<strong>Contexto por solicitud:</strong> cada pedido de radio con info suficiente",
+        "<strong>Edge AI:</strong> procesamiento en terreno, sin depender de oficina"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "\"Cumple\" o \"Regulariza así: [pasos concretos].\" Cola de solicitudes ordenada. Problema resuelto — silencio. Sin re-alertar, sin seguimiento innecesario. Manos libres de principio a fin.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "SentinelOne Purple AI",
+      refUrl: "https://www.sentinelone.com/platform/singularity-xdr/",
+      refIndustry: "Ciberseguridad (XDR)",
+      refFactorX: "Triaje automático de alertas → acción guiada a velocidad de máquina.",
+      refAplicaciones: [
+        "<strong>Respuesta binaria:</strong> \"cumple\" o \"regulariza así\"",
+        "<strong>Silencio post-acción:</strong> resuelto = no más alertas",
+        "<strong>Manos libres completo:</strong> de consulta a resolución sin tocar pantalla"
+      ]
+    }
+  ]}
+/>

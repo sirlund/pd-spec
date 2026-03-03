@@ -1,0 +1,67 @@
+---
+order: 37
+title: "Caso #8: Reportería Ejecutiva"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-29"
+  number={8}
+  title="Reportería Ejecutiva"
+  dominio="Dominio D: Alineación Estratégica"
+  roles={["CFO", "Gerente Minas", "Controller"]}
+  rolDesc="Reportar rendimiento financiero a directorio. Traducir operaciones a lenguaje de negocio."
+  necesidad="Reporte ejecutivo automático sin armar PDFs. Impacto en dinero, no en tonelaje."
+  dolor='Erika arma reportes manuales (medio día). CFO no usa TIMining. "Software de operaciones" no habla su idioma.'
+  casosAgrupados={[]}
+  origen='Workshop 01 (gap identificado), Design Brief (Executive App). CFO es "usuario invisible" — caso aspiracional.'
+  contexto='Reunión de directorio en curso. Alguien pregunta: "¿cómo va la operación minera?" El CFO no puede responder sin llamar a alguien, esperar un consolidado manual, o abrir un software que no entiende. Los datos existen — tonelaje, turnos, disponibilidad, alertas — pero están atrapados en sistemas diseñados para ingenieros, en un idioma que no es el suyo. La mina puede estar generando millones en valor capturado o destruyéndolo — y la persona que reporta al directorio es la última en enterarse.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita acceso a sistemas de operaciones — necesita la respuesta en su bolsillo, en su idioma.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "Notificación en el teléfono del CFO — un resumen ejecutivo que cabe en una pantalla. Cuatro KPIs traducidos a dinero: adherencia, producción, seguridad, valor capturado. Un solo indicador destacado pide atención. El resto — silencio.",
+      pilarIcon: "fa-solid fa-tower-broadcast",
+      pilarName: "Omni Sense",
+      refName: "Datadog Bits AI",
+      refUrl: "https://www.datadoghq.com/product/platform/bits-ai/",
+      refIndustry: "Observabilidad / DevOps",
+      refFactorX: "Recomendaciones proactivas de corrección. Archive Search sin rehidratar logs.",
+      refAplicaciones: [
+        "<strong>Push proactivo:</strong> el sistema llega al CFO, no al revés",
+        "<strong>KPIs traducidos:</strong> todo en dinero, no en métricas de ingeniería",
+        "<strong>Un indicador destacado:</strong> no 20 métricas, solo la que pide atención"
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Un tap en el indicador destacado. Drill-down financiero: qué turno fue el peor, por qué, cuánto costó. Comparativa con trimestres anteriores. Proyección de cierre si no se corrige. Legible desde el teléfono, en medio de la reunión.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "SentinelOne Storylines",
+      refUrl: "https://www.sentinelone.com/platform/singularity-xdr/",
+      refIndustry: "Ciberseguridad (XDR)",
+      refFactorX: "Storylines™: reconstrucción forense narrativa de incidentes, cadena causal automática.",
+      refAplicaciones: [
+        "<strong>Drill-down financiero:</strong> del KPI al turno culpable en un tap",
+        "<strong>Comparativa temporal:</strong> \"vs trimestre anterior\" como contexto automático",
+        "<strong>Legible en móvil:</strong> diseñado para consultarse en medio de una reunión"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "\"Ritmo actual cierra -12%. Con intervención, cierra +3%. Delta: USD 1.8M.\" El CFO responde la pregunta del directorio sin haberse levantado de la mesa. El software no le pidió que aprendiera minería — aprendió a hablar finanzas.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "Compound",
+      refUrl: "https://withcompound.com",
+      refIndustry: "Fintech / Diseño",
+      refFactorX: "Numerical Stillness: números en gran escala con pesos tipográficos ligeros.",
+      refAplicaciones: [
+        "<strong>Números que hablan:</strong> \"-12% → +3%, delta USD 1.8M\" como frase ejecutiva",
+        "<strong>Tipografía financiera:</strong> números grandes, ligeros, legibles al vuelo",
+        "<strong>Respuesta lista:</strong> el CFO copia la frase y responde al directorio"
+      ]
+    }
+  ]}
+/>

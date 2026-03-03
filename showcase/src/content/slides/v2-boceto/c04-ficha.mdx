@@ -1,0 +1,66 @@
+---
+order: 28
+title: "Caso #4: Briefing Inteligente"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-20"
+  number={4}
+  title="Briefing Inteligente"
+  dominio="Dominio C: Asistencia Inteligente"
+  roles={["Supervisor IROC \"Sofía\"", "Gerencia CIO"]}
+  rolDesc="Coordinar reuniones con contexto completo y actualizado."
+  necesidad="Contexto instantáneo sin preparación manual. El sistema la busca a ella."
+  dolor='Saturación de correos, reuniones y radio. "Pobreza de tiempo" crónica.'
+  casosAgrupados={["Reunión diaria CIO 8 AM", "Asistencia proactiva pre-reunión"]}
+  contexto='7:45 AM. Sofía camina hacia la sala de coordinación — casco, radio, cero tiempo. Reunión en 15 minutos. No ha podido prepararse: correos sin leer, tres reuniones previas, el radio que no para. ¿Cómo cerró el turno noche? ¿La tronadura? ¿Cuántos camiones parados? La información existe — dispersa entre el dashboard de despacho, el reporte de mantención y los correos del jefe de turno anterior. Sofía va a llegar a improvisar, como cada mañana.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita otro dashboard que abrir — necesita que el contexto la encuentre a ella.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "El briefing llega al WhatsApp de Sofía — el canal correcto para alguien caminando al turno. Resumen contra plan: turno noche al 87%, tronadura -20%, 5 camiones parados, 2 alertas de seguridad. El sistema la busca a ella, no al revés.",
+      pilarIcon: "fa-solid fa-tower-broadcast",
+      pilarName: "Omni Sense",
+      refName: "Samsara",
+      refUrl: "https://www.samsara.com",
+      refIndustry: "Fleet Management / IoT",
+      refFactorX: "Connected Workflows: dashboard holístico que integra múltiples fuentes sensoriales.",
+      refAplicaciones: [
+        "<strong>Push al canal correcto:</strong> el briefing llega donde estás, no donde deberías estar",
+        "<strong>Resumen contra plan:</strong> delta turno anterior en 3 líneas",
+        "<strong>Integración multi-fuente:</strong> despacho + mantención + correos en un mensaje"
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Priorización objetiva: lo más importante primero, medido por impacto en el plan. Causa raíz de cada brecha identificada. Sofía llega a la reunión con contexto completo — en 30 segundos, no en 30 minutos.",
+      pilarIcon: "fa-solid fa-tower-broadcast",
+      pilarName: "Omni Sense",
+      refName: "Motive",
+      refUrl: "https://gomotive.com",
+      refIndustry: "Fleet Management / IoT",
+      refFactorX: "Edge AI filtra 99% de alertas falsas. Asistente de voz + cámaras + telemática integrada.",
+      refAplicaciones: [
+        "<strong>Filtro inteligente:</strong> solo lo relevante para TU reunión",
+        "<strong>Prioridad por impacto:</strong> lo importante primero, lo urgente segundo",
+        "<strong>30 seg de contexto:</strong> sustituye 30 min de preparación manual"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "Post-reunión: \"Tus indicaciones van OK\" o \"Atención: desvío detectado en ejecución.\" Seguimiento automático sin que Sofía tenga que pedirlo.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "Vercel v0",
+      refUrl: "https://v0.dev",
+      refIndustry: "IA / Desarrollo",
+      refFactorX: "Generative UI: la intención se convierte en interfaz ejecutable.",
+      refAplicaciones: [
+        "<strong>Seguimiento automático:</strong> post-reunión sin pedir nada",
+        "<strong>Alerta por desvío:</strong> avisa si las indicaciones no se ejecutan",
+        "<strong>Interfaz adaptativa:</strong> formato de seguimiento, no de dashboard"
+      ]
+    }
+  ]}
+/>

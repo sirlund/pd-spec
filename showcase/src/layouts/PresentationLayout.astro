@@ -58,9 +58,15 @@ const {
       let currentSlide = 0;
 
       const total = slides.length;
+      const slugs = window.__slideSlugs || [];
       slides.forEach((slide, i) => {
         const num = slide.querySelector('.slide-number');
-        if (num) num.textContent = `${String(i + 1).padStart(2, '0')} / ${total}`;
+        if (num) {
+          const slug = slugs[i] || '';
+          num.innerHTML = slug
+            ? `<span class="slide-slug">${slug}</span>${i + 1} / ${total}`
+            : `${i + 1} / ${total}`;
+        }
       });
 
       function showSlide(index) {

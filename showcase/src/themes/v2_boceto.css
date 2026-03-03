@@ -326,3 +326,61 @@
     background: rgba(0, 0, 0, 0.04);
     color: #666;
 }
+
+/* ── Light mode: Moodboard cross slides ── */
+/* Sidebar divider — white→black rgba */
+[data-theme="light"] .slide [style*="border-right: 1px solid rgba(255,255,255"] {
+    border-right-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Dashed frame border */
+[data-theme="light"] .slide [style*="border: 2px dashed rgba(255,255,255"] {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Frame background */
+[data-theme="light"] .slide [style*="background: rgba(255,255,255,0.02)"] {
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Placeholder icon + text */
+[data-theme="light"] .slide [style*="color: rgba(255,255,255,0.25)"] {
+    color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Corner labels */
+[data-theme="light"] .slide [style*="color: rgba(255,255,255,0.2)"] {
+    color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Intensity level label (cyan for dark → darker blue for light) */
+[data-theme="light"] .slide [style*="color: rgba(0,188,212,0.6)"] {
+    color: rgba(0, 119, 182, 0.7) !important;
+}
+
+/* Domain badge backgrounds (orange tones — fine in both, but soften for light) */
+[data-theme="light"] .slide [style*="background: rgba(255,152,0,0.1)"] {
+    background: rgba(255, 152, 0, 0.08) !important;
+}
+
+[data-theme="light"] .slide [style*="border: 1px solid rgba(255,152,0,0.25)"] {
+    border-color: rgba(255, 152, 0, 0.3) !important;
+}
+
+/* Domain quote text */
+[data-theme="light"] .slide [style*="color: rgba(255,152,0,0.5)"] {
+    color: rgba(200, 120, 0, 0.6) !important;
+}
+
+/* Generic white-rgba backgrounds used in various slides */
+[data-theme="light"] .slide [style*="background: rgba(255,255,255,0.05)"] {
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-theme="light"] .slide [style*="background: rgba(255,255,255,0.03)"] {
+    background: rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme="light"] .slide [style*="background: rgba(255,255,255,0.06)"] {
+    background: rgba(0, 0, 0, 0.04) !important;
+}

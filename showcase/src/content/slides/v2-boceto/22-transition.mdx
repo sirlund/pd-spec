@@ -1,16 +1,32 @@
 ---
-order: 23
-title: "Transición: Dos Niveles de Valor"
+order: 32
+title: "De Cumplir a Optimizar"
 slideLayout: "transition"
 ---
 import Slide from '../../../components/Slide.astro';
+import DarBadge from '../../../components/atoms/DarBadge.astro';
 
-<Slide id="slide-22" title="" grid={false}>
-  <div class="content-grid">
-    <div class="placeholder-content">
-      <p style="font-family: var(--font-mono); font-size: 12px; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px;">Dos niveles de valor</p>
-      <h1 style="font-size: 36px; color: white; text-align: center; line-height: 1.3;">Mejoramiento Continuo<br/><span style="color: var(--text-muted); font-size: 24px;">+</span><br/>Reconfiguración Estratégica</h1>
-      <p style="font-size: 14px; color: var(--text-muted); max-width: 500px; text-align: center;">Casos 1-6: el plan es correcto — optimizar la ejecución.<br/>Casos 7-8: el plan es incorrecto — detectar y ajustar.</p>
+<Slide id="slide-26" title="" grid={false}>
+  <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 0 40px;">
+    <div style="display: flex; gap: 0; align-items: stretch; max-width: 1060px; width: 100%;">
+      <div class="transition-col">
+        <div class="transition-tag">Casos 1 – 6</div>
+        <h3 class="transition-title">Cumplir el Plan</h3>
+        <p class="transition-desc"><DarBadge /> aplicado a incidentes de turno, anticipación operativa y asistencia en terreno.</p>
+        <p class="transition-sub">La base. Sin esto, no hay plataforma.</p>
+      </div>
+      <div class="transition-col transition-col--mid">
+        <div class="transition-tag">Casos 7 – 8</div>
+        <h3 class="transition-title" style="color: var(--accent-cyan);">Optimizar el Plan</h3>
+        <p class="transition-desc"><DarBadge /> aplicado a decisiones estratégicas que trascienden el turno.</p>
+        <p class="transition-sub">CORE ya existe y funciona. La pregunta es: ¿qué más puedo hacer con esto?</p>
+      </div>
+      <div class="transition-col transition-col--horizon">
+        <div class="transition-tag">Horizonte</div>
+        <h3 class="transition-title transition-title--horizon"><i class="fa-solid fa-brain" style="font-size: 22px; margin-right: 8px; opacity: 0.7;"></i>Cerebro Autónomo</h3>
+        <p class="transition-desc">CORE como el <strong style="color: #ccc;">sistema nervioso central</strong> de la mina — percibe, decide y actúa sin intervención humana.</p>
+        <p class="transition-sub" style="color: #555;">Machine-to-Machine: CORE habla directo con equipos, sensores y sistemas. La operación se auto-optimiza.</p>
+      </div>
     </div>
   </div>
 </Slide>

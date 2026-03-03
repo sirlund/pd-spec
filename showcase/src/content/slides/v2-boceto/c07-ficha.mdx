@@ -1,0 +1,67 @@
+---
+order: 35
+title: "Caso #7: Optimización del Plan Minero"
+slideLayout: "case-study"
+---
+import CaseStudy from '../../../components/snowflakes/CaseStudy.astro';
+
+<CaseStudy
+  id="slide-27"
+  number={7}
+  title="Optimización del Plan Minero"
+  dominio="Dominio D: Alineación Estratégica"
+  roles={["Gerente Minas", "Planificador CP"]}
+  rolDesc="Definir y ajustar la estrategia de extracción a nivel de plan mensual."
+  necesidad="Visibilidad de que la configuración actual ya no es óptima. Herramientas para reconfigurar el plan."
+  dolor="Plan estático hecho hace 3 meses. Realidad geológica lo invalidó pero nadie lo cuestiona."
+  casosAgrupados={[]}
+  origen="Síntesis de evidencia de múltiples fuentes y motor Orchestra. No proviene directamente de láminas del workshop."
+  contexto='Reunión mensual de planificación. Fase Sur lleva 3 semanas rindiendo bajo plan — no por incidentes, sino porque la roca es más dura de lo que el modelo geológico proyectaba. Cada turno manda la misma flota a las mismas fases en las mismas proporciones. Nadie cuestiona la asignación porque "el plan dice así." Pero el plan se hizo hace 3 meses con proyecciones que la realidad ya invalidó. El gap no es de un turno — es estructural. Y se repite, turno tras turno, semana tras semana, porque la configuración global nunca se revisa.<br><strong style="color: var(--accent-cyan); font-weight: 600;">No necesita corregir un turno — necesita reconfigurar el plan.</strong>'
+  stages={[
+    {
+      type: 'd',
+      descripcion: "Patrón estructural detectado: Fase Sur rindió bajo plan en 18 de los últimos 21 turnos. No son incidentes aislados — es una tendencia sistémica. Divergencia cuantificada: dureza de roca 15% sobre la proyección del modelo geológico. El plan ya no refleja la realidad del terreno.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "Chronosphere",
+      refUrl: "https://chronosphere.io",
+      refIndustry: "Observabilidad / Cloud",
+      refFactorX: "Lens: políticas de retención temporal ajustables durante incidentes activos.",
+      refAplicaciones: [
+        "<strong>Detección de tendencia:</strong> no alertar por pico, alertar por patrón sostenido",
+        "<strong>Retención adaptativa:</strong> más resolución cuando importa, menos cuando no",
+        "<strong>Cuantificación del desvío:</strong> no \"va mal\" sino \"15% sobre proyección\""
+      ]
+    },
+    {
+      type: 'a',
+      descripcion: "Orchestra simula configuraciones alternativas de secuenciación de fases para las próximas 4 semanas. No \"qué hacer hoy\" sino \"qué patrón adoptar\": redistribuir esfuerzo 60/40 hacia Fase Norte, ajustar secuencia de tronadura, reasignar perforación. Cada configuración evaluada contra datos geológicos actualizados — no contra el plan de hace 3 meses.",
+      pilarIcon: "fa-solid fa-clock-rotate-left",
+      pilarName: "Time Sight",
+      refName: "SentinelOne Storylines",
+      refUrl: "https://www.sentinelone.com/platform/singularity-xdr/",
+      refIndustry: "Ciberseguridad (XDR)",
+      refFactorX: "Storylines™: reconstrucción forense narrativa de incidentes, cadena causal automática.",
+      refAplicaciones: [
+        "<strong>Simulación what-if:</strong> evaluar configuraciones alternativas antes de comprometerse",
+        "<strong>Narrativa causal:</strong> \"la roca cambió → el plan quedó obsoleto → esto cuesta X\"",
+        "<strong>Datos frescos:</strong> simular contra realidad actual, no contra plan de hace 3 meses"
+      ]
+    },
+    {
+      type: 'r',
+      descripcion: "Configuración recomendada: concentrar 60% del esfuerzo de extracción en Fase Norte por las semanas 5 a 8. Recuperación proyectada: +8% vs trayectoria actual. Impacto: USD 4.2M en valor recuperado en el mes. El plan se actualiza — no es un parche de turno, sino una nueva línea base que todos los turnos heredan.",
+      pilarIcon: "fa-solid fa-route",
+      pilarName: "Clear Path",
+      refName: "Tesla Fleet",
+      refUrl: "https://www.tesla.com/AI",
+      refIndustry: "Movilidad Autónoma",
+      refFactorX: "Time Scrubbing: rebobinar incidentes para entender causalidad física exacta.",
+      refAplicaciones: [
+        "<strong>Nueva línea base:</strong> el plan se actualiza, no se parchea",
+        "<strong>Impacto en USD:</strong> no \"mejorar\" sino \"USD 4.2M recuperados\"",
+        "<strong>Herencia automática:</strong> todos los turnos heredan la nueva configuración"
+      ]
+    }
+  ]}
+/>
