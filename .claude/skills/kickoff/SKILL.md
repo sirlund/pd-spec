@@ -1,8 +1,8 @@
 ---
 name: kickoff
-description: Project setup wizard. Asks project name, language (en/es), and one-liner. Writes to PROJECT.md. Run once after cloning.
+description: Project setup wizard. Asks project name, language, project type, and one-liner. Writes to PROJECT.md. Run once after cloning.
 user-invocable: true
-allowed-tools: Read, Edit, Write, Glob
+allowed-tools: Read, Edit, Write, Glob, AskUserQuestion
 argument-hint: ""
 ---
 
@@ -10,7 +10,7 @@ argument-hint: ""
 
 ## What this skill does
 
-Guides the user through initial project configuration after cloning the PD-Spec template. Asks 3 questions, writes the answers to `PROJECT.md`, and orients the user on next steps.
+Guides the user through initial project configuration after cloning the PD-Spec template. Asks 4 questions (name, language, one-liner, project type), writes the answers to `PROJECT.md`, and orients the user on next steps.
 
 ## When to use
 
@@ -49,6 +49,14 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - This provides context for the agent when generating outputs.
    - Examples: "A social banking app for Gen Z", "B2B SaaS for construction project management"
 
+7. **Project type** — Use `AskUserQuestion` to ask what kind of project this is. Write the question text and option labels in `output_language`.
+   - **Digital product** — SaaS, app, platform
+   - **Consulting / research** — benchmark, audit, analysis
+   - **Redesign / improvement** — existing product to improve
+   - **Business strategy** — model, positioning, segments
+   - (AskUserQuestion auto-provides "Other" with free text — do NOT add it as an explicit 5th option)
+   - If the user selects "Other", ask a follow-up to describe the project type in one phrase.
+
 ### Phase 2: Write Settings
 
 7. **If PROJECT.md exists** — Use Edit to replace the settings section:
@@ -62,6 +70,7 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - **project_name:** [user's answer]
    - **output_language:** en | es
    - **one_liner:** [user's answer]
+   - **project_type:** [user's answer]
    - **team:** [user's answer or leave as placeholder]
    - **started:** [today's date in YYYY-MM-DD]
    - **engine_version:** [read from current PROJECT.md or use latest]

@@ -6,6 +6,7 @@
 - **project_name:** [Set by /kickoff]
 - **output_language:** en
 - **one_liner:** [Set by /kickoff]
+- **project_type:** [Set by /kickoff]
 - **team:** [Set by /kickoff]
 - **started:** [Set by /kickoff]
 - **engine_version:** v4.26.0
