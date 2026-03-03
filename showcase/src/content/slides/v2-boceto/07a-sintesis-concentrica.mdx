@@ -6,90 +6,109 @@ slideLayout: "custom"
 import Slide from '../../../components/Slide.astro';
 
 <Slide id="slide-7a" cssClass="slide-sintesis" title="Síntesis Estratégica" grid={false}>
-  <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px 0 10px;">
-    <div style="position: relative; width: 520px; height: 520px;">
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0;">
+    <div style="position: relative; width: 480px; height: 480px; flex-shrink: 0;">
 
-      {/* Outer ring — CÓMO (Pilares) */}
-      <div style="position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(0,188,212,0.25); background: radial-gradient(circle, transparent 60%, rgba(0,188,212,0.04) 100%);">
-      </div>
-      <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #1a1a2e; padding: 2px 16px; border-radius: 20px; border: 1px solid rgba(0,188,212,0.3);">
-        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(0,188,212,0.7);">Cómo — Pilares de Diseño</span>
-      </div>
-      {/* Pillar labels on outer ring */}
-      <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center;">
-        <div style="background: rgba(0,188,212,0.12); border: 1px solid rgba(0,188,212,0.3); border-radius: 20px; padding: 6px 16px;">
-          <i class="fa-solid fa-tower-broadcast" style="color: var(--accent-cyan); margin-right: 6px; font-size: 12px;"></i>
-          <span style="font-size: 13px; color: var(--accent-cyan); font-weight: 600;">Omni Sense</span>
-        </div>
-      </div>
-      <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); text-align: center;">
-        <div style="background: rgba(0,188,212,0.12); border: 1px solid rgba(0,188,212,0.3); border-radius: 20px; padding: 6px 16px;">
-          <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan); margin-right: 6px; font-size: 12px;"></i>
-          <span style="font-size: 13px; color: var(--accent-cyan); font-weight: 600;">Time Sight</span>
-        </div>
-      </div>
-      <div style="position: absolute; top: 50%; left: 16px; transform: translateY(-50%); text-align: center;">
-        <div style="background: rgba(0,188,212,0.12); border: 1px solid rgba(0,188,212,0.3); border-radius: 20px; padding: 6px 16px;">
-          <i class="fa-solid fa-volume-xmark" style="color: var(--accent-cyan); margin-right: 6px; font-size: 12px;"></i>
-          <span style="font-size: 13px; color: var(--accent-cyan); font-weight: 600;">Quiet UI</span>
-        </div>
-      </div>
-      <div style="position: absolute; top: 50%; right: 16px; transform: translateY(-50%); text-align: center;">
-        <div style="background: rgba(0,188,212,0.12); border: 1px solid rgba(0,188,212,0.3); border-radius: 20px; padding: 6px 16px;">
-          <i class="fa-solid fa-route" style="color: var(--accent-cyan); margin-right: 6px; font-size: 12px;"></i>
-          <span style="font-size: 13px; color: var(--accent-cyan); font-weight: 600;">Clear Path</span>
-        </div>
-      </div>
+      {/* Subtle center glow */}
+      <div style="position: absolute; width: 250px; height: 250px; top: 115px; left: 115px; background: radial-gradient(circle, rgba(108,92,231,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0;"></div>
+
+      {/* Connector crosshair lines */}
+      <div style="position: absolute; width: 1px; left: 50%; top: 0; height: 157px; background: rgba(255,255,255,0.05); z-index: 1;"></div>
+      <div style="position: absolute; width: 1px; left: 50%; bottom: 0; height: 157px; background: rgba(255,255,255,0.05); z-index: 1;"></div>
+      <div style="position: absolute; height: 1px; top: 50%; left: 0; width: 157px; background: rgba(255,255,255,0.05); z-index: 1;"></div>
+      <div style="position: absolute; height: 1px; top: 50%; right: 0; width: 157px; background: rgba(255,255,255,0.05); z-index: 1;"></div>
+
+      {/* Outer ring — CÓMO (Pilares de diseño) */}
+      <div style="position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(0,188,212,0.18); background: rgba(0,188,212,0.02); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"></div>
+      <span style="position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,188,212,0.75); white-space: nowrap;">Cómo — Pilares de diseño</span>
 
       {/* Middle ring — DÓNDE (Dominios) */}
-      <div style="position: absolute; top: 85px; left: 85px; right: 85px; bottom: 85px; border-radius: 50%; border: 2px solid rgba(255,152,0,0.3); background: radial-gradient(circle, transparent 55%, rgba(255,152,0,0.06) 100%);">
-      </div>
-      <div style="position: absolute; top: 78px; left: 50%; transform: translateX(-50%); background: #1a1a2e; padding: 2px 14px; border-radius: 20px; border: 1px solid rgba(255,152,0,0.4);">
-        <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,152,0,0.8);">Dónde — Dominios</span>
-      </div>
-      {/* Alineación Estratégica as the ring label */}
-      <div style="position: absolute; top: 88px; left: 50%; transform: translateX(-50%); width: 200px; text-align: center;">
-        <span style="font-size: 10px; color: rgba(255,152,0,0.5); font-style: italic;">Alineación Estratégica envuelve</span>
-      </div>
-      {/* Domain labels inside middle ring */}
-      <div style="position: absolute; top: 140px; left: 50%; transform: translateX(-50%); text-align: center;">
-        <div style="background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); border-radius: 16px; padding: 5px 14px;">
-          <span style="font-size: 12px; color: #ff9800; font-weight: 600;">Anticipación</span>
-        </div>
-      </div>
-      <div style="position: absolute; bottom: 148px; left: 115px; text-align: center;">
-        <div style="background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); border-radius: 16px; padding: 5px 14px;">
-          <span style="font-size: 12px; color: #ff9800; font-weight: 600;">Crisis</span>
-        </div>
-      </div>
-      <div style="position: absolute; bottom: 148px; right: 115px; text-align: center;">
-        <div style="background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); border-radius: 16px; padding: 5px 14px;">
-          <span style="font-size: 12px; color: #ff9800; font-weight: 600;">Asistencia</span>
-        </div>
-      </div>
+      <div style="position: absolute; top: 79px; left: 79px; width: 322px; height: 322px; border-radius: 50%; border: 1.5px solid rgba(184,134,11,0.22); background: rgba(184,134,11,0.03); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"></div>
+
+      {/* SVG curved text: Alineación Estratégica */}
+      <svg style="position: absolute; top: 79px; left: 79px; width: 322px; height: 322px; z-index: 3; pointer-events: none;" viewBox="0 0 322 322">
+        <defs>
+          <path id="curveTop" d="M 46,161 A 115,115 0 0,1 276,161" fill="none"/>
+          <path id="curveBottom" d="M 276,161 A 115,115 0 0,1 46,161" fill="none"/>
+        </defs>
+        <text font-family="JetBrains Mono, monospace" style="font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; fill: rgba(184,134,11,0.35);">
+          <textPath href="#curveTop" startOffset="50%" text-anchor="middle">Alineación Estratégica</textPath>
+        </text>
+        <text font-family="JetBrains Mono, monospace" style="font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; fill: rgba(184,134,11,0.35);">
+          <textPath href="#curveBottom" startOffset="50%" text-anchor="middle">Alineación Estratégica</textPath>
+        </text>
+      </svg>
 
       {/* Inner ring — POR QUÉ (Visión) */}
-      <div style="position: absolute; top: 175px; left: 175px; right: 175px; bottom: 175px; border-radius: 50%; background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.05) 100%); border: 2px solid rgba(139,92,246,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;">
-        <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(139,92,246,0.7); margin-bottom: 4px;">Por qué</span>
-        <span style="font-size: 14px; font-weight: 700; color: #c4b5fd; line-height: 1.2; text-align: center;">Mejoramiento<br/>Continuo</span>
-        <span style="font-size: 10px; color: rgba(139,92,246,0.6); text-align: center; padding: 0 12px;">del Plan Minero<br/>= Plan de Negocio</span>
+      <div style="position: absolute; top: 157px; left: 157px; width: 166px; height: 166px; border-radius: 50%; border: 1.5px solid rgba(108,92,231,0.28); background: rgba(108,92,231,0.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2;">
+        <span style="font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: rgba(108,92,231,0.65); margin-bottom: 4px;">Por qué</span>
+        <span style="font-size: 16px; font-weight: 700; color: var(--text-main); line-height: 1.2; text-align: center;">Mejoramiento<br/>Continuo</span>
+        <span style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 2px;">del Plan Minero<br/>= Plan de Negocio</span>
       </div>
 
-      {/* Vision satellite labels */}
-      <div style="position: absolute; top: 188px; left: 112px;">
-        <span style="font-size: 10px; color: rgba(139,92,246,0.6);"><i class="fa-solid fa-bolt" style="font-size: 8px; margin-right: 3px;"></i>Tiempo Cero</span>
+      {/* Domain badges — triangle layout inside middle ring */}
+      <div style="position: absolute; top: 50px; left: 200px; width: 80px; height: 80px; border-radius: 50%; background: rgba(217,119,6,0.07); border: 1px solid rgba(217,119,6,0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 4;">
+        <span style="font-size: 11px; font-weight: 600; color: #f59e0b;">Anticipación</span>
       </div>
-      <div style="position: absolute; top: 188px; right: 100px;">
-        <span style="font-size: 10px; color: rgba(139,92,246,0.6);"><i class="fa-solid fa-arrow-right-arrow-left" style="font-size: 8px; margin-right: 3px;"></i>Salto Modelo</span>
+      <div style="position: absolute; top: 276px; left: 68px; width: 80px; height: 80px; border-radius: 50%; background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 4;">
+        <span style="font-size: 11px; font-weight: 600; color: #ef4444;">Crisis</span>
+      </div>
+      <div style="position: absolute; top: 276px; left: 332px; width: 80px; height: 80px; border-radius: 50%; background: rgba(13,148,136,0.07); border: 1px solid rgba(13,148,136,0.18); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 4;">
+        <span style="font-size: 11px; font-weight: 600; color: #10b981;">Asistencia</span>
+      </div>
+
+      {/* Pillar: Omni Sense — TOP */}
+      <div style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column-reverse; align-items: center; gap: 3px; z-index: 5; text-align: center;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(217,119,6,0.08); border: 1px solid rgba(217,119,6,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-tower-broadcast" style="font-size: 14px; color: #f59e0b;"></i>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; color: #f59e0b;">Omni Sense</div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px;">presencia omnicanal</div>
+      </div>
+
+      {/* Pillar: Quiet UI — LEFT */}
+      <div style="position: absolute; left: -120px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: row-reverse; align-items: center; gap: 8px; z-index: 5; text-align: right;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(8,145,178,0.08); border: 1px solid rgba(8,145,178,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fa-solid fa-volume-xmark" style="font-size: 14px; color: #0891b2;"></i>
+        </div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #0891b2;">Quiet UI</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px; margin-top: 1px;">gestión por excepción</div>
+        </div>
+      </div>
+
+      {/* Pillar: Clear Path — RIGHT */}
+      <div style="position: absolute; right: -128px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 8px; z-index: 5; text-align: left;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(108,92,231,0.08); border: 1px solid rgba(108,92,231,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fa-solid fa-route" style="font-size: 14px; color: #8b7cf7;"></i>
+        </div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #8b7cf7;">Clear Path</div>
+          <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px; margin-top: 1px;">recomendador proactivo</div>
+        </div>
+      </div>
+
+      {/* Pillar: Time Sight — BOTTOM */}
+      <div style="position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 5; text-align: center;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(13,148,136,0.08); border: 1px solid rgba(13,148,136,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-clock-rotate-left" style="font-size: 14px; color: #10b981;"></i>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; color: #10b981;">Time Sight</div>
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px;">trazabilidad temporal</div>
       </div>
 
     </div>
+
   </div>
 
-  {/* Foundation bar */}
-  <div style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, transparent, rgba(244,67,54,0.12), transparent); border-top: 1px solid rgba(244,67,54,0.3); padding: 8px 40px; border-radius: 0 0 12px 12px; text-align: center;">
-    <i class="fa-solid fa-triangle-exclamation" style="color: #ef5350; margin-right: 8px; font-size: 11px;"></i>
-    <span style="font-size: 12px; color: #ef5350; font-weight: 600; letter-spacing: 1px;">CONFIANZA EN DATOS</span>
-    <span style="font-size: 11px; color: rgba(244,67,54,0.6); margin-left: 8px;">— prerrequisito fundacional</span>
+  {/* Foundation banner: Confianza en Datos — full-width, pinned above footer */}
+  <div style="position: absolute; bottom: 52px; left: 0; right: 0; display: flex; align-items: center; gap: 16px; padding: 10px 40px; background: linear-gradient(90deg, transparent 0%, rgba(220,38,38,0.06) 30%, rgba(220,38,38,0.06) 70%, transparent 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(220,38,38,0.12); z-index: 10;">
+    <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(220,38,38,0.2), transparent);"></div>
+    <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+      <i class="fa-solid fa-triangle-exclamation" style="font-size: 12px; color: #ef4444;"></i>
+      <span style="font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #ef4444;">Confianza en Datos</span>
+      <span style="font-size: 12px; color: var(--text-muted);">— prerrequisito fundacional</span>
+    </div>
+    <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(220,38,38,0.2), transparent);"></div>
   </div>
 </Slide>
