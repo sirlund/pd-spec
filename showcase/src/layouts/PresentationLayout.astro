@@ -64,7 +64,7 @@ const {
         if (num) {
           const slug = slugs[i] || '';
           num.innerHTML = slug
-            ? `<span class="slide-slug">${slug}</span>${i + 1} / ${total}`
+            ? `<span class="slide-slug no-export">${slug}</span>${i + 1} / ${total}`
             : `${i + 1} / ${total}`;
         }
       });
