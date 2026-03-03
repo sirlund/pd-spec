@@ -27,4 +27,7 @@ const rendered = await Promise.all(
   {rendered.map(({ Content }) => (
     <Content />
   ))}
+  <script is:inline define:vars={{ slugs: slides.map(s => s.id.split('/').pop()) }}>
+    window.__slideSlugs = slugs;
+  </script>
 </PresentationLayout>

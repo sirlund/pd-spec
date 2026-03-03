@@ -111,6 +111,14 @@ body {
     font-family: var(--font-mono);
     color: var(--text-muted);
     font-size: 12px;
+    white-space: nowrap;
+}
+
+.slide-slug {
+    color: var(--border-color);
+    margin-right: 12px;
+    font-size: 10px;
+    letter-spacing: 0.3px;
 }
 
 /* --- Content Components --- */
