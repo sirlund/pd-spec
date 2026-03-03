@@ -111,7 +111,7 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
 ## User Profiles
 | Profile | Key Need | Evidence |
 |---|---|---|
-| Dispatcher | Real-time control | [IG-09] |
+| Store Manager | Inventory visibility | [IG-09] |
 
 ## System Architecture
 ### Module Name
@@ -135,7 +135,7 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
 ## Insights Summary
 | ID | Concept | Status | Convergence |
 |---|---|---|---|
-| [IG-SYNTH-01] | Geometry Gap | VERIFIED | 15/54 |
+| [IG-SYNTH-01] | Onboarding Cliff | VERIFIED | 15/54 |
 ```
 
 #### Persona structure (`/ship persona`)
