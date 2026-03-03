@@ -3411,6 +3411,10 @@ h1 {
 
 @media print {
 
+    .no-export {
+        display: none !important;
+    }
+
     .pres-footer .controls,
     .pres-footer #theme-toggle {
         display: none;

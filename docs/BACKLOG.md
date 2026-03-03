@@ -10,6 +10,21 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-110] Extract Quality Fix — SDK Read Compatibility for Oversized-Line Sources
+
+**Status:** IMPLEMENTED
+**Priority:** P0
+**Effort:** M
+**Origin:** QA Wave 2.1 (2026-03-02). `/extract` from app produced 72% fewer claims than old runtime for the same source file (`Workshop 1/transcript.md`: 8 claims SDK vs 29 old). Root cause: SDK Read truncates lines >2000 chars, losing 95% of content for Granola STT transcripts (entire transcript on one line).
+
+**Fix:** Script-first normalization in `discover-sources.sh` (step 8). Files with any line >2000 chars are sentence-split to ~1000 char lines and written to `02_Work/_temp/`. SKILL.md updated to read normalized versions. Also adds line count to file details, step 5c for files >1800 lines, and Read limits warning in SDK preamble.
+
+**Partially implements BL-109:** Q&A mode now routes to Haiku (separate commit). Per-file skill routing remains open in BL-109/BL-80-P2.
+
+**Files changed:** `scripts/discover-sources.sh`, `.claude/skills/extract/SKILL.md`, `app/server/claude.js`, `docs/BACKLOG.md`
+
+---
+
 ### [BL-108] Agent View State Persistence — Survive Tab Switches
 
 **Status:** PROPOSED

@@ -111,7 +111,8 @@ for f in "${all_files[@]}"; do
   _ext="${f:e}"  # zsh :e = extension
   _size=$(stat -f%z "$_full" 2>/dev/null || stat -c%s "$_full" 2>/dev/null || echo 0)
   _hsize=$(human_size "$_size")
-  _detail="$f  $_ext  $_hsize"
+  _lines=$(wc -l < "$_full" 2>/dev/null || echo 0)
+  _detail="$f  $_ext  $_hsize  ${_lines}L"
 
   if [[ -z "${known_hash[$f]:-}" ]]; then
     new_files+=("$f")
@@ -228,6 +229,85 @@ echo "RETRY:"
 if (( n_ret > 0 )); then
   for f in "${retry_files[@]}"; do
     echo "  ${retry_details[$f]}  ${current_hash[$f]}"
+  done
+else
+  echo "  (none)"
+fi
+
+# --- 8. Normalize oversized-line files for SDK Read compatibility ---
+# Non-fatal: errors here must not kill the script. Agent falls back to original.
+WORK_TEMP="02_Work/_temp"
+mkdir -p "$WORK_TEMP" 2>/dev/null || true
+typeset -a normalized_files
+typeset -A normalized_paths  # source_relative → temp_path
+
+normalize_oversized() {
+  local src="$1" dst="$2"
+  mkdir -p "$(dirname "$dst")"
+  # Uses python3 instead of awk — macOS awk (BWK) crashes on lines >~30K chars
+  python3 -c "
+import re, sys
+with open(sys.argv[1], 'r') as f:
+    for line in f:
+        line = line.rstrip('\n')
+        if len(line) <= 1000:
+            print(line)
+            continue
+        while len(line) > 1000:
+            chunk = line[:1000]
+            m = re.search(r'.*[.!?] ', chunk)
+            if m:
+                print(line[:m.end()])
+                line = line[m.end():]
+            else:
+                m2 = re.search(r'.* ', line[:800])
+                if m2:
+                    print(line[:m2.end()])
+                    line = line[m2.end():]
+                else:
+                    print(line[:800])
+                    line = line[800:]
+        if line:
+            print(line)
+" "$src" > "$dst" 2>/dev/null
+}
+
+for f in "${new_files[@]}" "${modified_files[@]}" "${retry_files[@]}"; do
+  _full="$SOURCES_DIR/${original_path[$f]}"
+  _ext="${f:e:l}"
+
+  # Only normalize text files
+  [[ "$_ext" == "md" || "$_ext" == "txt" || "$_ext" == "csv" ]] || continue
+
+  # Check if ANY line exceeds 2000 chars (SDK Read truncation limit)
+  _has_long=$(awk 'length($0) > 2000 {found=1; exit} END{print found+0}' "$_full")
+  (( _has_long == 0 )) && continue
+
+  # Clean up previous normalized version (stale from prior run)
+  _outpath="${WORK_TEMP}/${f}_normalized.md"
+  rm -f "$_outpath"
+
+  if normalize_oversized "$_full" "$_outpath"; then
+    # Verify byte count — normalized should be ≥90% of original (no content loss)
+    _orig_bytes=$(wc -c < "$_full")
+    _norm_bytes=$(wc -c < "$_outpath")
+    if (( _norm_bytes < _orig_bytes * 90 / 100 )); then
+      # Significant data loss — discard and warn
+      rm -f "$_outpath"
+    else
+      normalized_files+=("$f")
+      normalized_paths[$f]="$_outpath"
+    fi
+  else
+    rm -f "$_outpath"
+    # Non-fatal: agent will read original (step 5b byte-range fallback)
+  fi
+done
+
+echo "NORMALIZED: ${#normalized_files[@]}"
+if (( ${#normalized_files[@]} > 0 )); then
+  for f in "${normalized_files[@]}"; do
+    echo "  $f → ${normalized_paths[$f]}"
   done
 else
   echo "  (none)"

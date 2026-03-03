@@ -124,6 +124,10 @@ export function createClaudeRoutes(projectRoot, broadcast) {
 
       const preamble = `You are running inside the PD-Spec web application.
 You have native filesystem tools: Read, Write, Edit, Bash, Glob, Grep.
+NOTE: The Read tool has a 2000-line default limit and truncates lines longer than 2000
+characters. For source files, discover-sources.sh creates normalized versions of files with
+oversized lines in 02_Work/_temp/ — check the NORMALIZED section of its output and use those
+paths when reading. For files over 1800 lines, use Read with offset/limit in chunks of 1500.
 IMPORTANT: When a skill requires user confirmation or selection (gates, approvals,
 choices), you MUST use the AskUserQuestion tool. Do NOT write questions as plain text
 — the user cannot respond to text. Only AskUserQuestion renders an interactive panel.
@@ -203,9 +207,10 @@ ${projectMd}
     const session = req.session;
 
     // Mode detection
-    const skillMatch = message.match(/^\/(extract|analyze|spec)\b/);
+    const skillMatch = message.match(/^\/(extract|analyze|spec)\b(.*)/);
     const mode = skillMatch ? 'skill' : 'qa';
     const skillName = skillMatch ? skillMatch[1] : null;
+    const skillArgs = skillMatch ? skillMatch[2].trim() : '';
 
     // Build system prompt (throws on missing skill)
     let systemPrompt;
@@ -252,14 +257,16 @@ ${projectMd}
       // - disallowedTools blocks tools at the CLI level that would be auto-approved
       //   but shouldn't be available (Agent, Skill, etc.).
       const queryOptions = {
-        model: 'claude-sonnet-4-20250514',
+        model: mode === 'qa'
+          ? 'claude-haiku-4-5-20251001'
+          : 'claude-sonnet-4-20250514',
         cwd: projectRoot,
         systemPrompt,
-        maxTurns: 200,
+        maxTurns: mode === 'skill' ? 80 : 30,
         canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, mode),
         disallowedTools: mode === 'qa'
           ? ['Write', 'Edit', 'Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'AskUserQuestion']
-          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate'],
+          : ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'TodoWrite'],
         env: { ...process.env, ANTHROPIC_API_KEY: session.apiKey },
         abortController,
         persistSession: mode === 'qa',
@@ -275,7 +282,7 @@ ${projectMd}
       // doesn't intercept it as its own slash command. The system prompt
       // already contains the full SKILL.md instructions.
       const sdkPrompt = mode === 'skill'
-        ? `Execute the ${skillName} skill now. Follow the instructions in your system prompt.`
+        ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt. IMPORTANT: Execute the skill exactly ONCE. After completing all phases and reporting results, STOP. Do not re-execute, verify, or start over.`
         : message;
 
       const q = query({ prompt: sdkPrompt, options: queryOptions });

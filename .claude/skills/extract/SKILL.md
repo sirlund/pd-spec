@@ -40,7 +40,7 @@ Detect extraction mode from flags:
 
 Argument format — paths relative to `01_Sources/`:
 ```
-/extract --file sesiones-idemax/reunion_camila_2026-02-17.md
+/extract --file planning-sessions/stakeholder-interview-2026-01-15.md
 /extract --file file1.md file2.md "Touchpoint 1/transcript.md"
 ```
 
@@ -95,19 +95,21 @@ EVERY file discovered in Phase 1 MUST be:
    TOTAL_TO_PROCESS: <count>
    ---
    NEW:
-     <relative-path>  <ext>  <human-size>  <md5-hash>
+     <relative-path>  <ext>  <human-size>  <line-count>L  <md5-hash>
    MODIFIED:
-     <relative-path>  <ext>  <human-size>  <md5-hash>
+     <relative-path>  <ext>  <human-size>  <line-count>L  <md5-hash>
    MOVED:
      <old-path> → <new-path>
    DELETED:
      <relative-path>
    RETRY:
-     <relative-path>  <ext>  <human-size>  <md5-hash>
+     <relative-path>  <ext>  <human-size>  <line-count>L  <md5-hash>
+   NORMALIZED: <count>
+     <relative-path> → <temp-path>
    ```
    Each section lists `(none)` if empty. `TOTAL_TO_PROCESS` = NEW + MODIFIED + RETRY.
    Detail lines are indented with 2 spaces, fields separated by 2+ spaces.
-   Paths are relative to `01_Sources/`.
+   Paths are relative to `01_Sources/`. The `NL` field is the line count (e.g., `17L`).
 
    **Build processing queue** from the output:
    - NEW + MODIFIED + RETRY → process these files
@@ -157,6 +159,17 @@ EVERY file discovered in Phase 1 MUST be:
    - Note: if Phase 1.5 preprocessing normalizes the file, the normalized version will have
      proper line breaks and the oversized-lines flag is cleared for that file.
    - Log: `⚠️ Oversized lines detected: {filename} ({avg_chars_per_line} chars/line) — using byte-range reads`
+
+5c. **Large file detection (Read tool limit)** — For each text file in the processing queue:
+   - Check the line count from discover-sources.sh output (the `NL` field in file details).
+   - If `line_count > 1800` AND file is NOT listed in the NORMALIZED section:
+     Flag file as `large-file` in working memory.
+   - These files MUST be read using Read with offset/limit in chunks of 1500 lines:
+     `Read(path, offset=0, limit=1500)`, then `Read(path, offset=1500, limit=1500)`, etc.
+   - Continue until all lines are read.
+   - Log: `📄 Large file: {filename} ({line_count} lines) — using chunked Read`
+   - Note: The Read tool's default limit is 2000 lines and it truncates lines >2000 chars.
+     Using 1500-line chunks provides a safety margin.
 
 6. **Batch detection (MANDATORY for >40 files in processing queue):**
    - Count files remaining in queue after mode filtering
@@ -221,6 +234,11 @@ EVERY file discovered in Phase 1 MUST be:
 
 13. **Detect preprocessing candidates** — Scan files in the processing queue for two signals:
 
+   **Important:** If discover-sources.sh created a normalized version of a file (see
+   NORMALIZED section), read from the normalized path for content heuristic detection
+   and all subsequent Phase 1.5 processing. This ensures complete content is available
+   for speaker attribution and phonetic correction.
+
    **Metadata signal:** Check `_CONTEXT.md` or file frontmatter for `Source Type: transcript` (or `ocr`, `chat-log` — future v2). If found, the file is a candidate.
 
    **Content heuristic:** For files without explicit metadata, scan the first 50 lines for STT patterns:
@@ -269,7 +287,7 @@ EVERY file discovered in Phase 1 MUST be:
 
    **Pass B — Phonetic Correction:**
    - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
-   - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
+   - Examples: "ciefo" → "CFO", "ess-crum" → "Scrum", "you ex" → "UX"
    - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
    - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
 
@@ -321,7 +339,7 @@ EVERY file discovered in Phase 1 MUST be:
    | Original | Corrected | Context | Confidence |
    |---|---|---|---|
    | ciefo | CFO | "el ciefo dijo que..." | high |
-   | tim mining | TIMining | project name | high |
+   | ess-crum | Scrum | methodology name | high |
    | usabilida | usabilidad | "la usabilida del sistema" | high |
 
    ### Sentence Repairs
@@ -379,7 +397,8 @@ When processing a document, apply these criteria for claim extraction:
    - Do NOT use the Read tool (it will fail on lines >10K chars)
    - Use Bash byte-range reads: `head -c 8000 {filepath}`, then `tail -c +8001 {filepath} | head -c 8000`, etc.
    - Concatenate chunks in working memory, then extract claims as normal
-   - For files >50KB, read first 25KB + last 10KB (sufficient for extraction signal)
+   - For files >50KB, continue reading ALL remaining chunks until the full file is covered.
+     Do NOT skip content — every section may contain unique claims.
 2. **Extract claims meeting these criteria:**
    - User needs, pain points, behaviors (direct quotes preferred)
    - Business constraints, success metrics, strategic decisions
@@ -494,7 +513,12 @@ Process all files in single pass (step 12 below)
 
 12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from discover-sources.sh), read it and extract raw claims and factual statements.
 
-   **Preprocessing redirect:** Before reading a source file, check if Phase 1.5 created a normalized version in `02_Work/_temp/{filename}_normalized.md`. If a redirect exists, read from the `_temp/` path instead of the original. The section header (`## [folder/file.ext]`) must still reference the original `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
+   **Preprocessing redirect:** Before reading a source file, check the NORMALIZED section
+   of discover-sources.sh output. If the file has a normalized version listed (with exact
+   path), read from that path instead of the original. Phase 1.5 may also create or update
+   normalized versions in `02_Work/_temp/` — always use the most recent version available.
+   The section header (`## [folder/file.ext]`) must still reference the original
+   `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
 
    **If --full flag was used**, process all files from the script output (step 1), ignoring delta classification.
 

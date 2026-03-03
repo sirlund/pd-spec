@@ -91,7 +91,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    - **AND** both the candidate and existing insight belong to the same category (or would be categorized the same way).
    - **NOT a duplicate if:**
      - The same topic is mentioned but with a different claim (e.g., "users hate X" vs "users want X improved" are different claims about the same topic).
-     - **The candidate and the existing insight have different categories.** A `design-framework` claim that *defines* a concept is never a duplicate of a `user-need` insight about the same topic. Example: "Users want the system to only show what's critical" (`user-need`) and "Quiet UI: absorb visual complexity, exception-based management, alerts readable in <5 seconds" (`design-framework`) are about the same topic but serve different functions — evidence vs. design decision. The user-need is the *justification*; the design-framework is the *proposal*. Both must exist as separate insights.
+     - **The candidate and the existing insight have different categories.** A `design-framework` claim that *defines* a concept is never a duplicate of a `user-need` insight about the same topic. Example: "Users want the system to only show what's critical" (`user-need`) and "Progressive Disclosure: show only essential options, reveal advanced features on demand, reduce cognitive load on first use" (`design-framework`) are about the same topic but serve different functions — evidence vs. design decision. The user-need is the *justification*; the design-framework is the *proposal*. Both must exist as separate insights.
    - **When a duplicate is found (INCREMENTAL convergence update):**
      - Do NOT create a new insight
      - Increment convergence count on existing insight (e.g., 2/18 → 3/18)
@@ -99,12 +99,12 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
      - If new source has a better/clearer quote, update the quote
      - Log: "Updated convergence for [IG-XX]: 2/18 → 3/18"
    - **Report duplicates found** — In Phase 4, list how many candidate claims were deduplicated and into which existing insights.
-   - **SUPERSEDED detection (future)** — In a future version, Phase 2 will detect when a newer insight fully subsumes an older one (e.g., "users want real-time alerts" superseded by "users want configurable real-time alerts with severity levels"). The newer insight becomes VERIFIED and the older becomes SUPERSEDED → [IG-XX]. Not yet implemented — for now, subsumption is handled manually via `./scripts/verify-insight.sh --supersede`.
+   - **SUPERSEDED detection (future)** — In a future version, Phase 2 will detect when a newer insight fully subsumes an older one (e.g., "users want data export" superseded by "users want data export with custom filters and scheduled delivery"). The newer insight becomes VERIFIED and the older becomes SUPERSEDED → [IG-XX]. Not yet implemented — for now, subsumption is handled manually via `./scripts/verify-insight.sh --supersede`.
 
 10. **Prepare new insights** — For each raw claim from the filtered sections not already captured:
    - Determine the next available `[IG-XX]` ID. Use `./scripts/next-id.sh ig 02_Work/INSIGHTS_GRAPH.md` which auto-detects the zero-padding convention from existing IDs. If the script is unavailable, scan existing IDs manually: sequential two-digit minimum (`IG-01` through `IG-99`, then `IG-100`). Never three-digit zero-pad like `IG-001`. For synthesis insights, use `./scripts/next-id.sh synth 02_Work/INSIGHTS_GRAPH.md` for `[IG-SYNTH-XX]` IDs.
    - Categorize as one of: `user-need`, `technical`, `business`, `constraint`, `design-framework`.
-     - `design-framework` — design principles, UX patterns, naming conventions, product pillars, design language definitions. Example: "Quiet UI absorbs visual complexity", "D→A→R is the interaction skeleton", "4 design pillars: X, Y, Z, W". These claims define *how* the product should feel/work, not *what* users need or *what* the system does.
+     - `design-framework` — design principles, UX patterns, naming conventions, product pillars, design language definitions. Example: "Progressive Disclosure reduces cognitive load", "Search → Filter → Act is the core workflow", "3 design principles: Clarity, Speed, Trust". These claims define *how* the product should feel/work, not *what* users need or *what* the system does.
    - Reference the specific source file it came from.
    - **Key quote** — Include 1-2 sentences from the source that best support the claim. This is the evidence trail — without it, the insight is an assertion without proof.
    - **Voice** — Who is the source of this claim? Preserve from EXTRACTIONS.md metadata (Participants field). Use one of:
@@ -183,7 +183,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
    **c. Diversity dimensions** — Beyond source type, evaluate three additional diversity axes:
 
    - **Temporal diversity** — Are all sources from the same time period? Check source dates (from metadata or folder names). Flag clusters where all sources are older than 6 months ("sources may be outdated") or where all sources share the same date range ("no longitudinal perspective — trends and changes over time are invisible").
-   - **Perspective diversity** — Are all sources from the same stakeholder group? Categorize sources by who produced or is represented in them (e.g., management, end-users, operators, engineers, external partners). Flag when a single perspective dominates (>70% of sources) with no counterbalance.
+   - **Perspective diversity** — Are all sources from the same stakeholder group? Categorize sources by who produced or is represented in them (e.g., management, end-users, front-line staff, engineers, external partners). Flag when a single perspective dominates (>70% of sources) with no counterbalance.
    - **Methodology diversity** — Are all sources the same method type? (e.g., all interviews, all documents, all quantitative). Qualitative sources reveal *why*; quantitative sources reveal *how much*. Flag when all sources share a single methodology.
 
    **d. Source matrix & diversity score** — Build a source matrix for internal tracking:
@@ -234,7 +234,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md` (produced by `/extract`), convert
 **15. Consolidate into Strategic Insights:**
 
 For each cluster with ≥2 atomic observations:
-- **Named concept:** Extract memorable phrase from source quotes (e.g., "Geometry Gap" from TIMining, "Auto de Homero Simpson" metaphor). Do NOT invent names — use language from sources.
+- **Named concept:** Extract memorable phrase from source quotes (e.g., "Onboarding Cliff" from user interviews, "The Waiting Room" from support tickets). Do NOT invent names — use language from sources.
 - **Narrative:** 2-3 sentences explaining the insight with context — problem + evidence trail + impact
 - **Consolidates:** List which [IG-XX] atomic insights this synthesizes
 - **Convergence:** Sum unique sources across consolidated insights
@@ -247,7 +247,7 @@ For each cluster with ≥2 atomic observations:
 **Consolidates:** IG-19, IG-20, IG-161
 **Convergence:** 3/21 sources
 **Category:** user-need (current)
-**Voice:** user (operators), stakeholder (COO), document (workshop notes)
+**Voice:** user (end-users), stakeholder (COO), document (workshop notes)
 **Authority:** direct-quote, observation, fact
 
 > **Narrative:** [2-3 sentences explaining the insight with context]
@@ -289,7 +289,7 @@ When consolidating, prioritize evidence by who says it and how they know it:
 
 | Voice | Authority | Weight | Example |
 |---|---|---|---|
-| user | direct-quote | ⚡⚡⚡ High | 5 operators: "timing confuso" |
+| user | direct-quote | ⚡⚡⚡ High | 5 end-users: "the process is confusing" |
 | document | fact | ⚡⚡⚡ High | "$6M captured in contract" |
 | stakeholder | observation | ⚡⚡ Medium | CTO: "users don't read manual" |
 | stakeholder | hypothesis | ⚡ Low | PM: "users might prefer mobile" |
@@ -360,10 +360,10 @@ Group them by transcript/source and present targeted correction questions via As
 ```
 Speaker attribution review — {N} insights have uncertain speakers:
 
-From [sesion-gerencia/transcript.md]:
-  IG-03: "yo eliminé la navegación temporal" — attributed to CEO (uncertain)
+From [leadership-meeting/transcript.md]:
+  IG-03: "I removed the legacy navigation" — attributed to CEO (uncertain)
     → Sounds like an implementer (CTO?). Who said this?
-  IG-07: "el pricing tiene que ser por usuario" — attributed to CEO (uncertain)
+  IG-07: "pricing has to be per-user" — attributed to CEO (uncertain)
     → Business decision. Could be CEO or CFO. Who said this?
 ```
 

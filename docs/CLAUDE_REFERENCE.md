@@ -181,6 +181,11 @@ git worktree add ../pds--{name} -b project/{name}
 
 Then run `/kickoff` in the new worktree to set up `PROJECT.md`.
 
+> **Future cleanup:** Project branches currently live on the public remote.
+> Plan to migrate them to a private backup repo (`sirlund/pd-projects`).
+> Once migrated, never push project branches to pd-spec origin — the public
+> repo should contain only the engine (main branch).
+
 ### Rules
 
 - Never move or rename worktree directories — git tracks their absolute paths.
@@ -390,9 +395,38 @@ Components (`Slide.astro`, `PresentationLayout.astro`) import `theme.config.ts` 
 | **Atoms** | `components/atoms/` | ExternalLink, LogoAvatar, BulletList, ImageFrame, DarBadge | Yes — generic UI primitives |
 | **Snowflakes** | `components/snowflakes/` | CaseStudy, VizSlide, BenchCard, DarTimeline | No — project-specific, migrate to project branch |
 
-### Assets on Project Branches
+### Multi-Deck Routing
 
-`showcase/public/` assets (PNGs, images) are gitignored on main. On project branches, use `git add -f` to track them — once tracked, gitignore no longer applies.
+Slides live in subdirectories under `showcase/src/content/slides/`:
+- `slides/main/` — primary presentation deck, served at `/`
+- `slides/{deck-name}/` — additional decks, served at `/{deck-name}`
+- `[deck].astro` auto-discovers subdirectories via `getStaticPaths()`
+- `index.astro` has fallback: prefers `main/` when it exists, falls back to flat slides
+
+### Asset Organization (Project Branches)
+
+`showcase/public/` structure on project branches:
+
+```
+public/
+├── shared/              — Assets shared across decks (logos, bench images)
+│   ├── logo.svg
+│   ├── logo_idemax.png
+│   └── bench/
+│       └── closeups/
+└── decks/
+    ├── {deck-name}/     — Deck-specific assets
+    │   └── viz/         — e.g., case visualizations
+    └── {deck-name}/
+        └── mocks/       — e.g., wireframes
+```
+
+**Rules:**
+- Images shared between decks → `shared/`
+- Images exclusive to one deck → `decks/{deck-name}/`
+- Prefer WebP (q85) over PNG — use `cwebp -q 85` for conversion
+- `theme.config.ts` logo paths should reference `/shared/` prefix
+- Main branch has no image assets — only project branches track them
 
 ### Export Pipeline (planned)
 

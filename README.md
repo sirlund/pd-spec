@@ -181,31 +181,33 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 
 ## Getting Started
 
-```bash
-# 1. Clone or use as GitHub template
-git clone https://github.com/sirlund/pd-spec.git my-project
-cd my-project
+### New project (recommended)
 
-# 2. Open in Claude Code or Cursor, then run:
-/kickoff                # Set project name, language, and description
+1. Click **"Use this template"** on GitHub → creates your own repo
+2. Clone your new repo locally
+3. One-time setup: `git config merge.ours.driver true`
+4. Open in Claude Code, Cursor, or any AI coding tool
+5. Run `/kickoff` to configure project name, language, and type
+6. Add sources to `01_Sources/` (or run `/seed` for test data)
+7. Run the pipeline: `/extract` → `/analyze` → `/spec` → `/ship`
 
-# 3. Add sources to 01_Sources/
-#    Create a subfolder per milestone or category
-#    For markdown files: copy _SOURCE_TEMPLATE.md, fill metadata, paste content
-#    For other files (images, PDFs, .xlsx): add a _CONTEXT.md describing them
-#    Or run /seed to generate synthetic test data first
+### Receive engine updates
 
-# 4. Run the pipeline
-/extract                # Read sources, extract raw claims
-/analyze                # Process into insights, detect contradictions
-/spec                 # Resolve conflicts, build strategic vision + proposals
-/audit                  # (Optional) Check readiness before shipping
-/ship                   # Generate PRD
-/ship presentation      # Generate slide deck
-/ship persona           # Generate user persona cards
-/ship user-stories      # Generate JTBD user stories
-/visualize              # Generate system map diagram
-```
+After creating from template, add pd-spec as upstream:
+
+    git remote add upstream https://github.com/sirlund/pd-spec.git
+
+When updates are available:
+
+    git fetch upstream
+    git merge upstream/main
+
+`.gitattributes` protects your project files (01_Sources/, 02_Work/, 03_Outputs/)
+during merge — only engine files (skills, scripts, docs) update.
+
+**Required setup:** `git config merge.ours.driver true` (one-time, per clone).
+Without this, `.gitattributes` merge=ours is silently ignored and merges
+may overwrite your project files.
 
 Each layer has a `_README.md` explaining what it does and what you should (or shouldn't) touch. Start with `01_Sources/_README.md`.
 

@@ -1,5 +1,31 @@
 # Changelog
 
+## [4.27.2] — 2026-03-03 — Template Distribution
+
+pd-spec is now a GitHub template repo. External users click "Use this template" to get their own copy instead of cloning directly.
+
+<details>
+<summary>Features (0)</summary>
+
+No features in this release.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (2)</summary>
+
+- **GitHub template flag** — repo marked as template via `gh repo edit --template`. Users see "Use this template" button on GitHub.
+- **Getting Started rewrite** — README now documents two paths: template creation + upstream merge for engine updates. Includes `merge.ours.driver` setup instruction.
+
+</details>
+
 ## [4.27.1] — 2026-03-01 — Extract Cost Optimization
 
 Extract SKILL.md rewritten to eliminate redundant agent turns. Discovery + delta now handled by a single `discover-sources.sh` call instead of 5-8 turns of Glob/ls/md5/classification.
