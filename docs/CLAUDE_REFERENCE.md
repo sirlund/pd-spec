@@ -181,6 +181,11 @@ git worktree add ../pds--{name} -b project/{name}
 
 Then run `/kickoff` in the new worktree to set up `PROJECT.md`.
 
+> **Future cleanup:** Project branches currently live on the public remote.
+> Plan to migrate them to a private backup repo (`sirlund/pd-projects`).
+> Once migrated, never push project branches to pd-spec origin — the public
+> repo should contain only the engine (main branch).
+
 ### Rules
 
 - Never move or rename worktree directories — git tracks their absolute paths.
