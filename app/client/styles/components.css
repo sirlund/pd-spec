@@ -11,6 +11,17 @@
   overflow: hidden;
 }
 
+.card.card-exit {
+  animation: card-slide-out 0.45s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes card-slide-out {
+  0%   { opacity: 1; transform: translateX(0); }
+  60%  { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 0; transform: translateX(40px); max-height: 0; padding: 0; margin: 0; border-width: 0; }
+}
+
 .card::before {
   content: '';
   position: absolute;
