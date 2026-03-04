@@ -1,18 +1,26 @@
 ---
 /**
- * Main presentation page — loads slides from content collection.
- * Multi-deck aware: prefers slides in `main/` subdirectory,
- * falls back to flat slides (no subdirectory) for backward compat.
+ * Dynamic deck route — renders slides from a named subdirectory.
+ * A slide at `slides/v2-boceto/01-cover.mdx` is served at `/v2-boceto`.
  */
 import PresentationLayout from '../layouts/PresentationLayout.astro';
 import theme from '../theme.config';
 import { getCollection, render } from 'astro:content';
 
+export async function getStaticPaths() {
+  const allSlides = await getCollection('slides');
+  const decks = [...new Set(
+    allSlides
+      .filter(s => s.id.includes('/'))
+      .map(s => s.id.split('/')[0])
+  )];
+  return decks.map(deck => ({ params: { deck } }));
+}
+
+const { deck } = Astro.params;
 const allSlides = await getCollection('slides');
-const mainSlides = allSlides.filter(s => s.id.includes('/') && s.id.startsWith('main/'));
-const flatSlides = allSlides.filter(s => !s.id.includes('/'));
-const slides = (mainSlides.length > 0 ? mainSlides : flatSlides)
-  .filter(s => !s.data.hidden)
+const slides = allSlides
+  .filter(s => s.id.startsWith(`${deck}/`) && !s.data.hidden)
   .sort((a, b) => a.data.order - b.data.order);
 
 const rendered = await Promise.all(

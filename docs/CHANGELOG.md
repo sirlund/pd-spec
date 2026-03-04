@@ -1,5 +1,58 @@
 # Changelog
 
+## [4.28.0] — 2026-03-03 — Theme Token Refactor
+
+Showcase theme system upgraded from 19 to 27 CSS tokens. 90+ hardcoded hex colors replaced with semantic variables. DarTimeline and ConcentricRings refactored from inline styles to CSS classes — eliminates 18 of 39 `[style*=]` attribute selectors.
+
+<details>
+<summary>Features (1)</summary>
+
+- **Expanded token palette** — 8 new tokens: `--text-body`, `--text-strong`, `--text-faint`, `--border-light`, `--surface-hover`, `--accent-bright`, `--accent-rgb`, `--color-r-dim`. Both dark and light mode values defined. `--accent-cyan-bright` replaced by `--accent-bright` (works in both themes).
+
+</details>
+
+<details>
+<summary>Refactors (3)</summary>
+
+- **DarTimeline → CSS classes** — Inline style computation replaced by `.dar-label`, `.dar-dot`, `.dar-gradient`, `.dar-connector` classes with `data-stage` / `data-active` attributes. Light mode overrides are clean class selectors instead of 13 fragile `[style*=]` matchers.
+- **VizSlide → CSS vars** — `stageColors` uses `var(--color-d/a/r)`, backgrounds use `var(--surface-elevated)`, borders use `var(--border-subtle)`. 5 dead `[style*=]` selectors removed.
+- **ConcentricRings → `--accent-rgb`** — Hardcoded `rgba(0, 243, 255, ...)` replaced by custom properties (`--ring-opacity`, `--ring-border-opacity`) driving `rgba(var(--accent-rgb), ...)`. Light mode works automatically via token override.
+
+</details>
+
+<details>
+<summary>Fixes (1)</summary>
+
+- **Logo path** — `theme.config.base.ts` pointed to `/shared/logo.svg` (404). Fixed to `/logo.svg`.
+
+</details>
+
+## [4.27.2] — 2026-03-03 — Template Distribution
+
+pd-spec is now a GitHub template repo. External users click "Use this template" to get their own copy instead of cloning directly.
+
+<details>
+<summary>Features (0)</summary>
+
+No features in this release.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (2)</summary>
+
+- **GitHub template flag** — repo marked as template via `gh repo edit --template`. Users see "Use this template" button on GitHub.
+- **Getting Started rewrite** — README now documents two paths: template creation + upstream merge for engine updates. Includes `merge.ours.driver` setup instruction.
+
+</details>
+
 ## [4.27.1] — 2026-03-01 — Extract Cost Optimization
 
 Extract SKILL.md rewritten to eliminate redundant agent turns. Discovery + delta now handled by a single `discover-sources.sh` call instead of 5-8 turns of Glob/ls/md5/classification.

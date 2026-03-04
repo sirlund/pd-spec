@@ -40,7 +40,7 @@ Detect extraction mode from flags:
 
 Argument format — paths relative to `01_Sources/`:
 ```
-/extract --file sesiones-idemax/reunion_camila_2026-02-17.md
+/extract --file planning-sessions/stakeholder-interview-2026-01-15.md
 /extract --file file1.md file2.md "Touchpoint 1/transcript.md"
 ```
 
@@ -287,7 +287,7 @@ EVERY file discovered in Phase 1 MUST be:
 
    **Pass B — Phonetic Correction:**
    - Match garbled or phonetically similar words against the project context glossary (names, acronyms, domain terms, company names).
-   - Examples: "ciefo" → "CFO", "tim mining" → "TIMining", "you ex" → "UX"
+   - Examples: "ciefo" → "CFO", "ess-crum" → "Scrum", "you ex" → "UX"
    - Language-aware: apply phonetic rules for the project's `output_language` (e.g., Spanish phonetics for Spanish-language transcripts).
    - Only correct when confidence is high (phonetic similarity + contextual fit). Mark uncertain corrections with `[?]`.
 
@@ -339,7 +339,7 @@ EVERY file discovered in Phase 1 MUST be:
    | Original | Corrected | Context | Confidence |
    |---|---|---|---|
    | ciefo | CFO | "el ciefo dijo que..." | high |
-   | tim mining | TIMining | project name | high |
+   | ess-crum | Scrum | methodology name | high |
    | usabilida | usabilidad | "la usabilida del sistema" | high |
 
    ### Sentence Repairs
