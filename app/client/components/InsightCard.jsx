@@ -35,7 +35,6 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
   const handleApprove = async () => {
     try {
       await execute('verify-insight', { id: insight.id, action: 'verify' });
-      await new Promise(r => setTimeout(r, 400));
       setLocalStatus('VERIFIED');
     } catch { /* error shown inline */ }
   };
