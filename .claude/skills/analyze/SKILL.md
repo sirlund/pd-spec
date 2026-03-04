@@ -378,26 +378,20 @@ Options per group:
 
 **19b. Use AskUserQuestion for structured approval** (no free-text prompt):
 
-Invoke AskUserQuestion with 2 questions. Write question text and option labels in `output_language`. Substitute actual counts for N and M.
+Synthesized insights are always written as PENDING (line 133 mandate). Only ask about ambiguities.
 
-- **Question 1** (header: "Synthesis", multiSelect: false):
-  - Question text: "What to do with N synthesized insights?" (in output_language)
-  - Option A: "Approve all as PENDING" — recommended. Write N insights as PENDING for dashboard review.
-  - Option B: "Approve all as VERIFIED" — Write N insights as VERIFIED, skip individual review.
-  - Option C: "Review one by one" — present each insight for individual terminal approval (slow, for small projects only).
+Invoke AskUserQuestion with 1 question. Write question text and option labels in `output_language`. Substitute actual count for M.
 
-- **Question 2** (header: "Ambiguities", multiSelect: false):
+- **Question 1** (header: "Ambiguities", multiSelect: false):
   - Question text: "How to handle M ambiguities detected?" (in output_language)
   - Option A: "Save for /spec" — recommended. Write as PENDING conflicts, resolve later with dashboard.
   - Option B: "Resolve now" — walk through each ambiguity immediately in terminal.
 
-**Proceed to Phase 4 based on user selections.**
+**Proceed to Phase 4 based on user selection.**
 
-### Phase 4: Write (Based on AskUserQuestion Responses)
+### Phase 4: Write
 
-**Response to Synthesis Question:**
-
-**Path A — "Approve all as PENDING"** (most common):
+**If synthesis candidates were found:**
 
 20. **Write synthesized insights as PENDING** — Add consolidated insights to `02_Work/INSIGHTS_GRAPH.md` using synthesis format from step 15 with `Status: PENDING`.
 
@@ -409,18 +403,6 @@ Invoke AskUserQuestion with 2 questions. Write question text and option labels i
    Ref: [original source]
    ```
    Keep atomic observations in file for traceability, but mark them as merged.
-
-**Path B — "Approve all as VERIFIED"**:
-
-20b. **Write synthesized insights as VERIFIED** — Same as Path A but with `Status: VERIFIED`.
-
-21b. **Mark atomic observations as MERGED** — Same as step 21.
-
-**Path C — "Review one by one"** (small projects):
-
-20c. **Present each synthesized insight for individual approval** — Show one at a time, ask user to approve or reject. Write approved insights as PENDING, skip rejected ones. Repeat until all are reviewed.
-
-21c. **Mark merged atomic observations** — Same as step 21 for approved insights only.
 
 **If synthesis was skipped entirely (no synthesis candidates found, or project too small):**
 

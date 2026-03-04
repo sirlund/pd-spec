@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useLiveData } from '../hooks.js';
 import InsightCard from './InsightCard.jsx';
 import Icon from './ui/Icon.jsx';
@@ -8,6 +8,17 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const highlightRef = useRef(null);
+  const scrollRef = useRef(0);
+
+  useEffect(() => {
+    const handler = () => { scrollRef.current = window.scrollY; };
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, scrollRef.current);
+  }, [data]);
 
   useEffect(() => {
     if (highlightId && highlightRef.current) {

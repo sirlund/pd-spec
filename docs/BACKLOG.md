@@ -27,7 +27,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-108] Agent View State Persistence — Survive Tab Switches
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED
 **Priority:** P1
 **Effort:** M
 **Origin:** QA session 2026-03-01. Switching tabs in the app unmounts AgentView, losing the log and aborting the running SDK query. User lost a $5+ /extract run mid-execution.
@@ -52,6 +52,69 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
+### [BL-111] BUG: Scroll-to-Top on Insight Approval — InsightsView
+
+**Status:** IMPLEMENTED (v4.28.2)
+**Priority:** P1
+**Effort:** S
+**Origin:** QA session with Hugo (2026-03-02). When approving (verifying) an insight in the InsightsView pending tab, the page scrolls to the top after each approval. Makes batch review painful — user must scroll back down after every click.
+
+**Problem:** `useLiveData` refetches full insights after verify-insight.sh modifies file → chokidar → WebSocket → re-render → scroll lost.
+
+**Fix:** Track scroll position continuously via passive scroll listener, restore synchronously with `useLayoutEffect` after data re-render.
+
+**Acceptance criteria:**
+- [x] Approving an insight does NOT change scroll position
+- [x] Works for both single approval and rapid sequential approvals
+
+---
+
+### [BL-112] BUG: /analyze Always Applies Pending Without Asking
+
+**Status:** IMPLEMENTED (v4.28.2)
+**Priority:** P1
+**Effort:** S
+**Origin:** QA session with Hugo (2026-03-02). When running `/analyze` via Codex (GPT-5.3), the agent skipped the interactive question about whether to leave insights in PENDING and auto-applied the "recommended" option. In Claude Code the same flow sometimes re-asks unnecessarily.
+
+**Problem:** The pending/verified prompt in `/analyze` is a friction point with no real value — insights should always start as PENDING (per the lifecycle in CLAUDE.md). The question exists as a legacy artifact.
+
+**Fix:** Removed Question 1 (Synthesis) from Step 19b. Collapsed Phase 4 to always-PENDING path. Question 2 (Ambiguities) preserved.
+
+**Acceptance criteria:**
+- [x] `/analyze` never asks about pending vs verified — always PENDING
+- [x] Skill file updated to remove the prompt
+- [x] Works identically across Claude Code, SDK, and cross-LLM execution
+
+---
+
+### [BL-113] BUG: Token Overconsumption on PDF/PPT/DOCX Extraction
+
+**Status:** PROPOSED
+**Priority:** P1
+**Effort:** M
+**Origin:** QA session with Hugo (2026-03-02). Hugo's Claude Code Pro ($20/month) hit the usage limit after a single `/extract` run with ~6 files (PDFs, PPTs, DOCX). The agent reads binary files by having the LLM process them visually, consuming massive token budgets for what should be a deterministic text extraction.
+
+**Problem:** Without npm packages for document parsing, the agent uses LLM vision/reasoning to extract text from PDFs and PPTs. A single PPT can cost $1-2 in tokens. This makes the tool unusable on the Pro plan and expensive even on Max.
+
+**Fix:** Add deterministic preprocessing packages to the project:
+- `pdf-parse` or `pdfjs-dist` for PDF text extraction
+- `pptx-parser` or `officegen` for PPT/PPTX
+- `mammoth` for DOCX
+- Run these in `discover-sources.sh` (step 9+) to pre-extract text into `_temp/` as `.md` files
+- Agent reads pre-extracted text instead of raw binaries
+
+**Trade-off:** Adds npm dependencies (previously avoided for portability). Now that the webapp already requires `npm install`, this constraint is obsolete.
+
+**Acceptance criteria:**
+- [ ] PDF text extracted via npm package, not LLM
+- [ ] PPT/PPTX slides extracted to text via npm package
+- [ ] DOCX extracted via npm package
+- [ ] Pre-extracted files written to `02_Work/_temp/` with source reference
+- [ ] `/extract` reads pre-extracted text, not raw binaries
+- [ ] Token cost for a 6-file project drops by >80%
+
+---
+
 ### [BL-109] Image Read Cost — Model Routing for Visual Extraction
 
 **Status:** PROPOSED (subitem of BL-80-P2)
@@ -73,6 +136,40 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 **Conservative approach:** Haiku for text reads only, Sonnet for all images. Still saves significantly on the 12+ MD files per project. More aggressive routing (Haiku for simple images) can be tested empirically.
 
 **Depends on:** BL-80-P2 (Model Routing infrastructure). Could be implemented as part of the subagent `reader` approach.
+
+---
+
+### [BL-114] BUG: Research Brief Titles in English — output_language Not Respected
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** QA session with Hugo (2026-03-02). The Research Brief (`02_Work/RESEARCH_BRIEF.md`) generated section titles in English (e.g., "What could be done better?") even though `output_language` in PROJECT.md was set to the project's target language.
+
+**Problem:** The `/analyze` skill generates the Research Brief but its template or prompt includes hardcoded English section headers. The `output_language` directive from PROJECT.md is not being applied to structural headings.
+
+**Fix:** Ensure `/analyze` skill instructions explicitly apply `output_language` to all generated content in RESEARCH_BRIEF.md, including section headers. No hardcoded English strings in the template.
+
+**Acceptance criteria:**
+- [ ] Research Brief section titles respect `output_language`
+- [ ] No hardcoded English headings remain in the skill template for RESEARCH_BRIEF
+
+---
+
+### [BL-115] BUG: Evidence Gaps Display Incorrect Reference Numbers
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** QA session with Hugo (2026-03-02). Some evidence gaps in the webapp displayed incorrect reference numbers (a "6" appeared on broken entries) while the same gaps rendered correctly in the Research Brief markdown.
+
+**Problem:** The evidence gaps parser or renderer in the webapp misinterprets some gap entries, likely a regex or indexing issue in `app/server/parsers/` or the frontend component that renders gaps. The markdown source is correct, so the bug is in parsing or display only.
+
+**Fix:** Compare the raw RESEARCH_BRIEF.md evidence gaps section against what the parser produces. Fix the parser regex or the component rendering logic.
+
+**Acceptance criteria:**
+- [ ] Evidence gaps display correct reference numbers matching the markdown source
+- [ ] No phantom numbers appear on gap entries
 
 ---
 

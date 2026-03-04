@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.28.2] — 2026-03-03 — QA Quick Wins
+
+Two QA bugs from Hugo session (2026-03-02): scroll jump on insight approval, and legacy synthesis prompt in /analyze.
+
+<details>
+<summary>Fixes (2)</summary>
+
+- **BL-111 — Scroll preservation on approval** — `InsightsView.jsx` now tracks scroll position via passive listener and restores it synchronously with `useLayoutEffect` after data re-render. Approving insights no longer jumps to top.
+- **BL-112 — /analyze always PENDING** — Removed legacy Question 1 (Synthesis status choice) from Step 19b in `SKILL.md`. Collapsed Phase 4 Paths A/B/C into single always-PENDING path. Ambiguity question preserved.
+
+</details>
+
+## [4.28.1] — 2026-03-03 — Parser Hotfix
+
+Insights parser now correctly handles bold-formatted fields from `/analyze` output. Fixes 3 bugs: MERGED insights silently defaulting to PENDING, ref badges never appearing, and "Grounded in" text leaking into narrative.
+
+<details>
+<summary>Fixes (3)</summary>
+
+- **Status regex** — `insights.js:119` now accepts both `Status:` and `**Status:**`. Fixes 9 MERGED insights silently showing as PENDING.
+- **Ref regex** — `insights.js:157` now accepts both `Ref:` and `**Ref:**`. Fixes zero ref badges appearing on any insight card.
+- **Grounded-in handler** — New `grounded_in` field + parser regex + `InsightCard.jsx` render. Prevents raw markdown from leaking into narrative on insights that reference parent insights.
+
+</details>
+
 ## [4.28.0] — 2026-03-03 — Theme Token Refactor
 
 Showcase theme system upgraded from 19 to 27 CSS tokens. 90+ hardcoded hex colors replaced with semantic variables. DarTimeline and ConcentricRings refactored from inline styles to CSS classes — eliminates 18 of 39 `[style*=]` attribute selectors.
