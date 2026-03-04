@@ -13,7 +13,7 @@ function getFreshness(lastUpdated) {
   return { color: 'var(--vivid-red)', label: 'Stale', days, warn: true };
 }
 
-export default function InsightCard({ insight, onNavigate, decision, onDecision }) {
+export default function InsightCard({ insight, onNavigate, decision, onDecision, willExitFilter = false }) {
   const [expanded, setExpanded] = useState(false);
   const [refsExpanded, setRefsExpanded] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
@@ -64,7 +64,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
   }[effectiveStatus];
 
   return (
-    <Card accent={statusAccent} className={localStatus ? 'card-exit' : ''}>
+    <Card accent={statusAccent} className={localStatus && willExitFilter ? 'card-exit' : ''}>
       <div className="card-header">
         <IdBadge id={insight.id} />
         <StatusBadge status={effectiveStatus} />
