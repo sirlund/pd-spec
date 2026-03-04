@@ -87,6 +87,7 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
             onNavigate={onNavigate}
             decision={decisions?.[insight.id]}
             onDecision={onDecision}
+            willExitFilter={statusFilter !== 'all'}
           />
         </div>
       ))}
