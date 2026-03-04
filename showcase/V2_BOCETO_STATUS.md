@@ -4,10 +4,28 @@
 
 ## Deck Overview
 
-- **Total slides activos:** 44
+- **Total slides activos:** 52
 - **Branch:** `project/timining`
 - **Ruta:** `showcase/src/content/slides/v2-boceto/`
 - **Assets:** `showcase/public/decks/v2-boceto/` (mocks), `showcase/public/decks/main/viz/` (viz cases)
+
+## Vercel Deployments
+
+| Proyecto | URL producción | Contenido |
+|---|---|---|
+| `showcase` (Astro) | https://showcase-zeta-seven.vercel.app/v2-boceto | Deck v2-boceto actual |
+| `showcase` (Astro) | https://showcase-zeta-seven.vercel.app/main | Deck main |
+| `presentacion` (HTML v1) | https://presentacion-tau-three.vercel.app | Presentación v1 (legacy) |
+| `pds-timining` | https://pds-timining.vercel.app | Deployment anterior |
+
+## Exports
+
+| Formato | Archivo | Tamaño | Método |
+|---|---|---|---|
+| PDF | `showcase/exports/v2-boceto.pdf` | 1.7MB | Playwright + iLovePDF compress |
+| PPTX | `showcase/exports/v2-boceto.pptx` | 136KB | Anthropic API batched (python-pptx) |
+
+Ver `showcase/EXPORT_NOTES.md` para detalles completos de scripts y approaches.
 
 ## Estructura del Deck
 
