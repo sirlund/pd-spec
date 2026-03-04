@@ -64,7 +64,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
   }[effectiveStatus];
 
   return (
-    <Card accent={statusAccent}>
+    <Card accent={statusAccent} className={localStatus ? 'card-exit' : ''}>
       <div className="card-header">
         <IdBadge id={insight.id} />
         <StatusBadge status={effectiveStatus} />
