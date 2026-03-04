@@ -107,6 +107,12 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
         </div>
       )}
 
+      {insight.grounded_in && (
+        <div className="card-meta" style={{ marginTop: 6, fontSize: '0.75rem' }}>
+          <span><strong>Grounded in:</strong> {insight.grounded_in}</span>
+        </div>
+      )}
+
       {expanded && insight.evidence.length > 0 && (
         <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border-subtle)' }}>
           <div className="label-mono" style={{ marginBottom: 6 }}>Evidence Trail</div>
