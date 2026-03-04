@@ -103,7 +103,7 @@ CURRENT_STATUS=$(awk -v id="$INSIGHT_ID" '
   /^### \[/ && index($0, "[" id "]") > 0 { found=1; next }
   found && /^### \[/ { exit }
   found { print }
-' "$FILE" | grep -m1 '^Status:' | sed 's/^Status: *//')
+' "$FILE" | grep -m1 '^\*\{0,2\}Status:\*\{0,2\} ' | sed 's/^\*\{0,2\}Status:\*\{0,2\} *//')
 
 # --- Validate transition ---
 validate_transition() {
@@ -243,7 +243,7 @@ fi
 TMPFILE=$(mktemp)
 awk -v id="$INSIGHT_ID" -v new_status="$STATUS_LINE" '
   /^### \[/ { in_target = (index($0, "[" id "]") > 0) }
-  in_target && /^Status: / {
+  in_target && /^\*{0,2}Status:\*{0,2} / {
     print new_status
     in_target = 0
     next
