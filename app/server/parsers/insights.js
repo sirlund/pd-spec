@@ -85,6 +85,7 @@ export function parseInsights(content) {
         narrative: '',
         evidence: [],
         named_concept_origin: null,
+        grounded_in: null,
         refs: [],
       };
       section = 'fields';
@@ -115,7 +116,7 @@ export function parseInsights(content) {
       const auth = line.match(/^\*\*Authority:\*\*\s*(.+)/);
       if (auth) { current.authority = auth[1].trim(); continue; }
 
-      const status = line.match(/^Status:\s*(\w+)/);
+      const status = line.match(/^\*{0,2}Status:\*{0,2}\s*(\w+)/);
       if (status) { current.status = status[1].toUpperCase(); continue; }
 
       const lastUpdated = line.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
@@ -148,8 +149,12 @@ export function parseInsights(content) {
     const concept = line.match(/^\*\*Named concept origin:\*\*\s*(.+)/);
     if (concept) { current.named_concept_origin = concept[1].trim(); continue; }
 
+    // Grounded in line
+    const grounded = line.match(/^\*{0,2}Grounded in:\*{0,2}\s*(.+)/);
+    if (grounded) { current.grounded_in = grounded[1].trim(); continue; }
+
     // Ref line
-    const ref = line.match(/^Ref:\s*(.+)/);
+    const ref = line.match(/^\*{0,2}Ref:\*{0,2}\s*(.+)/);
     if (ref) {
       current.refs = ref[1].split(',').map(r => r.trim()).filter(Boolean);
       section = 'after';
