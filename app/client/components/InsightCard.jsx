@@ -18,8 +18,12 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
   const [refsExpanded, setRefsExpanded] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [localStatus, setLocalStatus] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
   const freshness = getFreshness(insight.last_updated);
+
+  // Reset optimistic state when real data catches up
+  useEffect(() => { setLocalStatus(null); }, [insight.status]);
 
   useEffect(() => {
     if (error) {
@@ -31,6 +35,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
   const handleApprove = async () => {
     try {
       await execute('verify-insight', { id: insight.id, action: 'verify' });
+      setLocalStatus('VERIFIED');
     } catch { /* error shown inline */ }
   };
 
@@ -47,6 +52,8 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
     } catch { /* error shown inline */ }
   };
 
+  const effectiveStatus = localStatus || insight.status;
+
   const statusAccent = {
     VERIFIED: 'verified',
     PENDING: 'pending',
@@ -54,13 +61,13 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
     INVALIDATED: 'invalidated',
     FROZEN: 'frozen',
     SUPERSEDED: 'superseded',
-  }[insight.status];
+  }[effectiveStatus];
 
   return (
     <Card accent={statusAccent}>
       <div className="card-header">
         <IdBadge id={insight.id} />
-        <StatusBadge status={insight.status} />
+        <StatusBadge status={effectiveStatus} />
         {freshness?.warn && (
           <span title={`${freshness.label} — updated ${freshness.days}d ago`} style={{
             display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
@@ -148,7 +155,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       )}
 
       {/* Direct action buttons for PENDING insights */}
-      {insight.status === 'PENDING' && (
+      {effectiveStatus === 'PENDING' && (
         <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6 }}>
             <button
@@ -192,7 +199,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
       )}
 
       {/* Invalidate button for VERIFIED insights (BL-87 minimal) */}
-      {insight.status === 'VERIFIED' && (
+      {effectiveStatus === 'VERIFIED' && (
         <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6 }}>
             <button
