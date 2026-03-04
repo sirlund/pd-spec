@@ -156,7 +156,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision 
               onClick={handleApprove}
               disabled={loading}
             >
-              {loading ? '...' : <><Icon name="check" size={14} /> Approve</>}
+              <Icon name={loading ? 'loader' : 'check'} size={14} spin={loading} /> Approve
             </button>
             <button
               className="btn btn-sm btn-reject"
