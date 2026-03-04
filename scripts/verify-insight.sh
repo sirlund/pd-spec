@@ -103,7 +103,12 @@ CURRENT_STATUS=$(awk -v id="$INSIGHT_ID" '
   /^### \[/ && index($0, "[" id "]") > 0 { found=1; next }
   found && /^### \[/ { exit }
   found { print }
-' "$FILE" | grep -m1 '^\*\{0,2\}Status:\*\{0,2\} ' | sed 's/^\*\{0,2\}Status:\*\{0,2\} *//')
+' "$FILE" | grep -m1 '^\*\{0,2\}Status:\*\{0,2\} ' | sed 's/^\*\{0,2\}Status:\*\{0,2\} *//' || true)
+
+# Insights without a Status field are treated as PENDING (common in synthesized insights)
+if [ -z "$CURRENT_STATUS" ]; then
+  CURRENT_STATUS="PENDING"
+fi
 
 # --- Validate transition ---
 validate_transition() {
@@ -238,18 +243,39 @@ if [ "$ACTION" = "invalidate" ] && [ -n "$REASON" ]; then
   STATUS_LINE="Status: $NEW_STATUS — $REASON"
 fi
 
-# Replace the Status: line within the insight's section
+# Replace or insert the Status: line within the insight's section
 # Use awk for precise section targeting (bash 3 compatible)
 TMPFILE=$(mktemp)
-awk -v id="$INSIGHT_ID" -v new_status="$STATUS_LINE" '
-  /^### \[/ { in_target = (index($0, "[" id "]") > 0) }
-  in_target && /^\*{0,2}Status:\*{0,2} / {
-    print new_status
-    in_target = 0
-    next
-  }
-  { print }
-' "$FILE" > "$TMPFILE"
+
+# Check if section has a Status line
+HAS_STATUS=$(awk -v id="$INSIGHT_ID" '
+  /^### \[/ && index($0, "[" id "]") > 0 { found=1; next }
+  found && /^### \[/ { exit }
+  found && /^\*{0,2}Status:\*{0,2} / { print "yes"; exit }
+' "$FILE")
+
+if [ "$HAS_STATUS" = "yes" ]; then
+  # Replace existing Status line
+  awk -v id="$INSIGHT_ID" -v new_status="$STATUS_LINE" '
+    /^### \[/ { in_target = (index($0, "[" id "]") > 0) }
+    in_target && /^\*{0,2}Status:\*{0,2} / {
+      print new_status
+      in_target = 0
+      next
+    }
+    { print }
+  ' "$FILE" > "$TMPFILE"
+else
+  # No Status line — insert after heading
+  awk -v id="$INSIGHT_ID" -v new_status="$STATUS_LINE" '
+    /^### \[/ && index($0, "[" id "]") > 0 {
+      print
+      print new_status
+      next
+    }
+    { print }
+  ' "$FILE" > "$TMPFILE"
+fi
 
 mv "$TMPFILE" "$FILE"
 
