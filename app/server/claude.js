@@ -268,14 +268,20 @@ Write output to: ${outputRelative}
 Instructions:
 1. Read the file at "Read from" path above.
    - If the file has more than 1800 lines, use Read with offset and limit of 1500 lines per chunk until all content is read.
+   - If the path ends in .HEIC or .heic: convert first with Bash:
+     sips -s format jpeg "${file.actual_path}" --out 02_Work/_temp/worker_img.jpg
+     Then use Read on 02_Work/_temp/worker_img.jpg (supports images visually).
 2. Extract claims that matter for product research. Apply density filtering:
    INCLUDE: user needs, pain points, behaviors (direct quotes preferred), business
    constraints, success metrics, strategic decisions, technical limitations, verifiable
    facts (numbers, dates, commitments), competitive insights.
    EXCLUDE: scheduling logistics, social pleasantries, conversational filler, repetitive
    restatements of the same point already captured.
-   Target density: 3-5 claims per page for transcripts and documents. A 50-page
-   transcript should yield ~150-250 claims, not thousands. Quality over quantity.
+   Target density (calibrated by type):
+   - Transcripts/interviews/meeting notes: 1 meaningful claim per 5-10 lines of dialogue.
+     A 1700-line transcript should yield 100-200 claims.
+   - Documents/presentations/reports: 3-5 claims per page.
+   - Images: all visible meaningful content (text, diagrams, post-its, annotations).
 3. Write structured output to the output path in this exact format:
 
 ## [${file.source_path}]
