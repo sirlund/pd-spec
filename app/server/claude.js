@@ -252,15 +252,12 @@ ${projectMd}
       const match = projectMd.match(/output_language:\s*(\S+)/);
       if (match) outputLanguage = match[1];
     } catch { /* ok */ }
-    const langRule = outputLanguage !== 'en'
-      ? `\nLANGUAGE RULE: Write ALL extracted claim text in "${outputLanguage}". This applies to every file type — transcripts, documents, images, diagrams. Do NOT paraphrase or summarize in English. Only preserve original-language verbatim quotes when the source text is in a language other than "${outputLanguage}".\n`
-      : '';
     return {
       systemPrompt: `You are running inside the PD-Spec web application.
 You have native filesystem tools: Read, Write, Bash, Glob, Grep.
 NOTE: The Read tool has a 2000-line default limit. For files over 1800 lines, use Read with offset/limit in chunks of 1500 lines.
 The project root is the working directory for all file paths.
-${langRule}
+
 PROJECT.md contents:
 ${projectMd}`,
       outputLanguage,
@@ -274,11 +271,11 @@ ${projectMd}`,
 
     const workerPrompt = `You are a source file claim extractor. Your job is to read ONE file and extract what matters for product research.
 
-LANGUAGE: ${outputLanguage} — Write ALL claims in this language. No exceptions for images or English-language sources.
-
 Source: ${file.source_path}
 Read from: ${file.actual_path}
 Write output to: ${outputRelative}
+Metadata language: ${outputLanguage} — use this language for section labels and metadata fields (Type, Date, etc.) only.
+Claim language: preserve the source language. Do NOT translate claim text. If the source is in Spanish, write claims in Spanish. If in English, write in English. For images, describe visible content in ${outputLanguage} but transcribe any visible text verbatim.
 
 Instructions:
 1. Read the file at "Read from" path above.
