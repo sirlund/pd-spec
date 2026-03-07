@@ -10,6 +10,31 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-123] License Change — MIT → BSL 1.1
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** Business model session (2026-03-07). Current MIT license allows anyone to copy, modify, and commercialize PD-Spec without restriction. Incompatible with a future SaaS/commercial distribution model.
+
+**Decision:** Change to **Business Source License (BSL 1.1)**. Used by MariaDB, Sentry, HashiCorp. Code stays visible (transparent, learnable, forkable for personal use), but commercial use requires a license from Nicolas Lundin. After a defined period (e.g., 4 years), converts automatically to Apache 2.0.
+
+**Why BSL over alternatives:**
+- CC BY-NC: designed for content, not software
+- Proprietary: closes off community + learning use cases
+- MIT (current): no commercial protection
+- BSL: balances openness with commercial rights — standard in developer tooling
+
+**IP reality check:** The SKILL.md methodology is an idea — ideas aren't copyrightable. BSL buys time and signals intent, not absolute protection. Real moat = ecosystem complexity + continuous iteration.
+
+**Actions:**
+- [ ] Replace `LICENSE` with BSL 1.1 text (Change Date = 4 years from release, Change License = Apache 2.0)
+- [ ] Add `USAGE.md` — plain English: free for personal/non-commercial, contact for commercial use
+- [ ] Update README with license badge
+- [ ] Do before first public distribution / wider beta
+
+---
+
 ### [BL-122] QA: E2E Pipeline Benchmark — SDK vs CLI
 
 **Status:** PROPOSED
