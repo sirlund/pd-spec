@@ -89,7 +89,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-113] BUG: Token Overconsumption on PDF/PPT/DOCX Extraction
 
-**Status:** PROPOSED
+**Status:** PARTIALLY IMPLEMENTED
 **Priority:** P1
 **Effort:** M
 **Origin:** QA session with Hugo (2026-03-02). Hugo's Claude Code Pro ($20/month) hit the usage limit after a single `/extract` run with ~6 files (PDFs, PPTs, DOCX). The agent reads binary files by having the LLM process them visually, consuming massive token budgets for what should be a deterministic text extraction.
@@ -105,12 +105,25 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 **Trade-off:** Adds npm dependencies (previously avoided for portability). Now that the webapp already requires `npm install`, this constraint is obsolete.
 
+**Implementation (2026-03-06):** Spike validated `markitdown` (Python/Microsoft) as winner over npm alternatives — single package handles PDF, DOCX, PPTX, XLSX. Step 9 added to `discover-sources.sh`: detects python3 with markitdown, converts all binary sources to `_temp/*.md`, emits `PREPROCESSED` section. SKILL.md updated with PREPROCESSED > NORMALIZED > original redirect priority.
+
+**E2E QA (2026-03-07 — Sonnet medium, 19 files, express mode):** Infrastructure PASS — 5 binaries preprocessed correctly (PDF 31K chars, DOCX 14K, PPTX 1.3K). Skill-level findings:
+
+| OBS | Priority | Description | Fix needed |
+|-----|----------|-------------|------------|
+| OBS-BL113-04 | P0 | PREPROCESSED files classified as `pending-heavy` in express mode — not processed in this pass | SKILL.md Phase 1c: add PREPROCESSED override → treat as light regardless of extension |
+| OBS-BL113-01 | P1 | Checkpoint preventivo no escrito antes del primer compact (Sonnet skips maintenance steps under context pressure) | SKILL.md step 7: move checkpoint write to start of step, before Phase 1.5 |
+| OBS-BL113-02 | info | 3 auto-compacts in 14 light files with Sonnet — O(N²) history confirmed | Confirms urgency of Path 2 (parallel extraction) |
+| OBS-BL113-03 | info | Touchpoint (1761 lines, 133KB) truncated to 480 lines by compact mid-read | Symptom of O(N²), not a SKILL.md bug |
+
+**Remaining work:** Fix OBS-BL113-04 and OBS-BL113-01 in SKILL.md, then re-run E2E to confirm binaries are processed in express pass.
+
 **Acceptance criteria:**
-- [ ] PDF text extracted via npm package, not LLM
-- [ ] PPT/PPTX slides extracted to text via npm package
-- [ ] DOCX extracted via npm package
-- [ ] Pre-extracted files written to `02_Work/_temp/` with source reference
-- [ ] `/extract` reads pre-extracted text, not raw binaries
+- [ ] PDF text extracted via markitdown, not LLM vision
+- [x] PPT/PPTX slides extracted to text via markitdown
+- [x] DOCX extracted via markitdown
+- [x] Pre-extracted files written to `02_Work/_temp/` with source reference
+- [ ] `/extract` reads pre-extracted text in express mode (OBS-BL113-04 blocks this)
 - [ ] Token cost for a 6-file project drops by >80%
 
 ---
