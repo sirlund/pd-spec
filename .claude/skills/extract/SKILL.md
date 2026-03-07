@@ -197,6 +197,48 @@ EVERY file discovered in Phase 1 MUST be:
      - Set batching flag for Phase 2
      - **CRITICAL: Process files DIRECTLY in main context (NO Task agents, NO parallelization)**
 
+### [COORDINATOR_MODE]
+
+If the prompt contains `[COORDINATOR_MODE]`: after completing Phase 0 and Phase 1 (steps 1-7
+including the preventive checkpoint), write the classified file list to
+`02_Work/_temp/extract_queue.json`:
+
+```json
+{
+  "mode": "express|full|heavy",
+  "timestamp": "YYYY-MM-DDTHH:MM",
+  "files": [
+    {
+      "source_path": "01_Sources/folder/file.md",
+      "actual_path": "01_Sources/folder/file.md",
+      "type": "light",
+      "ext": "md",
+      "size_kb": 12,
+      "lines": 45,
+      "hash": "<hash from script>"
+    },
+    {
+      "source_path": "01_Sources/docs/report.pdf",
+      "actual_path": "02_Work/_temp/report.pdf.md",
+      "type": "preprocessed",
+      "ext": "pdf",
+      "size_kb": 500,
+      "lines": 0,
+      "hash": "<hash from script>"
+    }
+  ]
+}
+```
+
+- `source_path`: always the original `01_Sources/` path (for section headers in EXTRACTIONS.md)
+- `actual_path`: the path to read from (use `_temp/` redirect for preprocessed/normalized files)
+- `type`: `"preprocessed"` if file appears in the PREPROCESSED section of discover-sources.sh output, `"light"` otherwise
+- Do NOT include heavy/pending-heavy files in this queue (express mode) — they are already recorded in SOURCE_MAP as `pending-heavy`
+- `lines`: the line count from discover-sources.sh output (NL field); use 0 for binary/preprocessed files
+
+After writing the queue, respond: `"COORDINATOR_DONE: N files queued"` and STOP immediately.
+Do NOT read any source files. Do NOT proceed to Phase 1.5 or Phase 2.
+
 ### Phase 1b: Delta Adjustments
 
 **Note:** Delta computation (hashing, classification, move detection, reporting) is handled by `discover-sources.sh` in step 1. This phase handles only the cases requiring agent judgment or user interaction.
@@ -384,6 +426,30 @@ EVERY file discovered in Phase 1 MUST be:
    - Log: `✓ Line-breaking applied: {filename} (max line: {max_chars} chars)`
 
 ### Phase 2: Read & Extract
+
+### [CONSOLIDATE_MODE]
+
+If the prompt contains `[CONSOLIDATE_MODE]`: skip Phase 0, 1, and 1.5. Workers have already
+extracted claims into `02_Work/_temp/tasks/`. Each `.md` file in that directory contains a
+pre-formatted extraction section ready to append to EXTRACTIONS.md.
+
+1. List all files in `02_Work/_temp/tasks/` matching `*.md` (not `.error`) using Glob or Bash
+2. Read each task file and append its content to EXTRACTIONS.md (batched: write every 5 files)
+3. For `.error` files: read the error content and add a row to SOURCE_MAP.md with status `error`
+4. Continue normally from Phase 4 (Validate against disk) → Phase 4b (SOURCE_MAP update) → Phase 4c (Cleanup) → Phase 4d (Indexes) → Phase 5 (MEMORY.md)
+
+Worker output format (each task `.md` file):
+```markdown
+## [01_Sources/folder/file.md]
+- Type: [inferred type]
+- Date: [from metadata or "unknown"]
+- Preprocessed: yes|no
+- Extracted: YYYY-MM-DDTHH:MM
+
+### Raw Claims
+1. "[claim]"
+2. "[claim]"
+```
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
 
