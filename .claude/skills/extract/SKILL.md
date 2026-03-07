@@ -70,12 +70,12 @@ EVERY file discovered in Phase 1 MUST be:
 1. **Run discover-sources.sh** — A single Bash call handles all discovery, hash computation, SOURCE_MAP parsing, and delta classification:
 
    ```bash
-   ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
+   zsh ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
    ```
 
    If an argument was provided (e.g., `/extract benchmark-inicial`):
    ```bash
-   ./scripts/discover-sources.sh "01_Sources/benchmark-inicial" "02_Work/SOURCE_MAP.md"
+   zsh ./scripts/discover-sources.sh "01_Sources/benchmark-inicial" "02_Work/SOURCE_MAP.md"
    ```
 
    If the folder doesn't exist, the script exits with code 2. Report the error and stop.
@@ -513,10 +513,10 @@ Process all files in single pass (step 12 below)
 
 12. **Read each source in the processing queue** — For every file marked as NEW, MODIFIED, or RETRY (from discover-sources.sh), read it and extract raw claims and factual statements.
 
-   **Preprocessing redirect:** Before reading a source file, check the NORMALIZED section
-   of discover-sources.sh output. If the file has a normalized version listed (with exact
-   path), read from that path instead of the original. Phase 1.5 may also create or update
-   normalized versions in `02_Work/_temp/` — always use the most recent version available.
+   **Preprocessing redirect:** Before reading a source file, check both the NORMALIZED
+   and PREPROCESSED sections of discover-sources.sh output. If the file has a preprocessed
+   or normalized version listed (with exact path), read from that path instead of the
+   original. Priority: PREPROCESSED > NORMALIZED > original.
    The section header (`## [folder/file.ext]`) must still reference the original
    `01_Sources/` path. Add `- Preprocessed: yes` to the section metadata.
 
@@ -557,28 +557,31 @@ Process all files in single pass (step 12 below)
 
    **PDF Processing — MANDATORY APPROACH:**
 
-   1. **MUST attempt `Read(pdf)` WITHOUT pages parameter first**
+   1. **Check PREPROCESSED section first** — if this PDF was preprocessed by markitdown,
+      read the `.md` from `02_Work/_temp/` (plain text, zero vision cost). Skip steps 2-4.
+
+   2. **If NOT preprocessed:** attempt `Read(pdf)` WITHOUT pages parameter first
       - Extracts text from PDF (no poppler required)
       - Works for PDFs with text layer
       - This is the default approach for ALL PDFs
 
-   2. **For large PDFs or projects with multiple PDFs >10MB:**
+   3. **For large PDFs or projects with multiple PDFs >10MB:**
       - Process ONE PDF at a time
       - Write to EXTRACTIONS.md after EACH PDF
       - Update SOURCE_MAP.md after EACH PDF
       - Intermediate writes clear working memory and prevent request accumulation
       - NEVER read multiple large PDFs in same context without intermediate writes
 
-   3. **For very large text content (>2000 lines):**
+   4. **For very large text content (>2000 lines):**
       - Use `Read(pdf, offset=0, limit=2000)` to read in chunks
       - Iterate with offset=2000, 4000, etc.
 
-   4. **ONLY use pages parameter if PDF is image-only (no text layer):**
+   5. **ONLY use pages parameter if PDF is image-only (no text layer):**
       - Requires poppler installation
       - Warn user: "PDF appears to be scanned images. Install poppler for OCR, or provide manual summary in _CONTEXT.md"
 
-   5. **ONLY report as UNPROCESSABLE if:**
-      - `Read(pdf)` returns error, OR
+   6. **ONLY report as UNPROCESSABLE if:**
+      - Both preprocessing and `Read(pdf)` fail, OR
       - Single PDF exceeds 20MB request limit even in clean context
       - Log which attempts were made and their error messages
 
@@ -586,7 +589,14 @@ Process all files in single pass (step 12 below)
 
    *Office files (DOCX, PPTX, XLSX) — convert-then-read:*
 
-   **Strategy:** Try `markitdown` first (best output). If not installed, fall back to zero-dependency tools.
+   **Strategy:** Check PREPROCESSED section first (discover-sources.sh already converted
+   binary files via markitdown at zero token cost). If not preprocessed, try markitdown
+   at runtime. If not installed, fall back to zero-dependency tools.
+
+   1. **Check PREPROCESSED section** — if preprocessed by markitdown, read the `.md`
+      from `02_Work/_temp/` (structured markdown with headings, lists, tables). Skip runtime conversion.
+
+   2. **If NOT preprocessed:** Try `markitdown` at runtime.
 
    ```
    Detection: Run `python3 -m markitdown --help` once at the start of Phase 2.
@@ -599,7 +609,7 @@ Process all files in single pass (step 12 below)
    - Produces structured markdown with tables, lists, slide separators preserved.
    - Works for: DOCX, PPTX, XLSX, HTML, and more.
 
-   **Without markitdown** (zero dependencies):
+   3. **Without markitdown** (zero dependencies):
    - **DOCX** — `textutil -convert txt "file.docx" -output 02_Work/_temp/file.txt` (macOS native). Then read the `.txt`.
    - **PPTX** — Extract slide text via Python stdlib:
      ```bash

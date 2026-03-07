@@ -94,7 +94,13 @@ No way to transition an INVALIDATED insight back to PENDING without manual file 
 
 ### OBS-W1-02 — Flicker on card action (approve/reject)
 **Test:** T01, T02
-When approving/rejecting, the action buttons disappear briefly and reappear before the card updates to the new status. Root cause: WebSocket file-change triggers full list re-render. All card action tests show this pattern.
+**Status:** RESOLVED (v4.28.2)
+When approving/rejecting, the action buttons disappear briefly and reappear before the card updates to the new status. Root cause: `useLiveData` sets `loading: true` on refetch → `loading || !data` guard unmounts entire list → scroll jumps to top. Secondary: `verify-insight.sh` didn't match `**Status:**` bold format written by `/analyze`. Tertiary: synthesized insights (`IG-SYNTH-XX`) had no Status field at all.
+**Fixes (4 commits):**
+1. `InsightsView.jsx` — changed guard to `!data` so old data stays visible during refetch (no unmount)
+2. `verify-insight.sh` — grep/awk accept bold `**Status:**`, fallback to PENDING when field missing, insert Status after heading for synthesized insights
+3. `InsightCard.jsx` — optimistic UI via `localStatus` (instant badge + button update, no flash), spinning loader icon on approve button (no width change)
+4. `InsightCard.jsx` + `components.css` — slide-out animation (`card-exit` class, 0.45s) when card exits filtered view (e.g. PENDING tab); no animation on "All" tab
 
 ### OBS-W1-03 — "Send" button has confusing red color
 **Test:** T02
@@ -106,6 +112,7 @@ After invalidating an insight, the card doesn't display the rejection reason. Th
 
 ### OBS-W1-05 — Brief collapse glitch on conflict resolve
 **Test:** T03
+**Note:** Same root cause family as OBS-W1-02. ConflictsView has identical `loading || !data` pattern. Fix pending (not in v4.28.2 scope).
 After resolving a conflict, the textarea and "Resolve now" button collapse briefly (button visible but empty for ~1s) before the WebSocket update removes the action area entirely.
 
 ### OBS-W1-06 — Markdown not rendered in Q&A response
