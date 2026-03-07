@@ -10,6 +10,53 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-120] Agent Chat Log UI — Task Tracker with Parallel Progress
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** M
+**Origin:** Design session (2026-03-07). The current AgentView log is a fast-scrolling monolithic text stream. During complex operations (especially `/extract` with parallel workers), it's nearly impossible to understand what's happening — which tasks are running, which finished, what failed.
+
+**Problem:** The agent chat log renders every SSE event as a flat text line. During parallel extraction (multiple workers processing sources simultaneously), all output interleaves into a single stream. The user sees a wall of text with no hierarchy, no progress indication, and no way to distinguish completed steps from active ones.
+
+**Solution:** Replace the flat text log with a structured Task Tracker / Stepper component:
+
+1. **Global activity indicator** — Animated circular loader at the top, pulsing while the agent is working. Disappears on completion.
+
+2. **Task list as vertical stepper** — Each major step (Starting Worker, Extract Claims, Run Workflow, Execute Function, etc.) appears as a named row with status:
+   - ✅ Completed tasks: green check icon + task name
+   - ⏳ Running tasks: hollow circle + task name + **horizontal progress bar** filling in real-time
+   - ⏸ Pending tasks: dimmed, no icon
+
+3. **Nested log areas (terminal view)** — Each running task has an expandable area (chevron toggle) showing a mini-terminal with its specific log output. Text enters from the bottom pushing previous lines up (auto-scroll). Capped at ~50 visible lines to avoid DOM bloat, older lines discarded.
+
+4. **Parallel visibility** — Multiple tasks can show progress bars and active logs simultaneously, making it visually evident that the system is working on multiple processes in parallel without saturating the main view.
+
+**Data mapping:** The component needs to parse SSE events into structured task state. This requires either:
+- (a) Structured SSE events from the server (preferred) — emit `{ type: 'task-start', id, name }`, `{ type: 'task-progress', id, current, total }`, `{ type: 'task-log', id, line }`, `{ type: 'task-complete', id }`
+- (b) Client-side parsing of text patterns (fragile, not recommended)
+
+Option (a) means changes to `app/server/claude.js` (SDK event processing) and the SSE endpoint to emit structured events alongside or replacing raw text.
+
+**Reference:** Screenshot — `/Users/nlundin/Desktop/Screenshot 2026-03-07 at 9.27.38 AM.png`
+
+**Files likely affected:**
+- `app/client/AgentView.jsx` — New TaskTracker component (or refactor of existing log renderer)
+- `app/client/AgentView.css` — Progress bars, stepper layout, animations
+- `app/server/claude.js` — Structured SSE event emission
+- `app/server/api.js` — SSE endpoint changes (if events change format)
+
+**Acceptance criteria:**
+- [ ] Completed tasks show green check + name, no log area
+- [ ] Running tasks show progress bar filling based on `current/total` when available
+- [ ] Each running task has an expandable log area with auto-scrolling terminal output
+- [ ] Multiple tasks can show active progress simultaneously (parallel workers visible)
+- [ ] Global loader animates while any task is running, stops when all complete
+- [ ] Fallback: if SSE events are unstructured (legacy), render as flat text (graceful degradation)
+- [ ] Log area per task capped at ~50 lines to prevent DOM bloat
+
+---
+
 ### [BL-110] Extract Quality Fix — SDK Read Compatibility for Oversized-Line Sources
 
 **Status:** IMPLEMENTED
