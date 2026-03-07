@@ -242,28 +242,35 @@ ${projectMd}
 
   async function buildWorkerSystemPrompt() {
     let projectMd = '';
+    let outputLanguage = 'en';
     try {
       projectMd = await readFile(resolve(projectRoot, 'PROJECT.md'), 'utf-8');
+      const match = projectMd.match(/output_language:\s*(\S+)/);
+      if (match) outputLanguage = match[1];
     } catch { /* ok */ }
-    return `You are running inside the PD-Spec web application.
+    return {
+      systemPrompt: `You are running inside the PD-Spec web application.
 You have native filesystem tools: Read, Write, Bash, Glob, Grep.
 NOTE: The Read tool has a 2000-line default limit. For files over 1800 lines, use Read with offset/limit in chunks of 1500 lines.
 The project root is the working directory for all file paths.
 
 PROJECT.md contents:
-${projectMd}`;
+${projectMd}`,
+      outputLanguage,
+    };
   }
 
-  async function runWorker(file, tasksDir, workerSystemPrompt, session, abortController, sendSSE, bridge) {
+  async function runWorker(file, tasksDir, workerSystemPrompt, outputLanguage, session, abortController, sendSSE, bridge) {
     const sanitizedName = file.source_path.replace(/[/\\]/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_');
     const outputRelative = `02_Work/_temp/tasks/${sanitizedName}.md`;
     const errorPath = join(tasksDir, `${sanitizedName}.error`);
 
-    const workerPrompt = `You are a source file claim extractor. Extract ALL factual claims from ONE file.
+    const workerPrompt = `You are a source file claim extractor. Your job is to read ONE file and extract what matters for product research.
 
 Source: ${file.source_path}
 Read from: ${file.actual_path}
 Write output to: ${outputRelative}
+Output language: ${outputLanguage} — write ALL claim text in this language (preserve direct quotes verbatim).
 
 Instructions:
 1. Read the file at "Read from" path above.
@@ -271,17 +278,14 @@ Instructions:
    - If the path ends in .HEIC or .heic: convert first with Bash:
      sips -s format jpeg "${file.actual_path}" --out 02_Work/_temp/${sanitizedName}_img.jpg
      Then use Read on 02_Work/_temp/${sanitizedName}_img.jpg (supports images visually).
-2. Extract claims that matter for product research. Apply density filtering:
-   INCLUDE: user needs, pain points, behaviors (direct quotes preferred), business
-   constraints, success metrics, strategic decisions, technical limitations, verifiable
-   facts (numbers, dates, commitments), competitive insights.
+2. Extract claims using semantic judgment — you understand the content, use that understanding.
+   INCLUDE: user needs, pain points, behaviors, business constraints, success metrics,
+   strategic decisions, technical limitations, verifiable facts (numbers, dates, commitments),
+   competitive insights. Prefer direct quotes when available.
    EXCLUDE: scheduling logistics, social pleasantries, conversational filler, repetitive
-   restatements of the same point already captured.
-   Target density (calibrated by type):
-   - Transcripts/interviews/meeting notes: 1 meaningful claim per 5-10 lines of dialogue.
-     A 1700-line transcript should yield 100-200 claims.
-   - Documents/presentations/reports: 3-5 claims per page.
-   - Images: all visible meaningful content (text, diagrams, post-its, annotations).
+   restatements of a point already captured.
+   The number of claims depends entirely on the content. A rich document may yield many;
+   a short or repetitive one may yield few. Quality over quantity.
 3. Write structured output to the output path in this exact format:
 
 ## [${file.source_path}]
@@ -363,13 +367,13 @@ Instructions:
     // Phase 2: Worker pool — parallel extraction (Haiku × N, max WORKER_CONCURRENCY concurrent)
     sendSSE({ type: 'text', content: `⚡ Phase 2/3: Extracting ${files.length} files in parallel (max ${WORKER_CONCURRENCY} concurrent)...\n` });
     await mkdir(tasksDir, { recursive: true });
-    const workerSystemPrompt = await buildWorkerSystemPrompt();
+    const { systemPrompt: workerSystemPrompt, outputLanguage } = await buildWorkerSystemPrompt();
 
     for (let i = 0; i < files.length; i += WORKER_CONCURRENCY) {
       if (abortController.signal.aborted) break;
       const batch = files.slice(i, i + WORKER_CONCURRENCY);
       await Promise.all(batch.map(file =>
-        runWorker(file, tasksDir, workerSystemPrompt, session, abortController, sendSSE, bridge)
+        runWorker(file, tasksDir, workerSystemPrompt, outputLanguage, session, abortController, sendSSE, bridge)
       ));
       const done = Math.min(i + WORKER_CONCURRENCY, files.length);
       sendSSE({ type: 'text', content: `  ✓ ${done}/${files.length} files extracted\n` });
