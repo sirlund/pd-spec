@@ -48,8 +48,8 @@ Use cases: re-preprocess after bug fix, extract a single new file, iterate on a 
 
 **Classification:**
 - **Preprocessed (highest priority):** any file that appears in the `PREPROCESSED` section of `discover-sources.sh` output is **always light**, regardless of extension or size. `discover-sources.sh` preprocesses all binary files when markitdown is available, so this covers most pdf/docx/pptx/xlsx files automatically.
-- **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic`, and any non-binary file < 5MB
-- **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` that were NOT preprocessed (markitdown unavailable), or any file ≥ 5MB
+- **Light files:** `.png`, `.jpg`, `.jpeg`, `.heic` (always — image token cost depends on dimensions, not file size); `.md`, `.txt`, `.csv` < 5MB
+- **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` NOT preprocessed (markitdown unavailable), or text files ≥ 5MB
 
 Express mode is the default — it processes all light files (including preprocessed binaries of any size) while deferring only unpreprocessed large binary files. Use `--full` to process everything, or `--heavy` after an express pass to pick up deferred files.
 
@@ -164,8 +164,8 @@ This rule applies at the claim level, NOT the file level — every file still ge
 
    Using the extension and size from the script output, classify files in the processing queue:
    - **PREPROCESSED = always light:** If the file appears in the `PREPROCESSED` section → classify as **light**, no exceptions. `discover-sources.sh` preprocesses all binary files when markitdown is available, so all pdf/docx/pptx/xlsx are light when preprocessed — regardless of size.
-   - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic`, and non-binary files < 5MB
-   - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` NOT in PREPROCESSED (markitdown unavailable or failed), or any file ≥ 5MB
+   - **Light files:** `.png`, `.jpg`, `.jpeg`, `.heic` (always, any size); `.md`, `.txt`, `.csv` < 5MB
+   - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` NOT in PREPROCESSED (markitdown unavailable or failed), or text files ≥ 5MB
 
    **Apply mode filter (from Phase 0b):**
    - **Express mode:** Remove heavy files from processing queue. PREPROCESSED files are exempt — they remain in the light queue regardless of their original extension. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process ({preprocessed_count} preprocessed), {heavy_count} heavy files deferred (pending-heavy)`
@@ -544,7 +544,7 @@ For each Light batch (batch size = 10 files):
      This is a SEPARATE step — do NOT bundle it with the EXTRACTIONS/SOURCE_MAP write above.
   5. **Continue to next Light batch** — Repeat until all Light files complete
 
-**PASS 2: Heavy Files (pdf, DOCX/PPTX, files ≥ 5MB)**
+**PASS 2: Heavy Files (unpreprocessed pdf/docx/pptx/xlsx, text files ≥ 5MB)**
 
 **CRITICAL: Process ONE file at a time, write IMMEDIATELY after each.**
 
