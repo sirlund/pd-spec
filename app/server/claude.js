@@ -269,8 +269,8 @@ Instructions:
 1. Read the file at "Read from" path above.
    - If the file has more than 1800 lines, use Read with offset and limit of 1500 lines per chunk until all content is read.
    - If the path ends in .HEIC or .heic: convert first with Bash:
-     sips -s format jpeg "${file.actual_path}" --out 02_Work/_temp/worker_img.jpg
-     Then use Read on 02_Work/_temp/worker_img.jpg (supports images visually).
+     sips -s format jpeg "${file.actual_path}" --out 02_Work/_temp/${sanitizedName}_img.jpg
+     Then use Read on 02_Work/_temp/${sanitizedName}_img.jpg (supports images visually).
 2. Extract claims that matter for product research. Apply density filtering:
    INCLUDE: user needs, pain points, behaviors (direct quotes preferred), business
    constraints, success metrics, strategic decisions, technical limitations, verifiable
