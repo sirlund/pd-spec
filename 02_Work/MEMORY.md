@@ -17,6 +17,12 @@
 - **Snapshot:** sources: X | extractions: X | insights: X (V verified) | conflicts: X (P pending) | outputs: X
 -->
 
+### 2026-03-06T00:00 — Comunicación cliente
+- **Request:** Redactar respuesta a Marcelo Ibáñez sobre bloque simultáneo y presupuesto
+- **Actions:** Borrador email + WSP intro. Confirmado: "Barri" = Marcelo (segundo nombre). Estimado ~25-30 hrs adicionales por real-time + QA complejidad. PROJECT.md actualizado con nombre correcto del cliente.
+- **Result:** Engine files descartados (SKILL.md + discover-sources.sh). Commit `84908db` con 20 archivos de proyecto.
+- **Snapshot:** 18 insights (18 PENDING) · 7 conflicts PENDING · 0 outputs
+
 ### 2026-03-04T16:00 — /analyze (full)
 - **Request:** /analyze (primer run, sin flags — modo full por ausencia de insights previos)
 - **Mode:** FULL — procesó 183 claims de 9 secciones (0 skipped)
