@@ -47,10 +47,12 @@ Argument format — paths relative to `01_Sources/`:
 Use cases: re-preprocess after bug fix, extract a single new file, iterate on a problematic transcript.
 
 **Classification:**
-- **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
-- **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
+- **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic`; also `.pdf`, `.docx`, `.pptx`, `.xlsx` when < 1MB
+- **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` ≥ 1MB, or any file ≥ 5MB
 
-Express mode is the default — it enables fast iteration on text and image sources while deferring expensive PDF/Office processing. Use `--full` to process everything, or `--heavy` after an express pass to pick up deferred files.
+**Size wins over extension:** any file < 1MB is light regardless of extension.
+
+Express mode is the default — it enables fast iteration on text, image, and small binary sources while deferring only large binary files (≥ 1MB). Use `--full` to process everything, or `--heavy` after an express pass to pick up deferred files.
 
 ## MANDATORY RULE: NO SKIPPING FILES
 
@@ -163,8 +165,9 @@ This rule applies at the claim level, NOT the file level — every file still ge
 
    Using the extension and size from the script output, classify files in the processing queue:
    - **PREPROCESSED override (highest priority):** If the file appears in the `PREPROCESSED` section of the script output → classify as **light** regardless of extension or size. Never defer as `pending-heavy`.
-   - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
-   - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
+   - **Size rule (second priority):** any file < 1MB → **light**, regardless of extension. Size wins over extension.
+   - **Light files (≥ 1MB):** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic`
+   - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` ≥ 1MB, or any file ≥ 5MB
 
    **Apply mode filter (from Phase 0b):**
    - **Express mode:** Remove heavy files from processing queue. PREPROCESSED files are exempt — they remain in the light queue regardless of their original extension. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process ({preprocessed_count} preprocessed), {heavy_count} heavy files deferred (pending-heavy)`
