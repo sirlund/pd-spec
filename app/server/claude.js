@@ -9,7 +9,7 @@ delete process.env.CLAUDECODE;
 
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
-import { readFile, readdir, mkdir, copyFile, stat } from 'fs/promises';
+import { readFile, writeFile, readdir, mkdir, copyFile, stat } from 'fs/promises';
 import { resolve, join, dirname } from 'path';
 import Anthropic from '@anthropic-ai/sdk';
 import { query } from '@anthropic-ai/claude-agent-sdk';
@@ -198,6 +198,182 @@ ${projectMd}
     return result;
   }
 
+  // --- Parallel extract helpers ---
+
+  const WORKER_CONCURRENCY = 5;
+
+  async function streamQueryEvents(q, sendSSE, abortController) {
+    const pendingTools = new Map();
+    for await (const msg of q) {
+      if (abortController.signal.aborted) break;
+      if (msg.type === 'system' && msg.subtype === 'init') continue;
+      if (msg.type === 'assistant' && msg.message?.content) {
+        for (const block of msg.message.content) {
+          if (block.type === 'thinking') continue;
+          if (block.type === 'text') {
+            sendSSE({ type: 'text', content: block.text });
+          } else if (block.type === 'tool_use') {
+            if (block.name === 'AskUserQuestion') continue;
+            sendSSE({ type: 'tool_start', tool: block.name, input: summarizeInput(block.input) });
+            pendingTools.set(block.id, { name: block.name, startTime: Date.now() });
+          }
+        }
+        continue;
+      }
+      if (msg.type === 'user' && msg.message?.content && Array.isArray(msg.message.content)) {
+        for (const block of msg.message.content) {
+          if (block.type === 'tool_result' && pendingTools.has(block.tool_use_id)) {
+            const tool = pendingTools.get(block.tool_use_id);
+            pendingTools.delete(block.tool_use_id);
+            const content = typeof block.content === 'string' ? block.content : JSON.stringify(block.content);
+            const summary = content.length > 500 ? content.slice(0, 500) + '...' : content;
+            sendSSE({ type: 'tool_done', tool: tool.name, summary });
+          }
+        }
+        continue;
+      }
+      if (msg.type === 'result') {
+        if (msg.subtype === 'error') throw new Error(msg.error || 'Query failed');
+        return msg;
+      }
+    }
+    return null;
+  }
+
+  async function buildWorkerSystemPrompt() {
+    let projectMd = '';
+    try {
+      projectMd = await readFile(resolve(projectRoot, 'PROJECT.md'), 'utf-8');
+    } catch { /* ok */ }
+    return `You are running inside the PD-Spec web application.
+You have native filesystem tools: Read, Write, Bash, Glob, Grep.
+NOTE: The Read tool has a 2000-line default limit. For files over 1800 lines, use Read with offset/limit in chunks of 1500 lines.
+The project root is the working directory for all file paths.
+
+PROJECT.md contents:
+${projectMd}`;
+  }
+
+  async function runWorker(file, tasksDir, workerSystemPrompt, session, abortController, sendSSE, bridge) {
+    const sanitizedName = file.source_path.replace(/[/\\]/g, '_').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const outputRelative = `02_Work/_temp/tasks/${sanitizedName}.md`;
+    const errorPath = join(tasksDir, `${sanitizedName}.error`);
+
+    const workerPrompt = `You are a source file claim extractor. Extract ALL factual claims from ONE file.
+
+Source: ${file.source_path}
+Read from: ${file.actual_path}
+Write output to: ${outputRelative}
+
+Instructions:
+1. Read the file at "Read from" path above.
+   - If the file has more than 1800 lines, use Read with offset and limit of 1500 lines per chunk until all content is read.
+2. Extract all factual claims, quotes, and data points.
+3. Write structured output to the output path in this exact format:
+
+## [${file.source_path}]
+- Type: [inferred from content]
+- Date: [from metadata if present, else "unknown"]
+- Preprocessed: ${file.type === 'preprocessed' ? 'yes' : 'no'}
+- Extracted: ${new Date().toISOString().slice(0, 16)}
+
+### Raw Claims
+1. "[claim]"
+2. "[claim]"
+...
+
+4. STOP immediately after writing. Do not do anything else.`;
+
+    const workerOptions = {
+      model: 'claude-haiku-4-5-20251001',
+      cwd: projectRoot,
+      systemPrompt: workerSystemPrompt,
+      maxTurns: 15,
+      canUseTool: createCanUseTool(projectRoot, bridge, sendSSE, 'skill'),
+      disallowedTools: ['Agent', 'Skill', 'EnterPlanMode', 'EnterWorktree', 'NotebookEdit', 'TaskCreate', 'TaskUpdate', 'TodoWrite', 'AskUserQuestion'],
+      env: { ...process.env, ANTHROPIC_API_KEY: session.apiKey },
+      abortController,
+      persistSession: false,
+      settingSources: [],
+    };
+
+    try {
+      const wq = query({ prompt: workerPrompt, options: workerOptions });
+      // Only forward tool events (not text) to avoid flooding the SSE stream
+      const workerSendSSE = (data) => {
+        if (data.type === 'tool_start' || data.type === 'tool_done') {
+          sendSSE({ ...data, worker: file.source_path });
+        }
+      };
+      await streamQueryEvents(wq, workerSendSSE, abortController);
+    } catch (err) {
+      try {
+        await writeFile(errorPath, `ERROR: ${err.message}\nFile: ${file.source_path}\nActual path: ${file.actual_path}`, 'utf-8');
+      } catch { /* best effort */ }
+      sendSSE({ type: 'text', content: `  ⚠️ Worker failed for ${file.source_path}: ${err.message}\n` });
+    }
+  }
+
+  async function runParallelExtract({ session, systemPrompt, queryOptions, sendSSE, abortController, skillArgs, bridge }) {
+    const queuePath = resolve(projectRoot, '02_Work/_temp/extract_queue.json');
+    const tasksDir = resolve(projectRoot, '02_Work/_temp/tasks');
+
+    // Phase 1: Coordinator — discovery, classification, checkpoint, write queue
+    sendSSE({ type: 'text', content: '⚡ Phase 1/3: Discovering and classifying sources...\n' });
+    const coordinatorPrompt = `Execute the extract skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt. IMPORTANT: Execute the skill exactly ONCE. After completing all phases and reporting results, STOP. Do not re-execute, verify, or start over.
+[COORDINATOR_MODE]: Run Phase 0 through Phase 1 only (steps 1-7 including checkpoint). At the end, write the file queue to 02_Work/_temp/extract_queue.json and respond with "COORDINATOR_DONE: N files". STOP immediately after writing the queue. Do NOT read any source files. Do NOT proceed to Phase 1.5 or Phase 2.`;
+    const phase1q = query({ prompt: coordinatorPrompt, options: { ...queryOptions, maxTurns: 30 } });
+    await streamQueryEvents(phase1q, sendSSE, abortController);
+
+    if (abortController.signal.aborted) return;
+
+    // Read and validate queue written by coordinator
+    let queueData;
+    try {
+      const raw = await readFile(queuePath, 'utf-8');
+      queueData = JSON.parse(raw);
+    } catch (err) {
+      sendSSE({ type: 'error', message: `Coordinator did not produce extract_queue.json: ${err.message}` });
+      return;
+    }
+
+    const files = queueData?.files || [];
+    if (files.length === 0) {
+      sendSSE({ type: 'done', usage: null });
+      return;
+    }
+    if (files.some(f => !f.source_path || !f.actual_path)) {
+      sendSSE({ type: 'error', message: 'extract_queue.json has invalid entries (missing source_path or actual_path)' });
+      return;
+    }
+
+    // Phase 2: Worker pool — parallel extraction (Haiku × N, max WORKER_CONCURRENCY concurrent)
+    sendSSE({ type: 'text', content: `⚡ Phase 2/3: Extracting ${files.length} files in parallel (max ${WORKER_CONCURRENCY} concurrent)...\n` });
+    await mkdir(tasksDir, { recursive: true });
+    const workerSystemPrompt = await buildWorkerSystemPrompt();
+
+    for (let i = 0; i < files.length; i += WORKER_CONCURRENCY) {
+      if (abortController.signal.aborted) break;
+      const batch = files.slice(i, i + WORKER_CONCURRENCY);
+      await Promise.all(batch.map(file =>
+        runWorker(file, tasksDir, workerSystemPrompt, session, abortController, sendSSE, bridge)
+      ));
+      const done = Math.min(i + WORKER_CONCURRENCY, files.length);
+      sendSSE({ type: 'text', content: `  ✓ ${done}/${files.length} files extracted\n` });
+    }
+
+    if (abortController.signal.aborted) return;
+
+    // Phase 3: Consolidation — merge task files into EXTRACTIONS.md, update SOURCE_MAP, cleanup
+    sendSSE({ type: 'text', content: '⚡ Phase 3/3: Consolidating results into EXTRACTIONS.md...\n' });
+    const consolidationPrompt = `Execute the extract skill consolidation now. Follow the instructions in your system prompt. IMPORTANT: Execute exactly ONCE then STOP.
+[CONSOLIDATE_MODE]: All source files have been extracted in parallel. Results are in 02_Work/_temp/tasks/ — one .md file per source. Skip Phase 0, 1, and 1.5. Read all task files, merge into EXTRACTIONS.md (batched writes, never all at once), update SOURCE_MAP.md, run cleanup (preserve SESSION_CHECKPOINT.md and *_normalized.md), update MEMORY.md and checkpoint. Mode was: ${skillArgs || 'express'}.`;
+    const phase3q = query({ prompt: consolidationPrompt, options: { ...queryOptions, maxTurns: 50 } });
+    const result = await streamQueryEvents(phase3q, sendSSE, abortController);
+
+    sendSSE({ type: 'done', usage: result?.usage || null });
+  }
+
   // --- Main run endpoint ---
 
   router.post('/run', requireSession, async (req, res) => {
@@ -212,6 +388,7 @@ ${projectMd}
     const mode = skillMatch ? 'skill' : 'qa';
     const skillName = skillMatch ? skillMatch[1] : null;
     const skillArgs = skillMatch ? skillMatch[2].trim() : '';
+    const useParallel = skillName === 'extract' && !skillArgs.includes('--file') && !skillArgs.includes('--heavy');
 
     // Build system prompt (throws on missing skill)
     let systemPrompt;
@@ -279,86 +456,90 @@ ${projectMd}
         queryOptions.resume = session.sdkSessionId;
       }
 
-      // For skills, replace "/extract" with a descriptive prompt so the SDK
-      // doesn't intercept it as its own slash command. The system prompt
-      // already contains the full SKILL.md instructions.
-      const sdkPrompt = mode === 'skill'
-        ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt. IMPORTANT: Execute the skill exactly ONCE. After completing all phases and reporting results, STOP. Do not re-execute, verify, or start over.`
-        : message;
+      if (useParallel) {
+        await runParallelExtract({ session, systemPrompt, queryOptions, sendSSE, abortController, skillArgs, bridge });
+      } else {
+        // For skills, replace "/extract" with a descriptive prompt so the SDK
+        // doesn't intercept it as its own slash command. The system prompt
+        // already contains the full SKILL.md instructions.
+        const sdkPrompt = mode === 'skill'
+          ? `Execute the ${skillName} skill now.${skillArgs ? ` Arguments: ${skillArgs}` : ''} Follow the instructions in your system prompt. IMPORTANT: Execute the skill exactly ONCE. After completing all phases and reporting results, STOP. Do not re-execute, verify, or start over.`
+          : message;
 
-      const q = query({ prompt: sdkPrompt, options: queryOptions });
-      const run = activeRuns.get(token);
-      if (run) run.query = q;
+        const q = query({ prompt: sdkPrompt, options: queryOptions });
+        const run = activeRuns.get(token);
+        if (run) run.query = q;
 
-      // Track tool_use blocks to emit tool_done when we see results
-      const pendingTools = new Map(); // id → { name, startTime }
+        // Track tool_use blocks to emit tool_done when we see results
+        const pendingTools = new Map(); // id → { name, startTime }
 
-      for await (const msg of q) {
-        if (abortController.signal.aborted) break;
+        for await (const msg of q) {
+          if (abortController.signal.aborted) break;
 
-        // System init — capture session ID
-        if (msg.type === 'system' && msg.subtype === 'init') {
-          if (mode === 'qa') {
-            session.sdkSessionId = msg.session_id;
+          // System init — capture session ID
+          if (msg.type === 'system' && msg.subtype === 'init') {
+            if (mode === 'qa') {
+              session.sdkSessionId = msg.session_id;
+            }
+            continue;
           }
-          continue;
-        }
 
-        // Assistant message — text, tool_use blocks (skip thinking)
-        if (msg.type === 'assistant' && msg.message?.content) {
-          for (const block of msg.message.content) {
-            if (block.type === 'thinking') continue;
-            if (block.type === 'text') {
-              sendSSE({ type: 'text', content: block.text });
-            } else if (block.type === 'tool_use') {
-              // Skip AskUserQuestion — handled in canUseTool
-              if (block.name === 'AskUserQuestion') continue;
+          // Assistant message — text, tool_use blocks (skip thinking)
+          if (msg.type === 'assistant' && msg.message?.content) {
+            for (const block of msg.message.content) {
+              if (block.type === 'thinking') continue;
+              if (block.type === 'text') {
+                sendSSE({ type: 'text', content: block.text });
+              } else if (block.type === 'tool_use') {
+                // Skip AskUserQuestion — handled in canUseTool
+                if (block.name === 'AskUserQuestion') continue;
 
+                sendSSE({
+                  type: 'tool_start',
+                  tool: block.name,
+                  input: summarizeInput(block.input),
+                });
+                pendingTools.set(block.id, { name: block.name, startTime: Date.now() });
+              }
+            }
+            continue;
+          }
+
+          // User message (tool results) — match tool_done events
+          if (msg.type === 'user' && msg.message?.content && Array.isArray(msg.message.content)) {
+            for (const block of msg.message.content) {
+              if (block.type === 'tool_result' && pendingTools.has(block.tool_use_id)) {
+                const tool = pendingTools.get(block.tool_use_id);
+                pendingTools.delete(block.tool_use_id);
+                const content = typeof block.content === 'string'
+                  ? block.content
+                  : JSON.stringify(block.content);
+                const summary = content.length > 500
+                  ? content.slice(0, 500) + '...'
+                  : content;
+                sendSSE({ type: 'tool_done', tool: tool.name, summary });
+              }
+            }
+            continue;
+          }
+
+          // Result message — done or error
+          if (msg.type === 'result') {
+            if (msg.subtype === 'success') {
               sendSSE({
-                type: 'tool_start',
-                tool: block.name,
-                input: summarizeInput(block.input),
+                type: 'done',
+                usage: msg.usage || null,
               });
-              pendingTools.set(block.id, { name: block.name, startTime: Date.now() });
+            } else if (msg.subtype === 'error') {
+              sendSSE({
+                type: 'error',
+                message: msg.error || 'Unknown error',
+              });
             }
+            continue;
           }
-          continue;
         }
-
-        // User message (tool results) — match tool_done events
-        if (msg.type === 'user' && msg.message?.content && Array.isArray(msg.message.content)) {
-          for (const block of msg.message.content) {
-            if (block.type === 'tool_result' && pendingTools.has(block.tool_use_id)) {
-              const tool = pendingTools.get(block.tool_use_id);
-              pendingTools.delete(block.tool_use_id);
-              const content = typeof block.content === 'string'
-                ? block.content
-                : JSON.stringify(block.content);
-              const summary = content.length > 500
-                ? content.slice(0, 500) + '...'
-                : content;
-              sendSSE({ type: 'tool_done', tool: tool.name, summary });
-            }
-          }
-          continue;
-        }
-
-        // Result message — done or error
-        if (msg.type === 'result') {
-          if (msg.subtype === 'success') {
-            sendSSE({
-              type: 'done',
-              usage: msg.usage || null,
-            });
-          } else if (msg.subtype === 'error') {
-            sendSSE({
-              type: 'error',
-              message: msg.error || 'Unknown error',
-            });
-          }
-          continue;
-        }
-      }
+      } // end else (single query path)
     } catch (err) {
       if (err.name !== 'AbortError' && !abortController.signal.aborted) {
         sendSSE({ type: 'error', message: err.message });
