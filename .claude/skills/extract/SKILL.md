@@ -143,13 +143,26 @@ EVERY file discovered in Phase 1 MUST be:
 5. **File classification & mode filtering:**
 
    Using the extension and size from the script output, classify files in the processing queue:
+   - **PREPROCESSED override (highest priority):** If the file appears in the `PREPROCESSED` section of the script output → classify as **light** regardless of extension or size. Never defer as `pending-heavy`.
    - **Light files:** `.md`, `.txt`, `.csv`, `.png`, `.jpg`, `.jpeg`, `.heic` and any file < 1MB
    - **Heavy files:** `.pdf`, `.docx`, `.pptx`, `.xlsx` or any file ≥ 5MB
 
    **Apply mode filter (from Phase 0b):**
-   - **Express mode:** Remove heavy files from processing queue. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process, {heavy_count} heavy files deferred (pending-heavy)`
+   - **Express mode:** Remove heavy files from processing queue. PREPROCESSED files are exempt — they remain in the light queue regardless of their original extension. For each heavy file, write `pending-heavy` status to SOURCE_MAP.md (do NOT skip these silently — they must appear in the report). Log: `⚡ Express mode: {light_count} light files to process ({preprocessed_count} preprocessed), {heavy_count} heavy files deferred (pending-heavy)`
    - **Heavy-only mode:** Use PENDING_HEAVY count and files from script output. If none found, report "No heavy files pending — run /extract first" and stop.
    - **Full mode:** Process all files (no filtering).
+
+7. **Cost gate — preventive checkpoint:**
+   IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing candidates detected:
+     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
+     - Phase completed: Phase 1 (discovery)
+     - Files in queue: [list with sizes]
+     - Mode: [express/full/heavy]
+     - Preprocessing candidates: [list or "none"]
+     - Resume instruction: "If recovering from compaction, skip Phase 1, read this checkpoint, continue from Phase 1.5 (or Phase 2 if no preprocessing)"
+   ELSE (≤10 files, small, no preprocessing):
+     Skip mid-skill checkpoints (task is small enough to complete safely)
+   Log: `💾 Preventive checkpoint written (${file_count} files, ${est_size}KB)`
 
 5b. **Oversized line detection** — For each file in the processing queue:
    - Check: `file_size / line_count > 2000` chars/line (approximate via `wc -l` and `wc -c`)
@@ -183,18 +196,6 @@ EVERY file discovered in Phase 1 MUST be:
      - Log: "  Pass 2: {heavy_count} heavy files (processing 1 at a time)"
      - Set batching flag for Phase 2
      - **CRITICAL: Process files DIRECTLY in main context (NO Task agents, NO parallelization)**
-
-7. **Cost gate — preventive checkpoint:**
-   IF file_count > 10 OR total_estimated_size > 50KB OR preprocessing candidates detected:
-     Write preventive checkpoint to `02_Work/_temp/SESSION_CHECKPOINT.md`:
-     - Phase completed: Phase 1 (discovery)
-     - Files in queue: [list with sizes]
-     - Mode: [express/full/heavy]
-     - Preprocessing candidates: [list or "none"]
-     - Resume instruction: "If recovering from compaction, skip Phase 1, read this checkpoint, continue from Phase 1.5 (or Phase 2 if no preprocessing)"
-   ELSE (≤10 files, small, no preprocessing):
-     Skip mid-skill checkpoints (task is small enough to complete safely)
-   Log: `💾 Preventive checkpoint written (${file_count} files, ${est_size}KB)`
 
 ### Phase 1b: Delta Adjustments
 
