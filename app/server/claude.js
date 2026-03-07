@@ -11,9 +11,13 @@ import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import { readFile, writeFile, readdir, mkdir, copyFile, stat } from 'fs/promises';
 import { resolve, join, dirname } from 'path';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import Anthropic from '@anthropic-ai/sdk';
 import { query } from '@anthropic-ai/claude-agent-sdk';
 import { InteractionBridge, createCanUseTool } from './sdk-guards.js';
+
+const execFileAsync = promisify(execFile);
 
 export function createClaudeRoutes(projectRoot, broadcast) {
   const router = Router();
@@ -381,14 +385,21 @@ Instructions:
 
     if (abortController.signal.aborted) return;
 
-    // Phase 3: Consolidation — merge task files into EXTRACTIONS.md, update SOURCE_MAP, cleanup
+    // Phase 3: Consolidation (script-based, 0 tokens)
     sendSSE({ type: 'text', content: '⚡ Phase 3/3: Consolidating results into EXTRACTIONS.md...\n' });
-    const consolidationPrompt = `Execute the extract skill consolidation now. Follow the instructions in your system prompt. IMPORTANT: Execute exactly ONCE then STOP.
-[CONSOLIDATE_MODE]: All source files have been extracted in parallel. Results are in 02_Work/_temp/tasks/ — one .md file per source. Skip Phase 0, 1, and 1.5. Read all task files, merge into EXTRACTIONS.md (batched writes, never all at once), update SOURCE_MAP.md, run cleanup (preserve SESSION_CHECKPOINT.md and *_normalized.md), update MEMORY.md and checkpoint. Mode was: ${skillArgs || 'express'}.`;
-    const phase3q = query({ prompt: consolidationPrompt, options: { ...queryOptions, maxTurns: 50 } });
-    const result = await streamQueryEvents(phase3q, sendSSE, abortController);
+    const scriptPath = join(projectRoot, 'scripts', 'consolidate.sh');
+    try {
+      const { stdout } = await execFileAsync('bash', [scriptPath, projectRoot], {
+        cwd: projectRoot,
+        timeout: 120_000,
+      });
+      sendSSE({ type: 'text', content: stdout });
+    } catch (err) {
+      sendSSE({ type: 'error', message: `Consolidation failed: ${err.message}` });
+      throw err;
+    }
 
-    sendSSE({ type: 'done', usage: result?.usage || null });
+    sendSSE({ type: 'done', usage: null });
   }
 
   // --- Main run endpoint ---

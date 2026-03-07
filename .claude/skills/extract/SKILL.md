@@ -448,27 +448,8 @@ Do NOT read any source files. Do NOT proceed to Phase 1.5 or Phase 2.
 
 ### [CONSOLIDATE_MODE]
 
-If the prompt contains `[CONSOLIDATE_MODE]`: skip Phase 0, 1, and 1.5. Workers have already
-extracted claims into `02_Work/_temp/tasks/`. Each `.md` file in that directory contains a
-pre-formatted extraction section ready to append to EXTRACTIONS.md.
-
-1. List all files in `02_Work/_temp/tasks/` matching `*.md` (not `.error`) using Glob or Bash
-2. Read each task file and append its content to EXTRACTIONS.md (batched: write every 5 files)
-3. For `.error` files: read the error content and add a row to SOURCE_MAP.md with status `error`
-4. Continue normally from Phase 4 (Validate against disk) → Phase 4b (SOURCE_MAP update) → Phase 4c (Cleanup) → Phase 4d (Indexes) → Phase 5 (MEMORY.md)
-
-Worker output format (each task `.md` file):
-```markdown
-## [01_Sources/folder/file.md]
-- Type: [inferred type]
-- Date: [from metadata or "unknown"]
-- Preprocessed: yes|no
-- Extracted: YYYY-MM-DDTHH:MM
-
-### Raw Claims
-1. "[claim]"
-2. "[claim]"
-```
+Phase 3 is handled by `scripts/consolidate.sh`, called directly by the app runner (claude.js).
+This block is not used in parallel mode. No action needed from the skill.
 
 **Silent execution rule:** Do not narrate between tool calls. Do not announce what you are about to do ("Now reading...", "Now updating..."). Execute tool calls directly. Only output text when a `Log:` directive explicitly specifies the message to output.
 
