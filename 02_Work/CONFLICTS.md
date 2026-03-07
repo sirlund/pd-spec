@@ -8,4 +8,5 @@ Contradictions detected between insights. Each conflict has a unique `[CF-XX]` I
 - **RESOLVED** — User has provided a resolution direction.
 
 ---
----
+
+<!-- New conflicts are appended below by /analyze -->
