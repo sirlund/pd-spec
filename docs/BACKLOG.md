@@ -921,6 +921,19 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 5. Deployment: single Node.js app (Express + React, already exists) behind reverse proxy
 6. Billing: usage-based (LLM tokens) or flat subscription
 
+**Platform credits model — risks and mitigations (2026-03-07):**
+
+In the platform credits model (user pays PD-Spec → Nicolas's API key handles all Anthropic calls), Nicolas absorbs the following risks:
+
+| Risk | Scenario | Mitigation |
+|---|---|---|
+| Underpricing | Real usage (3 iterations, re-runs) exceeds the assumed 1 E2E run per credit pack | Price credits with 2-3x usage buffer; benchmark real usage before launching |
+| No spend cap | User uploads 200 files, runs /extract --full — Anthropic bills $12, user had $5 in credits | Hard token budget enforced server-side; run aborts if balance exhausted mid-run |
+| Card fraud | User buys $10 credits with stolen card, burns API, files chargeback | Stripe fraud detection; delay first run by 24h for new accounts |
+| Anthropic price increase | Credits sold at today's price, Anthropic raises rates | Don't pre-sell large credit packs; keep credits short-lived (90 day expiry) |
+
+BYOK model has none of these risks (user pays Anthropic directly) but has higher onboarding friction. Both models should coexist: BYOK for technical users, platform credits for non-technical/trial users.
+
 **Evidence:**
 - Hugo: *"¿Y esto es un localhost? ¿Lo podrías publicar?"*
 - Nico: *"Puede tener un login, puedo pagar, puedo cobrar un fee"*
