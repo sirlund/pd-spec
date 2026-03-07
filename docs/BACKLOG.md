@@ -10,6 +10,58 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-122] QA: E2E Pipeline Benchmark — SDK vs CLI
+
+**Status:** PROPOSED
+**Priority:** P1
+**Effort:** S
+**Origin:** BL-115 QA session (2026-03-07). /extract parallel validated. /analyze, /spec, /ship never benchmarked in SDK mode. Need structured comparison before declaring pipeline production-ready.
+
+**Goals:**
+1. Confirm E2E works (extract → analyze → spec → ship) without errors or compaction loops
+2. Cost per file across full pipeline (SDK vs known CLI baseline: ~$2.04/file)
+3. Speed per step (wall clock)
+4. Quality signal: claims → insights conversion rate, conflict detection rate
+5. Stability: does /analyze loop or compact on QA dataset (6 files, 189 claims)?
+
+**CLI baseline (known):**
+- /extract serial: ~$1.05 (14 files), ~$0.07/file express
+- /analyze: ~$0.99 (14 files)
+- /spec + /ship: not benchmarked
+- Total extract+analyze: ~$2.04
+
+**Proposed test protocol:**
+1. Reset QA worktree to post-extract state (keep EXTRACTIONS.md, wipe INSIGHTS_GRAPH + downstream)
+2. Run `/analyze` — record cost delta, time, output quality
+3. Run `/spec` — record cost delta, conflicts resolved
+4. Run `/ship prd` — record cost delta, output quality
+5. Compare totals vs CLI baseline
+
+**Risk control:** Run on reduced QA dataset (2-3 files, ~60 claims) for first pass to cap cost at ~$0.30-0.50 before committing to full 6-file run.
+
+---
+
+### [BL-121] FEAT: Phase 1.5 Transcript Preprocessing in Parallel Extract Mode
+
+**Status:** PROPOSED
+**Priority:** P4
+**Effort:** M
+**Origin:** QA BL-115 (2026-03-07). Comparison between parallel Haiku extraction and serial Sonnet extraction of the TIMining touchpoint transcript revealed missing speaker attribution. Root cause: Phase 1.5 (Pass A speaker diarization, Pass B phonetics, Pass C sentence repair) is absent from the parallel pipeline — the coordinator only does Phase 1 (discovery + classification).
+
+**Accepted tradeoff (short term):** Phase 1.5 stays serial-only for now. Tools like Granola already produce speaker-attributed, normalized versions — export that instead of raw ASR. Sufficient for current use.
+
+**Why this is non-trivial vs. Granola:** Granola preprocesses in isolation without project context. PD-Spec Phase 1.5 can use `_CONTEXT.md` and existing `EXTRACTIONS.md` metadata to resolve speaker ambiguity and phonetic corrections specific to the project's domain vocabulary. The contextual insight cross-referencing ("this claim closes tension [IG-19]") belongs to `/analyze`, not here — Phase 1.5 scope is normalization + clean speaker attribution only.
+
+**If built (implementation path):**
+- Coordinator detects transcript candidates after Phase 1
+- Runs Phase 1.5 Passes A+B+C (Sonnet) → writes `_temp/filename_clean.md`
+- Updates `actual_path` in `extract_queue.json` — workers receive clean version automatically
+- Cost: ~$0.20-0.30/transcript, zero changes to worker code
+
+**Future angle:** `/preprocess` skill or Pro tier for teams without Granola/equivalent.
+
+---
+
 ### [BL-120] Agent Chat Log UI — Task Tracker with Parallel Progress
 
 **Status:** PROPOSED
