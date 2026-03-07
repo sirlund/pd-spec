@@ -268,7 +268,14 @@ Write output to: ${outputRelative}
 Instructions:
 1. Read the file at "Read from" path above.
    - If the file has more than 1800 lines, use Read with offset and limit of 1500 lines per chunk until all content is read.
-2. Extract all factual claims, quotes, and data points.
+2. Extract claims that matter for product research. Apply density filtering:
+   INCLUDE: user needs, pain points, behaviors (direct quotes preferred), business
+   constraints, success metrics, strategic decisions, technical limitations, verifiable
+   facts (numbers, dates, commitments), competitive insights.
+   EXCLUDE: scheduling logistics, social pleasantries, conversational filler, repetitive
+   restatements of the same point already captured.
+   Target density: 3-5 claims per page for transcripts and documents. A 50-page
+   transcript should yield ~150-250 claims, not thousands. Quality over quantity.
 3. Write structured output to the output path in this exact format:
 
 ## [${file.source_path}]
