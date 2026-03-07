@@ -52,9 +52,9 @@ Use cases: re-preprocess after bug fix, extract a single new file, iterate on a 
 
 Express mode is the default — it enables fast iteration on text and image sources while deferring expensive PDF/Office processing. Use `--full` to process everything, or `--heavy` after an express pass to pick up deferred files.
 
-## MANDATORY RULE: NO EDITORIAL DECISIONS
+## MANDATORY RULE: NO SKIPPING FILES
 
-The agent MUST NOT skip files based on:
+The agent MUST NOT skip **files** based on:
 - Assumed redundancy
 - Subjective judgment about value or relevance
 - Optimization attempts to reduce processing time
@@ -63,7 +63,26 @@ EVERY file discovered in Phase 1 MUST be:
 (a) Processed with claims extracted, OR
 (b) Reported as unprocessable with technical reason (unsupported format, conversion error, Read tool failure)
 
-"Redundancy" is NOT a valid technical reason. If two files appear to contain similar information, BOTH must be processed. Deduplication happens in `/analyze`, not here.
+"Redundancy" is NOT a valid technical reason to skip a file. If two files appear to contain similar information, BOTH must be processed. Deduplication happens in `/analyze`, not here.
+
+## MANDATORY RULE: DENSITY-AWARE EXTRACTION
+
+Within each file, apply semantic density filtering — do NOT dump every sentence as a claim:
+
+**INCLUDE:** User needs, pain points, behaviors (direct quotes preferred), business constraints,
+success metrics, strategic decisions, technical limitations, verifiable facts (numbers, dates,
+commitments), competitive insights, contradictions.
+
+**EXCLUDE:** Scheduling logistics ("meeting on Tuesday"), social pleasantries, conversational
+filler, repetitive restatements of a point already captured in the same file.
+
+**Target density:**
+- Transcripts and interviews: ~3-5 claims per page
+- Short documents (<10 pages): all meaningful facts
+- Large reports/datasets: key data points, not every row
+
+A 50-page transcript should yield ~150-250 claims. A 2-page brief: ~10-20 claims.
+This rule applies at the claim level, NOT the file level — every file still gets processed.
 
 ### Phase 1: Discover Sources
 
