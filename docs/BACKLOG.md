@@ -917,7 +917,7 @@ Skill instructions for `audit`, `strategy`, `presentation`, and `benchmark-ux` g
 1. Auth: OAuth (Google) or magic link
 2. File storage: S3-compatible bucket per tenant (replaces local `01_Sources/`)
 3. Multi-tenancy: isolated Work layers per project
-4. LLM integration: ties into BL-80 (BYOK or platform credits)
+4. LLM integration: ties into BL-80 (BYOK or platform credits). **Trial model idea (2026-03-07):** platform provides ~$2 in API credits for a guided E2E trial (10-15 files → full pipeline ~$1.70). If user completes it and likes the result, they upgrade to BYOK or a paid credits pack. No billing infra needed for trial — fixed budget enforced server-side by token counter. Margin on credits pack: ~8-10x ($15-20 for $1.70 worth of API).
 5. Deployment: single Node.js app (Express + React, already exists) behind reverse proxy
 6. Billing: usage-based (LLM tokens) or flat subscription
 
