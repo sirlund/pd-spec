@@ -76,12 +76,12 @@ commitments), competitive insights, contradictions.
 **EXCLUDE:** Scheduling logistics ("meeting on Tuesday"), social pleasantries, conversational
 filler, repetitive restatements of a point already captured in the same file.
 
-**Target density:**
-- Transcripts and interviews: ~3-5 claims per page
-- Short documents (<10 pages): all meaningful facts
-- Large reports/datasets: key data points, not every row
-
-A 50-page transcript should yield ~150-250 claims. A 2-page brief: ~10-20 claims.
+**Target density (calibrated by type):**
+- Transcripts/interviews/meeting notes: 1 meaningful claim per 5-10 lines of dialogue. A 1700-line transcript should yield 100-200 claims.
+- Documents/presentations/reports: 3-5 claims per page.
+- Short documents (<5 pages): all meaningful facts.
+- Images: all visible meaningful content (text, diagrams, post-its, annotations).
+- Large reports/datasets: key data points, not every row.
 This rule applies at the claim level, NOT the file level — every file still gets processed.
 
 ### Phase 1: Discover Sources
@@ -860,12 +860,20 @@ Process all files in single pass (step 12 below)
 
 15. **Clean temporary conversion files** (preserve checkpoint and preprocessed files):
    ```bash
-   # Remove converted files but preserve SESSION_CHECKPOINT.md and preprocessed sources
-   find 02_Work/_temp -type f ! -name 'SESSION_CHECKPOINT.md' ! -name '*_normalized.md' -delete 2>/dev/null
+   # Remove converted files but preserve checkpoint, normalized, and markitdown-preprocessed files
+   find 02_Work/_temp -maxdepth 1 -type f \
+     ! -name 'SESSION_CHECKPOINT.md' \
+     ! -name '*_normalized.md' \
+     ! -name '*.pdf.md' \
+     ! -name '*.docx.md' \
+     ! -name '*.pptx.md' \
+     ! -name '*.xlsx.md' \
+     -delete 2>/dev/null
    ```
-   - Removes converted files (DOCX→txt, PPTX→txt, HEIC→jpg)
+   - Removes converted files (DOCX→txt, PPTX→txt, HEIC→jpg), task files, queue JSON
    - **Preserves** `SESSION_CHECKPOINT.md` (primary recovery mechanism)
-   - **Preserves** `*_normalized.md` (preprocessed sources for Phase 2 redirect)
+   - **Preserves** `*_normalized.md` (oversized-line normalized sources)
+   - **Preserves** `*.pdf.md`, `*.docx.md`, `*.pptx.md`, `*.xlsx.md` (markitdown preprocessed — avoid re-converting on next incremental run)
    - Only runs after all batches complete (or single pass completes)
 
 ### Phase 4d: Generate Indexes
