@@ -235,19 +235,27 @@ Option (a) means changes to `app/server/claude.js` (SDK event processing) and th
 
 | OBS | Priority | Description | Fix needed |
 |-----|----------|-------------|------------|
-| OBS-BL113-04 | P0 | PREPROCESSED files classified as `pending-heavy` in express mode — not processed in this pass | SKILL.md Phase 1c: add PREPROCESSED override → treat as light regardless of extension |
+| OBS-BL113-04 | ~~P0~~ | ~~PREPROCESSED files classified as `pending-heavy` in express mode~~ | **FIXED** — SKILL.md updated 2026-03-07: PREPROCESSED = always light, highest priority override, no exceptions |
 | OBS-BL113-01 | P1 | Checkpoint preventivo no escrito antes del primer compact (Sonnet skips maintenance steps under context pressure) | SKILL.md step 7: move checkpoint write to start of step, before Phase 1.5 |
-| OBS-BL113-02 | info | 3 auto-compacts in 14 light files with Sonnet — O(N²) history confirmed | Confirms urgency of Path 2 (parallel extraction) |
-| OBS-BL113-03 | info | Touchpoint (1761 lines, 133KB) truncated to 480 lines by compact mid-read | Symptom of O(N²), not a SKILL.md bug |
+| OBS-BL113-02 | info | 3 auto-compacts in 14 light files with Sonnet — O(N²) history confirmed | Resolved by BL-114/115 parallel extraction |
+| OBS-BL113-03 | info | Touchpoint (1761 lines, 133KB) truncated to 480 lines by compact mid-read | Resolved by BL-114/115 parallel extraction |
 
-**Remaining work:** Fix OBS-BL113-04 and OBS-BL113-01 in SKILL.md, then re-run E2E to confirm binaries are processed in express pass.
+**Parallel extraction OBS (BL-114/115, QA 2026-03-07):**
+
+| OBS | Priority | Description | Status |
+|-----|----------|-------------|--------|
+| OBS-BL114-01 | P2 | Worker logs in UI show no filename — impossible to track which source is being processed | Tracked in BL-120 (Agent Chat Log UI) |
+| OBS-BL114-02 | P2 | Parallel mode activation threshold uses file count only — should also consider total `size_kb` to avoid triggering parallel for 3 tiny files | OPEN — add `size_kb` threshold to `useParallel` gate in `claude.js` |
+| OBS-BL114-03 | ~~P1~~ | ~~Phase 3 consolidation slow — mechanical work, candidate for external script~~ | **FIXED** — implemented as `scripts/consolidate.sh` (BL-115) |
+
+**Remaining work:** Fix OBS-BL113-01 in SKILL.md. OBS-BL114-02 (size_kb threshold) in claude.js.
 
 **Acceptance criteria:**
 - [ ] PDF text extracted via markitdown, not LLM vision
 - [x] PPT/PPTX slides extracted to text via markitdown
 - [x] DOCX extracted via markitdown
 - [x] Pre-extracted files written to `02_Work/_temp/` with source reference
-- [ ] `/extract` reads pre-extracted text in express mode (OBS-BL113-04 blocks this)
+- [x] `/extract` reads pre-extracted text in express mode (OBS-BL113-04 FIXED)
 - [ ] Token cost for a 6-file project drops by >80%
 
 ---
@@ -262,6 +270,8 @@ Option (a) means changes to `app/server/claude.js` (SDK event processing) and th
 **Problem:** No automated setup. A new user must manually: install Node.js, clone the repo, run `npm install`, configure API keys, and understand the project structure. Hugo hit issues with Xcode CLI tools, npm permissions, and sandbox restrictions — all solvable but not discoverable without hand-holding.
 
 **Idea:** A `setup.sh` (or `npx pd-spec init`) that detects the environment, installs what's missing, and guides the user. Format and scope TBD — could be minimal (check prerequisites + npm install) or comprehensive (interactive wizard). Should ship alongside or right after BL-113 since adding npm packages makes setup more important, not less.
+
+**Distribution context (2026-03-07):** When the repo goes private (BL-123), this script becomes the primary distribution mechanism. Flow: user receives invite link or download URL → runs `curl | bash` → script downloads latest release zip (GitHub private release with token or public release artifact) → extracts, installs, configures. Users never need to clone the repo or see git history. Skills are present locally (Claude reads them) but not in-their-face.
 
 ---
 

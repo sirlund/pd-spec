@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.29.0] — 2026-03-07 — Parallel Extraction + Zero-Token Consolidation
+
+`/extract` now runs in parallel by default: a Sonnet coordinator classifies sources and dispatches independent Haiku workers (one per file), then a deterministic bash script consolidates results at zero token cost. Cost drops from ~$1.05/run (serial Sonnet) to ~$0.06/file at scale.
+
+<details>
+<summary>Features (2)</summary>
+
+- **BL-114 — Parallel extraction** — `useParallel` gate activates for default `/extract` runs (not `--file`, not `--heavy`). Coordinator (Sonnet) runs Phase 0+1, writes `02_Work/_temp/extract_queue.json`, then spawns N concurrent Haiku workers via `Task` agents. Each worker processes one file independently — no shared context, no O(N²) compaction. Workers use density-aware prompts: 1 claim per 5-10 lines for transcripts, 3-5 claims/page for documents.
+- **BL-115 — `scripts/consolidate.sh`** — Replaces Phase 3 Sonnet consolidation call entirely. Bash script reads `extract_queue.json`, merges task `.md` files into `EXTRACTIONS.md` in queue order, updates `SOURCE_MAP.md` in one awk pass per file, cleans `_temp/`, runs `generate-index.sh` if needed, appends `MEMORY.md` entry. Called via `execFileAsync` from `claude.js`. Cost: $0 tokens.
+
+</details>
+
+<details>
+<summary>Fixes (4)</summary>
+
+- **Classification rules** — PREPROCESSED files (markitdown output) are always light, no exceptions. Images (`.png`, `.jpg`, `.jpeg`, `.heic`) are always light regardless of file size — token cost depends on pixel dimensions, not bytes. Heavy = unpreprocessed pdf/docx/pptx/xlsx or text ≥ 5MB.
+- **Claim language** — Worker prompts now preserve source language. Claims are written in the language of the source file. `output_language` applies only to metadata labels and section headers, never to claim text.
+- **HEIC race condition** — Parallel workers writing HEIC temp files now use unique filenames per worker (`${sanitized}_${workerId}.heic`) — prevents clobbering when multiple HEIC files are processed concurrently.
+- **SOURCE_MAP header** — `reset.sh` now writes correct 6-column header (`File | Format | Status | Claims | Hash | Last Processed`) instead of previous 4-column template.
+
+</details>
+
+---
+
 ## [4.28.2] — 2026-03-03 — QA Quick Wins
 
 Two QA bugs from Hugo session (2026-03-02): scroll jump on insight approval, and legacy synthesis prompt in /analyze.
