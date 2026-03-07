@@ -126,14 +126,15 @@ export function createClaudeRoutes(projectRoot, broadcast) {
 You have native filesystem tools: Read, Write, Edit, Bash, Glob, Grep.
 NOTE: The Read tool has a 2000-line default limit and truncates lines longer than 2000
 characters. For source files, discover-sources.sh creates normalized versions of files with
-oversized lines in 02_Work/_temp/ — check the NORMALIZED section of its output and use those
+oversized lines and preprocessed versions of binary files (PDF, DOCX, PPTX, XLSX) in
+02_Work/_temp/ — check the NORMALIZED and PREPROCESSED sections of its output and use those
 paths when reading. For files over 1800 lines, use Read with offset/limit in chunks of 1500.
 IMPORTANT: When a skill requires user confirmation or selection (gates, approvals,
 choices), you MUST use the AskUserQuestion tool. Do NOT write questions as plain text
 — the user cannot respond to text. Only AskUserQuestion renders an interactive panel.
 
-For utility scripts, run them via Bash: ./scripts/script-name.sh [args]
-IMPORTANT: ALWAYS start /extract by running via Bash: ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
+For utility scripts, run them via Bash with zsh: zsh ./scripts/script-name.sh [args]
+IMPORTANT: ALWAYS start /extract by running: zsh ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
 
 Skip writing to 02_Work/MEMORY.md and 02_Work/_temp/SESSION_CHECKPOINT.md.
 The project root is the working directory for all file paths.

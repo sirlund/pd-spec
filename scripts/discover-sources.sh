@@ -312,3 +312,63 @@ if (( ${#normalized_files[@]} > 0 )); then
 else
   echo "  (none)"
 fi
+
+# --- 9. Preprocess binary files with markitdown ---
+# Non-fatal: if markitdown is not installed or fails, script continues normally.
+# The agent falls back to runtime conversion (current approach).
+BINARY_EXTS=("pdf" "docx" "pptx" "xlsx")
+typeset -a preprocessed_files
+typeset -A preprocessed_paths
+
+# Find markitdown — try python3 first, then versioned pythons
+MARKITDOWN_PY=""
+for _py in python3 python3.13 python3.12 python3.11 python3.10; do
+  if command -v "$_py" &>/dev/null && "$_py" -m markitdown --help &>/dev/null 2>&1; then
+    MARKITDOWN_PY="$_py"
+    break
+  fi
+done
+
+if [[ -n "$MARKITDOWN_PY" ]]; then
+  for f in "${new_files[@]}" "${modified_files[@]}" "${retry_files[@]}"; do
+    _full="$SOURCES_DIR/${original_path[$f]}"
+    _ext="${f:e:l}"
+
+    # Only preprocess binary files
+    _is_binary=0
+    for bext in "${BINARY_EXTS[@]}"; do
+      [[ "$_ext" == "$bext" ]] && _is_binary=1 && break
+    done
+    (( _is_binary == 0 )) && continue
+
+    _outpath="${WORK_TEMP}/${f}.md"
+    mkdir -p "$(dirname "$_outpath")"
+    rm -f "$_outpath"
+
+    if "$MARKITDOWN_PY" -m markitdown "$_full" > "$_outpath" 2>/dev/null; then
+      _chars=$(wc -m < "$_outpath" 2>/dev/null || echo 0)
+      _fsize=$(stat -f%z "$_full" 2>/dev/null || stat -c%s "$_full" 2>/dev/null || echo 0)
+
+      if (( _chars < 200 && _fsize > 100000 )); then
+        # Likely visual-only content (scanned PDF, image-heavy slides)
+        rm -f "$_outpath"
+      elif (( _chars > 0 )); then
+        preprocessed_files+=("$f")
+        preprocessed_paths[$f]="$_outpath"
+      else
+        rm -f "$_outpath"
+      fi
+    else
+      rm -f "$_outpath"  # Non-fatal: LLM uses current fallback
+    fi
+  done
+fi
+
+echo "PREPROCESSED: ${#preprocessed_files[@]}"
+if (( ${#preprocessed_files[@]} > 0 )); then
+  for f in "${preprocessed_files[@]}"; do
+    echo "  $f → ${preprocessed_paths[$f]}"
+  done
+else
+  echo "  (none)"
+fi

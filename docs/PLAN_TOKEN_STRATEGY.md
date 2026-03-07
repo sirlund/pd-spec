@@ -1,7 +1,7 @@
 # Token Strategy — CLI vs SDK Optimization Paths
 
 **Date:** 2026-03-04
-**Status:** DRAFT — pending review and prioritization
+**Status:** DRAFT — Path 1 spike validated, pending full implementation
 **Context:** Post-SDK migration. Two separate token consumption problems with different economics requiring different (but complementary) solutions.
 
 ---
@@ -53,18 +53,18 @@ Everything on the right is already done by scripts or can be done by npm package
 
 ### Concept
 
-Expand BL-113 from "add pdf-parse" to a full preprocessing philosophy. A script (new `preprocess-sources.sh` or integrated into `discover-sources.sh`) runs npm packages to convert ALL binary sources into plain text BEFORE the LLM touches anything.
+Expand BL-113 from "add pdf-parse" to a full preprocessing philosophy. A script (new `preprocess-sources.sh` or integrated into `discover-sources.sh`) runs **markitdown** (Python, by Microsoft) to convert ALL binary sources into plain text BEFORE the LLM touches anything. Single package handles PDF, DOCX, PPTX, XLSX.
 
 ### Pipeline
 
 ```
-01_Sources/              npm packages              02_Work/_temp/
-  report.pdf      →     pdf-parse / pdfjs-dist →   report.md
-  slides.pptx     →     pptx-parser            →   slides.md
-  brief.docx      →     mammoth                →   brief.md
-  data.xlsx       →     xlsx                   →   data.md
-  photo.png       →     skip (or tesseract.js) →   photo.txt (optional)
-  recording.mp4   →     skip                   →   (flagged for manual)
+01_Sources/              markitdown (Python)        02_Work/_temp/
+  report.pdf      →     markitdown              →   report.md
+  slides.pptx     →     markitdown              →   slides.md
+  brief.docx      →     markitdown              →   brief.md
+  data.xlsx       →     markitdown              →   data.md
+  photo.png       →     skip (or tesseract.js)  →   photo.txt (optional)
+  recording.mp4   →     skip                    →   (flagged for manual)
 ```
 
 ### Three-phase extraction pipeline
@@ -83,7 +83,7 @@ Phase 1: Mechanical preprocessing (0 tokens)
   │  discover-sources.sh + preprocess-sources.sh        │
   │                                                     │
   │  For each binary source:                            │
-  │    → Run npm package (pdf-parse, mammoth, etc.)     │
+  │    → Run markitdown (python3 -m markitdown <file>)  │
   │    → Got enough text?                               │
   │        YES → write .md to _temp/, mark PREPROCESSED │
   │        NO  → mark needs-vision in SOURCE_MAP        │
@@ -110,28 +110,34 @@ Phase 3: Semantic extraction — vision (expensive, requires confirmation)
   └─────────────────────────────────────────────────────┘
 ```
 
-**Vision detection heuristic:** The preprocessing script runs `pdf-parse` on every PDF. If extracted text is < 200 chars for a file > 100KB, the file is likely visual (infographic, diagram, photo-heavy). Marked `needs-vision` automatically. No manual classification needed.
+**Vision detection heuristic:** The preprocessing script runs markitdown on every binary file. If extracted text is < 200 chars for a file > 100KB, the file is likely visual (infographic, diagram, photo-heavy). Marked `needs-vision` automatically. No manual classification needed.
+
+> **Spike finding (2026-03-04):** The heuristic threshold works as a safety net, but in practice most "visual" files (exported slides, diagrams) still contain extractable text layers. The 11MB TIMining slide deck (exported PDF) yielded 31K chars; the PPTX diagram yielded 1,305 chars. Both would pass the heuristic and get preprocessed successfully without vision. True needs-vision cases are rare: scanned documents, photo-only PDFs, hand-drawn diagrams.
 
 **`--semantic` flag:** Manual override to force vision processing on all files, bypassing the heuristic. For cases where layout/visual context matters even when text extraction succeeded (e.g., a PDF where spatial arrangement of text conveys meaning).
 
 **Interaction model:** Phase 3 confirmation reuses the existing express/heavy pattern. In express mode (default), vision files are deferred as `pending-vision`. In full mode, the agent asks before processing them. The `--semantic` flag skips the question and processes everything with vision.
 
-### npm packages (candidates)
+### Package: markitdown (Python, Microsoft)
 
-| Format | Package | Maturity | Notes |
-|--------|---------|----------|-------|
-| PDF | `pdf-parse` or `pdfjs-dist` | Stable | Text extraction + vision detection heuristic |
-| DOCX | `mammoth` | Stable | Converts to clean HTML/text |
-| PPTX | `pptx` or `officegen` | Moderate | Slide text + speaker notes |
-| XLSX | `xlsx` (SheetJS) | Stable | Sheets to CSV/text |
-| CSV | `csv-parse` | Stable | Already text but may need structuring |
-| Images | `tesseract.js` | Moderate | OCR — heavy, optional, skip by default |
+**Winner from BL-113 spike (2026-03-04).** Single package replaces all npm candidates.
+
+| Format | markitdown | npm alternative | Spike result |
+|--------|-----------|-----------------|--------------|
+| PDF | 31,310 chars (2.98s) | pdf-parse: ESM import issues | **markitdown wins** |
+| DOCX | 35,021 chars (preserves ## headings, **bold**, lists) | mammoth: 33,811 chars (plain text only) | **markitdown wins** (structure) |
+| PPTX | 1,305 chars (0.60s) | No viable npm package | **markitdown only option** |
+| XLSX | Supported (not tested) | xlsx (SheetJS) | Deferred — no test files |
+| Images | Not supported | tesseract.js | Skip by default |
+
+**Requirement:** Python ≥3.10. Install: `pip install "markitdown[all]"`. CLI: `python3 -m markitdown <file>`.
+**Spanish chars:** Fully preserved (áéíóúñü¿¡) across all formats.
 
 ### Impact
 
 - **CLI:** Pro users spend budget on semantic work only. Hugo's 6-file project would work fine on Phase 1+2 alone. Phase 3 is opt-in and explicit about cost.
 - **SDK:** Direct reduction of input tokens — plain text vs visual processing. Phase 3 confirmation via existing `AskUserQuestion` / `InteractionBridge` (already works).
-- **Trade-off:** Adds npm dependencies. Previously avoided for portability, but now that the webapp already requires `npm install`, this constraint is obsolete.
+- **Trade-off:** Requires Python ≥3.10 with markitdown installed. Single dependency vs multiple npm packages. The preprocessing script calls `python3 -m markitdown` via subprocess — no Python integration into the Node.js app.
 - **User experience:** Unchanged for text-only projects. For mixed projects, Phase 1+2 run silently and fast, then the user is asked about the visual files with a cost estimate before proceeding.
 
 ---
@@ -259,7 +265,7 @@ In the SDK, the pipeline doesn't need the LLM to decide "should I run the script
 async function extract(projectDir) {
   // Step 1-2: mechanical (zero LLM)
   await runScript('discover-sources.sh', projectDir);
-  await runScript('preprocess-sources.sh', projectDir);
+  await runScript('preprocess-sources.sh', projectDir);  // markitdown
 
   // Step 3: semantic (LLM, parallel, Haiku)
   const files = await getPreprocessedFiles(projectDir);
@@ -285,7 +291,7 @@ This is the full vision of "agents as thinkers, not executors" applied to the SD
                             CLI impact    SDK impact    Effort    Depends on
                             ──────────    ──────────    ──────    ──────────
 1. Path 1 (BL-113 expanded)    High          High          M        —
-   npm preprocessing
+   markitdown preprocessing
 
 2. Path 2 (BL-80 Ph2)          —             Very high     L        Path 1
    parallel extraction
@@ -308,3 +314,51 @@ Path 1 is the highest-value move — attacks both channels, is M effort, and unb
 3. **Parallel extraction granularity (Path 2):** One call per file? Per batch of 3-5 small files? Per subfolder? Need to balance parallelism vs overhead of N separate API calls.
 4. **Haiku quality for extraction:** Assumption is Haiku extracts claims from plain text at ~95% Sonnet quality. Needs empirical validation on a real project before committing.
 5. **Phase 3 cost estimation:** How accurate can we make the estimate? Input tokens are predictable (file size), but output tokens depend on content density. A conservative multiplier (e.g., 1.5x input) might be good enough for a ballpark shown to the user.
+
+---
+
+## Strategic Questions — Future of pd-spec
+
+Captured from 2026-03-04 session. These are directional questions, not action items.
+
+### Moat & differentiation
+
+The moat is NOT the LLM or the webapp — it's the **methodology codified as executable rules** (truth stack, insight lifecycle, conflict detection, evidence traceability) and the **full cycle** from research → decision → deliverable. Competitors (NotebookLM, Elicit, Consensus) stop at analysis. pd-spec reaches `/ship`.
+
+Cross-LLM portability (validated: GPT-5.3 ran the skills) means the moat is the orchestration + rules, not the runtime. Each LLM generation makes the pipeline better for free.
+
+### Scale ceiling
+
+Context window is the hard limit. 200+ sources don't fit. RAG (BL-22, XL effort) is the theoretical answer but changes the architecture fundamentally. Question: does anyone actually need 200 sources in one project, or is that 4 projects that should be separate?
+
+### Single-user → team
+
+Today it's one researcher. Collaborative research (multiple people adding field notes, reviewing insights, resolving conflicts) requires real-time sync, permissions, versioning — fundamentally different architecture from markdown files in git. pd-spec for teams is a different product, not a feature.
+
+### The bootstrap problem
+
+pd-spec synthesizes research you've already done. It doesn't help you figure out *what* to research. Evidence gaps and `/audit` are reactive. Could there be a step before `/extract` — a `/plan-research` that suggests activities based on the brief? "Given your brief, you're missing user interviews and competitive benchmarks."
+
+### Tool vs methodology
+
+The truth stack, insight lifecycle, and conflict detection framework could be taught and applied manually (post-its, Miro, spreadsheets). The software accelerates it. Is there a world where pd-spec is a methodology + certification, and the software is the accelerator? (Like IDEO's HCD toolkit.)
+
+### Intuition vs evidence bias
+
+pd-spec weights evidence. Tier 4 (Vision/Aspiration) gets lowest authority. But some great design decisions are intuitive leaps. Does the system create a bias toward safe, well-evidenced decisions at the expense of bold innovation? The iPhone didn't come from an evidence gap analysis.
+
+### Domain generality
+
+Nothing in the engine is specific to product design. The architecture works for competitive intelligence, academic research, policy analysis, due diligence. The skills are markdown — change the instructions, change the domain. Is pd-spec a product design tool or a general research synthesis engine?
+
+### MCP App: distribution vs control
+
+As MCP tool, pd-spec lives inside someone else's UI (Claude, ChatGPT, VS Code). Gains massive distribution, loses UX control. Probably two products: webapp for serious researchers, MCP App for PMs doing quick 3-document analysis. Coexistence, not replacement.
+
+### Business model defines the product
+
+Who pays? Tokens cost money. A consultant charging $5K/sprint doesn't care about $5 in tokens. A freelance designer does. An enterprise team needs centralized billing and SOC2. Each model leads to a different product:
+- Open-source + paid hosting (GitLab model)
+- SaaS subscription (Figma model)
+- Methodology license + software (IDEO model)
+- Free engine + paid MCP App marketplace listing
