@@ -161,8 +161,8 @@ TEMPLATE
 
 Per-file extraction state. Auto-maintained by `/extract`.
 
-| File | Hash | Status | Timestamp |
-|---|---|---|---|
+| File | Format | Status | Claims | Hash | Last Processed |
+|---|---|---|---|---|---|
 TEMPLATE
 
   # MEMORY.md
