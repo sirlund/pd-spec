@@ -173,7 +173,12 @@ For each gap, suggest a concrete action: interview type, research method, docume
 
 **14. Write conflicts** — For each detected conflict, append to `02_Work/CONFLICTS.md` as PENDING with `[CF-XX]` ID. Both sides must reference `[IG-XX]` IDs.
 
-**15. Write diagnostic** — Write `02_Work/ANALYSIS.md`:
+**15. Write diagnostic** — Before writing, get accurate counts from files:
+```bash
+TOTAL=$(grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md)
+SENAL=$(grep -B5 'Tier: Señal' 02_Work/INSIGHTS_GRAPH.md | grep -c '### \[IG-')
+```
+Then write `02_Work/ANALYSIS.md` using those counts — never use in-memory tallies:
 
 ```markdown
 # Análisis — [Project Name]

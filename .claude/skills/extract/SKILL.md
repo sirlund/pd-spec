@@ -613,8 +613,8 @@ Process all files in single pass (step 12 below)
    **Non-markdown files** — The agent handles all common file types. Use the best available tool, with zero-dependency fallbacks.
 
    *Directly readable (Read tool):*
-   - **Images** (PNG, JPG) — Read the image file directly. Extract visible text, diagrams, post-it notes, or annotations as claims. For workshop photos, capture spatial relationships (groupings, connections drawn between items).
-   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out 02_Work/_temp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the 02_Work/_temp/ path.
+   - **Images** (PNG, JPG) — Read the image file directly. Extract the **actual content** visible in the image: text written on post-its, whiteboard annotations, diagram labels, slide text. Write claims in the language the content appears in (Spanish post-its → Spanish claims). Do NOT describe the image structure or format ("uses color-coded sticky notes", "canvas incorporates organizing lines") — extract what is written, not how it looks.
+   - **HEIC images** (iPhone default) — Convert to JPG first using macOS native tool: `sips -s format jpeg "file.heic" --out 02_Work/_temp/converted.jpg` (zero dependencies). Then read the resulting JPG as an image. Reference the original HEIC path in the extraction header, not the 02_Work/_temp/ path. Same rule: extract written content, not image structure.
 
    **Image batching** — Images are token-expensive (each photo can consume 1-2k input tokens for visual reading). To reduce overhead, batch images from the same folder:
    1. **Group** all image files (PNG, JPG, converted HEIC→JPG) within a subfolder.
