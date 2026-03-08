@@ -10,6 +10,36 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-126] FIX: /extract --file Dedup — Path Normalization on Re-extraction
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** QA session /analyze redesign (2026-03-08). Observed during HEIC re-extraction with fix applied.
+
+**Problem:** When `/extract --file` re-extracts a file already in EXTRACTIONS.md, it creates a duplicate section instead of overwriting the existing one. Root cause: path prefix mismatch between original entry (`01_Sources/Workshop 1/file.heic`) and new entry (`Workshop 1/file.heic`) — the lookup fails to find the existing section.
+
+**Fix:** Normalize paths to a canonical relative form (without `01_Sources/` prefix) both on write and on lookup. Fix location: `consolidate.sh` dedup logic or extract SKILL.md section header format.
+
+**Impact:** Without fix, EXTRACTIONS.md accumulates duplicate sections on reruns, inflating claim counts and confusing /analyze incremental mode.
+
+---
+
+### [BL-125] FEAT: Persist HEIC→JPG Conversion as Sidecar Artifact
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** S
+**Origin:** QA session /analyze redesign (2026-03-08). Idea surfaced during HEIC image extraction QA.
+
+**Problem:** markitdown converts HEIC → JPG ephemerally for API consumption. The converted JPG is discarded after extraction. On reruns, conversion happens again (unnecessary cost + time). Users can't inspect what the model actually saw.
+
+**Solution:** After conversion in `discover-sources.sh` step 8 (or consolidate.sh), persist the JPG as a sidecar in `02_Work/_temp/previews/` (or alongside original in `01_Sources/`). Reuse on subsequent runs if JPG already exists and HEIC hasn't changed (md5 check).
+
+**Benefit:** Avoids redundant conversion, enables debugging when image claims are wrong.
+
+---
+
 ### [BL-124] Parallel /analyze — Haiku Workers for Synthesis
 
 **Status:** PROPOSED
