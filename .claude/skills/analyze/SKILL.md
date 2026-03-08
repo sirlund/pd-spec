@@ -53,6 +53,13 @@ Scan claims across all filtered sections. Group claims that describe the same un
 - **1 source for a theme** → create an `[IG-XX]` (atomic insight).
 - **≥2 sources for a theme** → create an `[IG-SYNTH-XX]` (consolidated insight).
 
+**Granularity rules — when to separate vs. consolidate:**
+- **Separate** when claims have different categories, different sources, or could be independently verified or invalidated.
+- **Separate** when claims describe different problems even if they share a topic (e.g., "users lack time" and "users lack tools" are two insights, not one).
+- **Consolidate** only when two claims are the same observation stated differently from different sources.
+- **When in doubt, separate.** It's easier to merge later than to split. Aim for 1 insight per atomic concept — 20 sources should produce ~15-30 insights, not 5-8.
+- Do NOT bundle multiple problems or needs into one IG-SYNTH-XX. Broad "umbrella" insights lose traceability and make /spec harder.
+
 Use `./scripts/next-id.sh ig 02_Work/INSIGHTS_GRAPH.md` for IG IDs, `./scripts/next-id.sh synth` for IG-SYNTH IDs. If unavailable, scan existing IDs manually (two-digit minimum: IG-01…IG-99, then IG-100+).
 
 **7. Apply evidence tiers (deterministic)**
