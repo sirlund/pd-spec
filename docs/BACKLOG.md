@@ -10,6 +10,46 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-124] Parallel /analyze — Haiku Workers for Synthesis
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** M
+**Origin:** /analyze redesign session (2026-03-08). Applies BL-114 pattern to /analyze with a key architectural difference: synthesis requires cross-source context, so parallelism is split across 4 phases instead of 3.
+
+**Architecture:**
+```
+Phase 1: Coordinator (Sonnet)
+  → reads EXTRACTIONS.md, builds analyze_queue.json (sections + ID ranges per worker)
+
+Phase 2: Workers (Haiku × N) — parallel
+  → each worker: 1 section → atomic observations only (no IG-SYNTH, no cross-source synthesis)
+  → writes _temp/tasks/section-N.md with pre-assigned ID range
+
+Phase 3: Synthesis (Sonnet)
+  → reads all compact atomic outputs
+  → produces IG-SYNTH-XX cross-section, applies evidence tiers
+  → cheaper than current: reads structured atomics, not verbose raw claims
+
+Phase 4: Scripts ($0)
+  → consolidate-analyze.sh: merge, cleanup, MEMORY.md
+  → grade-tiers.sh: tier assignment + ANALYSIS.md generation
+```
+
+**Diff from BL-114:**
+- `claude.js`: add `skillName === 'analyze'` to `useParallel`, new `runParallelAnalyze()` (~70 lines)
+- `.claude/skills/analyze-worker/SKILL.md`: Haiku worker skill, atomic extraction per section (~60 lines)
+- `scripts/consolidate-analyze.sh`: merge + cleanup (~40 lines, similar to consolidate.sh)
+- `scripts/grade-tiers.sh`: parse INSIGHTS_GRAPH.md, apply tier rules, write ANALYSIS.md (~60 lines)
+- Reuses: `runWorker()`, `buildWorkerSystemPrompt()`, queue JSON pattern, `streamQueryEvents()`
+
+**Cost projection:** ~$0.15-0.25/run vs $0.99 current → 75-85% reduction
+**Key risk:** Phase 3 synthesis quality from compact atomics — needs QA baseline comparison.
+
+**Depends on:** /analyze redesign (v4.30) stable in production first.
+
+---
+
 ### [BL-123] License Change — MIT → BSL 1.1
 
 **Status:** PROPOSED
