@@ -16,6 +16,8 @@ Runs autonomously — no approval gates, no interactive questions. Works identic
 
 **Prerequisite:** Run `/extract` first.
 
+**Language:** Read `output_language` from `PROJECT.md` before doing anything else. Write ALL content — insight descriptions, evidence quotes, ANALYSIS.md, MEMORY.md entries — in that language. System identifiers (`[IG-XX]`, `[IG-SYNTH-XX]`, `[CF-XX]`), status labels (`PENDING`, `VERIFIED`), category names, and tier labels (`Señal`, `Hipótesis`, `Supuesto`) always stay in English.
+
 ---
 
 ## Phase 1: Load
@@ -59,9 +61,9 @@ Assign each insight a tier based on these rules — no interpretation, no judgme
 
 | Tier | Rule |
 |---|---|
-| **Señal** | ≥3 users/sources expressing same need (direct-quote or observation) OR stakeholder claim + user corroboration on same point OR document fact (metric, contract, spec) OR `category: constraint` (business constraints are facts) |
-| **Hipótesis** | 1–2 user sources on same point OR stakeholder claim without user corroboration |
-| **Supuesto** | Stakeholder-only with no user backing OR voice: ai (any count) |
+| **Señal** | ≥3 sources expressing same need (direct-quote or observation) OR stakeholder + user corroboration aligned OR document fact (metric, contract, spec) OR `category: constraint` OR `category: design-framework` with `Grounded in: [IG-XX]` refs and ≥2 sources |
+| **Hipótesis** | 1–2 sources OR stakeholder without user corroboration OR `design-framework` without `Grounded in:` refs |
+| **Supuesto** | Stakeholder-only with no user backing OR `voice: ai` (any count) |
 
 **Tradeoff rule:** When a `constraint` conflicts with a `user-need` Señal → do NOT resolve. Flag as explicit tradeoff in the diagnostic: *"⚡ Tradeoff: users need X, but constraint Y limits this — strategic decision required."*
 
