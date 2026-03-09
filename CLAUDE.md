@@ -92,7 +92,7 @@ freeze│    supersede
    - If checkpoint is **stale** (counts diverge) or **absent** → read `02_Work/MEMORY.md` (~2K tokens) and rebuild context.
 2. **Integrity check** — only when checkpoint counts diverge. Report discrepancies before proceeding.
 3. **Resume context** — use checkpoint (preferred) or MEMORY to continue without user re-explaining.
-4. **Reference gate** — Before engine dev, release, or custom/ad-hoc work (freemode) → read `docs/CLAUDE_REFERENCE.md` first.
+4. **Reference gate** — Before engine dev, release, or custom/ad-hoc work (freemode) → read `docs/architecture/CLAUDE_REFERENCE.md` first.
 
 ### After Every Skill Execution
 
@@ -132,4 +132,4 @@ Project-specific state (maturity, insights count, conflicts count) lives in `PRO
 
 ---
 
-> **Reference:** For detailed documentation on source organization, maturity levels, sources of truth table, folder structure, worktrees, engine development workflow, CHANGELOG format, freemode protocol, documentation guidelines, script patterns, and pre-commit verification → read `docs/CLAUDE_REFERENCE.md`
+> **Reference:** For detailed documentation on source organization, maturity levels, sources of truth table, folder structure, worktrees, engine development workflow, CHANGELOG format, freemode protocol, documentation guidelines, script patterns, and pre-commit verification → read `docs/architecture/CLAUDE_REFERENCE.md`

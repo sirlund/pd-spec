@@ -82,8 +82,8 @@ Deletion is the most destructive operation — it can orphan insights. The agent
 | `03_Outputs/LEAN_CANVAS.md` | Lean Canvas (business model) | Yes (via `/ship lean-canvas`) |
 | `03_Outputs/USER_STORIES.md` | JTBD user stories | Yes (via `/ship user-stories`) |
 | `docs/CHANGELOG.md` | Internal change log | Yes (append-only) |
-| `docs/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
-| `docs/FRAMEWORK.md` | Methodology reference | Reference only |
+| `docs/architecture/DECISIONS.md` | Cross-cutting architectural decisions (DEC-##) | Yes (append, consult before new patterns) |
+| `docs/architecture/FRAMEWORK.md` | Methodology reference | Reference only |
 | `docs/qa/*` | QA plans and findings | Reference only |
 
 ## Folder Structure
@@ -201,7 +201,7 @@ Engine files (do NOT edit in project branches):
 - `CLAUDE.md`, `README.md`
 - `.claude/skills/*/SKILL.md`
 - `03_Outputs/_templates/*`, `03_Outputs/_schemas/*`
-- `docs/BACKLOG.md`, `docs/CHANGELOG.md`, `docs/FRAMEWORK.md`
+- `docs/BACKLOG.md`, `docs/CHANGELOG.md`, `docs/architecture/FRAMEWORK.md`
 
 Project files (only exist in project branches):
 - `PROJECT.md` (settings + current state)
@@ -500,6 +500,56 @@ When a bug is discovered during formal QA:
 - No data loss: output entity count ≥ input entity count
 
 **Anti-pattern:** Never use LLM reasoning to count things, compute hashes, or generate mechanical JSON. These are the operations that caused BUG-04 (agent miscounted SYNTH insights).
+
+## Development Session Workflow (Plugins)
+
+Claude Code plugins streamline the engine development cycle. Use them in this order:
+
+### Available Plugins
+
+| Plugin | Command | When to use |
+|---|---|---|
+| `/commit` | Create a git commit | After completing a unit of work. Analyzes diff, matches repo commit style, generates message. |
+| `/commit-push-pr` | Commit + push + create PR | When a feature/fix is ready for review. Creates branch if on main, pushes, opens PR via `gh`. |
+| `/code-review` | Review a pull request | Before merging. Runs 5 parallel review agents (compliance, bugs, history, comments, code). Posts only issues with confidence >80. |
+| `/revise-claude-md` | Capture session learnings | At session end. Reflects on what context was missing, proposes CLAUDE.md updates with approval. |
+| `/clean_gone` | Remove stale local branches | Maintenance. Deletes local branches whose remote was deleted + associated worktrees. |
+
+### Ralph Loop (Autonomous Iteration)
+
+`/ralph-loop "prompt" --max-iterations N --completion-promise 'DONE'`
+
+Runs the same prompt in a loop until completion criteria are met or max iterations reached. Cancel anytime with `/cancel-ralph`.
+
+**Use for:** Mechanical tasks with automated verification — e.g., "implement X, run `./scripts/validate-fixes.sh`, fix until it passes."
+
+**Do NOT use for:**
+- Tasks requiring user judgment or approval gates
+- Semantic work (insight categorization, conflict resolution)
+- Tasks where progress isn't captured in files (context is lost between iterations)
+
+**Prompt requirements:**
+- Concrete, scoped task description
+- Verification command that validates success
+- Explicit completion criteria
+- Escape hatch instructions if stuck after N iterations
+
+### Recommended Session Flow
+
+```
+1. Define tasks (interactive)
+2. Implement changes (normal flow, or /ralph-loop for mechanical tasks)
+3. /commit                    → after each logical unit
+4. /code-review               → before merge (on PR)
+5. /commit-push-pr            → when ready for PR
+6. /revise-claude-md          → capture learnings at session end
+```
+
+**Rules:**
+- `/ralph-loop` requires explicit user approval before launch — propose the prompt first
+- `/commit` and `/commit-push-pr` follow existing commit convention (`type: BL-## — description`)
+- `/code-review` requires `gh` CLI authenticated
+- `/revise-claude-md` proposes changes for approval — never writes without confirmation
 
 ## Pre-Commit Verification
 

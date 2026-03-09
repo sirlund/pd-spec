@@ -211,7 +211,7 @@ may overwrite your project files.
 
 Each layer has a `_README.md` explaining what it does and what you should (or shouldn't) touch. Start with `01_Sources/_README.md`.
 
-See [docs/FRAMEWORK.md](docs/FRAMEWORK.md) for the full methodology reference.
+See [docs/architecture/FRAMEWORK.md](docs/architecture/FRAMEWORK.md) for the full methodology reference.
 
 ## ProductDesign OS Ecosystem
 
