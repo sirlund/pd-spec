@@ -42,6 +42,7 @@
 | OBS-extract-dedup-01 | P2 | `--file` re-extraction creates duplicate section — path prefix mismatch (`01_Sources/...` vs relative) | consolidate.sh or extract SKILL.md (BL-126) |
 | OBS-spec-ui-01 | P2 | /spec has too many approval gates with insufficient context — user approves "blind" | /spec SKILL.md — make autonomous by default (remove AskUserQuestion) |
 | OBS-spec-ui-02 | P2 | Markdown renders as plain text in agent chat log (bold, headers visible as characters) | app/client — apply md-content rendering to agent log text entries |
+| OBS-ship-ui-01 | P2 | /ship AskUserQuestion gate has no buttons in UI — run terminates with 0 output | /ship SKILL.md — make autonomous by default (same fix as OBS-spec-ui-01) |
 | OBS-BL113-01 | P1 | Preventive checkpoint not written before first context compaction | claude.js |
 | OBS-BL114-01 | P2 | Worker logs in UI show no filename | BL-120 |
 | OBS-BL114-02 | P2 | Parallel activation threshold uses only file count, not size_kb | claude.js |
