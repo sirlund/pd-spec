@@ -150,7 +150,13 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
     - Run `./scripts/generate-index.sh insights 02_Work/INSIGHTS_GRAPH.md`
     - If the script is unavailable, skip silently.
 
-13. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
+13. **Update ANALYSIS.md** — If conflicts were resolved in this run, update `02_Work/ANALYSIS.md` to reflect the new state:
+    - Move resolved tradeoffs from `## ⚡ Tradeoffs` to a resolved note or remove them.
+    - Update the veredicto if conflict resolution removed a blocker.
+    - Update insight tier counts if convergence or status changed.
+    - If ANALYSIS.md does not exist, skip silently.
+
+14. **Write to project memory** — Append an entry to `02_Work/MEMORY.md`:
     ```markdown
     ## [YYYY-MM-DDTHH:MM] /spec
     - **Request:** [what the user asked]
