@@ -215,6 +215,7 @@ Option (a) means changes to `app/server/claude.js` (SDK event processing) and th
 - [ ] Global loader animates while any task is running, stops when all complete
 - [ ] Fallback: if SSE events are unstructured (legacy), render as flat text (graceful degradation)
 - [ ] Log area per task capped at ~50 lines to prevent DOM bloat
+- [ ] Done banner shows input/output token breakdown and estimated cost (`total_cost_usd` from SDK result). SDK already returns the data — currently only combined count is displayed.
 
 ---
 

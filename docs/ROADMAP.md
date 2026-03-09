@@ -90,19 +90,19 @@ Key deliverables:
 
 | # | Item | What | Effort | Days | Depends on |
 |---|------|------|--------|------|------------|
-| 3.1 | /spec autonomous | Remove blind approval gates (OBS-spec-ui-01), make SKILL.md self-directed | S | 1 | — |
-| 3.2 | /ship autonomous | Fix gates falling into void (OBS-ship-ui-01/02), self-directed execution | S | 1 | — |
-| 3.3 | System prompt scope | Q&A stops leaking BL-XXX/OBS-XXX to users (OBS-spec-ui-03) | S | 0.5 | — |
-| 3.4 | Checkpoint fix | Write before first compact (OBS-BL113-01) | S | 0.5 | — |
+| 3.1 | ✅ /spec autonomous | Smart gates: auto-resolve when evidence is clear, AskUserQuestion only for comparable+high-impact | S | 1 | — |
+| 3.2 | ✅ /ship autonomous | Transparent outline, no approval gate, proceeds to generate | S | 1 | — |
+| 3.3 | ✅ System prompt scope | Q&A disallowedTools blocks Read/Grep/Glob/Bash + scope restriction in prompt | S | 0.5 | — |
+| 3.4 | ✅ Checkpoint fix | Removed preamble line blocking MEMORY.md and SESSION_CHECKPOINT.md writes | S | 0.5 | — |
 | 3.5 | **Opinionated methodology** | Rewrite skill .md files: apply design frameworks (JTBD, Design Thinking), take strong positions, industry-aware analysis. This is the soul of Wave 3. | L | 5-7 | 3.1, 3.2 |
 | 3.6 | BL-89 Truth levels | Tag outputs as Verified/Projected/Hypothetical with visual treatment | M | 2 | 3.5 |
-| 3.7 | BL-99 Conflict lifecycle | OPEN/NEEDS-*/RESOLVED with mandatory IG actions. Migrate existing CFs | M | 3 | — |
+| 3.7 | BL-99 Conflict lifecycle | **Scope reduced:** With /spec autonomous, conflicts UI becomes audit log, not active workspace. Simplify to history view + agent decision transparency. | S-M | 1-2 | — |
 | 3.8 | BL-100 MASTER deliverable | Replace PRD with MASTER + specifics architecture. Agent proposes relevant deliverables | L | 5 | 3.5 |
 | 3.9 | **Guided Interview in /spec** | Structured Q&A waves for methodology + prioritization (the pattern from this session) | M | 3 | 3.5, 3.8 |
 | | | | **Total** | **~21** | |
 
-**Critical path:** 3.1+3.2 (2d) → 3.5 (7d) → 3.8 (5d) → 3.9 (3d) = **17 days sequential**
-Items 3.3, 3.4, 3.7 are independent — interleave during build.
+**Critical path:** ~~3.1+3.2 (2d)~~ ✅ → 3.5 (7d) → 3.8 (5d) → 3.9 (3d) = **15 days remaining**
+Items 3.6, 3.7 are independent — interleave during build. 3.7 scope reduced (conflicts UI → audit log).
 
 **End state:** `/extract` → `/analyze` → `/spec` (with Guided Interview) → `/ship` produces a MASTER + relevant specifics, opinionated, with truth levels. Pipeline runs autonomously.
 
