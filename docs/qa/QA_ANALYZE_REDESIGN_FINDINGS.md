@@ -41,8 +41,10 @@
 | OBS-extract-file-01 | P2 | `--file` mode runs full Sonnet (~$0.40) instead of Haiku worker (~$0.07) | BL-124 scope or standalone |
 | OBS-extract-dedup-01 | P2 | `--file` re-extraction creates duplicate section — path prefix mismatch (`01_Sources/...` vs relative) | consolidate.sh or extract SKILL.md (BL-126) |
 | OBS-spec-ui-01 | P2 | /spec has too many approval gates with insufficient context — user approves "blind" | /spec SKILL.md — make autonomous by default (remove AskUserQuestion) |
-| OBS-spec-ui-02 | P2 | Markdown renders as plain text in agent chat log (bold, headers visible as characters) | app/client — apply md-content rendering to agent log text entries |
-| OBS-ship-ui-01 | P2 | /ship AskUserQuestion gate has no buttons in UI — run terminates with 0 output | /ship SKILL.md — make autonomous by default (same fix as OBS-spec-ui-01) |
+| OBS-spec-ui-02 | P2 | Markdown renders as plain text in agent chat log AND Q&A panel (bold, headers as literal characters) | app/client — apply md-content rendering to both agent log text entries and Q&A response panel |
+| OBS-spec-ui-03 | P2 | Q&A reads engine MEMORY.md and responds with internal engine context (BL-XXX, OBS-XXX) — irrelevant to end users | Q&A system prompt should be scoped to project knowledge only, not engine state |
+| OBS-ship-ui-01 | P1 | /ship AskUserQuestion gate has no buttons — run terminates, "ok" typed after falls into Q&A instead of answering the gate | Root fix: unified agent+chat panel (BL-127). Short-term: make /ship autonomous by default |
+| OBS-ship-ui-02 | P1 | Agent log and Q&A are two separate panels — skill output and chat are disconnected. User "ok" response went to Q&A after /ship run ended | BL-127: unify into single conversational thread where skills run inline |
 | OBS-BL113-01 | P1 | Preventive checkpoint not written before first context compaction | claude.js |
 | OBS-BL114-01 | P2 | Worker logs in UI show no filename | BL-120 |
 | OBS-BL114-02 | P2 | Parallel activation threshold uses only file count, not size_kb | claude.js |
@@ -56,6 +58,7 @@
 | BL-124 | P3 | Parallel /analyze — Haiku Workers for Synthesis |
 | BL-125 | P3 | Persist HEIC→JPG conversion as sidecar artifact |
 | BL-126 | P2 | Fix /extract --file dedup — path normalization on re-extraction |
+| BL-127 | P1 | Unified Agent+Chat panel — single conversational thread where skills run inline and user can respond to gates naturally |
 
 ---
 
