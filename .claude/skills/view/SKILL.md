@@ -1,6 +1,6 @@
 ---
 name: view
-description: Start the Live Research App and open in browser
+description: Start, stop, or restart the Live Research App
 user-invocable: true
 allowed-tools: Bash, Read
 ---
@@ -11,31 +11,48 @@ Start the PD-Spec Live Research App — a local web viewer that reads Work layer
 
 ## Flags
 
-- **`--dev`** — Start in Vite dev mode with hot module replacement (HMR). CSS and JSX changes appear instantly without rebuild. Default (no flag) uses production build.
+- **`--stop`** — Kill the server running for this worktree.
+- **`--restart`** — Kill existing server, rebuild, and start fresh.
+- **`--dev`** — Start in Vite dev mode with HMR. CSS and JSX changes appear instantly without rebuild.
+- Default (no flag) — Start in production mode.
+
+## How to find this worktree's server
+
+Use `lsof -i :3000-3009 -t` to get PIDs, then for each: `lsof -p PID | grep cwd` to check if cwd matches current project root. That PID owns this worktree's server.
 
 ## Behavior
+
+### `--stop`
+
+1. Find the PID for this worktree (see above).
+2. If found: `kill PID` and report port killed.
+3. If not found: report "No server running for this project."
+
+### `--restart`
+
+1. Stop existing server (same as `--stop`, silent if none running).
+2. Rebuild frontend: `cd app && npx vite build`.
+3. Start server on the same port (or next free if port is now taken).
+4. Open browser.
 
 ### Default (production)
 
 1. **Check dependencies:** If `app/node_modules/` doesn't exist, run `npm install` in `app/`.
-2. **Find available port:** Check ports 3000-3009 in order. Use the first free port.
-   - Check with: `lsof -i :PORT -t 2>/dev/null` (empty = free)
-   - If an existing PD-Spec server is already running for THIS worktree (check `lsof -p PID | grep cwd` matches current project root), just open the browser to that port.
-3. **Build frontend:** Run `cd app && npx vite build` to build the React SPA.
-4. **Start server:** Run `cd app && PORT=XXXX node server/index.js &` in background.
+2. **Find available port:** Check ports 3000-3009. If this worktree's server is already running, just open the browser to that port — skip rebuild and restart.
+3. **Build frontend:** `cd app && npx vite build`.
+4. **Start server:** `cd app && PORT=XXXX node server/index.js &` in background.
 5. **Wait for ready:** Poll `http://localhost:XXXX` until it responds (max 10 seconds).
 6. **Open browser:** `open http://localhost:XXXX`
-7. **Report:** Tell the user the app is running and watching for changes.
+7. **Report:** Tell the user the URL and port.
 
-### With `--dev` (development)
+### `--dev`
 
-1. **Check dependencies:** Same as production.
-2. **Find available port:** Same as production (for the Express backend).
-3. **Skip `vite build`.**
-4. **Start dev servers:** Run `cd app && PORT=XXXX npm run dev &` in background. This starts Express on the found port AND Vite dev server on port 5173 concurrently.
-5. **Wait for ready:** Poll `http://localhost:5173` until it responds (max 15 seconds).
-6. **Open browser:** `open http://localhost:5173` (Vite dev server, NOT the Express port).
-7. **Report:** Dev-specific message (see below).
+1. Check dependencies.
+2. Find available port (for Express backend).
+3. Skip `vite build`.
+4. `cd app && PORT=XXXX npm run dev &` — starts Express + Vite dev server on port 5173.
+5. Poll `http://localhost:5173` (max 15 seconds).
+6. Open `http://localhost:5173`.
 
 ## Output
 
@@ -43,7 +60,16 @@ Start the PD-Spec Live Research App — a local web viewer that reads Work layer
 ```
 🌐 Live Research App running at http://localhost:XXXX
    Watching: 01_Sources/, 02_Work/, 03_Outputs/
-   Press Ctrl+C in terminal to stop the server.
+```
+
+### Stop
+```
+🛑 Server on port XXXX stopped.
+```
+
+### Restart
+```
+🔄 Server restarted at http://localhost:XXXX
 ```
 
 ### Dev mode
@@ -51,15 +77,9 @@ Start the PD-Spec Live Research App — a local web viewer that reads Work layer
 🔧 Live Research App (dev mode) at http://localhost:5173
    Express API on port XXXX (proxied by Vite)
    HMR active — CSS/JSX changes appear instantly.
-   Press Ctrl+C in terminal to stop.
 ```
 
 ## Notes
 
-- The app is **read-only** — it never writes to PD-Spec files.
-- File changes in 02_Work/ and 03_Outputs/ trigger live updates via WebSocket.
-- Output files (PRD.html, etc.) open in new browser tabs, not inside the app.
-- The app works on `main` branch too (shows empty state with guidance).
 - Multiple projects can run simultaneously on different ports (3000-3009).
-- To stop: kill the Node process or close the terminal.
-- In dev mode, `vite.config.js` reads `PORT` env var to proxy API/WebSocket requests to the correct Express port.
+- In dev mode, `vite.config.js` reads `PORT` env var to proxy API/WebSocket to the correct Express port.
