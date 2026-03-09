@@ -109,30 +109,44 @@ Phase 4: Scripts ($0)
 
 **Status:** PROPOSED
 **Priority:** P1
-**Effort:** S
-**Origin:** BL-115 QA session (2026-03-07). /extract parallel validated. /analyze, /spec, /ship never benchmarked in SDK mode. Need structured comparison before declaring pipeline production-ready.
+**Effort:** S → M (now Wave A2, after Wave A pipeline fixes)
+**Origin:** BL-115 QA session (2026-03-07). /extract parallel validated. /analyze, /spec, /ship partially benchmarked in pseudo-QA (2026-03-09). Need structured full comparison before declaring pipeline production-ready.
 
-**Goals:**
-1. Confirm E2E works (extract → analyze → spec → ship) without errors or compaction loops
-2. Cost per file across full pipeline (SDK vs known CLI baseline: ~$2.04/file)
-3. Speed per step (wall clock)
-4. Quality signal: claims → insights conversion rate, conflict detection rate
-5. Stability: does /analyze loop or compact on QA dataset (6 files, 189 claims)?
+**Scope clarification (2026-03-09):**
+This is Wave A2 — runs after Wave A (pipeline fixes: /spec + /ship autonomous, onboarding).
 
-**CLI baseline (known):**
-- /extract serial: ~$1.05 (14 files), ~$0.07/file express
-- /analyze: ~$0.99 (14 files)
-- /spec + /ship: not benchmarked
-- Total extract+analyze: ~$2.04
+**Primary comparison axis: OUTPUT QUALITY**
+- Are Haiku worker claims as good as Sonnet full-run claims?
+- Are /analyze insights comparable in depth and granularity?
+- Are PROPOSALS.md and STRATEGIC_VISION.md comparable?
 
-**Proposed test protocol:**
-1. Reset QA worktree to post-extract state (keep EXTRACTIONS.md, wipe INSIGHTS_GRAPH + downstream)
-2. Run `/analyze` — record cost delta, time, output quality
-3. Run `/spec` — record cost delta, conflicts resolved
-4. Run `/ship prd` — record cost delta, output quality
-5. Compare totals vs CLI baseline
+**Secondary metric: COST (absolute, not comparative)**
+- SDK: $X/file average, Y tokens/file average (real API cost)
+- CLI: estimated equivalent cost using token count × public Sonnet pricing ($3/MTok input, $15/MTok output) — NOT real cost (Max plan has no per-token billing), but a normalized metric for comparison and value assessment
 
-**Risk control:** Run on reduced QA dataset (2-3 files, ~60 claims) for first pass to cap cost at ~$0.30-0.50 before committing to full 6-file run.
+**Protocol:**
+- Two branches: `qa-sdk` (existing pd-spec--qa worktree) and `qa-cli` (new CLI worktree)
+- Same dataset: current QA set (6 sources, ~300 claims)
+- Both run full pipeline: extract → analyze → spec → ship prd
+- Capture per step: cost equivalent, tokens, wall clock, output file
+
+**Quality evaluation:**
+- Claims per file (extraction quality)
+- Insights per claim ratio (synthesis quality)
+- Insight tier distribution (Señal/Hipótesis/Supuesto)
+- Proposal count and traceability (IG-XX refs per proposal)
+- Reviewer reads both outputs blind and rates quality 1-5
+
+**Pseudo-QA already done (2026-03-09, SDK):**
+- /extract: ~$1.18 total (6 files, parallel Haiku) — $0.07/file avg — ✅
+- /analyze full: ~$0.54, incremental: $0.62 — ✅
+- /spec: $0.65 — ✅
+- /ship: BLOCKED (mode detection bug, fixed in fa2f4b6) — pending rerun
+- Total so far: ~$3.39 (includes --file retries)
+
+**Deliverable:** `docs/qa/BL122_E2E_BENCHMARK.md` with side-by-side results table.
+
+**Prerequisite:** Wave A complete (/spec + /ship autonomous and functional).
 
 ---
 
