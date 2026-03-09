@@ -413,7 +413,7 @@ Instructions:
     const session = req.session;
 
     // Mode detection
-    const skillMatch = message.match(/^\/(extract|analyze|spec)\b(.*)/);
+    const skillMatch = message.match(/^\/(extract|analyze|spec|ship|audit|visualize|seed|reset|kickoff|view)\b(.*)/);
     const mode = skillMatch ? 'skill' : 'qa';
     const skillName = skillMatch ? skillMatch[1] : null;
     const skillArgs = skillMatch ? skillMatch[2].trim() : '';
