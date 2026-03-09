@@ -180,7 +180,8 @@ Voice: document | Authority: fact
 Tier: Señal
 Convergence: 2/5 sources
 Refs: Design Brief_ TIMining CORE.docx, PPT TIMining - General_ENE 2026_Español.pdf
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 
 > Capacidad única de ejecutar simulaciones sobre topografía actualizada cada 15 minutos genera ventaja competitiva demostrada con $10M+ en ahorros comprobados.
 
@@ -255,7 +256,8 @@ Voice: stakeholder, document | Authority: fact, direct-quote
 Tier: Señal
 Convergence: 3/5 sources
 Refs: PPT TIMining - General_ENE 2026_Español.pdf, Touchpoint_TIMining-IDEMAX _2026-02-19.md, TIMining_8-Layer_Diagram.pptx
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 
 > TIMining es una empresa con 15 años de experiencia enfocada en resolver la brecha entre planificación minera y operación diaria mediante tecnología de monitoreo en tiempo real y análisis espacial.
 
@@ -270,7 +272,8 @@ Voice: stakeholder, document | Authority: fact, observation
 Tier: Señal
 Convergence: 3/5 sources
 Refs: PPT TIMining - General_ENE 2026_Español.pdf, Touchpoint_TIMining-IDEMAX _2026-02-19.md, laminas-caso-uso-1.png
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 
 > La falta de adherencia al plan minero genera pérdidas significativas, con potencial de USD 15B anuales de valor para la industria con solo 5% de mejora en cumplimiento.
 
@@ -302,7 +305,8 @@ Voice: user, stakeholder | Authority: direct-quote, observation
 Tier: Señal
 Convergence: 4/5 sources
 Refs: PPT TIMining - General_ENE 2026_Español.pdf, Touchpoint_TIMining-IDEMAX _2026-02-19.md, laminas-caso-uso-1.png, IMG_9680.HEIC
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 
 > Los operadores enfrentan sobrecarga de información donde todo parece crítico, perdiendo capacidad de priorizar acciones efectivas en tiempo real.
 
@@ -355,7 +359,8 @@ Voice: stakeholder, document | Authority: fact, direct-quote
 Tier: Señal
 Convergence: 3/5 sources
 Refs: PPT TIMining - General_ENE 2026_Español.pdf, TIMining_8-Layer_Diagram.pptx, Touchpoint_TIMining-IDEMAX _2026-02-19.md
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 
 > TIMining Aware ofrece capacidades de reconstrucción espacial en tiempo real cada 15 minutos, modelando geometrías de mina y equipos sin sensores físicos tradicionales.
 
@@ -447,7 +452,8 @@ Voice: stakeholder | Authority: observation
 Tier: Señal
 Convergence: 1/5 sources
 Ref: Touchpoint_TIMining-IDEMAX _2026-02-19.md
-Status: PENDING
+Status: VERIFIED
+Last-updated: 2026-03-09
 > "El perfil del operador es crítico — si no logramos vender al operador, el proyecto fracasa"
 
 ### [IG-08] Validez de datos GPS es crítica - datos incorrectos invalidan inteligencia del sistema
