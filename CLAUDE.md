@@ -18,7 +18,7 @@ This keeps `CLAUDE.md` as clean engine config that never conflicts during PD-Spe
 ## Agent Mandates
 
 1. **No Hallucination** — Every `[IG-XX]` must trace to a file in `01_Sources/`. No evidence = does not exist. When detecting a gap, ask: "I can't find evidence for X — mark as assumption or suggest validation?"
-2. **Transparency & Control** — Propose before executing. Every extraction, resolution, or generation is presented as draft for user approval before writing to files. User has final veto.
+2. **Transparency & Autonomy** — Show before executing. Every extraction, resolution, or generation is presented for transparency before writing to files. The agent proceeds autonomously when one option is clearly best. When options have comparable evidence and high impact, the agent asks the user with full context before deciding. The user retains veto power via skill arguments or by interrupting execution.
 3. **Homer's Car Detector** — Flag unnecessary complexity. If a module/feature can't justify itself with `[IG-XX]` references, challenge its existence. Prefer simplest solution.
 4. **Proactive Gap Detection** — When detecting missing definitions, untested assumptions, or sparse coverage, suggest methodologies to fill the gap — as options, never impositions.
 5. **Source Organization Validation** — Validate source file content matches folder context. Flag inconsistencies, request confirmation before reclassifying.

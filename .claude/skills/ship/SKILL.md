@@ -70,16 +70,16 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
    - Are there unresolved PENDING conflicts affecting the deliverable?
    - **If insufficient**, report gaps and suggest `/analyze` or `/spec` first.
 
-### Phase 2: Propose (User Approval)
+### Phase 2: Propose (Transparent Outline)
 
 4. **Present deliverable outline** — Before generating, show:
    - Document type and target file
    - Proposed section structure (headings list)
    - Key insights to reference (by ID)
    - Any gaps where sections lack sufficient insight backing
-   - **Wait for user approval before generating.**
+   - **Present this outline for transparency, then proceed to generate.**
 
-### Phase 3: Generate (After Approval) — Write Markdown
+### Phase 3: Generate — Write Markdown
 
 5. **Write the Markdown file** to `03_Outputs/TYPE.md`. Follow these structural conventions:
 
@@ -356,7 +356,7 @@ When the user runs `/ship update [type]`, update an existing output rather than 
    - Sections to add (from new insights).
    - Sections to remove or revise (from invalidated insights).
    - Sections to update (from changed spec entries).
-4. **Apply after approval** — Write changes to the output file after user confirms.
+4. **Apply changes** — Present the proposed changes for transparency, then write them to the output file.
 
 This is faster and cheaper than full regeneration when only a few insights have changed.
 

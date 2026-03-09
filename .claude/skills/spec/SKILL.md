@@ -35,22 +35,23 @@ Previously named `/resolve`. Pipeline: `/extract` → `/analyze` → `/spec` →
 
 If there are PENDING conflicts, resolve them before writing the spec. If no PENDING conflicts, skip to Phase 3.
 
-5. **Present each PENDING conflict** one at a time:
+5. **Resolve each PENDING conflict** one at a time:
    - Show the conflict ID, title, and the tension between insights.
    - Show the relevant source references.
-   - If the agent has a suggested resolution, present it with reasoning.
-   - Present clear options (e.g., keep A, keep B, merge, invalidate both).
-   - Also offer intermediate options: "Flag for discussion" and "Needs more research".
-   - **Wait for user decision before proceeding to the next conflict.**
+   - Evaluate the evidence for each option (keep A, keep B, merge, invalidate both).
+   - **If one option is clearly better** (evidence strongly favors it) → resolve autonomously and log the reasoning.
+   - **If options have comparable evidence AND the decision has high impact** → ask the user via AskUserQuestion with full context (option A vs B, evidence for each, estimated impact).
+   - **If unable to decide** → set status to "Flag for discussion" as an intermediate state.
+   - Also consider intermediate options: "Needs more research" when evidence is insufficient.
 
    **Intermediate state handling:**
-   When user selects "Flag for discussion" or "Needs more research":
-   - Ask for context (who to discuss with, what to research)
+   When the agent judges "Flag for discussion" or "Needs more research":
+   - Provide context (who should discuss, what needs research)
    - Write to CONFLICTS.md: `Status: PENDING — Flagged (context)` or `Status: PENDING — Research (context)`
    - The conflict remains PENDING (not RESOLVED) — the intermediate tag records the decision without closing the conflict
    - These intermediate states are visible in the app with distinct badges (amber "Flagged", blue "Research")
 
-### Phase 3: Propose Spec Updates (User Approval)
+### Phase 3: Propose Spec Updates (Transparent Summary)
 
 6. **Draft resolution summary** — After conflicts are handled, present:
    - Proposed changes to `CONFLICTS.md` (status updates, resolution notes).
@@ -58,9 +59,9 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
    - Proposed changes to `STRATEGIC_VISION.md` (vision, strategy, principles, domains, value props).
    - Proposed changes to `PROPOSALS.md` (new/updated design proposals [DP-XX]).
    - Any traceability gaps found (entries without `[IG-XX]` references).
-   - **Wait for user approval before writing.**
+   - **Present this summary for transparency, then proceed to write.**
 
-### Phase 4: Write (After Approval)
+### Phase 4: Write
 
 7. **Resolve conflicts** — Update conflict statuses to `RESOLVED` in `02_Work/CONFLICTS.md`. Add resolution notes and actions taken. Use `./scripts/resolve-conflict.sh` for mechanical status changes when available.
 
@@ -105,11 +106,9 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 
    **Proposal flow:**
    1. Select recommended elements based on project_type
-   2. Present via AskUserQuestion: "Based on [project_type] and [N] insights,
-      I recommend organizing the vision with [elements]. Adjust?"
-      Options: "Approve", "Add [other element]", "Change structure"
-   3. If user wants to change, present the full menu
-   4. Proceed with approved structure
+   2. Use the recommended structure automatically
+   3. If `project_type` is genuinely ambiguous (cannot infer from insight categories), ask the user via AskUserQuestion
+   4. Proceed with selected structure
 
    **Universal sections (always include regardless of structure):**
    - Product Vision

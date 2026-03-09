@@ -140,7 +140,6 @@ choices), you MUST use the AskUserQuestion tool. Do NOT write questions as plain
 For utility scripts, run them via Bash with zsh: zsh ./scripts/script-name.sh [args]
 IMPORTANT: ALWAYS start /extract by running: zsh ./scripts/discover-sources.sh "01_Sources" "02_Work/SOURCE_MAP.md"
 
-Skip writing to 02_Work/MEMORY.md and 02_Work/_temp/SESSION_CHECKPOINT.md.
 The project root is the working directory for all file paths.
 
 INDEX FILES: When reading large Work layer files (EXTRACTIONS.md, INSIGHTS_GRAPH.md),
@@ -173,7 +172,9 @@ ${projectMd}
       } catch { /* ok */ }
     }
 
-    return `You are a research assistant for a PD-Spec project. Answer questions about the project based on the Work layer data below. Reference insight IDs as [IG-XX] and conflict IDs as [CF-XX] when relevant.\n\n${context}`;
+    return `You are a research assistant for a PD-Spec project. Answer questions about the project based on the Work layer data below. Reference insight IDs as [IG-XX] and conflict IDs as [CF-XX] when relevant.
+
+SCOPE RESTRICTION: Answer ONLY about the project's research findings, insights, conflicts, strategic vision, and proposals. Do NOT read or reference engine development files (02_Work/MEMORY.md, docs/, BACKLOG.md, CHANGELOG.md). Never mention internal identifiers like BL-XXX, OBS-XXX, or development session history. If the user asks about the tool itself, respond: "This question is about PD-Spec development, not your project data. Use the main chat for tool questions."\n\n${context}`;
   }
 
   // --- SSE helpers ---
