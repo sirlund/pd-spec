@@ -24,7 +24,7 @@ export const VIEW_REGISTRY = [
   { id: 'evidence-gaps', label: 'Evidence Gaps', icon: 'alert-triangle', section: 'research', countKey: 'gaps' },
   { id: 'strategic-vision', label: 'Strategic Vision', icon: 'sitemap', section: 'structure' },
   { id: 'proposals', label: 'Proposals', icon: 'layout-list', section: 'structure' },
-  { id: 'brief', label: 'Research Brief', icon: 'file-text', section: 'structure' },
+  { id: 'brief', label: 'Analysis', icon: 'file-text', section: 'structure' },
   { id: 'add-context', label: 'Add Context', icon: 'pencil-plus', section: 'tools' },
   { id: 'agent', label: 'Agent', icon: 'bot', section: 'tools' },
   { id: 'sources', label: 'Sources', icon: 'folders', section: 'browse' },
@@ -158,7 +158,7 @@ export default function App() {
       case 'proposals':
         return <ProposalsView onNavigate={navigateTo} />;
       case 'brief':
-        return <MarkdownView path="/file/02_Work/RESEARCH_BRIEF.md" title="Research Brief" onNavigate={navigateTo} />;
+        return <MarkdownView path="/file/02_Work/ANALYSIS.md" title="Analysis" onNavigate={navigateTo} />;
       case 'add-context':
         return <AddContextView projectName={project.data?.name} />;
       case 'agent':
