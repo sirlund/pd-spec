@@ -121,7 +121,7 @@ export default function AgentView({ sessionToken, onNavigate, visible, onStatusC
               break;
             case 'done':
               setRunning(false);
-              setLog(prev => [...prev, { type: 'done', usage: event.usage }]);
+              setLog(prev => [...prev, { type: 'done', usage: event.usage, cost_usd: event.cost_usd }]);
               onStatusChange?.('done');
               break;
             case 'aborted':
@@ -373,12 +373,16 @@ function LogEntry({ entry, onNavigate }) {
   }
 
   if (entry.type === 'done') {
-    const tokens = entry.usage
-      ? `${entry.usage.input_tokens + entry.usage.output_tokens} tokens`
+    const u = entry.usage;
+    const details = u
+      ? `${u.input_tokens?.toLocaleString() || 0} in · ${u.output_tokens?.toLocaleString() || 0} out`
+      : '';
+    const cost = entry.cost_usd != null
+      ? `$${entry.cost_usd.toFixed(2)}`
       : '';
     return (
       <div className="agent-log-entry agent-log-done">
-        <Icon name="check" size={14} /> Done {tokens && <span style={{ color: 'var(--text-muted)' }}>({tokens})</span>}
+        <Icon name="check" size={14} /> Done {(details || cost) && <span style={{ color: 'var(--text-muted)' }}>({[details, cost].filter(Boolean).join(' · ')})</span>}
       </div>
     );
   }
@@ -402,14 +406,31 @@ function LogEntry({ entry, onNavigate }) {
   return null;
 }
 
+function toolInputSummary(tool, input) {
+  if (!input) return '';
+  const basename = (p) => p ? p.split('/').pop() : '';
+  switch (tool) {
+    case 'Read': return basename(input.file_path);
+    case 'Write': return basename(input.file_path);
+    case 'Edit': return basename(input.file_path);
+    case 'Bash': {
+      const cmd = input.command || '';
+      return cmd.length > 60 ? cmd.slice(0, 60) + '…' : cmd;
+    }
+    case 'Grep': return `${input.pattern || ''}${input.path ? ' in ' + basename(input.path) : ''}`;
+    case 'Glob': return input.pattern || '';
+    default: return input.file_path ? basename(input.file_path) : input.pattern || '';
+  }
+}
+
 function ToolLogEntry({ entry, nested }) {
   const icon = entry.status === 'done' ? 'check' : 'loader';
-  const inputSummary = entry.input?.path || entry.input?.script || entry.input?.pattern || '';
+  const summary = toolInputSummary(entry.tool, entry.input);
   return (
     <div className={`agent-log-entry agent-log-tool ${nested ? 'nested' : ''}`}>
       <Icon name={icon} size={12} />
       <span className="agent-tool-name">{entry.tool}</span>
-      {inputSummary && <span className="agent-tool-input">{inputSummary}</span>}
+      {summary && <span className="agent-tool-input">{summary}</span>}
     </div>
   );
 }

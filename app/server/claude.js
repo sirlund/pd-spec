@@ -559,6 +559,7 @@ Instructions:
               sendSSE({
                 type: 'done',
                 usage: msg.usage || null,
+                cost_usd: msg.total_cost_usd ?? null,
               });
             } else if (msg.subtype === 'error') {
               sendSSE({
