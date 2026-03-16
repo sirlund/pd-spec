@@ -83,10 +83,11 @@ Key deliverables:
 
 ---
 
-### Wave 3 — "Opinionated Pipeline" (Mar 10 – Apr 4)
+### Wave 3 — "Amplifier, Not Process" (Mar 10 – Apr 4)
 
-> **Goal:** PD-Spec has a point of view. Outputs are distinctive, not generic summaries.
-> **Success metric:** A `/ship prd` output reads like it was written by an opinionated design consultant, not a summarizer.
+> **Goal:** PD-Spec is a design partner on-demand, not a process tool. Adapts to project type, user experience, and what exists.
+> **Success metric:** A founder with no design team can start a project from conversation alone. A senior designer uses PD-Spec as a sparring partner without touching the pipeline.
+> **Design brief:** [`docs/DESIGN_3_5.md`](DESIGN_3_5.md)
 
 | # | Item | What | Effort | Days | Depends on |
 |---|------|------|--------|------|------------|
@@ -94,17 +95,23 @@ Key deliverables:
 | 3.2 | ✅ /ship autonomous | Transparent outline, no approval gate, proceeds to generate | S | 1 | — |
 | 3.3 | ✅ System prompt scope | Q&A disallowedTools blocks Read/Grep/Glob/Bash + scope restriction in prompt | S | 0.5 | — |
 | 3.4 | ✅ Checkpoint fix | Removed preamble line blocking MEMORY.md and SESSION_CHECKPOINT.md writes | S | 0.5 | — |
-| 3.5 | **Opinionated methodology** | Rewrite skill .md files: apply design frameworks (JTBD, Design Thinking), take strong positions, industry-aware analysis. This is the soul of Wave 3. | L | 5-7 | 3.1, 3.2 |
-| 3.6 | BL-89 Truth levels | Tag outputs as Verified/Projected/Hypothetical with visual treatment | M | 2 | 3.5 |
-| 3.7 | BL-99 Conflict lifecycle | **Scope reduced:** With /spec autonomous, conflicts UI becomes audit log, not active workspace. Simplify to history view + agent decision transparency. | S-M | 1-2 | — |
-| 3.8 | BL-100 MASTER deliverable | Replace PRD with MASTER + specifics architecture. Agent proposes relevant deliverables | L | 5 | 3.5 |
-| 3.9 | **Guided Interview in /spec** | Structured Q&A waves for methodology + prioritization (the pattern from this session) | M | 3 | 3.5, 3.8 |
-| | | | **Total** | **~21** | |
+| 3.5a | BL-128 Flexible pipeline | Remove forced sequential dependencies. Skills check what's available and adapt. | S | 1-2 | 3.1, 3.2 |
+| 3.5b | BL-129 Kickoff project type | `/kickoff` asks project type + user profile. Skills adapt tone and depth. | S | 1 | — |
+| 3.5c | Conversation as ingestion | PD-Spec interviews the user. Claims produced live, tagged with evidence quality. | M | 3-4 | 3.5a, 3.5b |
+| 3.5d | Workshop mode | Formalize ad-hoc work: crosses, stakeholder artifacts, `_temp/` with traceability. | S-M | 2 | 3.5a |
+| 3.5e | All voices as evidence | Remove pro-user-voice bias in /analyze. Evidence Quality Model from ingestion. | S | 1 | 3.5c |
+| 3.7 | BL-99 Conflict lifecycle | **Scope reduced:** conflicts UI becomes audit log. History view + decision transparency. | S-M | 1-2 | — |
+| | | | **Total** | **~13** | |
 
-**Critical path:** ~~3.1+3.2 (2d)~~ ✅ → 3.5 (7d) → 3.8 (5d) → 3.9 (3d) = **15 days remaining**
-Items 3.6, 3.7 are independent — interleave during build. 3.7 scope reduced (conflicts UI → audit log).
+**Absorbed into 3.5:**
+- ~~3.6 BL-89 Truth levels~~ → replaced by Evidence Quality Model (part of 3.5c/3.5e)
+- ~~3.8 BL-100 MASTER deliverable~~ → deferred to Layer 3 as stakeholder-specific artifacts
+- ~~3.9 Guided Interview~~ → absorbed into 3.5c (conversation as ingestion)
 
-**End state:** `/extract` → `/analyze` → `/spec` (with Guided Interview) → `/ship` produces a MASTER + relevant specifics, opinionated, with truth levels. Pipeline runs autonomously.
+**Critical path:** ~~3.1-3.4 (3d)~~ ✅ → 3.5a+3.5b (2d) → 3.5c (4d) → 3.5e (1d) = **~7 days remaining**
+Items 3.5d, 3.7 are independent — interleave during build.
+
+**End state:** PD-Spec adapts to three project types (ecosystem / from scratch / MVP) and three entry points (files / conversation / existing product). Pipeline is a suggested default, not a wall. Evidence quality assessed from ingestion. Workshop mode is first-class.
 
 ---
 
@@ -193,6 +200,10 @@ Moved to `docs/archive/`:
 | D-19 | **Multi-modelo is Wave 5:** solidify pipeline with Claude first, abstract provider later. | 2026-03-09 |
 | D-20 | **Webapp IS the product:** but blocked by vendor lock-in. Unlocked in Wave 5. | 2026-03-09 |
 | D-21 | **Guided Interview is a UX pattern:** applies to /spec, /ship, methodology config. Core interaction model. | 2026-03-09 |
+| D-22 | **Amplifier, not process:** PD-Spec is a design partner on-demand. Pipeline is one mode, not THE mode. Frameworks invisible. | 2026-03-15 |
+| D-23 | **Three project types:** ecosystem redesign / from scratch / existing MVP. Defined at kickoff, shapes all skill behavior. | 2026-03-15 |
+| D-24 | **Evidence Quality Model:** assess HOW evidence was obtained (anonymous > third-party interview > founder interview > intuition). Applied from ingestion. | 2026-03-15 |
+| D-25 | **"Apply design frameworks" deprecated:** frameworks power the engine internally but user never sees framework names. | 2026-03-15 |
 
 ---
 
@@ -216,4 +227,4 @@ Q3 2026 (Jul 1 – Sep 30)
 
 ---
 
-*Last updated: 2026-03-09. Next review: end of Wave 3 (~Apr 4).*
+*Last updated: 2026-03-16. Wave 3 redefined after design session (see `docs/DESIGN_3_5.md`). Next review: end of Wave 3 (~Apr 4).*

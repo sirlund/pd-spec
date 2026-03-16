@@ -10,6 +10,65 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 > Ordered by priority (P1 → P2 → P3 → P4), then by effort (S → M → L → XL) within each tier.
 
+### [BL-128] FEAT: Flexible Pipeline — Remove Forced Sequential Dependencies
+
+**Status:** PROPOSED
+**Priority:** P1
+**Effort:** S
+**Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 1A.
+**Roadmap:** Wave 3, item 3.5a
+
+**Problem:** Skills enforce sequential dependencies ("requires /extract first") that force users into a rigid pipeline even when they have context or want to work differently. This friction increases as the user gains experience with their project — the pipeline was valuable for TIMining weeks 1-2 but became a wall by week 3-4.
+
+**Solution:** Skills check what's available and adapt instead of blocking:
+- If no `EXTRACTIONS.md` exists → "I don't have extracted sources — want to start from conversation or bring files?"
+- If no `INSIGHTS_GRAPH.md` exists → /spec works from whatever is available (extractions, conversation, or user-provided context)
+- Pipeline sequence becomes a **suggested default**, not a gate
+
+**Scope:**
+- Remove hard dependency checks in `/analyze`, `/spec`, `/ship` SKILL.md files
+- Replace with adaptive preamble: check what exists, inform user, suggest options
+- No changes to `claude.js` or app code — purely SKILL.md changes
+
+**Acceptance criteria:**
+- `/analyze` runs without `/extract` having been called first (uses conversation or available context)
+- `/ship` runs with partial Work layer (produces what it can, flags what's missing)
+- Pipeline order is suggested in `/kickoff` output but not enforced
+
+---
+
+### [BL-129] FEAT: Kickoff Defines Project Type and User Profile
+
+**Status:** PROPOSED
+**Priority:** P1
+**Effort:** S
+**Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 1D.
+**Roadmap:** Wave 3, item 3.5b
+
+**Problem:** PD-Spec treats all projects the same — same pipeline, same tone, same depth. But a founder with an MVP needs diagnosis, a startup from scratch needs structure, and a team redesigning an existing ecosystem needs cross-referencing. The approach should depend on what exists.
+
+**Solution:** Add 2 questions to `/kickoff`:
+1. "What's the starting point?" → `project_type`: `ecosystem` | `from_scratch` | `existing_mvp`
+2. "Who's driving this?" → `user_profile`: `founder_solo` | `designer` | `team_with_research`
+
+Store in `PROJECT.md`. Skills read these values to adapt:
+- **Tone:** more structured guidance for `founder_solo`, more peer-level for `designer`
+- **Suggested workflow:** full pipeline for `from_scratch`, diagnostic-first for `existing_mvp`, crosses for `ecosystem`
+- **Question depth:** deeper probing for `founder_solo` (Evidence Quality Model), lighter for `team_with_research`
+
+**Scope:**
+- Update `/kickoff` SKILL.md: add 2 questions + store in PROJECT.md
+- Update `PROJECT.md` template: add `project_type` and `user_profile` fields
+- Update `/extract`, `/analyze`, `/spec`, `/ship` SKILL.md preambles: read and use these values
+- No changes to `claude.js` or app code
+
+**Acceptance criteria:**
+- `/kickoff` asks project type and user profile
+- `PROJECT.md` stores the values
+- At least one skill visibly adapts behavior based on these values (e.g., /analyze suggests different workflow for `existing_mvp` vs `from_scratch`)
+
+---
+
 ### [BL-126] FIX: /extract --file Dedup — Path Normalization on Re-extraction
 
 **Status:** PROPOSED
