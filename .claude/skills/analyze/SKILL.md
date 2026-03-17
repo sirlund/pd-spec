@@ -33,31 +33,33 @@ When the user chooses to tell you about their project (option 3 in adaptive star
 
 ### Interview Protocol
 
-**Conversational style:** Ask natural follow-up questions based on what the user says. Do NOT use AskUserQuestion — converse directly in the chat. The only exception is genuine clarification where proceeding without the answer would produce wrong output (e.g., ambiguous project name for file headers).
+**Interview style:** Use `AskUserQuestion` for each interview question. This provides structure, guides users who don't know what to say, and lets the agent adapt options dynamically based on prior answers. Each question should offer 2-4 relevant options plus a free-text option. Adapt the options based on what the user has already told you — the interview deepens, not repeats.
+
+**When NOT to use AskUserQuestion:** Brief acknowledgments, transitions between topics, and short clarifications that don't need structured options. These go as inline text.
 
 **Internal progression (invisible to user):** Track coverage across 6 themes. You do NOT need to cover them in order — follow the conversation naturally, but ensure you touch them. 3-8 exchanges max.
 
-| Theme | What to surface | Example questions |
+| Theme | What to surface | Example AskUserQuestion options |
 |---|---|---|
-| Context | What the project is, who it's for, current state | "¿En qué consiste el proyecto?" / "¿Quiénes son los usuarios?" |
-| Jobs-to-be-Done | What users are trying to accomplish, what success looks like | "¿Qué están tratando de lograr?" / "¿Cómo miden el éxito hoy?" |
-| Evidence | How they know what they know — surfaces evidence quality tags | "¿Cómo llegaron a esa conclusión?" / "¿Eso viene de datos, entrevistas, o intuición?" |
-| Friction | Current pain points, workarounds, failed attempts | "¿Qué no funciona hoy?" / "¿Qué han intentado que no resultó?" |
-| Constraints | Non-negotiables: budget, timeline, regulatory, technical | "¿Qué limitaciones tienen?" / "¿Hay restricciones técnicas o de negocio?" |
-| Aspiration | Vision, differentiation, future state | "¿Hacia dónde quieren llevar esto?" / "¿Qué los haría diferentes?" |
+| Context | What the project is, who it's for, current state | "Contame de qué va el proyecto" / options about domain, users, current state |
+| Jobs-to-be-Done | What users are trying to accomplish, what success looks like | Options about user goals, success metrics, current workarounds |
+| Evidence | How they know what they know — surfaces evidence quality tags | Options: "Tenemos datos/métricas", "Hicimos entrevistas", "Es nuestra percepción", etc. |
+| Friction | Current pain points, workarounds, failed attempts | Options about specific pain areas based on what they've described |
+| Constraints | Non-negotiables: budget, timeline, regulatory, technical | Options: timeline, tech debt, budget, regulatory, team capacity |
+| Aspiration | Vision, differentiation, future state | Options about vision, differentiation, future state |
 
-**Evidence quality probing:** When the user makes a claim, naturally ask how they know. The agent must NEVER infer evidence quality from context — always ask explicitly. Assign tags ONLY after the user describes the methodology:
+**Evidence quality probing:** When the user makes a claim, ask how they know — using AskUserQuestion with evidence type options. The agent must NEVER infer evidence quality from context — always ask explicitly. Assign tags ONLY after the user describes the methodology:
 
-| Tag | User describes | Signal strength |
+| Tag | AskUserQuestion option (adapt language to context) | Signal strength |
 |---|---|---|
-| `[OBSERVED]` | "We measured it", "I saw it happen", "analytics show" | Strong |
-| `[INTERVIEW-3P]` | "A researcher/designer interviewed them" | Strong |
-| `[INTERVIEW-SELF]` | "I interviewed them myself" | Medium (flag: interviewer bias) |
-| `[INTUITION]` | "I believe...", "My experience says..." | Weak (suggest validation) |
-| `[DEMO-FEEDBACK]` | "They said it during a demo", "In a sales call" | Weak (flag: social bias) |
-| `[FACT]` | "It's in the contract", "Our runway is X" | Strong |
+| `[OBSERVED]` | "Lo medimos / hay datos / analytics lo muestran" | Strong |
+| `[INTERVIEW-3P]` | "Un investigador/diseñador externo lo entrevistó" | Strong |
+| `[INTERVIEW-SELF]` | "Nosotros mismos lo entrevistamos" | Medium (flag: interviewer bias) |
+| `[INTUITION]` | "Es nuestra percepción / experiencia" | Weak (suggest validation) |
+| `[DEMO-FEEDBACK]` | "Lo dijeron en un demo / llamada de ventas" | Weak (flag: social bias) |
+| `[FACT]` | "Está en el contrato / es dato verificable" | Strong |
 
-**Anti-pattern:** "The founder said users hate the UI" → do NOT auto-tag as `[INTUITION]`. Ask: "¿Eso viene de feedback directo, entrevistas, o es tu percepción?" The answer determines the tag.
+**Anti-pattern:** "The founder said users hate the UI" → do NOT auto-tag as `[INTUITION]`. Use AskUserQuestion: "¿Cómo llegaron a eso?" with options mapping to the evidence tags above. The answer determines the tag.
 
 **user_profile calibration:** Read `user_profile` from `PROJECT.md` (set by `/kickoff`). Adapt interview depth and tone:
 
