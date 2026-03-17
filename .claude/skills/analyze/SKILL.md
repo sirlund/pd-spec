@@ -2,7 +2,7 @@
 name: analyze
 description: Synthesize raw claims from 02_Work/EXTRACTIONS.md into insights, assess evidence quality, detect gaps, and produce a readiness diagnostic for /spec. Supports conversational ingestion (interview mode). Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
-allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion
 argument-hint: "[--full | --file <section>...]"
 ---
 
@@ -14,10 +14,12 @@ Reads raw claims from `02_Work/EXTRACTIONS.md`, synthesizes them into insights, 
 
 Runs autonomously — no approval gates, no interactive questions. Works identically in CLI and SDK runs.
 
-**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally (Phase 1). If it does NOT exist → offer the user three options:
+**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally (Phase 1). If it does NOT exist → use `AskUserQuestion` to offer the user three options:
 1. Add files to `01_Sources/` and run `/extract`
 2. Paste content directly in chat
 3. "Tell me about your project" → **enter Interview Mode** (see below)
+
+Use `AskUserQuestion` for this initial routing choice — it's a structured decision. Once the user picks option 3, switch to direct conversational mode (no more AskUserQuestion during the interview itself).
 
 Do NOT abort — if the user provides context conversationally, work with what you have.
 
