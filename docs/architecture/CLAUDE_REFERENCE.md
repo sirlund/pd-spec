@@ -375,6 +375,57 @@ Present findings as a compact prefix:
 
 User can skip with "skip audit" in their request.
 
+## Workshop Mode — Full Protocol
+
+Workshop mode handles ad-hoc analytical operations outside the standard pipeline. Compact rules live in `CLAUDE.md`; this section provides full detail.
+
+### Cross-Referencing
+
+When the user asks to compare entities ("compare insight A against B", "how does proposal X differ from Y"):
+
+1. **Identify operands** — resolve `[IG-XX]`, `[CF-XX]`, `[DP-XX]` refs to their full entries in Work files.
+2. **Build delta table** — produce a structured comparison table highlighting agreements, contradictions, and gaps.
+3. **Write to `_temp/`** — save as `02_Work/_temp/WORKSHOP_COMPARE_YYYY-MM-DD_HH-MM.md`. Include a header with operand refs and timestamp.
+4. **Report** — show a compact summary in conversation. Full table is in the file.
+
+Example delta table format:
+```markdown
+# Workshop: Compare [IG-03] vs [IG-17]
+> Generated: 2026-03-17T14:30
+
+| Dimension | [IG-03] | [IG-17] | Delta |
+|---|---|---|---|
+| Category | user-need | business | Different focus |
+| Tier | Señal | Hipótesis | Confidence gap |
+| Convergence | 4/N | 1/N | IG-03 stronger |
+| Voice | user, stakeholder | stakeholder | Missing user voice |
+```
+
+### Artifact Graduation
+
+Workshop artifacts in `_temp/` are ephemeral. On user request, they graduate:
+
+| User says | Action | Destination |
+|---|---|---|
+| "preserve this" / "keep this" | Copy to custom outputs | `03_Outputs/_custom/` |
+| "add to insights" / "make this official" | Extract claims and create `[IG-XX]` entries | `02_Work/INSIGHTS_GRAPH.md` + `CONFLICTS.md` |
+| "add to extractions" | Write as a conversation extraction section | `02_Work/EXTRACTIONS.md` |
+
+Graduation always logs to MEMORY.md: what graduated, where it went, which refs were created.
+
+### Artifact Naming
+
+Workshop files in `_temp/` follow: `WORKSHOP_{TYPE}_{YYYY-MM-DD}_{HH-MM}.md`
+
+Types: `COMPARE`, `EXPLORE`, `DRAFT`, `MATRIX`, `TIMELINE`.
+
+### Logging
+
+Workshop actions follow the same logging protocol as skill execution:
+- Append to `02_Work/MEMORY.md` with timestamp and action summary
+- Update `02_Work/_temp/SESSION_CHECKPOINT.md`
+- Include workshop artifact paths in the checkpoint's "files modified" section
+
 ## Showcase (Presentation Engine)
 
 Astro + MDX presentation system. Lives at `showcase/` on main (engine), project branches add content.

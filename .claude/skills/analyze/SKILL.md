@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: Synthesize raw claims from 02_Work/EXTRACTIONS.md into insights, assess evidence quality, detect gaps, and produce a readiness diagnostic for /spec. Incremental by default (only new extractions), use --full to reprocess all.
+description: Synthesize raw claims from 02_Work/EXTRACTIONS.md into insights, assess evidence quality, detect gaps, and produce a readiness diagnostic for /spec. Supports conversational ingestion (interview mode). Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 argument-hint: "[--full | --file <section>...]"
@@ -14,23 +14,98 @@ Reads raw claims from `02_Work/EXTRACTIONS.md`, synthesizes them into insights, 
 
 Runs autonomously — no approval gates, no interactive questions. Works identically in CLI and SDK runs.
 
-**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally. If it does NOT exist → tell the user: "No extracted sources found. You can: (1) add files to `01_Sources/` and run `/extract`, (2) paste content directly in chat for me to work with, or (3) tell me about your project and I'll start from that conversation." Do NOT abort — if the user provides context conversationally, work with what you have.
+**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally (Phase 1). If it does NOT exist → offer the user three options:
+1. Add files to `01_Sources/` and run `/extract`
+2. Paste content directly in chat
+3. "Tell me about your project" → **enter Interview Mode** (see below)
+
+Do NOT abort — if the user provides context conversationally, work with what you have.
 
 **Language:** Read `output_language` from `PROJECT.md` before doing anything else. Write ALL content — insight descriptions, evidence quotes, ANALYSIS.md, MEMORY.md entries — in that language. System identifiers (`[IG-XX]`, `[IG-SYNTH-XX]`, `[CF-XX]`), status labels (`PENDING`, `VERIFIED`), category names, and tier labels (`Señal`, `Hipótesis`, `Supuesto`) always stay in English.
+
+---
+
+## Interview Mode (Conversational Ingestion)
+
+When the user chooses to tell you about their project (option 3 in adaptive start, or says things like "let me explain", "I'll describe it"), enter interview mode. This is a structured but invisible interview — the user experiences a natural conversation, not a questionnaire.
+
+### Interview Protocol
+
+**Conversational style:** Ask natural follow-up questions based on what the user says. Do NOT use AskUserQuestion — converse directly in the chat. The only exception is genuine clarification where proceeding without the answer would produce wrong output (e.g., ambiguous project name for file headers).
+
+**Internal progression (invisible to user):** Track coverage across 6 themes. You do NOT need to cover them in order — follow the conversation naturally, but ensure you touch them. 3-8 exchanges max.
+
+| Theme | What to surface | Example questions |
+|---|---|---|
+| Context | What the project is, who it's for, current state | "¿En qué consiste el proyecto?" / "¿Quiénes son los usuarios?" |
+| Jobs-to-be-Done | What users are trying to accomplish, what success looks like | "¿Qué están tratando de lograr?" / "¿Cómo miden el éxito hoy?" |
+| Evidence | How they know what they know — surfaces evidence quality tags | "¿Cómo llegaron a esa conclusión?" / "¿Eso viene de datos, entrevistas, o intuición?" |
+| Friction | Current pain points, workarounds, failed attempts | "¿Qué no funciona hoy?" / "¿Qué han intentado que no resultó?" |
+| Constraints | Non-negotiables: budget, timeline, regulatory, technical | "¿Qué limitaciones tienen?" / "¿Hay restricciones técnicas o de negocio?" |
+| Aspiration | Vision, differentiation, future state | "¿Hacia dónde quieren llevar esto?" / "¿Qué los haría diferentes?" |
+
+**Evidence quality probing:** When the user makes a claim, naturally ask how they know. The agent must NEVER infer evidence quality from context — always ask explicitly. Assign tags ONLY after the user describes the methodology:
+
+| Tag | User describes | Signal strength |
+|---|---|---|
+| `[OBSERVED]` | "We measured it", "I saw it happen", "analytics show" | Strong |
+| `[INTERVIEW-3P]` | "A researcher/designer interviewed them" | Strong |
+| `[INTERVIEW-SELF]` | "I interviewed them myself" | Medium (flag: interviewer bias) |
+| `[INTUITION]` | "I believe...", "My experience says..." | Weak (suggest validation) |
+| `[DEMO-FEEDBACK]` | "They said it during a demo", "In a sales call" | Weak (flag: social bias) |
+| `[FACT]` | "It's in the contract", "Our runway is X" | Strong |
+
+**Anti-pattern:** "The founder said users hate the UI" → do NOT auto-tag as `[INTUITION]`. Ask: "¿Eso viene de feedback directo, entrevistas, o es tu percepción?" The answer determines the tag.
+
+**user_profile calibration:** Read `user_profile` from `PROJECT.md` (set by `/kickoff`). Adapt interview depth and tone:
+
+| user_profile | Interview style |
+|---|---|
+| `founder_solo` | Deeper probing, more "¿cómo lo sabés?" questions, constructive pushback on assumptions. Founders often conflate intuition with evidence — help them distinguish. |
+| `designer` | Peer-level questions, skip basics, focus on evidence gaps and user research coverage. Less hand-holding. |
+| `team_with_research` | Ask about existing research, where it lives, coverage gaps. Lighter questioning — they likely have answers. Focus on what's NOT covered. |
+| _(not set)_ | Balanced default — ask naturally, no special calibration. |
+
+**Coverage tracking:** After 3-8 exchanges, check internal coverage. If major themes are missing, ask one or two targeted questions. Do NOT extend beyond 8 exchanges — work with what you have.
+
+### Writing Conversational Claims
+
+After the interview concludes (user signals done, or 8 exchanges reached), write claims to `02_Work/EXTRACTIONS.md`:
+
+```markdown
+## [Conversación YYYY-MM-DD]
+- Type: conversation
+- Participants: [user_profile from PROJECT.md, or "user" if not set]
+- Evidence Quality: mixed
+
+### Raw Claims
+1. "Claim text as stated by user" [EVIDENCE-TAG]
+2. "Another claim" [EVIDENCE-TAG] (flag: suggest validation)
+3. "Constraint claim" [FACT]
+```
+
+**Rules for claim writing:**
+- One claim per atomic concept — do NOT bundle multiple ideas into one claim
+- Preserve the user's language and framing
+- Include the evidence quality tag on every claim
+- Add flags where relevant: `(flag: interviewer bias)`, `(flag: suggest validation)`, `(flag: social bias)`
+- If the user never clarified the evidence basis for a claim, tag as `[INTUITION]` and add `(flag: evidence basis not confirmed)`
+
+After writing to EXTRACTIONS.md, proceed to **Phase 1** (the claims are now in EXTRACTIONS.md, so the normal pipeline takes over). Use `--file "Conversación YYYY-MM-DD"` mode to process only the new conversational section.
 
 ---
 
 ## Phase 1: Load
 
 **1. Read context**
-- Read `PROJECT.md` → get `output_language`. Default to `en` if missing.
+- Read `PROJECT.md` → get `output_language`, `user_profile`. Default to `en` / unset if missing.
 - Check flags: `--full` (reprocess all), `--file <section>` (specific sections only), no flags (incremental).
 
 **2. Index check (silent optimization)**
 Check `02_Work/_index/EXTRACTIONS_INDEX.md`. If fresh (compare hash against `md5 -q 02_Work/EXTRACTIONS.md | cut -c1-8`) → use index to identify sections and line ranges. If stale or missing → read full file. Never fail because index is absent.
 
 **3. Load extractions**
-Read `02_Work/EXTRACTIONS.md`. If missing or empty: output "No extractions found. Run `/extract` first." and stop.
+Read `02_Work/EXTRACTIONS.md`. If missing or empty and not in interview mode: output "No extractions found. Run `/extract` first or tell me about your project." and stop.
 
 **4. Incremental filter**
 - `--full`: process all sections.
@@ -68,9 +143,14 @@ Assign each insight a tier based on these rules — no interpretation, no judgme
 
 | Tier | Rule |
 |---|---|
-| **Señal** | ≥3 sources expressing same need (direct-quote or observation) OR stakeholder + user corroboration aligned OR document fact (metric, contract, spec) OR `category: constraint` OR `category: design-framework` with `Grounded in: [IG-XX]` refs and ≥2 sources |
-| **Hipótesis** | 1–2 sources OR stakeholder without user corroboration OR `design-framework` without `Grounded in:` refs |
-| **Supuesto** | Stakeholder-only with no user backing OR `voice: ai` (any count) |
+| **Señal** | ≥3 sources expressing same need (direct-quote or observation) OR ≥2 distinct voices aligned (any combination except `ai`) OR document fact (metric, contract, spec) OR `category: constraint` OR `category: design-framework` with `Grounded in: [IG-XX]` refs and ≥2 sources |
+| **Hipótesis** | 1–2 sources from a single voice OR `design-framework` without `Grounded in:` refs |
+| **Supuesto** | `voice: ai` (any count) OR claims tagged `[INTUITION]` or `[DEMO-FEEDBACK]` without corroboration from other sources |
+
+**Evidence quality tag behavior:** When claims carry evidence quality tags (from conversational ingestion), apply these additional rules:
+- `[OBSERVED]`, `[INTERVIEW-3P]`, `[FACT]` → strong signal, counts normally toward tier
+- `[INTERVIEW-SELF]` → medium signal, flag potential interviewer bias in the insight
+- `[INTUITION]`, `[DEMO-FEEDBACK]` → weak signal, cannot reach Señal alone — requires corroboration from a different source or voice to escape Supuesto
 
 **Tradeoff rule:** When a `constraint` conflicts with a `user-need` Señal → do NOT resolve. Flag as explicit tradeoff in the diagnostic: *"⚡ Tradeoff: users need X, but constraint Y limits this — strategic decision required."*
 

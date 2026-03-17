@@ -111,6 +111,19 @@ When `02_Work/MEMORY.md` exceeds 80 lines: summarize all except 3 most recent in
 
 After context compaction, re-read `SESSION_CHECKPOINT.md` (not MEMORY.md) to recover state.
 
+## Workshop Mode
+
+Ad-hoc analytical operations outside the standard pipeline. Use `02_Work/_temp/` for workshop artifacts.
+
+- **Cross-referencing:** "compare A against B" → produce a delta table in `_temp/WORKSHOP_*.md`. Reference `[IG-XX]` IDs when comparing insights.
+- **Graduation:** artifacts in `_temp/` are ephemeral by default. On user request:
+  - "preserve this" → move to `03_Outputs/_custom/`
+  - "add to insights" → extract claims into Work layer files (INSIGHTS_GRAPH, CONFLICTS)
+- **Logging:** all workshop actions logged in MEMORY.md + checkpoint update (same as skill execution).
+- **No special folders:** `_temp/` is sufficient — no `_workshop/` subfolder (Homer's Car).
+
+> **Reference:** For full workshop protocol (artifact naming, cross-reference patterns, graduation workflow) → read `docs/architecture/CLAUDE_REFERENCE.md`
+
 ## Engine Development Anti-Patterns
 
 | Rule | Why |

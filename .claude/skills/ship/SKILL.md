@@ -43,7 +43,16 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
 
 0. **Check project memory** — Read `02_Work/MEMORY.md` to understand the last known state. Compare against the current state of Work files. If discrepancies are found, report them before proceeding.
 
-**Language & Project Info** — Read `output_language` and `project_name` from `PROJECT.md`. If missing, default to `en` / "Untitled Project" and suggest `/kickoff`. Write all deliverable content in that language. System IDs (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`) stay in English.
+**Language & Project Info** — Read `output_language`, `project_name`, and `user_profile` from `PROJECT.md`. If missing, default to `en` / "Untitled Project" / unset and suggest `/kickoff`. Write all deliverable content in that language. System IDs (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`) stay in English.
+
+**user_profile tone calibration:** Adapt deliverable writing style based on `user_profile`:
+
+| user_profile | Tone | Style |
+|---|---|---|
+| `founder_solo` | Guide — explicit about gaps, constructive | Highlight what's validated vs. assumed. Call out missing evidence directly. Frame gaps as actionable next steps. |
+| `designer` | Collaborative — peer-level, no obviedades | Concise, design-aware language. Skip explanations of basic UX concepts. Focus on evidence and tradeoffs. |
+| `team_with_research` | Synthesis — concise, structured | Dense information, minimal hand-holding. Assume familiarity with the domain. Emphasize cross-referencing and convergence. |
+| _(not set)_ | Balanced default — clear, professional | Standard deliverable tone. No special calibration. |
 
 ### Phase 1: Load & Validate
 
