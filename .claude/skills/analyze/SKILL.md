@@ -14,7 +14,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md`, synthesizes them into insights, 
 
 Runs autonomously — no approval gates, no interactive questions. Works identically in CLI and SDK runs.
 
-**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally (Phase 1). If it does NOT exist → use `AskUserQuestion` to offer the user three options:
+**Adaptive start:** Check if `02_Work/EXTRACTIONS.md` exists AND contains at least one extraction section (look for a `## [` header below the template comment). If yes → proceed normally (Phase 1). If NOT (file missing, or exists but has no claim sections) → use `AskUserQuestion` to offer the user three options:
 1. Add files to `01_Sources/` and run `/extract`
 2. Paste content directly in chat
 3. "Tell me about your project" → **enter Interview Mode** (see below)
@@ -107,7 +107,7 @@ After writing to EXTRACTIONS.md, proceed to **Phase 1** (the claims are now in E
 Check `02_Work/_index/EXTRACTIONS_INDEX.md`. If fresh (compare hash against `md5 -q 02_Work/EXTRACTIONS.md | cut -c1-8`) → use index to identify sections and line ranges. If stale or missing → read full file. Never fail because index is absent.
 
 **3. Load extractions**
-Read `02_Work/EXTRACTIONS.md`. If missing or empty and not in interview mode: output "No extractions found. Run `/extract` first or tell me about your project." and stop.
+Read `02_Work/EXTRACTIONS.md`. If missing or has no claim sections (empty template) and not in interview mode: use `AskUserQuestion` with the same three options as adaptive start (same routing, not inline text).
 
 **4. Incremental filter**
 - `--full`: process all sections.
