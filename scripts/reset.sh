@@ -187,14 +187,26 @@ TEMPLATE
 -->
 TEMPLATE
 
+  # ANALYSIS.md
+  cat > "$WORK/ANALYSIS.md" << 'TEMPLATE'
+# Análisis
+
+> No analysis run yet. Execute `/analyze` to generate.
+TEMPLATE
+
   # Clean _temp/
   if [ -d "$WORK/_temp" ]; then
     find "$WORK/_temp" -type f -not -name '.gitkeep' -delete 2>/dev/null || true
   fi
 
+  # Clean _index/
+  if [ -d "$WORK/_index" ]; then
+    find "$WORK/_index" -type f -not -name '.gitkeep' -delete 2>/dev/null || true
+  fi
+
   echo "  Restored: INSIGHTS_GRAPH.md, CONFLICTS.md, STRATEGIC_VISION.md, PROPOSALS.md"
-  echo "  Restored: EXTRACTIONS.md, RESEARCH_BRIEF.md, SOURCE_MAP.md, MEMORY.md"
-  echo "  Cleaned: _temp/"
+  echo "  Restored: EXTRACTIONS.md, RESEARCH_BRIEF.md, SOURCE_MAP.md, MEMORY.md, ANALYSIS.md"
+  echo "  Cleaned: _temp/, _index/"
 }
 
 # --- Reset Outputs Layer ---

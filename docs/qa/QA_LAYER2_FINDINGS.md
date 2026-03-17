@@ -12,6 +12,16 @@
 **Expected:** If a field exists in the PROJECT.md template, /kickoff should ask for it.
 **Fix:** Add `team` as question 7 in kickoff SKILL.md. Optional field — user can skip, but should be asked.
 
+### OBS-L2-03 — reset.sh --work doesn't reset ANALYSIS.md or _index/ (P2, bug)
+
+**Test:** Pre-QA reset
+**Observed:** `reset.sh --work` resets 8 files but leaves ANALYSIS.md with stale data from previous /analyze run. Also leaves _index/ with stale indexes.
+**Expected:** Full Work layer reset should include all generated Work files.
+**Fix:** Added ANALYSIS.md template reset and _index/ cleanup to reset.sh.
+**Status:** FIXED in-session.
+
+---
+
 ### OBS-L2-02 — /kickoff orientation text not aligned with /analyze interview mode (P3, cosmetic)
 
 **Test:** Pre-QA setup via /kickoff
