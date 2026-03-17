@@ -110,21 +110,20 @@ Ask the user these questions. Use `AskUserQuestion` for structured choices. Ask 
 
     **If `from_scratch`:**
     > Your project is set up. You can:
-    > 1. **Add source files** to `01_Sources/` (interviews, briefs, docs) and run `/extract` → `/analyze`
-    > 2. **Start a conversation** — tell me about your project, your users, your hypotheses. I'll help you build a snapshot of where you are.
+    > 1. **Add source files** to `01_Sources/` (interviews, briefs, docs) and run `/extract`
+    > 2. **Run `/analyze`** — if you don't have files yet, it will offer to start from a conversation about your project
     > 3. **Run `/seed`** to generate synthetic test data first.
 
     **If `existing_product`:**
     > Your project is set up. Since you have an existing product:
-    > 1. **Add what you have** to `01_Sources/` — user feedback, analytics, support tickets, feature requests, screenshots.
-    > 2. **Or just tell me about it** — what's working, what's not, what you've heard from users. I'll help diagnose.
-    > 3. Run `/extract` when sources are ready, or start with `/analyze` if you want to work from conversation.
+    > 1. **Add what you have** to `01_Sources/` — user feedback, analytics, support tickets, feature requests, screenshots — and run `/extract`
+    > 2. **Or run `/analyze` directly** — it will offer to start from a conversation if there are no extracted sources yet. Tell me what's working, what's not, what you've heard from users.
 
     **If `existing_ecosystem`:**
     > Your project is set up. Since you're designing on top of an existing ecosystem:
-    > 1. **Add documentation** to `01_Sources/` — technical docs, stakeholder meeting notes, product specs, user research.
-    > 2. **Cross-referencing is key** — once sources are extracted, I can cross signals between stakeholders, technical constraints, and user needs.
-    > 3. Run `/extract` to start, or tell me about the ecosystem and I'll help identify what to investigate first.
+    > 1. **Add documentation** to `01_Sources/` — technical docs, stakeholder meeting notes, product specs, user research — and run `/extract`
+    > 2. **Or run `/analyze` directly** — it will offer to start from a conversation about the ecosystem, or you can bring files first
+    > 3. **Cross-referencing is key** — once sources are extracted, `/analyze` crosses signals between stakeholders, technical constraints, and user needs.
 
     Translate the above to the project's `output_language` if not `en`.
 
