@@ -10,7 +10,7 @@ argument-hint: ""
 
 ## What this skill does
 
-Guides the user through initial project configuration after cloning the PD-Spec template. Asks 4 questions (name, language, one-liner, project type), writes the answers to `PROJECT.md`, and orients the user on next steps.
+Guides the user through initial project configuration after cloning the PD-Spec template. Asks 6 questions (name, language, one-liner, project type, starting point, user profile), writes the answers to `PROJECT.md`, and orients the user on next steps.
 
 ## When to use
 
@@ -33,7 +33,7 @@ Guides the user through initial project configuration after cloning the PD-Spec 
 
 ### Phase 1: Ask Questions
 
-Ask the user these 3 questions. Use `AskUserQuestion` for the language (structured choice). Ask project name and one-liner as natural conversation.
+Ask the user these questions. Use `AskUserQuestion` for structured choices. Ask project name and one-liner as natural conversation.
 
 4. **Project name** — "What's the name of your project?"
    - This becomes the title in all outputs (PRD, presentations, reports).
@@ -57,6 +57,18 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - (AskUserQuestion auto-provides "Other" with free text — do NOT add it as an explicit 5th option)
    - If the user selects "Other", ask a follow-up to describe the project type in one phrase.
 
+8. **Starting point** — Use `AskUserQuestion`. Write question text and option labels in `output_language`.
+   - **From scratch** — No existing product. Vision, hypotheses, maybe early research.
+   - **Existing product** — Running MVP or product with real users. Need to diagnose what works and what doesn't.
+   - **Existing ecosystem** — Designing on top of existing products, stack, or platform. Need to cross-reference what exists against what's desired.
+   - This determines how PD-Spec approaches the project: full pipeline guidance for "from scratch", diagnostic-first for "existing product", cross-referencing for "existing ecosystem".
+
+9. **User profile** — Use `AskUserQuestion`. Write question text and option labels in `output_language`.
+   - **Founder / solo** — No dedicated design team. Need PD-Spec as an opinionated design partner.
+   - **Designer / design team** — Have design expertise. Need PD-Spec as a second pair of eyes and evidence amplifier.
+   - **Team with research** — Have research team or existing research. Need PD-Spec to synthesize and detect gaps.
+   - This determines depth and tone: more structured guidance and probing for "founder/solo", more peer-level for "designer", lighter touch for "team with research".
+
 ### Phase 2: Write Settings
 
 7. **If PROJECT.md exists** — Use Edit to replace the settings section:
@@ -71,6 +83,8 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
    - **output_language:** en | es
    - **one_liner:** [user's answer]
    - **project_type:** [user's answer]
+   - **starting_point:** from_scratch | existing_product | existing_ecosystem
+   - **user_profile:** founder_solo | designer | team_with_research
    - **team:** [user's answer or leave as placeholder]
    - **started:** [today's date in YYYY-MM-DD]
    - **engine_version:** [read from current PROJECT.md or use latest]
@@ -81,7 +95,7 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
 
    - **Maturity:** Level 1 (Seed)
    - **Last updated:** [today's date]
-   - **Status:** Fresh project. Add sources to `01_Sources/` and run `/extract`.
+   - **Status:** Fresh project. Run `/extract` with source files, or start a conversation about your project.
    - **Insights count:** 0
    - **Conflicts count:** 0
    ```
@@ -92,21 +106,27 @@ Ask the user these 3 questions. Use `AskUserQuestion` for the language (structur
 
 9. **Show confirmation** — Display the settings that were written.
 
-10. **Next steps** — Tell the user:
+10. **Next steps** — Adapt the orientation based on `starting_point`:
 
-    If output_language is `en`:
-    > Your project is set up. Here's what to do next:
-    > 1. Add your source files to `01_Sources/` — interviews, briefs, technical docs, benchmarks. See `01_Sources/_README.md` for format guidance.
-    > 2. Run `/analyze` to extract insights and detect contradictions.
-    >
-    > Or run `/seed` to generate synthetic test data first.
+    **If `from_scratch`:**
+    > Your project is set up. You can:
+    > 1. **Add source files** to `01_Sources/` (interviews, briefs, docs) and run `/extract` → `/analyze`
+    > 2. **Start a conversation** — tell me about your project, your users, your hypotheses. I'll help you build a snapshot of where you are.
+    > 3. **Run `/seed`** to generate synthetic test data first.
 
-    If output_language is `es`:
-    > Tu proyecto está configurado. Próximos pasos:
-    > 1. Agrega tus fuentes a `01_Sources/` — entrevistas, briefs, docs técnicos, benchmarks. Consulta `01_Sources/_README.md` para guía de formato.
-    > 2. Ejecuta `/analyze` para extraer insights y detectar contradicciones.
-    >
-    > O ejecuta `/seed` para generar datos de prueba sintéticos primero.
+    **If `existing_product`:**
+    > Your project is set up. Since you have an existing product:
+    > 1. **Add what you have** to `01_Sources/` — user feedback, analytics, support tickets, feature requests, screenshots.
+    > 2. **Or just tell me about it** — what's working, what's not, what you've heard from users. I'll help diagnose.
+    > 3. Run `/extract` when sources are ready, or start with `/analyze` if you want to work from conversation.
+
+    **If `existing_ecosystem`:**
+    > Your project is set up. Since you're designing on top of an existing ecosystem:
+    > 1. **Add documentation** to `01_Sources/` — technical docs, stakeholder meeting notes, product specs, user research.
+    > 2. **Cross-referencing is key** — once sources are extracted, I can cross signals between stakeholders, technical constraints, and user needs.
+    > 3. Run `/extract` to start, or tell me about the ecosystem and I'll help identify what to investigate first.
+
+    Translate the above to the project's `output_language` if not `en`.
 
 ### Important constraints
 

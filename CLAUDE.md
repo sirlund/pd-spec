@@ -25,13 +25,15 @@ This keeps `CLAUDE.md` as clean engine config that never conflicts during PD-Spe
 6. **Uncertainty Management** — When facing ambiguity, present clear options with reasoning and `[IG-XX]` references. Never silently pick one interpretation.
 7. **Silence is Gold** — Minimize cognitive load. No filler, no restating the obvious. Every sentence must earn its place.
 
-## Skills Pipeline
+## Skills (Flexible Pipeline)
+
+Suggested order: `/extract` → `/analyze` → `/spec` → `/ship` — but skills adapt to what's available. No forced sequential dependencies.
 
 | Skill | Command | What it does |
 |---|---|---|
-| Kickoff | `/kickoff` | Project setup wizard — name, language, one-liner |
+| Kickoff | `/kickoff` | Project setup wizard — name, language, project type, starting point, user profile |
 | Extract | `/extract [folder]` | Read sources, extract raw claims to 02_Work/EXTRACTIONS.md |
-| Analyze | `/analyze` | Process extractions into insights, detect conflicts. Requires `/extract` first. |
+| Analyze | `/analyze` | Process extractions into insights, detect conflicts. Adapts if no extractions exist. |
 | Spec | `/spec` | Resolve conflicts, build Strategic Vision + Design Proposals |
 | Ship | `/ship [type]` | Generate Markdown deliverables (prd, presentation, report, benchmark-ux, persona, journey-map, lean-canvas, user-stories, audit, strategy) |
 | Audit | `/audit` | Quality gate — evaluates Work layer readiness before /ship |

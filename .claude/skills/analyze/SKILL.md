@@ -1,6 +1,6 @@
 ---
 name: analyze
-description: Synthesize raw claims from 02_Work/EXTRACTIONS.md into insights, assess evidence quality, detect gaps, and produce a readiness diagnostic for /spec. Requires /extract first. Incremental by default (only new extractions), use --full to reprocess all.
+description: Synthesize raw claims from 02_Work/EXTRACTIONS.md into insights, assess evidence quality, detect gaps, and produce a readiness diagnostic for /spec. Incremental by default (only new extractions), use --full to reprocess all.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 argument-hint: "[--full | --file <section>...]"
@@ -14,7 +14,7 @@ Reads raw claims from `02_Work/EXTRACTIONS.md`, synthesizes them into insights, 
 
 Runs autonomously — no approval gates, no interactive questions. Works identically in CLI and SDK runs.
 
-**Prerequisite:** Run `/extract` first.
+**Adaptive start:** If `02_Work/EXTRACTIONS.md` exists → proceed normally. If it does NOT exist → tell the user: "No extracted sources found. You can: (1) add files to `01_Sources/` and run `/extract`, (2) paste content directly in chat for me to work with, or (3) tell me about your project and I'll start from that conversation." Do NOT abort — if the user provides context conversationally, work with what you have.
 
 **Language:** Read `output_language` from `PROJECT.md` before doing anything else. Write ALL content — insight descriptions, evidence quotes, ANALYSIS.md, MEMORY.md entries — in that language. System identifiers (`[IG-XX]`, `[IG-SYNTH-XX]`, `[CF-XX]`), status labels (`PENDING`, `VERIFIED`), category names, and tier labels (`Señal`, `Hipótesis`, `Supuesto`) always stay in English.
 

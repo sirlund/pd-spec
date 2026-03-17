@@ -11,7 +11,7 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion
 
 Builds the product specification layer: resolves pending conflicts as pre-work, updates insight statuses, then writes STRATEGIC_VISION.md (vision, strategy, principles, domains) and PROPOSALS.md (design proposals [DP-XX]).
 
-Previously named `/resolve`. Pipeline: `/extract` → `/analyze` → `/spec` → `/ship`.
+Previously named `/resolve`. Suggested pipeline order: `/extract` → `/analyze` → `/spec` → `/ship` — but skills can run in any order. Each skill adapts to what's available.
 
 ## Instructions
 
@@ -23,11 +23,13 @@ Previously named `/resolve`. Pipeline: `/extract` → `/analyze` → `/spec` →
 
 ### Phase 1: Load & Analyze (with Index Optimization)
 
-1. **Load conflicts** — Read `02_Work/CONFLICTS.md` and identify all `PENDING` conflicts.
+**Adaptive start:** Check what Work layer files exist before loading. If key files are missing (no INSIGHTS_GRAPH.md, no CONFLICTS.md), report what's available and what's missing. Do NOT abort — work with whatever exists. If the Work layer is mostly empty, tell the user: "The knowledge base is thin. I can build a spec from what's here, but the result will have gaps. Want to proceed, or run `/analyze` first to build a stronger foundation?" Proceed if the user confirms or if there's enough to work with.
 
-2. **Load insights** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists. If it exists, verify freshness by comparing the hash in the index header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`. If fresh → read the index first to get all insight IDs, titles, statuses, categories, and convergence (~5 KB). Only read individual full entries (by line range from L-start) when needed for conflict resolution or status changes. If the index is stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
+1. **Load conflicts** — Read `02_Work/CONFLICTS.md` and identify all `PENDING` conflicts. If the file doesn't exist or is empty, skip conflict resolution (Phase 2) entirely.
 
-3. **Load current spec** — Read `02_Work/STRATEGIC_VISION.md` and `02_Work/PROPOSALS.md` to understand current product decisions.
+2. **Load insights** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists. If it exists, verify freshness by comparing the hash in the index header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`. If fresh → read the index first to get all insight IDs, titles, statuses, categories, and convergence (~5 KB). Only read individual full entries (by line range from L-start) when needed for conflict resolution or status changes. If the index is stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full. If neither exists, proceed with whatever context is available (EXTRACTIONS.md, conversation, user input).
+
+3. **Load current spec** — Read `02_Work/STRATEGIC_VISION.md` and `02_Work/PROPOSALS.md` to understand current product decisions. If these don't exist yet, this is a first run — proceed to Phase 3 (write from scratch).
 
 4. **Validate arguments** — If the user provides specific IDs (approve IG-XX, reject IG-YY, resolve CF-ZZ), verify each ID exists in the loaded files before proceeding. If an ID doesn't exist, report it to the user and skip it. Do not silently ignore invalid IDs or create phantom resolutions.
 

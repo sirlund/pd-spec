@@ -63,12 +63,14 @@ The `> vX.Y | ...` blockquote line serves as version metadata. The app renders i
    - `02_Work/PROPOSALS.md` for design proposals [DP-XX]
    - **INSIGHTS_GRAPH** — Check if `02_Work/_index/INSIGHTS_GRAPH_INDEX.md` exists and is fresh (compare hash in header against `md5 -q 02_Work/INSIGHTS_GRAPH.md | cut -c1-8`). If fresh → read the index (~5 KB) to get all insight IDs, titles, statuses, categories, and convergence. Only read individual full entries (by line range from L-start) when the deliverable needs detailed narrative, quotes, or evidence trails. If stale or missing → read `02_Work/INSIGHTS_GRAPH.md` in full.
 
-3. **Validate readiness** — Check Work layer has sufficient verified content:
+3. **Validate readiness (adaptive)** — Check what's available in the Work layer:
    - Are there VERIFIED insights to reference?
    - Is STRATEGIC_VISION populated with traceable decisions?
    - Are there design proposals in PROPOSALS.md?
    - Are there unresolved PENDING conflicts affecting the deliverable?
-   - **If insufficient**, report gaps and suggest `/analyze` or `/spec` first.
+   - **If the Work layer is rich** → proceed normally with full traceability.
+   - **If partially populated** → proceed with what's available. Flag sections that lack insight backing as `[gap]` in the outline. Generate the deliverable with explicit notes on what's thin.
+   - **If mostly empty** → tell the user what's missing and suggest options: "I can generate a draft based on what's here, but it won't have traceability. Want me to proceed, or would you prefer to run `/analyze` or `/spec` first to build a stronger foundation?" Do NOT refuse to generate.
 
 ### Phase 2: Propose (Transparent Outline)
 
