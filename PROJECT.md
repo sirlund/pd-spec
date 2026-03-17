@@ -3,11 +3,14 @@
 > Project-specific configuration. Created by `/kickoff`.
 > Edit manually anytime. This file is tracked per branch.
 
-- **project_name:** TIMining-QA
-- **output_language:** es
-- **one_liner:** QA dataset — trimmed TIMining for SDK testing
-- **team:** Idemax
-- **started:** 2026-03-01
+- **project_name:** [Set by /kickoff]
+- **output_language:** en
+- **one_liner:** [Set by /kickoff]
+- **project_type:** [Set by /kickoff]
+- **starting_point:** [Set by /kickoff]
+- **user_profile:** [Set by /kickoff]
+- **team:** [Set by /kickoff]
+- **started:** [Set by /kickoff]
 - **engine_version:** v4.30.0
 
 ## Current State
