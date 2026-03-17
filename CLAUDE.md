@@ -115,7 +115,11 @@ After context compaction, re-read `SESSION_CHECKPOINT.md` (not MEMORY.md) to rec
 
 Ad-hoc analytical operations outside the standard pipeline. Use `02_Work/_temp/` for workshop artifacts.
 
-- **Cross-referencing:** "compare A against B" → produce a delta table in `_temp/WORKSHOP_*.md`. Reference `[IG-XX]` IDs when comparing insights.
+**Trigger:** When the user asks to compare, cross-reference, or explore insights/conflicts/proposals outside a skill execution (e.g., "compare X against Y", "how does IG-03 relate to IG-17", "show me the difference between..."), activate workshop mode. The key signal is the user asking about relationships between existing Work layer entities without running a skill.
+
+**Workshop actions MUST write to files — never respond only in chat.** The artifact is the deliverable, not the conversation.
+
+- **Cross-referencing:** "compare A against B" → write a delta table to `02_Work/_temp/WORKSHOP_COMPARE_YYYY-MM-DD_HH-MM.md`. Show a brief summary in chat, but the full comparison goes to the file.
 - **Graduation:** artifacts in `_temp/` are ephemeral by default. On user request:
   - "preserve this" → move to `03_Outputs/_custom/`
   - "add to insights" → extract claims into Work layer files (INSIGHTS_GRAPH, CONFLICTS)
