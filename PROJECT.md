@@ -8,7 +8,7 @@
 - **one_liner:** QA dataset — trimmed TIMining for SDK testing
 - **team:** Idemax
 - **started:** 2026-03-01
-- **engine_version:** v4.27.1
+- **engine_version:** v4.30.0
 
 ## Current State
 

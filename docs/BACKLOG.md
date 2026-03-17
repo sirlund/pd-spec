@@ -12,7 +12,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-128] FEAT: Flexible Pipeline — Remove Forced Sequential Dependencies
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
 **Priority:** P1
 **Effort:** S
 **Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 1A.
@@ -39,7 +39,7 @@ For user-facing changes, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ### [BL-129] FEAT: Kickoff Defines Project Type and User Profile
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
 **Priority:** P1
 **Effort:** S
 **Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 1D.
@@ -66,6 +66,92 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 - `/kickoff` asks project type and user profile
 - `PROJECT.md` stores the values
 - At least one skill visibly adapts behavior based on these values (e.g., /analyze suggests different workflow for `existing_mvp` vs `from_scratch`)
+
+---
+
+### [BL-130] FEAT: Conversation as Ingestion — Interview Mode in /analyze
+
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
+**Priority:** P1
+**Effort:** M
+**Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 2B. L1 QA OBS-L1-01, OBS-L1-03.
+**Depends on:** BL-131
+**Roadmap:** Wave 3, item 3.5c
+
+**Problem:** When users choose "tell me about your project" in /analyze's adaptive start, the conversation works organically (OBS-L1-03) but claims aren't persisted — they exist only in conversation context. No evidence quality tracking, no re-processability.
+
+**Solution:** Structured invisible interview in /analyze with 6-theme internal progression (context → JTBD → evidence → friction → constraints → aspiration). Claims persist to EXTRACTIONS.md with evidence quality tags before Phase 2 analysis. Evidence tags are NEVER inferred — the agent asks explicitly how the user obtained each piece of information.
+
+**Scope:**
+- Expand adaptive start in `/analyze` SKILL.md → structured interview mode
+- Write conversational claims to EXTRACTIONS.md with evidence quality tags
+- After writing, run normal Phase 2-5 on those claims
+- Fix OBS-L1-01: no AskUserQuestion in conversational mode except genuine clarification
+
+**Acceptance criteria:**
+- Interview produces claims in EXTRACTIONS.md with `## [Conversación YYYY-MM-DD]` section
+- Evidence quality tags present on every conversational claim
+- Conversational claims re-processable with `/analyze --full`
+- No AskUserQuestion during interview — direct chat only
+
+---
+
+### [BL-131] FEAT: Evidence Quality Tier Integration
+
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
+**Priority:** P1
+**Effort:** S
+**Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 2E. Design decision D5.
+**Roadmap:** Wave 3, item 3.5e
+
+**Problem:** Current tier rules have implicit voice hierarchy: stakeholder+user aligned = Señal, stakeholder-only = Supuesto. This biases against researchers, documents, and other voices. Also no integration with evidence quality tags from conversational ingestion.
+
+**Solution:** Replace voice hierarchy with cross-category alignment: ≥2 distinct voices aligned = Señal (any combination except ai); 1 voice alone = Hipótesis; ai-only = Supuesto. Add evidence quality tag rules: `[INTUITION]` and `[DEMO-FEEDBACK]` without corroboration = Supuesto.
+
+**Acceptance criteria:**
+- Tier rules use ≥2 voices (not just user+stakeholder)
+- Evidence quality tags influence tier assignment
+- `[INTUITION]`/`[DEMO-FEEDBACK]` claims can't reach Señal alone
+
+---
+
+### [BL-132] FEAT: Workshop Mode Protocol
+
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
+**Priority:** P2
+**Effort:** S
+**Origin:** Wave 3.5 design session (2026-03-15). Design brief: `docs/DESIGN_3_5.md`, Layer 2C. Design decision D6.
+**Roadmap:** Wave 3, item 3.5d
+
+**Problem:** No formal protocol for ad-hoc analytical operations (cross-referencing insights, comparing proposals, exploratory analysis). Users do this informally but artifacts are lost.
+
+**Solution:** Compact workshop section in CLAUDE.md (~15 lines) with core rules: cross-referencing → delta table in `_temp/`, artifact graduation (`_temp/` → `_custom/` or Work layer), logging in MEMORY.md + checkpoint. Full protocol detail in CLAUDE_REFERENCE.md. No `_workshop/` subfolder (Homer's Car — `_temp/` is enough).
+
+**Acceptance criteria:**
+- Workshop section exists in CLAUDE.md with core rules
+- Full protocol documented in CLAUDE_REFERENCE.md
+- Cross-referencing produces delta table in `_temp/`
+- Artifact graduation paths documented (preserve → `_custom/`, add to insights → Work layer)
+
+---
+
+### [BL-133] FEAT: user_profile Consumption in /analyze + /ship
+
+**Status:** IMPLEMENTED (v4.30.0, 2026-03-17)
+**Priority:** P2
+**Effort:** S
+**Origin:** Wave 3.5 L1 QA, OBS-L1-06 (P2). user_profile stored by /kickoff but not consumed by any skill.
+**Depends on:** BL-130
+**Roadmap:** Wave 3, item 3.5b (extension)
+
+**Problem:** `/kickoff` stores `user_profile` in PROJECT.md (BL-129) but no skill reads or uses it. The field has no effect.
+
+**Solution:** `/analyze` reads `user_profile` and calibrates interview depth (founder_solo = deeper probing, designer = peer-level, team_with_research = focus on coverage gaps). `/ship` reads `user_profile` and calibrates deliverable tone (founder_solo = guide tone with explicit gaps, designer = collaborative, team_with_research = synthesis/concise).
+
+**Acceptance criteria:**
+- `/analyze` interview adapts to user_profile
+- `/ship` deliverable tone adapts to user_profile
+- Behavior is graceful when user_profile is not set
 
 ---
 
@@ -1603,6 +1689,35 @@ Each `/extract` proposes new entries → user approves → approved entries auto
 **Origin:** QA v7, OBS-32 + OBS-33 + OBS-34.
 
 ## ✅ Implemented (Archive)
+
+<details>
+<summary><strong>BL-128 to BL-133 — v4.30.0 (Wave 3.5 Layers 1+2 — Amplifier, Not Process)</strong> (click to expand)</summary>
+
+### [BL-128] Flexible Pipeline — Remove Forced Sequential Dependencies
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — Skills check what's available and adapt instead of blocking. Pipeline sequence becomes suggested default, not a gate. Adaptive preamble in /analyze, /spec, /ship.**
+
+### [BL-129] Kickoff Defines Project Type and User Profile
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — /kickoff asks starting_point + user_profile. Stored in PROJECT.md. Skills read these values to adapt tone and workflow.**
+
+### [BL-130] Conversation as Ingestion — Interview Mode in /analyze
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — Structured invisible interview in /analyze (6-theme progression). Claims persist to EXTRACTIONS.md with evidence quality tags. Normal Phase 2-5 runs on conversational claims. No AskUserQuestion in interview mode.**
+
+### [BL-131] Evidence Quality Tier Integration
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — Tier rules use cross-category alignment (≥2 distinct voices = Señal) instead of implicit stakeholder+user hierarchy. Evidence quality tags ([INTUITION], [DEMO-FEEDBACK]) influence tier assignment.**
+
+### [BL-132] Workshop Mode Protocol
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — Compact workshop section in CLAUDE.md. Full protocol in CLAUDE_REFERENCE.md. Cross-referencing → delta table in _temp/. Artifact graduation: _temp/ → _custom/ or Work layer.**
+
+### [BL-133] user_profile Consumption in /analyze + /ship
+
+**IMPLEMENTED (v4.30.0, 2026-03-17) — /analyze calibrates interview depth by user_profile (founder_solo = deeper probing, designer = peer-level, team_with_research = coverage gaps). /ship calibrates deliverable tone accordingly.**
+
+</details>
 
 <details>
 <summary><strong>BL-15 to BL-97 — v4.25.0 (Architecture & Lifecycle)</strong> (click to expand)</summary>

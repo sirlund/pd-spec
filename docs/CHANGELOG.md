@@ -1,5 +1,37 @@
 # Changelog
 
+## [4.30.0] — 2026-03-17 — Amplifier, Not Process (Wave 3.5 Layers 1+2)
+
+PD-Spec now adapts to how you work — tell it about your project in conversation and it captures structured claims with evidence quality tracking, or bring files and run the classic pipeline. Skills flex to what's available instead of enforcing a rigid sequence.
+
+<details>
+<summary>Features (6)</summary>
+
+- **Flexible pipeline (BL-128)** — Skills check what's available and adapt instead of blocking. `/analyze` works without `/extract`, `/ship` works with partial Work layer. Pipeline sequence is a suggestion, not a gate.
+- **Project type + user profile (BL-129)** — `/kickoff` asks starting point and who's driving the project. Stored in PROJECT.md for skills to calibrate their behavior.
+- **Conversational ingestion (BL-130)** — `/analyze` enters interview mode when the user describes their project conversationally. 6-theme invisible progression (context → JTBD → evidence → friction → constraints → aspiration). Claims persist to EXTRACTIONS.md with evidence quality tags, then flow through the normal analysis pipeline.
+- **Evidence quality tiers (BL-131)** — Tier rules now use cross-category voice alignment (≥2 distinct voices = Señal) instead of implicit stakeholder+user hierarchy. Claims tagged `[INTUITION]` or `[DEMO-FEEDBACK]` can't reach Señal without corroboration.
+- **Workshop mode (BL-132)** — Formal protocol for ad-hoc analytical operations: cross-referencing insights, comparing proposals, exploratory analysis. Artifacts live in `_temp/` and graduate to `_custom/` or the Work layer on demand.
+- **user_profile consumption (BL-133)** — `/analyze` calibrates interview depth by user profile (deeper probing for solo founders, peer-level for designers, coverage-focused for research teams). `/ship` calibrates deliverable tone accordingly.
+
+</details>
+
+<details>
+<summary>Fixes (0)</summary>
+
+No fixes in this release.
+
+</details>
+
+<details>
+<summary>Patches (0)</summary>
+
+No patches in this release.
+
+</details>
+
+---
+
 ## [4.29.0] — 2026-03-07 — Parallel Extraction + Zero-Token Consolidation
 
 `/extract` now runs in parallel by default: a Sonnet coordinator classifies sources and dispatches independent Haiku workers (one per file), then a deterministic bash script consolidates results at zero token cost. Cost drops from ~$1.05/run (serial Sonnet) to ~$0.06/file at scale.
