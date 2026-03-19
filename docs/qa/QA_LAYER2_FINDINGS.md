@@ -58,6 +58,27 @@
 
 ---
 
+### OBS-L2-10 — Conversational claims: elaboration, duplication, tag confusion (P2, accuracy)
+
+**Test:** T6 re-run claim quality review
+**Observed:** 3 issues in 9 claims from AskUserQuestion interview:
+1. **Elaboration beyond user input:** Claim 4 ("cada producto se comporta distinto, generando confusión y curvas de aprendizaje") was synthesized by the agent — user only said "UX inconsistente entre productos". Violates "preserve the user's language and framing" rule.
+2. **Duplication:** Claims 3 and 6 capture the same information ("UX inconsistente") from two different questions. Should be one claim.
+3. **Tag confusion — INTUITION vs FACT for aspirational/constraint claims:** Claims 8 (timeline constraint) and 9 (vision) tagged as [INTUITION] but are user-declared facts about their own constraints/aspirations. FACT + flag ("aspiracional, no validada con clientes") is correct; INTUITION implies the user is guessing about their own decisions.
+**Expected:** Raw claims should be verbatim or near-verbatim user statements. Dedup across questions. FACT tag for user-declared constraints/aspirations with appropriate flags.
+**Fix:** Update SKILL.md claim writing rules: (a) never elaborate beyond what was said, (b) dedup across questions, (c) FACT for self-declared constraints/vision — reserve INTUITION for claims about external reality without evidence.
+
+---
+
+### OBS-L2-09 — Interview AskUserQuestion: single-select vs multi-select (P3, design)
+
+**Test:** T6 re-run with AskUserQuestion interview
+**Observed:** Some interview questions offer mutually exclusive options (correct for single-select) but others have non-exclusive options where the user would want to pick multiple (e.g., "who are the users?" or "what constraints?"). User had to type "todos los anteriores" in free-text fallback.
+**Expected:** When options are non-exclusive, either: (a) include "Varios / todos los anteriores" as explicit option, (b) break into sequential questions ("¿Cuál es el principal?" → "¿Hay otros?"), or (c) note in AskUserQuestion text that multiple can be typed.
+**Fix:** Update SKILL.md interview protocol: distinguish exclusive vs. non-exclusive questions. For non-exclusive, include a "Varios de los anteriores" option or decompose into sequential probes.
+
+---
+
 ### OBS-L2-08 — Adaptive start treats empty EXTRACTIONS.md as "exists" (P2, bug)
 
 **Test:** T6 — user_profile=team_with_research
