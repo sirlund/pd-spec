@@ -155,6 +155,99 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ---
 
+### [BL-134] FIX: /kickoff Skips `team` Field
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** XS
+**Origin:** QA Layer 2 — OBS-L2-01 (2026-03-17)
+
+**Problem:** /kickoff asks 6 questions but leaves `team` as `[Set by /kickoff]` without ever asking. If a field exists in the PROJECT.md template, /kickoff should ask for it.
+
+**Fix:** Add `team` as question 7 in kickoff SKILL.md. Optional field — user can skip.
+
+**Acceptance criteria:**
+- /kickoff asks about team composition
+- User can skip (field stays `[Set by /kickoff]` or blank)
+- PROJECT.md template unchanged
+
+---
+
+### [BL-135] FIX: Rename `design-framework` Category to `design-principle`
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** S
+**Origin:** QA Layer 2 — OBS-L2-06 (2026-03-17)
+
+**Problem:** Insights categorized as `design-framework` are actually design principles or interaction patterns (Quiet UI, Human-in-the-loop), not frameworks (Double Diamond, JTBD, Atomic Design). The term misleads designers who expect the academic/industry meaning.
+
+**Fix:** Rename in analyze SKILL.md category table. Update references in existing projects if any.
+
+**Acceptance criteria:**
+- Category `design-framework` → `design-principle` in SKILL.md
+- /analyze produces `design-principle` category on new runs
+
+---
+
+### [BL-136] FIX: Interview Claims — Elaboration, Duplication, Tag Confusion
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** QA Layer 2 — OBS-L2-10 (2026-03-19)
+
+**Problem:** Conversational claims from interview mode have 3 quality issues:
+1. Agent elaborates beyond user's words (violates "preserve the user's language")
+2. Same info from two different questions produces duplicate claims
+3. INTUITION tag used for user-declared constraints/aspirations (should be FACT + flag)
+
+**Fix:** Update SKILL.md claim writing rules:
+- Never elaborate beyond what was said — claims must be verbatim or near-verbatim
+- Dedup across questions before writing
+- FACT for self-declared constraints/vision; INTUITION only for claims about external reality without evidence
+
+**Acceptance criteria:**
+- Claims map 1:1 to user statements, not agent synthesis
+- No duplicate claims from overlapping questions
+- Constraint/vision claims tagged FACT with appropriate flags
+
+---
+
+### [BL-137] FIX: Interview AskUserQuestion Multi-Select
+
+**Status:** PROPOSED
+**Priority:** P3
+**Effort:** S
+**Origin:** QA Layer 2 — OBS-L2-09 (2026-03-19)
+
+**Problem:** AskUserQuestion is single-select only. Interview questions with non-exclusive options (user types, constraints, research methods) force user to type "todos los anteriores" in free-text fallback — not discoverable.
+
+**Fix:** Update SKILL.md: distinguish exclusive vs. non-exclusive questions. For non-exclusive, either include "Varios / combinación" as explicit option then follow up, or decompose into sequential probes.
+
+**Acceptance criteria:**
+- Non-exclusive questions offer "Varios de los anteriores" or break into sequential asks
+- User never needs undiscoverable free-text workaround for multi-select
+
+---
+
+### [BL-138] FIX: /analyze Summary Count Accuracy
+
+**Status:** PROPOSED
+**Priority:** P2
+**Effort:** S
+**Origin:** QA Layer 2 — OBS-L2-05 (2026-03-17)
+
+**Problem:** ANALYSIS.md report said "4 design-frameworks grounded" but actual count was 2. DART was business (wrong category), iPhone-like was Hipótesis with 1 source (not grounded). LLM summarization error — tier rules and categories in INSIGHTS_GRAPH.md were correct.
+
+**Fix:** Add script-first verification step: after writing INSIGHTS_GRAPH.md, use inline script to count categories/tiers before writing ANALYSIS.md summary. LLM writes the narrative but counts come from deterministic scan.
+
+**Acceptance criteria:**
+- Category/tier counts in ANALYSIS.md match actual INSIGHTS_GRAPH.md content
+- Counts derived from script, not LLM reasoning
+
+---
+
 ### [BL-126] FIX: /extract --file Dedup — Path Normalization on Re-extraction
 
 **Status:** PROPOSED
