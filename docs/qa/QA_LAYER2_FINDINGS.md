@@ -95,6 +95,7 @@
 **Observed:** Even the developer (Nicolas) had to stop and think about why `--full` was needed after `/extract` added new file-based claims alongside existing conversational claims. If the creator of the system has to reason about flags, end users have no chance.
 **Expected:** An orchestrator agent should handle routing: detect new claims, decide mode, chain skills automatically. The user says "analyze" or the system auto-chains after /extract.
 **Implication:** This is Layer 3+ territory — connects to the orchestrator/agent concept discussed previously. Current pipeline is power-user mode; the default path should be invisible.
+**Additional signal (2026-03-20):** Post-kickoff, the experience breaks — user finishes setup and has to decide between /extract and /analyze with no guidance. The orchestrator should auto-chain: kickoff → detect sources → suggest next step (or auto-run).
 
 ---
 
