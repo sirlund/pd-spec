@@ -193,13 +193,14 @@ PD-Spec is the strategy layer — it turns research into decisions. It does not 
 
 ### Receive engine updates
 
-After creating from template, add pd-spec as upstream:
+After creating from template, add pd-spec as upstream (shallow — no full history needed):
 
     git remote add upstream https://github.com/sirlund/pd-spec.git
+    git fetch upstream --depth=1
 
 When updates are available:
 
-    git fetch upstream
+    git fetch upstream --depth=1
     git merge upstream/main
 
 `.gitattributes` protects your project files (01_Sources/, 02_Work/, 03_Outputs/)
