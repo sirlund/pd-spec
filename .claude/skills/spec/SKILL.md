@@ -102,7 +102,6 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
    |---|---|
    | Digital product | Design Principles + Operational Domains |
    | Consulting / research | Strategic Axes + Prioritized Recommendations |
-   | Redesign / improvement | Design Principles + Operational Domains |
    | Business strategy | Strategic Axes |
    | (not set) | Infer from insight categories, ask user |
 

@@ -50,9 +50,8 @@ Ask the user these questions. Use `AskUserQuestion` for structured choices. Ask 
    - Examples: "A social banking app for Gen Z", "B2B SaaS for construction project management"
 
 7. **Project type** — Use `AskUserQuestion` to ask what kind of project this is. Write the question text and option labels in `output_language`.
-   - **Digital product** — SaaS, app, platform
-   - **Consulting / research** — benchmark, audit, analysis
-   - **Redesign / improvement** — existing product to improve
+   - **Digital product** — SaaS, app, platform (new or existing — starting_point captures the distinction)
+   - **Consulting / research** — benchmark, audit, analysis for a client
    - **Business strategy** — model, positioning, segments
    - (AskUserQuestion auto-provides "Other" with free text — do NOT add it as an explicit 5th option)
    - If the user selects "Other", ask a follow-up to describe the project type in one phrase.
