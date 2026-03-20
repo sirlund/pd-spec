@@ -11,7 +11,7 @@
 - **user_profile:** [Set by /kickoff]
 - **team:** [Set by /kickoff]
 - **started:** [Set by /kickoff]
-- **engine_version:** v4.30.0
+- **engine_version:** v4.30.1
 
 ## Current State
 

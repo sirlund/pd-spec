@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.30.1] — 2026-03-20 — Layer 2 QA Fixes
+
+<details>
+<summary>Fixes (5)</summary>
+
+- **Kickoff team field (BL-134)** — `/kickoff` now asks team composition as Q7 (optional, conversational).
+- **Category rename (BL-135)** — `design-framework` → `design-principle` across analyze, spec, and FRAMEWORK.md. Aligns name with what the category actually captures.
+- **Interview claim quality (BL-136)** — Added 3 rules: no elaboration beyond user's words, dedup across questions, FACT tag for self-declared constraints/aspirations (not INTUITION).
+- **Multi-select heuristic (BL-137)** — Non-exclusive interview questions now include "Varios / combinación" option with follow-up. Exclusive vs non-exclusive determined by heuristic.
+- **Summary count accuracy (BL-138)** — Post-write verification step for ANALYSIS.md: cross-checks each insight's tier placement against INSIGHTS_GRAPH.md before proceeding.
+
+</details>
+
+---
+
 ## [4.30.0] — 2026-03-17 — Amplifier, Not Process (Wave 3.5 Layers 1+2)
 
 PD-Spec now adapts to how you work — tell it about your project in conversation and it captures structured claims with evidence quality tracking, or bring files and run the classic pipeline. Skills flex to what's available instead of enforcing a rigid sequence.
