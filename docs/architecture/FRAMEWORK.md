@@ -282,7 +282,7 @@ El meta-framework no cambia la naturaleza transversal de los principios de dise�
 - **Comportamental:** moldea flujos UX (qué se muestra primero vs. qué se revela bajo demanda)
 - **Materialización:** dicta estados de componentes y densidad de información
 
-Los principios se extraen de insights `design-framework` y se fundamentan en evidencia `[IG-XX]`, sin importar el perfil de complejidad.
+Los principios se extraen de insights `design-principle` y se fundamentan en evidencia `[IG-XX]`, sin importar el perfil de complejidad.
 
 ### Ciclos de Refinamiento
 
@@ -474,7 +474,7 @@ Un campo `framework_mode` en `PROJECT.md` determina cuánta autonomía toma pd-s
 
 #### Categorías de Insight Editables
 
-Las categorías de insight por defecto en `/analyze` (`user-need`, `pain-point`, `behavior-pattern`, `market-context`, `design-framework`, `technical-constraint`) son un punto de partida, no un esquema fijo.
+Las categorías de insight por defecto en `/analyze` (`user-need`, `pain-point`, `behavior-pattern`, `market-context`, `design-principle`, `technical-constraint`) son un punto de partida, no un esquema fijo.
 
 En modos **Guided** y **Manual**, el Lead puede:
 - **Renombrar** categorías para que coincidan con el vocabulario del equipo

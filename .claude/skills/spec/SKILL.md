@@ -83,7 +83,7 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
    from PROJECT.md and propose which structural elements to include.
 
    **Fallback for missing project_type:** If `project_type` is missing or `[Set by /kickoff]`,
-   infer type from insight categories: majority `user-need` + `design-framework` → Digital product;
+   infer type from insight categories: majority `user-need` + `design-principle` → Digital product;
    majority `business` → Business strategy; mixed with few `technical` → Consulting / research.
    If ambiguous, ask the user via AskUserQuestion.
 
@@ -91,7 +91,7 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 
    | Element | What it organizes | When to use |
    |---|---|---|
-   | Design Principles | Guiding principles from design-framework insights | Product has design decisions grounded in evidence |
+   | Design Principles | Guiding principles from design-principle insights | Product has design decisions grounded in evidence |
    | Operational Domains | Functional territory groupings | Product covers multiple functional areas |
    | Strategic Axes | High-level strategic themes/directions | Project defines strategic direction, not buildable modules |
    | Prioritized Recommendations | Actionable findings ranked by impact | Project delivers analysis/advice, not a product |
@@ -120,7 +120,7 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
 
    **Rules for each element:**
    - **Design Principles** — product-level principles only. Source exclusively from
-     insights with category `design-framework`. Internal methodology concepts
+     insights with category `design-principle`. Internal methodology concepts
      (Homer's Car, etc.) are NOT product principles — list them in a separate
      "Internal Design Criteria" subsection if relevant. Each principle gets:
      - A **memorable name** — use the name from the source insight, don't rename or invent.

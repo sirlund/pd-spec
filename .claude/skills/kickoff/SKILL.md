@@ -69,6 +69,8 @@ Ask the user these questions. Use `AskUserQuestion` for structured choices. Ask 
    - **Team with research** — Have research team or existing research. Need PD-Spec to synthesize and detect gaps.
    - This determines depth and tone: more structured guidance and probing for "founder/solo", more peer-level for "designer", lighter touch for "team with research".
 
+10. **Team** — Ask conversationally (not AskUserQuestion — open-ended answer). "¿Quiénes componen el equipo? (ej: '2 diseñadores + 1 PM', 'founder solo'). Podés saltar esta pregunta si no aplica." If user skips → leave `team` as `[Set by /kickoff]`.
+
 ### Phase 2: Write Settings
 
 7. **If PROJECT.md exists** — Use Edit to replace the settings section:

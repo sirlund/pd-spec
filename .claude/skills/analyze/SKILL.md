@@ -37,6 +37,8 @@ When the user chooses to tell you about their project (option 3 in adaptive star
 
 **When NOT to use AskUserQuestion:** Brief acknowledgments, transitions between topics, and short clarifications that don't need structured options. These go as inline text.
 
+**Exclusive vs. non-exclusive questions:** Before writing options, determine if the question is exclusive (only one answer makes sense) or non-exclusive (multiple answers are natural). Heuristic: if the question uses plural ("quiénes", "qué restricciones") or answers aren't mutually exclusive → non-exclusive. For non-exclusive: include "Varios / combinación de los anteriores" as last option before free text. If selected, follow up with "¿Cuáles aplican? Mencionálos." as free text.
+
 **Internal progression (invisible to user):** Track coverage across 6 themes. You do NOT need to cover them in order — follow the conversation naturally, but ensure you touch them. 3-8 exchanges max.
 
 | Theme | What to surface | Example AskUserQuestion options |
@@ -94,6 +96,9 @@ After the interview concludes (user signals done, or 8 exchanges reached), write
 - Include the evidence quality tag on every claim
 - Add flags where relevant: `(flag: interviewer bias)`, `(flag: suggest validation)`, `(flag: social bias)`
 - If the user never clarified the evidence basis for a claim, tag as `[INTUITION]` and add `(flag: evidence basis not confirmed)`
+- **No elaboration** — claims must be verbatim or near-verbatim user statements. Do NOT synthesize, infer, or expand beyond what was said. AskUserQuestion option text counts as "what the user said" since they explicitly selected it.
+- **Dedup across questions** — if two questions produce the same core information, write one claim. When in doubt, keep both — easier to merge later than to recover lost nuance.
+- **FACT for self-declared realities** — user states their own constraint, vision, decision, or org fact → [FACT]. User speculates about external reality without evidence ("users probably want X") → [INTUITION]. Still add scope flags: `(flag: aspiracional)`, `(flag: sin fecha específica)`, `(flag: decisión del equipo, no validada técnicamente)`.
 
 After writing to EXTRACTIONS.md, proceed to **Phase 1** (the claims are now in EXTRACTIONS.md, so the normal pipeline takes over). Use `--file "Conversación YYYY-MM-DD"` mode to process only the new conversational section.
 
@@ -147,8 +152,8 @@ Assign each insight a tier based on these rules — no interpretation, no judgme
 
 | Tier | Rule |
 |---|---|
-| **Señal** | ≥3 sources expressing same need (direct-quote or observation) OR ≥2 distinct voices aligned (any combination except `ai`) OR document fact (metric, contract, spec) OR `category: constraint` OR `category: design-framework` with `Grounded in: [IG-XX]` refs and ≥2 sources |
-| **Hipótesis** | 1–2 sources from a single voice OR `design-framework` without `Grounded in:` refs |
+| **Señal** | ≥3 sources expressing same need (direct-quote or observation) OR ≥2 distinct voices aligned (any combination except `ai`) OR document fact (metric, contract, spec) OR `category: constraint` OR `category: design-principle` with `Grounded in: [IG-XX]` refs and ≥2 sources |
+| **Hipótesis** | 1–2 sources from a single voice OR `design-principle` without `Grounded in:` refs |
 | **Supuesto** | `voice: ai` (any count) OR claims tagged `[INTUITION]` or `[DEMO-FEEDBACK]` without corroboration from other sources |
 
 **Evidence quality tag behavior:** When claims carry evidence quality tags (from conversational ingestion), apply these additional rules:
@@ -166,11 +171,11 @@ Assign each insight a tier based on these rules — no interpretation, no judgme
 | `business` | Business objectives, metrics, model |
 | `constraint` | Non-negotiable limits: runway, regulatory, capital, hard deadlines |
 | `technical` | System capabilities or technical limits |
-| `design-framework` | Design principles with evidence trail |
+| `design-principle` | Design principles with evidence trail |
 
 Add temporal tag: `(current)` for present state, `(aspirational)` for desired future. Default to `(current)` if ambiguous.
 
-`design-framework` insights MUST include `Grounded in: [IG-XX]` — a design principle without evidence is a Homer's Car.
+`design-principle` insights MUST include `Grounded in: [IG-XX]` — a design principle without evidence is a Homer's Car.
 
 **9. Assign voice and authority**
 
@@ -301,6 +306,8 @@ Veredicto rules:
 - `ready`: ≥50% of insights are Señal, no critical gaps
 - `partial`: mix of Señal + Hipótesis, gaps exist but /spec can proceed with caveats
 - `not ready`: majority Supuesto, critical gaps (no user research, only 1 source total)
+
+**Post-write verification:** After writing ANALYSIS.md, re-read INSIGHTS_GRAPH.md and verify: (1) each `[IG-XX]` in ANALYSIS.md is placed in the section matching its actual Tier in INSIGHTS_GRAPH.md, (2) the count in each section header matches the number of bullets listed, (3) no insight is referenced that doesn't exist in INSIGHTS_GRAPH.md. Fix any mismatches before proceeding.
 
 **16. Write to memory** — Append to `02_Work/MEMORY.md`:
 ```
