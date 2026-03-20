@@ -33,21 +33,21 @@ Guides the user through initial project configuration after cloning the PD-Spec 
 
 ### Phase 1: Ask Questions
 
-Ask the user these questions. Use `AskUserQuestion` for structured choices. Ask project name and one-liner as natural conversation.
+Ask the user these questions **one at a time, each in its own turn**. Do NOT combine multiple questions in a single message. Wait for the user's answer before asking the next question.
 
-4. **Project name** — "What's the name of your project?"
+4. **Project name** — Ask conversationally: "What's the name of your project?"
    - This becomes the title in all outputs (PRD, presentations, reports).
    - Examples: "NeoWallet", "HealthTrack Pro", "Marketplace X"
 
-5. **Language** — "What language should outputs be generated in?"
+5. **One-liner** — Ask conversationally: "Describe your project in one sentence."
+   - This provides context for the agent when generating outputs.
+   - Examples: "A social banking app for Gen Z", "B2B SaaS for construction project management"
+
+6. **Language** — Use `AskUserQuestion`: "What language should outputs be generated in?"
    - **English (en)** — All Work layer files and Outputs in English.
    - **Spanish (es)** — All Work layer files and Outputs in Spanish.
    - Default: `en`
    - Note: skill instructions, system IDs (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`), and template structure always stay in English regardless of this setting.
-
-6. **One-liner** — "Describe your project in one sentence."
-   - This provides context for the agent when generating outputs.
-   - Examples: "A social banking app for Gen Z", "B2B SaaS for construction project management"
 
 7. **Project type** — Use `AskUserQuestion` to ask what kind of project this is. Write the question text and option labels in `output_language`.
    - **Digital product** — SaaS, app, platform (new or existing — starting_point captures the distinction)
