@@ -157,7 +157,7 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ### [BL-134] FIX: /kickoff Skips `team` Field
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.1, 2026-03-20)
 **Priority:** P3
 **Effort:** XS
 **Origin:** QA Layer 2 — OBS-L2-01 (2026-03-17)
@@ -175,7 +175,7 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ### [BL-135] FIX: Rename `design-framework` Category to `design-principle`
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.1, 2026-03-20)
 **Priority:** P3
 **Effort:** S
 **Origin:** QA Layer 2 — OBS-L2-06 (2026-03-17)
@@ -192,7 +192,7 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ### [BL-136] FIX: Interview Claims — Elaboration, Duplication, Tag Confusion
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.1, 2026-03-20)
 **Priority:** P2
 **Effort:** S
 **Origin:** QA Layer 2 — OBS-L2-10 (2026-03-19)
@@ -216,7 +216,7 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ### [BL-137] FIX: Interview AskUserQuestion Multi-Select
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.1, 2026-03-20)
 **Priority:** P3
 **Effort:** S
 **Origin:** QA Layer 2 — OBS-L2-09 (2026-03-19)
@@ -233,7 +233,7 @@ Store in `PROJECT.md`. Skills read these values to adapt:
 
 ### [BL-138] FIX: /analyze Summary Count Accuracy
 
-**Status:** PROPOSED
+**Status:** IMPLEMENTED (v4.30.1, 2026-03-20)
 **Priority:** P2
 **Effort:** S
 **Origin:** QA Layer 2 — OBS-L2-05 (2026-03-17)
