@@ -96,6 +96,7 @@
 **Expected:** An orchestrator agent should handle routing: detect new claims, decide mode, chain skills automatically. The user says "analyze" or the system auto-chains after /extract.
 **Implication:** This is Layer 3+ territory — connects to the orchestrator/agent concept discussed previously. Current pipeline is power-user mode; the default path should be invisible.
 **Additional signal (2026-03-20):** Post-kickoff, the experience breaks — user finishes setup and has to decide between /extract and /analyze with no guidance. The orchestrator should auto-chain: kickoff → detect sources → suggest next step (or auto-run).
+**Additional signal (2026-03-21):** /analyze accumulates insights instead of refining them. When new evidence arrives (e.g., audit técnico with real bug data), IG-11 ("problemas técnicos" genérico) should be superseded or merged — but the agent just adds IG-18, IG-19 on top. The orchestrator should manage graph hygiene: detect when new evidence invalidates/supersedes/merges existing insights, propose consolidation, signal tier upgrades. This is the real "second pair of eyes" value of PD-Spec as a design partner.
 
 ---
 
