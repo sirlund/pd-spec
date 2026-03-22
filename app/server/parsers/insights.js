@@ -154,7 +154,7 @@ export function parseInsights(content) {
     if (grounded) { current.grounded_in = grounded[1].trim(); continue; }
 
     // Ref line
-    const ref = line.match(/^\*{0,2}Ref:\*{0,2}\s*(.+)/);
+    const ref = line.match(/^\*{0,2}Refs?:\*{0,2}\s*(.+)/);
     if (ref) {
       current.refs = ref[1].split(',').map(r => r.trim()).filter(Boolean);
       section = 'after';
