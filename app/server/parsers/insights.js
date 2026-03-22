@@ -96,10 +96,10 @@ export function parseInsights(content) {
 
     // Field lines (key-value)
     if (section === 'fields') {
-      const consolidates = line.match(/^\*\*Consolidates:\*\*\s*(.+)/);
+      const consolidates = line.match(/^\*{0,2}Consolidates:\*{0,2}\s*(.+)/);
       if (consolidates) { current.consolidates = consolidates[1].trim(); continue; }
 
-      const convergence = line.match(/^\*\*Convergence:\*\*\s*(.+)/);
+      const convergence = line.match(/^\*{0,2}Convergence:\*{0,2}\s*(.+)/);
       if (convergence) {
         current.convergence = convergence[1].trim();
         const ratio = convergence[1].match(/(\d+)\/(\d+)/);
@@ -107,13 +107,22 @@ export function parseInsights(content) {
         continue;
       }
 
-      const cat = line.match(/^\*\*Category:\*\*\s*(.+)/);
+      const cat = line.match(/^\*{0,2}Category:\*{0,2}\s*(.+)/);
       if (cat) { current.category = cat[1].trim(); continue; }
 
-      const voice = line.match(/^\*\*Voice:\*\*\s*(.+)/);
-      if (voice) { current.voice = voice[1].trim(); continue; }
+      // Voice and Authority — may appear on separate lines or combined as "Voice: x | Authority: y"
+      const voiceAuth = line.match(/^\*{0,2}Voice:\*{0,2}\s*(.+)/);
+      if (voiceAuth) {
+        const parts = voiceAuth[1].split(/\s*\|\s*/);
+        current.voice = parts[0].trim();
+        if (parts.length > 1) {
+          const authPart = parts[1].match(/\*{0,2}Authority:\*{0,2}\s*(.+)/);
+          if (authPart) current.authority = authPart[1].trim();
+        }
+        continue;
+      }
 
-      const auth = line.match(/^\*\*Authority:\*\*\s*(.+)/);
+      const auth = line.match(/^\*{0,2}Authority:\*{0,2}\s*(.+)/);
       if (auth) { current.authority = auth[1].trim(); continue; }
 
       const status = line.match(/^\*{0,2}Status:\*{0,2}\s*(\w+)/);

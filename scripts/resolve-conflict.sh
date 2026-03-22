@@ -50,7 +50,7 @@ fi
 # Use awk with a flag to avoid the range-closes-on-first-line problem
 CURRENT_STATUS=$(awk -v id="$CONFLICT_ID" '
   /^### \[/ { if (found) exit; if (index($0, "[" id "]") > 0) found=1 }
-  found && /^Status:/ { sub(/^Status: */, ""); print; exit }
+  found && /^-? ?Status:/ { sub(/^-? ?Status: */, ""); print; exit }
 ' "$FILE")
 
 if [ -z "$CURRENT_STATUS" ]; then
@@ -85,10 +85,13 @@ awk -v id="$CONFLICT_ID" -v resolution="$RESOLUTION" '
     in_target = (index($0, "[" id "]") > 0)
     did_replace = 0
   }
-  in_target && /^Status: *PENDING/ && !did_replace {
-    print "Status: RESOLVED"
+  in_target && /^-? ?Status: *PENDING/ && !did_replace {
+    # Preserve dash prefix if present
+    prefix = ""
+    if (substr($0, 1, 1) == "-") prefix = "- "
+    print prefix "Status: RESOLVED"
     if (resolution != "") {
-      print "Resolution: " resolution
+      print prefix "Resolution: " resolution
     }
     did_replace = 1
     next

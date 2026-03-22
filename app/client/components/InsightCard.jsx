@@ -19,6 +19,11 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [localStatus, setLocalStatus] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editNarrative, setEditNarrative] = useState('');
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
   const freshness = getFreshness(insight.last_updated);
 
@@ -32,14 +37,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
     }
   }, [error, clearError]);
 
-  const handleApprove = async () => {
-    try {
-      await execute('verify-insight', { id: insight.id, action: 'verify' });
-      setLocalStatus('VERIFIED');
-    } catch { /* error shown inline */ }
-  };
-
-  const handleReject = async () => {
+  const handleDiscard = async () => {
     if (!showRejectInput) {
       setShowRejectInput(true);
       return;
@@ -50,6 +48,39 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
       setShowRejectInput(false);
       setRejectReason('');
     } catch { /* error shown inline */ }
+  };
+
+  const handleEditStart = () => {
+    setEditTitle(insight.title || '');
+    setEditNarrative(insight.narrative || '');
+    setEditing(true);
+    setEditError(null);
+  };
+
+  const handleEditSave = async () => {
+    setEditLoading(true);
+    setEditError(null);
+    try {
+      const res = await fetch(`/api/insight/${insight.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: editTitle, narrative: editNarrative }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to save');
+      }
+      setEditing(false);
+    } catch (err) {
+      setEditError(err.message);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditing(false);
+    setEditError(null);
   };
 
   const effectiveStatus = localStatus || insight.status;
@@ -82,11 +113,41 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
         )}
       </div>
 
-      <div className="card-title" style={{ marginBottom: 8 }}>
-        {insight.concept && <span style={{ color: 'var(--accent-cyan)' }}>"{insight.concept}"</span>}
-        {insight.concept && ' — '}
-        {insight.title}
-      </div>
+      {editing ? (
+        <div style={{ marginBottom: 8 }}>
+          <input
+            className="form-input"
+            style={{ fontSize: '0.85rem', padding: '6px 8px', width: '100%', marginBottom: 6 }}
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            placeholder="Insight title..."
+          />
+          <textarea
+            className="form-input"
+            style={{ fontSize: '0.82rem', padding: '6px 8px', width: '100%', minHeight: 60, resize: 'vertical' }}
+            value={editNarrative}
+            onChange={(e) => setEditNarrative(e.target.value)}
+            placeholder="Narrative..."
+          />
+          <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+            <button className="btn btn-sm btn-approve" onClick={handleEditSave} disabled={editLoading}>
+              <Icon name={editLoading ? 'loader' : 'check'} size={14} spin={editLoading} /> Save
+            </button>
+            <button className="btn btn-sm btn-ghost" onClick={handleEditCancel} disabled={editLoading}>
+              Cancel
+            </button>
+          </div>
+          {editError && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginTop: 4 }}>{editError}</div>
+          )}
+        </div>
+      ) : (
+        <div className="card-title" style={{ marginBottom: 8 }}>
+          {insight.concept && <span style={{ color: 'var(--accent-cyan)' }}>"{insight.concept}"</span>}
+          {insight.concept && ' — '}
+          {insight.title}
+        </div>
+      )}
 
       <div className="card-meta">
         {insight.category && <span><strong>Category:</strong> {insight.category}</span>}
@@ -96,7 +157,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
       </div>
 
 
-      {insight.narrative && (
+      {!editing && insight.narrative && (
         <div className="card-body">
           <p style={{
             overflow: 'hidden',
@@ -154,23 +215,23 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
         </div>
       )}
 
-      {/* Direct action buttons for PENDING insights */}
-      {effectiveStatus === 'PENDING' && (
+      {/* Action buttons for PENDING insights: Edit + Discard */}
+      {effectiveStatus === 'PENDING' && !editing && (
         <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6 }}>
             <button
-              className="btn btn-sm btn-approve"
-              onClick={handleApprove}
+              className="btn btn-sm btn-ghost"
+              onClick={handleEditStart}
               disabled={loading}
             >
-              <Icon name={loading ? 'loader' : 'check'} size={14} spin={loading} /> Approve
+              <Icon name="pencil" size={14} /> Edit
             </button>
             <button
               className="btn btn-sm btn-reject"
-              onClick={handleReject}
+              onClick={handleDiscard}
               disabled={loading}
             >
-              <Icon name="x" size={14} /> Reject
+              <Icon name="x" size={14} /> Discard
             </button>
           </div>
           {showRejectInput && (
@@ -178,13 +239,13 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
               <input
                 className="form-input"
                 style={{ fontSize: '0.78rem', padding: '4px 8px' }}
-                placeholder="Reason for rejection..."
+                placeholder="Reason for discarding..."
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleReject()}
+                onKeyDown={(e) => e.key === 'Enter' && handleDiscard()}
                 autoFocus
               />
-              <button className="btn btn-sm btn-reject" onClick={handleReject} disabled={!rejectReason.trim() || loading}>
+              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!rejectReason.trim() || loading}>
                 Send
               </button>
               <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>
@@ -204,7 +265,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
           <div style={{ display: 'flex', gap: 6 }}>
             <button
               className="btn btn-sm btn-reject"
-              onClick={handleReject}
+              onClick={handleDiscard}
               disabled={loading}
             >
               <Icon name="x" size={14} /> Invalidate
@@ -218,10 +279,10 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
                 placeholder="Reason for invalidation..."
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleReject()}
+                onKeyDown={(e) => e.key === 'Enter' && handleDiscard()}
                 autoFocus
               />
-              <button className="btn btn-sm btn-reject" onClick={handleReject} disabled={!rejectReason.trim() || loading}>
+              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!rejectReason.trim() || loading}>
                 Send
               </button>
               <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>

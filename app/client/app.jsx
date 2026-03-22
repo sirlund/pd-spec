@@ -37,6 +37,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [connected, setConnected] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
+  const [highlightPath, setHighlightPath] = useState(null);
   const [sessionToken, setSessionToken] = useState(() => localStorage.getItem('pd-session-token'));
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [agentNotification, setAgentNotification] = useState(false);
@@ -99,8 +100,9 @@ export default function App() {
       setView('conflicts', { highlightId: id });
     } else if (id.startsWith('source:')) {
       const filePath = id.replace('source:', '');
-      setRestoredFile(`01_Sources/${filePath}`);
-      setView('sources');
+      setHighlightPath(filePath);
+      setView('extractions');
+      setTimeout(() => setHighlightPath(null), 3000);
     } else if (VIEW_REGISTRY.some(v => v.id === id)) {
       setView(id);
     }
@@ -154,7 +156,7 @@ export default function App() {
           />
         );
       case 'extractions':
-        return <MarkdownView path="/extractions" title="Extractions" parsed onNavigate={navigateTo} />;
+        return <MarkdownView path="/extractions" title="Extractions" parsed onNavigate={navigateTo} highlightPath={highlightPath} />;
       case 'evidence-gaps':
         return <EvidenceGapsView onNavigate={navigateTo} />;
       case 'strategic-vision':

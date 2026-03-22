@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useLiveData } from '../hooks.js';
 import Card from './ui/Card.jsx';
 import { WarningBadge, IdBadge } from './ui/Badge.jsx';
@@ -20,15 +20,24 @@ function InlineRefs({ text, onNavigate }) {
   );
 }
 
-function ExtractionCard({ file, onNavigate }) {
+function ExtractionCard({ file, onNavigate, highlightPath }) {
   const [expanded, setExpanded] = useState(false);
+  const cardRef = useRef(null);
+  const isHighlighted = highlightPath && file.path.includes(highlightPath);
+
+  useEffect(() => {
+    if (isHighlighted) {
+      setExpanded(true);
+      setTimeout(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+  }, [isHighlighted]);
 
   return (
-    <Card>
+    <Card ref={cardRef}>
       <div
         className="card-header"
         onClick={() => setExpanded(!expanded)}
-        style={{ cursor: 'pointer', marginBottom: expanded ? 8 : 0 }}
+        style={{ cursor: 'pointer', marginBottom: expanded ? 8 : 0, ...(isHighlighted ? { background: 'var(--accent-cyan-bg, rgba(0,200,200,0.1))' } : {}) }}
       >
         <Icon
           name="chevron-down"
@@ -68,7 +77,7 @@ function ExtractionCard({ file, onNavigate }) {
   );
 }
 
-export default function MarkdownView({ path, title, parsed, onNavigate }) {
+export default function MarkdownView({ path, title, parsed, onNavigate, highlightPath }) {
   const { data, loading } = useLiveData(path, ['02_Work/']);
 
   const handleClick = useCallback((e) => {
@@ -103,7 +112,7 @@ export default function MarkdownView({ path, title, parsed, onNavigate }) {
           <h1 className="section-title">{title} ({data.total_claims} claims)</h1>
         </div>
         {data.files.map((file) => (
-          <ExtractionCard key={file.path} file={file} onNavigate={onNavigate} />
+          <ExtractionCard key={file.path} file={file} onNavigate={onNavigate} highlightPath={highlightPath} />
         ))}
       </div>
     );

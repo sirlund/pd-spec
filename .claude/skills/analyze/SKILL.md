@@ -144,6 +144,8 @@ Scan claims across all filtered sections. Group claims that describe the same un
 - **When in doubt, separate.** It's easier to merge later than to split. Aim for 1 insight per atomic concept — 20 sources should produce ~15-30 insights, not 5-8.
 - Do NOT bundle multiple problems or needs into one IG-SYNTH-XX. Broad "umbrella" insights lose traceability and make /spec harder.
 
+**Product-relevance filter (for `project_type: digital_product`):** Only create insights for claims that inform product design decisions: user needs, product limitations, technical constraints, business strategy/vision, competitive positioning. Do NOT create `[IG-XX]` for internal operational claims (sales process, team operations, lead qualification, HR). These stay in EXTRACTIONS.md as raw claims. Exception: an operational claim that reveals a product gap ("demos fail because the product can't show X") → the gap IS an insight.
+
 Use `./scripts/next-id.sh ig 02_Work/INSIGHTS_GRAPH.md` for IG IDs, `./scripts/next-id.sh synth` for IG-SYNTH IDs. If unavailable, scan existing IDs manually (two-digit minimum: IG-01…IG-99, then IG-100+).
 
 **7. Apply evidence tiers (deterministic)**

@@ -56,7 +56,7 @@ export function parseConflicts(content) {
 
     // Field lines
     if (section === 'fields' || section === 'claims') {
-      const status = line.match(/^Status:\s*(\w+)(?:\s*—\s*(.+))?/);
+      const status = line.match(/^-?\s*Status:\s*(\w+)(?:\s*—\s*(.+))?/);
       if (status) {
         current.status = status[1].toUpperCase();
         if (status[2]) {
@@ -73,10 +73,10 @@ export function parseConflicts(content) {
         continue;
       }
 
-      const type = line.match(/^Type:\s*(.+)/);
+      const type = line.match(/^-?\s*Type:\s*(.+)/);
       if (type) { current.type = type[1].trim(); continue; }
 
-      const related = line.match(/^Related insights:\s*(.+)/);
+      const related = line.match(/^-?\s*Related insights:\s*(.+)/);
       if (related) {
         current.related_insights = related[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || [];
         current.related_insights = current.related_insights.map(r => r.replace(/[\[\]]/g, ''));

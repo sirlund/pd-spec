@@ -4,7 +4,7 @@
  */
 
 import { Router } from 'express';
-import { readFile, readdir, stat } from 'fs/promises';
+import { readFile, writeFile, readdir, stat } from 'fs/promises';
 import { resolve, join, extname } from 'path';
 import { execFile } from 'child_process';
 import { parseInsights } from './parsers/insights.js';
@@ -577,6 +577,110 @@ export function createApi(projectRoot) {
         source_folders: sourceFolders,
         evidence_gap_count: gapCount,
       });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // PATCH /api/insight/:id — edit title and narrative (pure file manipulation, no LLM)
+  router.patch('/insight/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, narrative } = req.body || {};
+      if (!id || (!title && narrative === undefined)) {
+        return res.status(400).json({ error: 'Missing id, title, or narrative' });
+      }
+
+      const filePath = resolve(projectRoot, '02_Work/INSIGHTS_GRAPH.md');
+      let content;
+      try {
+        content = await readFile(filePath, 'utf-8');
+      } catch {
+        return res.status(404).json({ error: 'INSIGHTS_GRAPH.md not found' });
+      }
+
+      // Find insight block by ### [ID]
+      const headerPattern = new RegExp(`^### \\[${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]\\s*(.*)$`, 'm');
+      const headerMatch = content.match(headerPattern);
+      if (!headerMatch) {
+        return res.status(404).json({ error: `${id} not found` });
+      }
+
+      let updated = content;
+
+      // Replace title in header line
+      if (title) {
+        const oldHeader = headerMatch[0];
+        // Preserve concept if present: ### [ID] "Concept" — Title
+        const conceptMatch = headerMatch[1].match(/^("(?:[^"]+)")\s*—\s*.+$/);
+        const newHeader = conceptMatch
+          ? `### [${id}] ${conceptMatch[1]} — ${title}`
+          : `### [${id}] ${title}`;
+        updated = updated.replace(oldHeader, newHeader);
+      }
+
+      // Replace narrative blockquote
+      if (narrative !== undefined) {
+        // Find the narrative block: lines starting with > after the header
+        const lines = updated.split('\n');
+        const headerIdx = lines.findIndex(l => l.match(headerPattern));
+        if (headerIdx >= 0) {
+          // Find narrative start (> **Narrative:** or first > line after fields)
+          let narrativeStart = -1;
+          let narrativeEnd = -1;
+          for (let i = headerIdx + 1; i < lines.length; i++) {
+            if (lines[i].match(/^### \[/)) break; // next insight
+            if (lines[i].startsWith('> ')) {
+              if (narrativeStart === -1) narrativeStart = i;
+              narrativeEnd = i;
+            } else if (narrativeStart !== -1) {
+              break; // end of blockquote
+            }
+          }
+
+          const newNarrativeLines = narrative
+            ? narrative.split('\n').map(l => `> ${l}`)
+            : ['> '];
+
+          if (narrativeStart >= 0) {
+            lines.splice(narrativeStart, narrativeEnd - narrativeStart + 1, ...newNarrativeLines);
+          } else {
+            // No existing narrative — insert after fields, before evidence
+            let insertIdx = headerIdx + 1;
+            for (let i = headerIdx + 1; i < lines.length; i++) {
+              if (lines[i].match(/^### \[/) || lines[i].match(/^\*\*Evidence/) || lines[i].match(/^---/)) break;
+              insertIdx = i + 1;
+            }
+            lines.splice(insertIdx, 0, '', ...newNarrativeLines);
+          }
+          updated = lines.join('\n');
+        }
+      }
+
+      // Add edited timestamp
+      const today = new Date().toISOString().slice(0, 10);
+      const editedTag = `**Edited:** ${today}`;
+      const editedLines = updated.split('\n');
+      const hIdx = editedLines.findIndex(l => l.match(headerPattern));
+      // Find where to insert — after the last field line before narrative/evidence
+      let insertAt = hIdx + 1;
+      for (let i = hIdx + 1; i < editedLines.length; i++) {
+        if (editedLines[i].match(/^### \[/) || editedLines[i].startsWith('> ') || editedLines[i].match(/^\*\*Evidence/)) break;
+        // Skip existing Edited tag
+        if (editedLines[i].match(/^\*\*Edited:\*\*/)) {
+          editedLines.splice(i, 1);
+          break;
+        }
+        insertAt = i + 1;
+      }
+      editedLines.splice(insertAt, 0, editedTag);
+      updated = editedLines.join('\n');
+
+      await writeFile(filePath, updated, 'utf-8');
+      // Invalidate parse cache
+      parseCache.delete('02_Work/INSIGHTS_GRAPH.md');
+
+      res.json({ ok: true, id });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

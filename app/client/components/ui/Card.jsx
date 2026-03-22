@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-export default function Card({ children, accent, className = '', ...props }) {
+const Card = forwardRef(function Card({ children, accent, className = '', ...props }, ref) {
   const accentClass = accent ? `card-accent-${accent}` : '';
   return (
-    <div className={`card ${accentClass} ${className}`} {...props}>
+    <div ref={ref} className={`card ${accentClass} ${className}`} {...props}>
       {children}
     </div>
   );
-}
+});
+
+export default Card;
