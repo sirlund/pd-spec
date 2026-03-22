@@ -99,7 +99,7 @@ export default function App() {
       setView('conflicts', { highlightId: id });
     } else if (id.startsWith('source:')) {
       const filePath = id.replace('source:', '');
-      setRestoredFile(filePath);
+      setRestoredFile(`01_Sources/${filePath}`);
       setView('sources');
     } else if (VIEW_REGISTRY.some(v => v.id === id)) {
       setView(id);
