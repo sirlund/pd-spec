@@ -5,7 +5,7 @@
 Project-specific configuration (name, language, one-liner) lives in `PROJECT.md` at repo root.
 This keeps `CLAUDE.md` as clean engine config that never conflicts during PD-Spec updates.
 
-**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language` (defined in `PROJECT.md`). System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `PENDING`, `RESOLVED`, `INVALIDATED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
+**Language rule:** All Work layer content (`02_Work/`) and Output deliverables (`03_Outputs/`) must be written in `output_language` (defined in `PROJECT.md`). System identifiers (`[IG-XX]`, `[CF-XX]`, `VERIFIED`, `RESOLVED`, `DISCARDED`, `MERGED`) and skill instructions always remain in English regardless of this setting.
 
 ## The Truth Stack
 
@@ -44,44 +44,25 @@ Suggested order: `/extract` → `/analyze` → `/spec` → `/ship` — but skill
 
 ## Insight Lifecycle
 
-Insights in `INSIGHTS_GRAPH.md` follow a 6-status state machine:
+Insights in `INSIGHTS_GRAPH.md` follow a 5-status lifecycle:
 
 ```
-        /analyze creates
-              │
-              ▼
-        ┌──────────┐
-        │ PENDING  │
-        └────┬─────┘
-             │
-  ┌──────────┼──────────┐
-  │ verify   │ invalidate│ merge
-  ▼          ▼           ▼
-┌──────────┐ ┌──────────┐ ┌──────────┐
-│ VERIFIED │ │INVALIDATED│ │  MERGED  │
-└────┬─────┘ └──────────┘ │→ [IG-XX] │
-     │                     └──────────┘
-  ┌──┼────────┐
-freeze│    supersede
-  ▼  │        ▼
-┌────────┐ ┌──────────┐
-│ FROZEN │ │SUPERSEDED│
-└───┬────┘ │→ [IG-XX] │
- unfreeze  └──────────┘
-  ▼
-(VERIFIED)
+VERIFIED (born here via /analyze)
+  ├→ FROZEN (user: "valid but not now") → can Unfreeze back to VERIFIED
+  ├→ DISCARDED (user: "not useful") + reason
+  ├→ MERGED → [IG-XX] (engine)
+  └→ SUPERSEDED → [IG-XX] (engine)
 ```
 
 | Status | Meaning | Counts toward convergence? |
 |---|---|---|
-| `PENDING` | New, unverified | Yes |
-| `VERIFIED` | Confirmed by evidence | Yes |
+| `VERIFIED` | Confirmed by evidence, born status | Yes |
 | `FROZEN` | Valid but deprioritized (user-only decision) | No |
-| `INVALIDATED` | Contradicted + reason stored | No |
+| `DISCARDED` | Not useful + reason stored (user decision) | No |
 | `MERGED` | Absorbed into another `[IG-XX]` | No |
 | `SUPERSEDED` | Replaced by newer `[IG-XX]` | No |
 
-**Cascade protection:** Before FREEZE, INVALIDATE, or SUPERSEDE, `scripts/verify-insight.sh` greps the insight ID across STRATEGIC_VISION + PROPOSALS + Outputs. LOW (≤2 refs) proceeds silently. MEDIUM (3-5) shows orphans, asks confirm. HIGH (5+) requires explicit ID confirmation.
+**Cascade protection:** Before FREEZE, DISCARD, or SUPERSEDE, `scripts/verify-insight.sh` greps the insight ID across STRATEGIC_VISION + PROPOSALS + Outputs. LOW (≤2 refs) proceeds silently. MEDIUM (3-5) shows orphans, asks confirm. HIGH (5+) requires explicit ID confirmation.
 
 **FROZEN = user only.** The agent cannot freeze insights.
 

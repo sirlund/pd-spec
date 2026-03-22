@@ -4,15 +4,11 @@ import { StatusBadge, IdBadge, SubtleBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
 import { useScriptAction } from '../hooks.js';
 
-const CONFLICT_OPTIONS = [
-  { id: 'flag', label: 'Flag for discussion' },
-  { id: 'research', label: 'Needs more research' },
-  { id: 'context', label: 'I have context' },
-];
-
 export default function ConflictCard({ conflict, onNavigate, decision, onDecision }) {
   const [expanded, setExpanded] = useState(false);
   const [contextText, setContextText] = useState('');
+  const [showContext, setShowContext] = useState(false);
+  const [localIntermediate, setLocalIntermediate] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
 
   useEffect(() => {
@@ -22,32 +18,42 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
     }
   }, [error, clearError]);
 
+  // Reset optimistic state when real data catches up
+  useEffect(() => { setLocalIntermediate(null); }, [conflict.intermediate, conflict.status]);
+
+  const handleFlag = async () => {
+    try {
+      await execute('resolve-conflict', { id: conflict.id, flag: 'Flagged by user' });
+      setLocalIntermediate('FLAGGED');
+    } catch { /* error shown inline */ }
+  };
+
+  const handleResearch = async () => {
+    try {
+      await execute('resolve-conflict', { id: conflict.id, research: 'Marked for research' });
+      setLocalIntermediate('RESEARCH');
+    } catch { /* error shown inline */ }
+  };
+
   const handleResolve = async () => {
     if (!contextText.trim()) return;
     try {
       await execute('resolve-conflict', { id: conflict.id, resolution: contextText.trim() });
       setContextText('');
+      setShowContext(false);
     } catch { /* error shown inline */ }
   };
 
+  const effectiveIntermediate = localIntermediate || conflict.intermediate;
   const statusAccent = conflict.status === 'RESOLVED' ? 'verified'
-    : conflict.intermediate ? 'pending' : 'conflict';
-
-  const handleOption = (optionId) => {
-    if (optionId === 'context') {
-      onDecision?.(conflict.id, { type: 'context', text: contextText });
-    } else {
-      onDecision?.(conflict.id, { type: optionId });
-    }
-  };
-
-  const currentType = decision?.type;
+    : effectiveIntermediate ? 'pending' : 'conflict';
+  const displayStatus = effectiveIntermediate || conflict.status;
 
   return (
     <Card accent={statusAccent}>
       <div className="card-header">
         <IdBadge id={conflict.id} />
-        <StatusBadge status={conflict.intermediate || conflict.status} />
+        <StatusBadge status={displayStatus} />
         {conflict.type && <SubtleBadge>{conflict.type}</SubtleBadge>}
         {conflict.priority && (
           <span className={`badge ${conflict.priority === 'Critical' ? 'badge-critical' : conflict.priority === 'High' ? 'badge-pending' : 'badge-subtle'}`}>
@@ -105,46 +111,43 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
         </div>
       )}
 
-      {/* Decision radio options for unresolved conflicts */}
-      {conflict.status !== 'RESOLVED' && !conflict.intermediate && onDecision && (
-        <div className="radio-group">
-          {CONFLICT_OPTIONS.map(opt => (
-            <div key={opt.id}>
-              <div
-                className={`radio-option ${currentType === opt.id ? 'selected' : ''}`}
-                onClick={() => handleOption(opt.id)}
-              >
-                <span className="radio-dot" />
-                <span>{opt.label}</span>
-              </div>
-              {opt.id === 'context' && currentType === 'context' && (
-                <>
-                  <textarea
-                    className="context-textarea"
-                    placeholder="Add your context here..."
-                    value={contextText}
-                    onChange={(e) => {
-                      setContextText(e.target.value);
-                      onDecision?.(conflict.id, { type: 'context', text: e.target.value });
-                    }}
-                  />
-                  {contextText.trim() && (
-                    <button
-                      className="btn btn-sm btn-accent"
-                      style={{ marginTop: 6 }}
-                      onClick={handleResolve}
-                      disabled={loading}
-                    >
-                      {loading ? '...' : 'Resolve now'}
-                    </button>
-                  )}
-                  {error && (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginTop: 4 }}>{error}</div>
-                  )}
-                </>
+      {/* Direct action buttons for unresolved conflicts */}
+      {conflict.status !== 'RESOLVED' && !effectiveIntermediate && (
+        <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button className="btn btn-sm btn-ghost" onClick={handleFlag} disabled={loading}>
+              <Icon name="flag" size={14} /> Flag for discussion
+            </button>
+            <button className="btn btn-sm btn-ghost" onClick={handleResearch} disabled={loading}>
+              <Icon name="search" size={14} /> Needs research
+            </button>
+            <button className="btn btn-sm btn-accent" onClick={() => setShowContext(!showContext)} disabled={loading}>
+              <Icon name="message-circle" size={14} /> I have context
+            </button>
+          </div>
+          {showContext && (
+            <>
+              <textarea
+                className="context-textarea"
+                placeholder="Add your context here..."
+                value={contextText}
+                onChange={(e) => setContextText(e.target.value)}
+              />
+              {contextText.trim() && (
+                <button
+                  className="btn btn-sm btn-accent"
+                  style={{ marginTop: 6 }}
+                  onClick={handleResolve}
+                  disabled={loading}
+                >
+                  {loading ? '...' : 'Resolve now'}
+                </button>
               )}
-            </div>
-          ))}
+            </>
+          )}
+          {error && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginTop: 4 }}>{error}</div>
+          )}
         </div>
       )}
     </Card>

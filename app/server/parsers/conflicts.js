@@ -93,17 +93,17 @@ export function parseConflicts(content) {
     }
 
     // Resolution
-    if (line.match(/^\*\*Resolution:\*\*/)) {
+    if (line.match(/^-?\s*\*{0,2}Resolution:\*{0,2}/)) {
       section = 'resolution';
-      const text = line.replace(/^\*\*Resolution:\*\*\s*/, '');
+      const text = line.replace(/^-?\s*\*{0,2}Resolution:\*{0,2}\s*/, '');
       current.resolution = text;
       continue;
     }
 
     // Action
-    if (line.match(/^\*\*Action:\*\*/)) {
+    if (line.match(/^-?\s*\*{0,2}Action:\*{0,2}/)) {
       section = 'resolution';
-      const text = line.replace(/^\*\*Action:\*\*\s*/, '');
+      const text = line.replace(/^-?\s*\*{0,2}Action:\*{0,2}\s*/, '');
       current.action = text;
       continue;
     }

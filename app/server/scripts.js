@@ -16,7 +16,7 @@ export function createScriptRoutes(projectRoot) {
 
   /**
    * POST /api/scripts/verify-insight
-   * Body: { id: "IG-03", action: "verify"|"invalidate"|"merge"|"freeze"|"unfreeze"|"supersede", reason?: string, target?: string }
+   * Body: { id: "IG-03", action: "verify"|"discard"|"merge"|"freeze"|"unfreeze"|"supersede", reason?: string, target?: string }
    */
   router.post('/verify-insight', (req, res) => {
     const { id, action, reason, target } = req.body || {};
@@ -25,13 +25,13 @@ export function createScriptRoutes(projectRoot) {
       return res.status(400).json({ error: 'Missing required fields: id, action' });
     }
 
-    const validActions = ['verify', 'invalidate', 'merge', 'freeze', 'unfreeze', 'supersede'];
+    const validActions = ['verify', 'discard', 'merge', 'freeze', 'unfreeze', 'supersede'];
     if (!validActions.includes(action)) {
       return res.status(400).json({ error: `Invalid action: ${action}. Valid: ${validActions.join(', ')}` });
     }
 
-    if (action === 'invalidate' && !reason) {
-      return res.status(400).json({ error: 'Missing required field: reason (required for invalidate)' });
+    if (action === 'discard' && !reason) {
+      return res.status(400).json({ error: 'Missing required field: reason (required for discard)' });
     }
 
     if ((action === 'merge' || action === 'supersede') && !target) {
@@ -54,17 +54,25 @@ export function createScriptRoutes(projectRoot) {
 
   /**
    * POST /api/scripts/resolve-conflict
-   * Body: { id: "CF-03", resolution?: string }
+   * Body: { id: "CF-03", resolution?: string, flag?: string, research?: string }
    */
   router.post('/resolve-conflict', (req, res) => {
-    const { id, resolution } = req.body || {};
+    const { id, resolution, flag, research } = req.body || {};
 
     if (!id) {
       return res.status(400).json({ error: 'Missing required field: id' });
     }
 
+    // Mutual exclusivity check
+    const optCount = [resolution, flag, research].filter(Boolean).length;
+    if (optCount > 1) {
+      return res.status(400).json({ error: 'resolution, flag, and research are mutually exclusive' });
+    }
+
     const args = [id, conflictsFile];
     if (resolution) args.push('--resolution', resolution);
+    if (flag) args.push('--flag', flag);
+    if (research) args.push('--research', research);
 
     execFile(resolve(scriptsDir, 'resolve-conflict.sh'), args, (err, stdout, stderr) => {
       if (err) {

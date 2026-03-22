@@ -79,7 +79,7 @@ export function parseInsights(content) {
         category: null,
         voice: null,
         authority: null,
-        status: 'PENDING',
+        status: 'VERIFIED',
         ai_generated: false,
         last_updated: null,
         narrative: '',
@@ -127,6 +127,12 @@ export function parseInsights(content) {
 
       const status = line.match(/^\*{0,2}Status:\*{0,2}\s*(\w+)/);
       if (status) { current.status = status[1].toUpperCase(); continue; }
+
+      const edited = line.match(/^\*{0,2}Edited:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+      if (edited) { current.edited = edited[1]; continue; }
+
+      const tier = line.match(/^\*{0,2}Tier:\*{0,2}\s*(.+)/);
+      if (tier) { current.tier = tier[1].trim(); continue; }
 
       const lastUpdated = line.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
       if (lastUpdated) { current.last_updated = lastUpdated[1]; continue; }

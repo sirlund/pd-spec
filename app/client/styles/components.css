@@ -58,6 +58,10 @@
   border-left: 2px solid var(--invalidated-fg);
 }
 
+.card-accent-discarded {
+  border-left: 2px solid var(--discarded-fg);
+}
+
 .card-accent-frozen {
   border-left: 2px solid var(--frozen-fg);
 }
@@ -141,6 +145,13 @@
   background: var(--invalidated-bg);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: var(--invalidated-fg);
+  text-decoration: line-through;
+}
+
+.badge-discarded {
+  background: var(--discarded-bg);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--discarded-fg);
   text-decoration: line-through;
 }
 

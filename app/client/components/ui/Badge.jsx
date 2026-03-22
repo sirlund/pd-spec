@@ -5,6 +5,7 @@ const STATUS_CLASS = {
   PENDING: 'badge-pending',
   MERGED: 'badge-merged',
   INVALIDATED: 'badge-invalidated',
+  DISCARDED: 'badge-discarded',
   FROZEN: 'badge-frozen',
   SUPERSEDED: 'badge-superseded',
   RESOLVED: 'badge-resolved',

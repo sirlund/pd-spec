@@ -74,7 +74,7 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
      - If ALL evidence trail entries carry `[AI-SOURCE]` tags → block VERIFIED (same message, same logic).
      - If a mix of INTERNAL/AI-SOURCE and primary entries exists → the primary entry provides corroboration. Proceed normally.
      - **User override:** If the user explicitly requests VERIFIED with a justification note (e.g., "strategic decision by CEO+CTO"), write VERIFIED and append the justification note to the insight. The system warns but obeys human decisions.
-   - Mark resolved insights as `VERIFIED`, `MERGED`, or `INVALIDATED`.
+   - Mark resolved insights as `VERIFIED`, `MERGED`, or `DISCARDED`.
    - If merging, create a new insight that combines the originals.
    - **Update `Last-updated: YYYY-MM-DD`** on every insight touched.
    - Use `./scripts/verify-insight.sh` for mechanical status changes when available.
@@ -166,20 +166,21 @@ If there are PENDING conflicts, resolve them before writing the spec. If no PEND
     - **Snapshot:** X insights (N VERIFIED, M PENDING) · Y conflicts PENDING · Z outputs
     ```
 
-## Insight Lifecycle (6 Statuses)
+## Insight Lifecycle (5 Statuses)
 
 | Status | Meaning | Convergence? | Reversible? |
 |---|---|---|---|
-| `PENDING` | New, unverified | Yes | — |
-| `VERIFIED` | Confirmed by evidence | Yes | — |
+| `VERIFIED` | Confirmed by evidence, born status | Yes | — |
 | `FROZEN` | Valid but deprioritized | **No** | Yes → VERIFIED |
-| `INVALIDATED` | Contradicted + reason stored | No | Rare |
+| `DISCARDED` | Not useful + reason stored | No | Rare |
 | `MERGED` | Absorbed into [IG-XX] | No | No |
 | `SUPERSEDED` | Replaced by newer [IG-XX] | No | No |
 
-**Transition rules:** See `scripts/verify-insight.sh` for cascade protection. FROZEN and INVALIDATED transitions trigger impact analysis across STRATEGIC_VISION + PROPOSALS + Outputs.
+**Transition rules:** See `scripts/verify-insight.sh` (uses `--discard`) for cascade protection. FROZEN and DISCARDED transitions trigger impact analysis across STRATEGIC_VISION + PROPOSALS + Outputs.
 
 **FROZEN → user only.** The agent cannot freeze insights — only the user can decide "this doesn't move the needle right now."
+
+**Temporal tag handling:** `(future-state)` insights that are VERIFIED enter proposals but are marked as exploratory. The user controls exclusion via Freeze, not via temporal tag.
 
 ## Design Proposal Format
 

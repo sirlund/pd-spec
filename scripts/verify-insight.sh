@@ -4,20 +4,20 @@
 #
 # Actions:
 #   --verify          PENDING → VERIFIED
-#   --invalidate      PENDING|VERIFIED → INVALIDATED (requires --reason)
-#   --merge           PENDING → MERGED (requires --target IG-XX)
+#   --discard         PENDING|VERIFIED → DISCARDED (requires --reason)
+#   --merge           PENDING|VERIFIED → MERGED (requires --target IG-XX)
 #   --freeze          VERIFIED → FROZEN
 #   --unfreeze        FROZEN → VERIFIED
 #   --supersede       VERIFIED → SUPERSEDED (requires --target IG-XX)
 #
 # Options:
-#   --reason "text"   Required for --invalidate
+#   --reason "text"   Required for --discard
 #   --target IG-XX    Required for --merge and --supersede (the absorbing insight)
 #   --project PATH    Project root for cascade calculation (default: dirname of file/..)
 #   --force           Skip cascade confirmation prompt
 #
 # Cascade protection:
-#   Before FREEZE or INVALIDATE, greps [IG-XX] across STRATEGIC_VISION, PROPOSALS, and Outputs.
+#   Before FREEZE, DISCARD, or SUPERSEDE, greps [IG-XX] across STRATEGIC_VISION, PROPOSALS, and Outputs.
 #   LOW (≤2 refs): proceeds silently
 #   MEDIUM (3-5 refs): shows orphaned refs, asks for confirmation
 #   HIGH (5+ refs): shows full tree, requires explicit confirmation
@@ -37,7 +37,7 @@ FORCE=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --verify|--invalidate|--merge|--freeze|--unfreeze|--supersede)
+    --verify|--discard|--merge|--freeze|--unfreeze|--supersede)
       ACTION="${1#--}"
       shift
       ;;
@@ -76,7 +76,7 @@ done
 if [ -z "$ACTION" ] || [ -z "$INSIGHT_ID" ] || [ -z "$FILE" ]; then
   echo "Usage: ./scripts/verify-insight.sh <action> <insight_id> <file_path> [options]"
   echo ""
-  echo "Actions: --verify, --invalidate, --merge, --freeze, --unfreeze, --supersede"
+  echo "Actions: --verify, --discard, --merge, --freeze, --unfreeze, --supersede"
   echo "Options: --reason \"text\", --target IG-XX, --project PATH, --force"
   exit 1
 fi
@@ -122,19 +122,19 @@ validate_transition() {
         exit 1
       fi
       ;;
-    INVALIDATED)
+    DISCARDED)
       if [ "$from" != "PENDING" ] && [ "$from" != "VERIFIED" ]; then
-        echo "ERROR: Cannot transition $INSIGHT_ID from $from to INVALIDATED (allowed: PENDING, VERIFIED)"
+        echo "ERROR: Cannot transition $INSIGHT_ID from $from to DISCARDED (allowed: PENDING, VERIFIED)"
         exit 1
       fi
       if [ -z "$REASON" ]; then
-        echo "ERROR: --reason is required for --invalidate"
+        echo "ERROR: --reason is required for --discard"
         exit 1
       fi
       ;;
     MERGED)
-      if [ "$from" != "PENDING" ]; then
-        echo "ERROR: Cannot transition $INSIGHT_ID from $from to MERGED (allowed: PENDING)"
+      if [ "$from" != "PENDING" ] && [ "$from" != "VERIFIED" ]; then
+        echo "ERROR: Cannot transition $INSIGHT_ID from $from to MERGED (allowed: PENDING, VERIFIED)"
         exit 1
       fi
       if [ -z "$TARGET" ]; then
@@ -164,7 +164,7 @@ validate_transition() {
 # Map action to target status
 case "$ACTION" in
   verify)    NEW_STATUS="VERIFIED" ;;
-  invalidate) NEW_STATUS="INVALIDATED" ;;
+  discard)   NEW_STATUS="DISCARDED" ;;
   merge)     NEW_STATUS="MERGED" ;;
   freeze)    NEW_STATUS="FROZEN" ;;
   unfreeze)  NEW_STATUS="VERIFIED" ;;
@@ -177,9 +177,9 @@ esac
 
 validate_transition "$CURRENT_STATUS" "$NEW_STATUS"
 
-# --- Cascade protection (for FREEZE, INVALIDATE, SUPERSEDE) ---
+# --- Cascade protection (for FREEZE, DISCARD, SUPERSEDE) ---
 needs_cascade() {
-  [ "$ACTION" = "freeze" ] || [ "$ACTION" = "invalidate" ] || [ "$ACTION" = "supersede" ]
+  [ "$ACTION" = "freeze" ] || [ "$ACTION" = "discard" ] || [ "$ACTION" = "supersede" ]
 }
 
 if needs_cascade; then
@@ -239,7 +239,7 @@ STATUS_LINE="Status: $NEW_STATUS"
 if [ "$ACTION" = "merge" ] || [ "$ACTION" = "supersede" ]; then
   STATUS_LINE="Status: $NEW_STATUS → [$TARGET]"
 fi
-if [ "$ACTION" = "invalidate" ] && [ -n "$REASON" ]; then
+if [ "$ACTION" = "discard" ] && [ -n "$REASON" ]; then
   STATUS_LINE="Status: $NEW_STATUS — $REASON"
 fi
 

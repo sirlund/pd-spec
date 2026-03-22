@@ -3,7 +3,7 @@
 # Usage: ./scripts/count-statuses.sh <file_path>
 #
 # Reads "Status: XXXX" lines and counts by status value.
-# Works for INSIGHTS_GRAPH.md (PENDING, VERIFIED, FROZEN, INVALIDATED, MERGED, SUPERSEDED)
+# Works for INSIGHTS_GRAPH.md (PENDING, VERIFIED, FROZEN, DISCARDED, MERGED, SUPERSEDED)
 # and CONFLICTS.md (PENDING, RESOLVED).
 #
 # Output format:

@@ -173,4 +173,20 @@
     <path d="M6 12h-3" />
     <path d="M7.75 7.75l-2.15-2.15" />
   </symbol>
+
+  <symbol id="icon-pencil" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 20h4l10.5-10.5a2.828 2.828 0 10-4-4l-10.5 10.5v4" />
+    <path d="M13.5 6.5l4 4" />
+  </symbol>
+
+  <symbol id="icon-snowflake" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 4l2 1 2-1" />
+    <path d="M12 2v20" />
+    <path d="M10 20l2-1 2 1" />
+    <path d="M20 10l-1 2 1 2" />
+    <path d="M22 12h-20" />
+    <path d="M4 10l1 2-1 2" />
+    <path d="M15 7l-3 3-3-3" />
+    <path d="M15 17l-3-3-3 3" />
+  </symbol>
 </svg>

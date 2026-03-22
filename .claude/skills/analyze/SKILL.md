@@ -23,7 +23,7 @@ Use `AskUserQuestion` for this initial routing choice — it's a structured deci
 
 Do NOT abort — if the user provides context conversationally, work with what you have.
 
-**Language:** Read `output_language` from `PROJECT.md` before doing anything else. Write ALL content — insight descriptions, evidence quotes, ANALYSIS.md, MEMORY.md entries — in that language. System identifiers (`[IG-XX]`, `[IG-SYNTH-XX]`, `[CF-XX]`), status labels (`PENDING`, `VERIFIED`), category names, and tier labels (`Señal`, `Hipótesis`, `Supuesto`) always stay in English.
+**Language:** Read `output_language` from `PROJECT.md` before doing anything else. Write ALL content — insight descriptions, evidence quotes, ANALYSIS.md, MEMORY.md entries — in that language. System identifiers (`[IG-XX]`, `[IG-SYNTH-XX]`, `[CF-XX]`), status labels (`VERIFIED`, `DISCARDED`), category names, and tier labels (`Señal`, `Hipótesis`, `Supuesto`) always stay in English.
 
 ---
 
@@ -175,7 +175,7 @@ Assign each insight a tier based on these rules — no interpretation, no judgme
 | `technical` | System capabilities or technical limits |
 | `design-principle` | Design principles with evidence trail |
 
-Add temporal tag: `(current)` for present state, `(aspirational)` for desired future. Default to `(current)` if ambiguous.
+Add temporal tag: `(as-is)` for current state (present reality), `(to-be)` for desired future state (concrete design intent), `(future-state)` for long-term vision (exploratory, not scoped for current cycle). Default to `(as-is)` if ambiguous.
 
 `design-principle` insights MUST include `Grounded in: [IG-XX]` — a design principle without evidence is a Homer's Car.
 
@@ -214,24 +214,24 @@ Compare new insights against existing insights. Flag:
 **Atomic (1 source):**
 ```markdown
 ### [IG-XX] [Claim — one idea only]
-Category: user-need (aspirational)
+Category: user-need (to-be)
 Voice: user | Authority: direct-quote
 Tier: Hipótesis
 Convergence: 1/N sources
 Ref: 01_Sources/path/to/source.md
-Status: PENDING
+Status: VERIFIED
 > "Key quote from source"
 ```
 
 **Synthesized (≥2 sources):**
 ```markdown
 ### [IG-SYNTH-XX] [Named Concept — use language from sources, never invent]
-Category: user-need (current)
+Category: user-need (as-is)
 Voice: user, stakeholder | Authority: direct-quote, observation
 Tier: Señal
 Convergence: 3/N sources
 Refs: source1.md, source2.md, source3.md
-Status: PENDING
+Status: VERIFIED
 
 > [2–3 sentences: problem + evidence trail + impact]
 
@@ -241,7 +241,7 @@ Evidence:
 - source3.md: "quote"
 ```
 
-Status is always `PENDING` — plain text, no bold, no backticks.
+Status is always `VERIFIED` — plain text, no bold, no backticks.
 
 ---
 
@@ -318,12 +318,12 @@ Veredicto rules:
 - Insights: X new (A Señal, B Hipótesis, C Supuesto) · Y convergence updates
 - Conflicts: Z new PENDING
 - Veredicto: ready | partial | not ready
-- Snapshot: T insights (V VERIFIED, P PENDING) · C conflicts PENDING
+- Snapshot: T insights (V VERIFIED, D DISCARDED, F FROZEN) · C conflicts PENDING
 ```
 Count from files using Bash, not from memory:
 ```bash
 grep -c '### \[IG-' 02_Work/INSIGHTS_GRAPH.md
-grep -c 'Status: PENDING' 02_Work/INSIGHTS_GRAPH.md
+grep -c 'Status: VERIFIED' 02_Work/INSIGHTS_GRAPH.md
 grep -c '### \[CF-' 02_Work/CONFLICTS.md
 ```
 

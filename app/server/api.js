@@ -582,13 +582,13 @@ export function createApi(projectRoot) {
     }
   });
 
-  // PATCH /api/insight/:id — edit title and narrative (pure file manipulation, no LLM)
+  // PATCH /api/insight/:id — edit insight fields (pure file manipulation, no LLM)
   router.patch('/insight/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, narrative } = req.body || {};
-      if (!id || (!title && narrative === undefined)) {
-        return res.status(400).json({ error: 'Missing id, title, or narrative' });
+      const { title, narrative, category, temporal, voice, authority } = req.body || {};
+      if (!id || (!title && narrative === undefined && !category && !voice && !authority)) {
+        return res.status(400).json({ error: 'Missing id or fields to update' });
       }
 
       const filePath = resolve(projectRoot, '02_Work/INSIGHTS_GRAPH.md');
@@ -652,6 +652,113 @@ export function createApi(projectRoot) {
               insertIdx = i + 1;
             }
             lines.splice(insertIdx, 0, '', ...newNarrativeLines);
+          }
+          updated = lines.join('\n');
+        }
+      }
+
+      // Replace Category line (with optional temporal qualifier)
+      if (category) {
+        const lines = updated.split('\n');
+        const hdrIdx = lines.findIndex(l => l.match(headerPattern));
+        let found = false;
+        if (hdrIdx >= 0) {
+          for (let i = hdrIdx + 1; i < lines.length; i++) {
+            if (lines[i].match(/^### \[/)) break; // next insight
+            const catMatch = lines[i].match(/^(-\s*)?\**Category:?\**\s*.*/i);
+            if (catMatch) {
+              const prefix = catMatch[1] || '';
+              const temporalSuffix = (temporal && temporal !== 'as-is') ? ` (${temporal})` : '';
+              lines[i] = `${prefix}Category: ${category}${temporalSuffix}`;
+              found = true;
+              break;
+            }
+          }
+        }
+        updated = lines.join('\n');
+      }
+
+      // Replace Voice and/or Authority lines
+      if (voice || authority) {
+        const lines = updated.split('\n');
+        const hdrIdx = lines.findIndex(l => l.match(headerPattern));
+        if (hdrIdx >= 0) {
+          // Find the insight block boundary
+          let blockEnd = lines.length;
+          for (let i = hdrIdx + 1; i < lines.length; i++) {
+            if (lines[i].match(/^### \[/)) { blockEnd = i; break; }
+          }
+
+          // Locate existing Voice and Authority lines (separate or combined)
+          let voiceIdx = -1, authorityIdx = -1, combinedIdx = -1;
+          for (let i = hdrIdx + 1; i < blockEnd; i++) {
+            if (lines[i].match(/^(-\s*)?\**Voice:?\**\s*.*\|\s*\**Authority:?\**/i)) {
+              combinedIdx = i;
+            } else if (lines[i].match(/^(-\s*)?\**Voice:?\**\s/i)) {
+              voiceIdx = i;
+            } else if (lines[i].match(/^(-\s*)?\**Authority:?\**\s/i)) {
+              authorityIdx = i;
+            }
+          }
+
+          if (voice && authority) {
+            // Both provided — write combined line, remove any existing separate/combined lines
+            const combinedLine = `Voice: ${voice} | Authority: ${authority}`;
+            // Collect indices to remove (descending to preserve positions)
+            const toRemove = [combinedIdx, voiceIdx, authorityIdx].filter(i => i >= 0).sort((a, b) => b - a);
+            for (const idx of toRemove) {
+              lines.splice(idx, 1);
+            }
+            // Re-find header after removals
+            const newHdrIdx = lines.findIndex(l => l.match(headerPattern));
+            // Insert after last field line before narrative/evidence
+            let insertPos = newHdrIdx + 1;
+            let newBlockEnd = lines.length;
+            for (let i = newHdrIdx + 1; i < lines.length; i++) {
+              if (lines[i].match(/^### \[/)) { newBlockEnd = i; break; }
+            }
+            for (let i = newHdrIdx + 1; i < newBlockEnd; i++) {
+              if (lines[i].startsWith('> ') || lines[i].match(/^\*\*Evidence/) || lines[i].match(/^\*\*Edited:\*\*/)) break;
+              insertPos = i + 1;
+            }
+            lines.splice(insertPos, 0, combinedLine);
+          } else if (voice) {
+            // Only voice — replace voice in combined or standalone
+            if (combinedIdx >= 0) {
+              // Extract existing authority from combined line
+              const existAuth = lines[combinedIdx].match(/Authority:?\**\s*(.+)/i)?.[1]?.trim() || '';
+              const prefix = lines[combinedIdx].match(/^(-\s*)?/)?.[1] || '';
+              lines[combinedIdx] = `${prefix}Voice: ${voice} | Authority: ${existAuth}`;
+            } else if (voiceIdx >= 0) {
+              const prefix = lines[voiceIdx].match(/^(-\s*)?/)?.[1] || '';
+              lines[voiceIdx] = `${prefix}Voice: ${voice}`;
+            } else {
+              // No existing voice line — insert one
+              let insertPos = hdrIdx + 1;
+              for (let i = hdrIdx + 1; i < blockEnd; i++) {
+                if (lines[i].startsWith('> ') || lines[i].match(/^\*\*Evidence/) || lines[i].match(/^\*\*Edited:\*\*/)) break;
+                insertPos = i + 1;
+              }
+              lines.splice(insertPos, 0, `Voice: ${voice}`);
+            }
+          } else if (authority) {
+            // Only authority — replace authority in combined or standalone
+            if (combinedIdx >= 0) {
+              const existVoice = lines[combinedIdx].match(/Voice:?\**\s*(.+?)\s*\|/i)?.[1]?.trim() || '';
+              const prefix = lines[combinedIdx].match(/^(-\s*)?/)?.[1] || '';
+              lines[combinedIdx] = `${prefix}Voice: ${existVoice} | Authority: ${authority}`;
+            } else if (authorityIdx >= 0) {
+              const prefix = lines[authorityIdx].match(/^(-\s*)?/)?.[1] || '';
+              lines[authorityIdx] = `${prefix}Authority: ${authority}`;
+            } else {
+              // No existing authority line — insert one
+              let insertPos = hdrIdx + 1;
+              for (let i = hdrIdx + 1; i < blockEnd; i++) {
+                if (lines[i].startsWith('> ') || lines[i].match(/^\*\*Evidence/) || lines[i].match(/^\*\*Edited:\*\*/)) break;
+                insertPos = i + 1;
+              }
+              lines.splice(insertPos, 0, `Authority: ${authority}`);
+            }
           }
           updated = lines.join('\n');
         }

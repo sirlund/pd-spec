@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Card from './ui/Card.jsx';
-import { StatusBadge, IdBadge, WarningBadge } from './ui/Badge.jsx';
+import { StatusBadge, IdBadge, WarningBadge, SubtleBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
 import { useScriptAction } from '../hooks.js';
+
 function getFreshness(lastUpdated) {
   if (!lastUpdated) return null;
   const now = new Date();
@@ -13,15 +14,40 @@ function getFreshness(lastUpdated) {
   return { color: 'var(--vivid-red)', label: 'Stale', days, warn: true };
 }
 
+function parseCategory(raw) {
+  if (!raw) return { category: '', temporal: 'as-is' };
+  const match = raw.match(/^(.+?)\s*\((to-be|future-state|as-is)\)\s*$/);
+  if (match) return { category: match[1].trim(), temporal: match[2] };
+  return { category: raw.trim(), temporal: 'as-is' };
+}
+
+function parseDiscardReason(status) {
+  if (!status) return { baseStatus: status, discardReason: null };
+  if (status.includes('—')) {
+    const [base, ...rest] = status.split('—');
+    return { baseStatus: base.trim(), discardReason: rest.join('—').trim() };
+  }
+  return { baseStatus: status, discardReason: null };
+}
+
+const CATEGORY_OPTIONS = ['user-need', 'business', 'constraint', 'technical', 'design-principle'];
+const TEMPORAL_OPTIONS = ['as-is', 'to-be', 'future-state'];
+const VOICE_OPTIONS = ['user', 'stakeholder', 'document', 'researcher', 'ai'];
+const AUTHORITY_OPTIONS = ['direct-quote', 'observation', 'hypothesis', 'vision', 'fact'];
+
 export default function InsightCard({ insight, onNavigate, decision, onDecision, willExitFilter = false }) {
   const [expanded, setExpanded] = useState(false);
   const [refsExpanded, setRefsExpanded] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
-  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [showDiscardInput, setShowDiscardInput] = useState(false);
+  const [discardReason, setDiscardReason] = useState('');
   const [localStatus, setLocalStatus] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editNarrative, setEditNarrative] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [editTemporal, setEditTemporal] = useState('as-is');
+  const [editVoice, setEditVoice] = useState('');
+  const [editAuthority, setEditAuthority] = useState('');
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
@@ -37,22 +63,45 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
     }
   }, [error, clearError]);
 
+  const { baseStatus, discardReason: parsedDiscardReason } = parseDiscardReason(insight.status);
+  const effectiveStatus = localStatus || baseStatus;
+
   const handleDiscard = async () => {
-    if (!showRejectInput) {
-      setShowRejectInput(true);
+    if (!showDiscardInput) {
+      setShowDiscardInput(true);
       return;
     }
-    if (!rejectReason.trim()) return;
+    if (!discardReason.trim()) return;
     try {
-      await execute('verify-insight', { id: insight.id, action: 'invalidate', reason: rejectReason.trim() });
-      setShowRejectInput(false);
-      setRejectReason('');
+      await execute('verify-insight', { id: insight.id, action: 'discard', reason: discardReason.trim() });
+      setLocalStatus('DISCARDED');
+      setShowDiscardInput(false);
+      setDiscardReason('');
+    } catch { /* error shown inline */ }
+  };
+
+  const handleFreeze = async () => {
+    try {
+      await execute('verify-insight', { id: insight.id, action: 'freeze' });
+      setLocalStatus('FROZEN');
+    } catch { /* error shown inline */ }
+  };
+
+  const handleUnfreeze = async () => {
+    try {
+      await execute('verify-insight', { id: insight.id, action: 'unfreeze' });
+      setLocalStatus('VERIFIED');
     } catch { /* error shown inline */ }
   };
 
   const handleEditStart = () => {
     setEditTitle(insight.title || '');
     setEditNarrative(insight.narrative || '');
+    const parsed = parseCategory(insight.category);
+    setEditCategory(parsed.category);
+    setEditTemporal(parsed.temporal);
+    setEditVoice(insight.voice || '');
+    setEditAuthority(insight.authority || '');
     setEditing(true);
     setEditError(null);
   };
@@ -61,10 +110,18 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
     setEditLoading(true);
     setEditError(null);
     try {
+      const body = {
+        title: editTitle,
+        narrative: editNarrative,
+        category: editCategory,
+        temporal: editTemporal,
+        voice: editVoice,
+        authority: editAuthority,
+      };
       const res = await fetch(`/api/insight/${insight.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: editTitle, narrative: editNarrative }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -83,16 +140,25 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
     setEditError(null);
   };
 
-  const effectiveStatus = localStatus || insight.status;
-
   const statusAccent = {
     VERIFIED: 'verified',
     PENDING: 'pending',
     MERGED: 'merged',
     INVALIDATED: 'invalidated',
+    DISCARDED: 'discarded',
     FROZEN: 'frozen',
     SUPERSEDED: 'superseded',
   }[effectiveStatus];
+
+  // Category display: strip (as-is), show (to-be) and (future-state) as badges
+  const parsedCat = parseCategory(insight.category);
+  const displayCategory = parsedCat.category;
+  const temporalBadge = parsedCat.temporal !== 'as-is' ? parsedCat.temporal : null;
+
+  // Determine which action buttons to show
+  const isActive = effectiveStatus === 'VERIFIED' || effectiveStatus === 'PENDING';
+  const isFrozen = effectiveStatus === 'FROZEN';
+  const isArchived = effectiveStatus === 'DISCARDED' || effectiveStatus === 'MERGED' || effectiveStatus === 'SUPERSEDED' || effectiveStatus === 'INVALIDATED';
 
   return (
     <Card accent={statusAccent} className={localStatus && willExitFilter ? 'card-exit' : ''}>
@@ -106,12 +172,28 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
           }} />
         )}
         {insight.ai_generated && <WarningBadge>AI-GENERATED</WarningBadge>}
-        {freshness && (
-          <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: freshness.warn ? freshness.color : 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Updated {freshness.days}d ago
-          </span>
-        )}
+        {insight.tier && <SubtleBadge>{insight.tier}</SubtleBadge>}
+        {temporalBadge && <SubtleBadge>{temporalBadge}</SubtleBadge>}
+        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          {insight.edited && (
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Edited: {insight.edited}
+            </span>
+          )}
+          {freshness && (
+            <span style={{ fontSize: '0.7rem', color: freshness.warn ? freshness.color : 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Updated {freshness.days}d ago
+            </span>
+          )}
+        </span>
       </div>
+
+      {/* Discard reason for DISCARDED insights */}
+      {parsedDiscardReason && (
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: 6, paddingLeft: 4 }}>
+          {parsedDiscardReason}
+        </div>
+      )}
 
       {editing ? (
         <div style={{ marginBottom: 8 }}>
@@ -124,12 +206,41 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
           />
           <textarea
             className="form-input"
-            style={{ fontSize: '0.82rem', padding: '6px 8px', width: '100%', minHeight: 60, resize: 'vertical' }}
+            style={{ fontSize: '0.82rem', padding: '6px 8px', width: '100%', minHeight: 60, resize: 'vertical', marginBottom: 6 }}
             value={editNarrative}
             onChange={(e) => setEditNarrative(e.target.value)}
             placeholder="Narrative..."
           />
-          <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Category
+              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editCategory} onChange={(e) => setEditCategory(e.target.value)}>
+                <option value="">—</option>
+                {CATEGORY_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Temporal
+              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editTemporal} onChange={(e) => setEditTemporal(e.target.value)}>
+                {TEMPORAL_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Voice
+              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editVoice} onChange={(e) => setEditVoice(e.target.value)}>
+                <option value="">—</option>
+                {VOICE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Authority
+              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editAuthority} onChange={(e) => setEditAuthority(e.target.value)}>
+                <option value="">—</option>
+                {AUTHORITY_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </label>
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
             <button className="btn btn-sm btn-approve" onClick={handleEditSave} disabled={editLoading}>
               <Icon name={editLoading ? 'loader' : 'check'} size={14} spin={editLoading} /> Save
             </button>
@@ -150,7 +261,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
       )}
 
       <div className="card-meta">
-        {insight.category && <span><strong>Category:</strong> {insight.category}</span>}
+        {displayCategory && <span><strong>Category:</strong> {displayCategory}</span>}
         {insight.convergence && <span><strong>Convergence:</strong> {insight.convergence}</span>}
         {insight.authority && <span><strong>Authority:</strong> {insight.authority}</span>}
         {insight.voice && <span><strong>Voice:</strong> {insight.voice}</span>}
@@ -215,40 +326,35 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
         </div>
       )}
 
-      {/* Action buttons for PENDING insights: Edit + Discard */}
-      {effectiveStatus === 'PENDING' && !editing && (
+      {/* Action buttons for VERIFIED and PENDING insights: Edit + Freeze + Discard */}
+      {isActive && !editing && (
         <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              className="btn btn-sm btn-ghost"
-              onClick={handleEditStart}
-              disabled={loading}
-            >
+            <button className="btn btn-sm btn-ghost" onClick={handleEditStart} disabled={loading}>
               <Icon name="pencil" size={14} /> Edit
             </button>
-            <button
-              className="btn btn-sm btn-reject"
-              onClick={handleDiscard}
-              disabled={loading}
-            >
+            <button className="btn btn-sm btn-ghost" onClick={handleFreeze} disabled={loading}>
+              <Icon name="snowflake" size={14} /> Freeze
+            </button>
+            <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={loading}>
               <Icon name="x" size={14} /> Discard
             </button>
           </div>
-          {showRejectInput && (
+          {showDiscardInput && (
             <div style={{ display: 'flex', gap: 6 }}>
               <input
                 className="form-input"
                 style={{ fontSize: '0.78rem', padding: '4px 8px' }}
                 placeholder="Reason for discarding..."
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
+                value={discardReason}
+                onChange={(e) => setDiscardReason(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleDiscard()}
                 autoFocus
               />
-              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!rejectReason.trim() || loading}>
+              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!discardReason.trim() || loading}>
                 Send
               </button>
-              <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>
+              <button className="btn btn-sm btn-ghost" onClick={() => { setShowDiscardInput(false); setDiscardReason(''); }}>
                 Cancel
               </button>
             </div>
@@ -259,42 +365,19 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
         </div>
       )}
 
-      {/* Invalidate button for VERIFIED insights (BL-87 minimal) */}
-      {effectiveStatus === 'VERIFIED' && (
-        <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              className="btn btn-sm btn-reject"
-              onClick={handleDiscard}
-              disabled={loading}
-            >
-              <Icon name="x" size={14} /> Invalidate
-            </button>
-          </div>
-          {showRejectInput && (
-            <div style={{ display: 'flex', gap: 6 }}>
-              <input
-                className="form-input"
-                style={{ fontSize: '0.78rem', padding: '4px 8px' }}
-                placeholder="Reason for invalidation..."
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleDiscard()}
-                autoFocus
-              />
-              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!rejectReason.trim() || loading}>
-                Send
-              </button>
-              <button className="btn btn-sm btn-ghost" onClick={() => { setShowRejectInput(false); setRejectReason(''); }}>
-                Cancel
-              </button>
-            </div>
-          )}
+      {/* Unfreeze button for FROZEN insights */}
+      {isFrozen && !editing && (
+        <div className="decision-row">
+          <button className="btn btn-sm btn-approve" onClick={handleUnfreeze} disabled={loading}>
+            <Icon name="check" size={14} /> Unfreeze
+          </button>
           {error && (
-            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)' }}>{error}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginLeft: 8 }}>{error}</div>
           )}
         </div>
       )}
+
+      {/* No action buttons for archived statuses (DISCARDED, MERGED, SUPERSEDED, INVALIDATED) */}
     </Card>
   );
 }

@@ -46,6 +46,9 @@ export default function App() {
   const viewContextRef = useRef(null); // current FileBrowser's selectedFile
   const [restoredFile, setRestoredFile] = useState(null);
 
+  // Scroll persistence across back/forward navigation
+  const pendingScrollRef = useRef(null);
+
   // Decision state (ephemeral — lost on refresh)
   const [insightDecisions, setInsightDecisions] = useState({});
   const [conflictDecisions, setConflictDecisions] = useState({});
@@ -62,8 +65,9 @@ export default function App() {
   // --- Browser navigation (BL-90): pushState with state objects, NO URL changes ---
   const setView = useCallback((newView, opts = {}) => {
     if (!opts.fromPopState) {
-      // Snapshot current view's selectedFile into the current history entry
-      history.replaceState({ view, highlightId, selectedFile: viewContextRef.current }, '');
+      // Snapshot current view's selectedFile and scroll position into the current history entry
+      const scrollTop = document.querySelector('.app-main')?.scrollTop || 0;
+      history.replaceState({ view, highlightId, selectedFile: viewContextRef.current, scrollTop }, '');
       viewContextRef.current = null;
       setRestoredFile(null);
     }
@@ -84,6 +88,17 @@ export default function App() {
         setHighlightId(e.state.highlightId || null);
         setRestoredFile(e.state.selectedFile || null);
         viewContextRef.current = null;
+        // Restore scroll position after render
+        if (e.state.scrollTop != null) {
+          pendingScrollRef.current = e.state.scrollTop;
+          requestAnimationFrame(() => {
+            const main = document.querySelector('.app-main');
+            if (main && pendingScrollRef.current != null) {
+              main.scrollTop = pendingScrollRef.current;
+              pendingScrollRef.current = null;
+            }
+          });
+        }
       }
     };
     window.addEventListener('popstate', onPopState);

@@ -3,10 +3,19 @@ import { useLiveData } from '../hooks.js';
 import InsightCard from './InsightCard.jsx';
 import Icon from './ui/Icon.jsx';
 
+const ACTIVE_STATUSES = new Set(['VERIFIED', 'PENDING']);
+
+function isActiveInsight(insight) {
+  // Parse base status (before any "—reason" suffix)
+  const base = insight.status?.split('—')[0].trim();
+  return ACTIVE_STATUSES.has(base);
+}
+
 export default function InsightsView({ highlightId, onHighlightClear, onNavigate, decisions, onDecision }) {
   const { data, loading } = useLiveData('/insights', ['INSIGHTS_GRAPH']);
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [archivedOpen, setArchivedOpen] = useState(false);
   const highlightRef = useRef(null);
 
   useEffect(() => {
@@ -33,14 +42,38 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
     );
   }
 
-  const statuses = [...new Set(data.insights.map(i => i.status))];
+  const statuses = [...new Set(data.insights.map(i => i.status?.split('—')[0].trim()))];
   const categories = data.categories || [];
 
   const filtered = data.insights.filter(i => {
-    if (statusFilter !== 'all' && i.status !== statusFilter) return false;
+    const base = i.status?.split('—')[0].trim();
+    if (statusFilter !== 'all' && base !== statusFilter) return false;
     if (categoryFilter !== 'all' && i.category_group !== categoryFilter) return false;
     return true;
   });
+
+  const active = filtered.filter(isActiveInsight);
+  const archived = filtered.filter(i => !isActiveInsight(i));
+
+  const renderCard = (insight) => (
+    <div
+      key={insight.id}
+      ref={highlightId === insight.id ? highlightRef : null}
+      style={{
+        transition: 'box-shadow 0.3s',
+        boxShadow: highlightId === insight.id ? '0 0 0 2px var(--accent-cyan)' : 'none',
+        borderRadius: 'var(--radius)',
+      }}
+    >
+      <InsightCard
+        insight={insight}
+        onNavigate={onNavigate}
+        decision={decisions?.[insight.id]}
+        onDecision={onDecision}
+        willExitFilter={statusFilter !== 'all'}
+      />
+    </div>
+  );
 
   return (
     <div>
@@ -72,25 +105,23 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
         </div>
       )}
 
-      {filtered.map(insight => (
-        <div
-          key={insight.id}
-          ref={highlightId === insight.id ? highlightRef : null}
-          style={{
-            transition: 'box-shadow 0.3s',
-            boxShadow: highlightId === insight.id ? '0 0 0 2px var(--accent-cyan)' : 'none',
-            borderRadius: 'var(--radius)',
-          }}
-        >
-          <InsightCard
-            insight={insight}
-            onNavigate={onNavigate}
-            decision={decisions?.[insight.id]}
-            onDecision={onDecision}
-            willExitFilter={statusFilter !== 'all'}
-          />
+      {/* Active insights */}
+      {active.map(renderCard)}
+
+      {/* Archived section */}
+      {archived.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <button
+            className="btn btn-sm btn-ghost"
+            onClick={() => setArchivedOpen(!archivedOpen)}
+            style={{ fontSize: '0.82rem', marginBottom: archivedOpen ? 8 : 0 }}
+          >
+            <Icon name="chevron-down" size={14} style={archivedOpen ? { transform: 'rotate(180deg)' } : {}} />
+            Archived ({archived.length})
+          </button>
+          {archivedOpen && archived.map(renderCard)}
         </div>
-      ))}
+      )}
 
       {filtered.length === 0 && (
         <div className="empty-state">

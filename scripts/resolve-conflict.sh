@@ -4,7 +4,14 @@
 #
 # Examples:
 #   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md --resolution "Prioritize speed per user majority"
+#   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md --flag "Needs stakeholder input"
+#   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md --research "Run A/B test on both options"
 #   ./scripts/resolve-conflict.sh CF-03 02_Work/CONFLICTS.md
+#
+# Actions (mutually exclusive):
+#   --resolution "text"   PENDING → RESOLVED (with optional resolution note)
+#   --flag "note"         Keeps PENDING, adds Flagged annotation
+#   --research "note"     Keeps PENDING, adds Research annotation
 #
 # Changes "Status: PENDING..." to "Status: RESOLVED" for the given conflict.
 # Optionally appends a "Resolution:" line after the status.
@@ -14,13 +21,23 @@ set -euo pipefail
 CONFLICT_ID="${1:-}"
 FILE="${2:-}"
 RESOLUTION=""
+FLAG=""
+RESEARCH=""
 
-# Parse optional --resolution flag
+# Parse optional flags
 shift 2 2>/dev/null || true
 while [ $# -gt 0 ]; do
   case "$1" in
     --resolution)
       RESOLUTION="${2:-}"
+      shift 2
+      ;;
+    --flag)
+      FLAG="${2:-}"
+      shift 2
+      ;;
+    --research)
+      RESEARCH="${2:-}"
       shift 2
       ;;
     *)
@@ -30,8 +47,18 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# Mutual exclusivity check
+_opt_count=0
+[ -n "$RESOLUTION" ] && _opt_count=$((_opt_count + 1))
+[ -n "$FLAG" ] && _opt_count=$((_opt_count + 1))
+[ -n "$RESEARCH" ] && _opt_count=$((_opt_count + 1))
+if [ "$_opt_count" -gt 1 ]; then
+  echo "ERROR: --resolution, --flag, and --research are mutually exclusive"
+  exit 1
+fi
+
 if [ -z "$CONFLICT_ID" ] || [ -z "$FILE" ]; then
-  echo "Usage: ./scripts/resolve-conflict.sh <conflict_id> <file_path> [--resolution \"text\"]"
+  echo "Usage: ./scripts/resolve-conflict.sh <conflict_id> <file_path> [--resolution \"text\"|--flag \"note\"|--research \"note\"]"
   exit 1
 fi
 
@@ -75,7 +102,38 @@ case "$CURRENT_STATUS" in
     ;;
 esac
 
-# Replace status using awk (more reliable than sed for multi-line context)
+# --- Handle --flag and --research (keep PENDING, add annotation) ---
+if [ -n "$FLAG" ] || [ -n "$RESEARCH" ]; then
+  if [ -n "$FLAG" ]; then
+    NEW_SUFFIX="Flagged ($FLAG)"
+    LABEL="Flagged"
+  else
+    NEW_SUFFIX="Research ($RESEARCH)"
+    LABEL="Research"
+  fi
+
+  TMPFILE=$(mktemp)
+  awk -v id="$CONFLICT_ID" -v suffix="$NEW_SUFFIX" '
+    /^### \[/ {
+      in_target = (index($0, "[" id "]") > 0)
+      did_replace = 0
+    }
+    in_target && /^-? ?Status: *PENDING/ && !did_replace {
+      prefix = ""
+      if (substr($0, 1, 1) == "-") prefix = "- "
+      print prefix "Status: PENDING — " suffix
+      did_replace = 1
+      next
+    }
+    { print }
+  ' "$FILE" > "$TMPFILE"
+
+  mv "$TMPFILE" "$FILE"
+  echo "OK: $CONFLICT_ID → PENDING — $LABEL"
+  exit 0
+fi
+
+# --- Handle --resolution (or bare resolve) ---
 TMPFILE=$(mktemp)
 awk -v id="$CONFLICT_ID" -v resolution="$RESOLUTION" '
   /^### \[/ {
