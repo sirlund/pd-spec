@@ -136,7 +136,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
           {(refsExpanded ? insight.refs : insight.refs.slice(0, 3)).map((ref, i) => {
             const filename = ref.split('/').pop();
             return (
-              <span key={i} className="badge badge-subtle" style={{ fontSize: '0.65rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} title={ref} onClick={() => onNavigate?.('sources')}>
+              <span key={i} className="badge badge-subtle" style={{ fontSize: '0.65rem', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} title={ref} onClick={() => onNavigate?.(`source:${ref}`)}>
                 {filename}
               </span>
             );

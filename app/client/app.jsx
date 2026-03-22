@@ -97,6 +97,10 @@ export default function App() {
     } else if (id.startsWith('CF-')) {
       setHighlightId(id);
       setView('conflicts', { highlightId: id });
+    } else if (id.startsWith('source:')) {
+      const filePath = id.replace('source:', '');
+      setRestoredFile(filePath);
+      setView('sources');
     } else if (VIEW_REGISTRY.some(v => v.id === id)) {
       setView(id);
     }
