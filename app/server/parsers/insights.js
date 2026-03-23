@@ -125,26 +125,45 @@ export function parseInsights(content) {
       const auth = line.match(/^\*{0,2}Authority:\*{0,2}\s*(.+)/);
       if (auth) { current.authority = auth[1].trim(); continue; }
 
-      const status = line.match(/^\*{0,2}Status:\*{0,2}\s*(\w+)/);
-      if (status) { current.status = status[1].toUpperCase(); continue; }
-
-      const edited = line.match(/^\*{0,2}Edited:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
-      if (edited) { current.edited = edited[1]; continue; }
-
-      const tier = line.match(/^\*{0,2}Tier:\*{0,2}\s*(.+)/);
-      if (tier) { current.tier = tier[1].trim(); continue; }
-
-      const lastUpdated = line.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
-      if (lastUpdated) { current.last_updated = lastUpdated[1]; continue; }
-
       const aiTag = line.match(/\[AI-GENERATED/);
       if (aiTag) { current.ai_generated = true; continue; }
     }
 
-    // Narrative blockquote
-    if (line.startsWith('> **Narrative:**') || line.startsWith('> ')) {
+    // These fields can appear anywhere in the insight block (scripts may write them after narrative)
+    const status = line.match(/^\*{0,2}Status:\*{0,2}\s*(.+)/);
+    if (status && current) {
+      const parts = status[1].match(/^(\w+)/);
+      if (parts) current.status = parts[1].toUpperCase();
+      continue;
+    }
+
+    const edited = line.match(/^\*{0,2}Edited:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+    if (edited && current) { current.edited = edited[1]; continue; }
+
+    const tier = line.match(/^\*{0,2}Tier:\*{0,2}\s*(.+)/);
+    if (tier && current) { current.tier = tier[1].trim(); continue; }
+
+    const lastUpdated = line.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+    if (lastUpdated && current) { current.last_updated = lastUpdated[1]; continue; }
+
+    // Narrative blockquote — but filter out metadata fields embedded in blockquotes
+    if (line.startsWith('> **Narrative:**') || (line.startsWith('> ') && section !== 'evidence')) {
+      // Check if this blockquote line is actually a metadata field
+      const stripped = line.replace(/^>\s*/, '');
+      const isMetadata = /^\*{0,2}(Last-updated|Status|Category|Voice|Authority|Tier|Edited|Convergence|Consolidates|Grounded in|Refs?):\*{0,2}\s/i.test(stripped);
+      if (isMetadata) {
+        // Parse as field instead of narrative
+        const lastUpd = stripped.match(/^\*{0,2}Last-updated:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+        if (lastUpd) { current.last_updated = lastUpd[1]; continue; }
+        const edited = stripped.match(/^\*{0,2}Edited:\*{0,2}\s*(\d{4}-\d{2}-\d{2})/);
+        if (edited) { current.edited = edited[1]; continue; }
+        const tier = stripped.match(/^\*{0,2}Tier:\*{0,2}\s*(.+)/);
+        if (tier) { current.tier = tier[1].trim(); continue; }
+        // Skip other metadata silently
+        continue;
+      }
       section = 'narrative';
-      const text = line.replace(/^>\s*/, '').replace(/^\*\*Narrative:\*\*\s*/, '');
+      const text = stripped.replace(/^\*\*Narrative:\*\*\s*/, '');
       if (text) current.narrative += text + '\n';
       continue;
     }

@@ -25,7 +25,7 @@ export function createScriptRoutes(projectRoot) {
       return res.status(400).json({ error: 'Missing required fields: id, action' });
     }
 
-    const validActions = ['verify', 'discard', 'merge', 'freeze', 'unfreeze', 'supersede'];
+    const validActions = ['verify', 'discard', 'restore', 'merge', 'freeze', 'unfreeze', 'supersede'];
     if (!validActions.includes(action)) {
       return res.status(400).json({ error: `Invalid action: ${action}. Valid: ${validActions.join(', ')}` });
     }

@@ -591,32 +591,58 @@
   background: var(--surface-elevated);
 }
 
-.btn-approve {
-  background: var(--verified-bg);
-  border-color: var(--verified-fg);
-  color: var(--verified-fg);
+.btn-primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #fff;
 }
 
-.btn-approve:hover {
-  opacity: 0.9;
+.btn-primary:hover {
+  opacity: 0.88;
+  color: #fff;
 }
 
-.btn-approve.active {
-  box-shadow: 0 0 0 1px var(--verified-fg);
+[data-theme="light"] .btn-primary {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  color: #fff;
 }
 
-.btn-reject {
-  background: var(--conflict-bg);
-  border-color: var(--conflict-fg);
-  color: var(--conflict-fg);
+/* ── Tab Group (segmented control) ── */
+.tab-group {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
-.btn-reject:hover {
-  opacity: 0.9;
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s;
 }
 
-.btn-reject.active {
-  box-shadow: 0 0 0 1px var(--conflict-fg);
+.tab-item:last-child {
+  border-right: none;
+}
+
+.tab-item:hover {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+.tab-item.active {
+  background: var(--accent-cyan);
+  color: #fff;
 }
 
 /* ── Filter Bar ── */

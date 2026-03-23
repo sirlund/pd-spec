@@ -119,6 +119,7 @@ Ad-hoc analytical operations outside the standard pipeline. Use `02_Work/_temp/`
 | **Never edit files without explicit user request** | Especially during QA — observe, don't fix |
 | **Never build large JSON in-context** | >10KB JSON causes compaction loops. Use external scripts |
 | **Never put override properties BEFORE spread** | `{ type: 'x', ...obj }` — obj overwrites yours. Always: `{ ...obj, type: 'x' }` |
+| **Never generate SVG paths** | Copy from `app/node_modules/@tabler/icons/icons/outline/{name}.svg` (v3.40.0). Never approximate from memory. Bump `?v=N` in Icon.jsx after adding icons. |
 
 ## Script-First Execution (90/10 Rule)
 

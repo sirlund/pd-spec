@@ -8,7 +8,7 @@ export default function Icon({ name, size = 20, className = '', spin = false }) 
       height={size}
       aria-hidden="true"
     >
-      <use href={`/icons/sprite.svg#icon-${name}`} />
+      <use href={`/icons/sprite.svg?v=3#icon-${name}`} />
     </svg>
   );
 }

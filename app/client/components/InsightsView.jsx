@@ -13,9 +13,8 @@ function isActiveInsight(insight) {
 
 export default function InsightsView({ highlightId, onHighlightClear, onNavigate, decisions, onDecision }) {
   const { data, loading } = useLiveData('/insights', ['INSIGHTS_GRAPH']);
-  const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [archivedOpen, setArchivedOpen] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const highlightRef = useRef(null);
 
   useEffect(() => {
@@ -42,18 +41,23 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
     );
   }
 
-  const statuses = [...new Set(data.insights.map(i => i.status?.split('—')[0].trim()))];
-  const categories = data.categories || [];
+  // Categories from actual insight.category field (parsed, without temporal tag)
+  const categories = [...new Set(data.insights.map(i => {
+    if (!i.category) return null;
+    return i.category.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  }).filter(Boolean))].sort();
 
   const filtered = data.insights.filter(i => {
-    const base = i.status?.split('—')[0].trim();
-    if (statusFilter !== 'all' && base !== statusFilter) return false;
-    if (categoryFilter !== 'all' && i.category_group !== categoryFilter) return false;
+    if (categoryFilter !== 'all') {
+      const cat = i.category?.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if (cat !== categoryFilter) return false;
+    }
     return true;
   });
 
-  const active = filtered.filter(isActiveInsight);
-  const archived = filtered.filter(i => !isActiveInsight(i));
+  const allActive = data.insights.filter(isActiveInsight);
+  const allArchived = data.insights.filter(i => !isActiveInsight(i));
+  const displayList = showArchived ? filtered.filter(i => !isActiveInsight(i)) : filtered.filter(isActiveInsight);
 
   const renderCard = (insight) => (
     <div
@@ -70,7 +74,7 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
         onNavigate={onNavigate}
         decision={decisions?.[insight.id]}
         onDecision={onDecision}
-        willExitFilter={statusFilter !== 'all'}
+        willExitFilter={false}
       />
     </div>
   );
@@ -82,48 +86,24 @@ export default function InsightsView({ highlightId, onHighlightClear, onNavigate
       </div>
 
       <div className="filter-bar">
-        <button className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`} onClick={() => setStatusFilter('all')}>
-          All
+        <button className={`filter-btn ${!showArchived && categoryFilter === 'all' ? 'active' : ''}`} onClick={() => { setShowArchived(false); setCategoryFilter('all'); }}>
+          All ({allActive.length})
         </button>
-        {statuses.map(s => (
-          <button key={s} className={`filter-btn ${statusFilter === s ? 'active' : ''}`} onClick={() => setStatusFilter(s)}>
-            {s}
+        {categories.length > 1 && categories.map(c => (
+          <button key={c} className={`filter-btn ${!showArchived && categoryFilter === c ? 'active' : ''}`} onClick={() => { setShowArchived(false); setCategoryFilter(c); }}>
+            {c}
           </button>
         ))}
+        {allArchived.length > 0 && (
+          <button className={`filter-btn ${showArchived ? 'active' : ''}`} onClick={() => { setShowArchived(true); setCategoryFilter('all'); }}>
+            Archived ({allArchived.length})
+          </button>
+        )}
       </div>
 
-      {categories.length > 1 && (
-        <div className="filter-bar">
-          <button className={`filter-btn ${categoryFilter === 'all' ? 'active' : ''}`} onClick={() => setCategoryFilter('all')}>
-            All categories
-          </button>
-          {categories.map(c => (
-            <button key={c} className={`filter-btn ${categoryFilter === c ? 'active' : ''}`} onClick={() => setCategoryFilter(c)} title={c} style={{ whiteSpace: 'normal', textAlign: 'left' }}>
-              {c}
-            </button>
-          ))}
-        </div>
-      )}
+      {displayList.map(renderCard)}
 
-      {/* Active insights */}
-      {active.map(renderCard)}
-
-      {/* Archived section */}
-      {archived.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <button
-            className="btn btn-sm btn-ghost"
-            onClick={() => setArchivedOpen(!archivedOpen)}
-            style={{ fontSize: '0.82rem', marginBottom: archivedOpen ? 8 : 0 }}
-          >
-            <Icon name="chevron-down" size={14} style={archivedOpen ? { transform: 'rotate(180deg)' } : {}} />
-            Archived ({archived.length})
-          </button>
-          {archivedOpen && archived.map(renderCard)}
-        </div>
-      )}
-
-      {filtered.length === 0 && (
+      {displayList.length === 0 && (
         <div className="empty-state">
           <div className="empty-state-text">No insights match the current filters.</div>
         </div>

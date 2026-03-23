@@ -4,10 +4,10 @@ import { StatusBadge, IdBadge, SubtleBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
 import { useScriptAction } from '../hooks.js';
 
-export default function ConflictCard({ conflict, onNavigate, decision, onDecision }) {
+export default function ConflictCard({ conflict, onNavigate }) {
   const [expanded, setExpanded] = useState(false);
-  const [contextText, setContextText] = useState('');
-  const [showContext, setShowContext] = useState(false);
+  const [activeAction, setActiveAction] = useState(null); // 'flag' | 'research' | 'resolve'
+  const [noteText, setNoteText] = useState('');
   const [localIntermediate, setLocalIntermediate] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
 
@@ -21,27 +21,26 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
   // Reset optimistic state when real data catches up
   useEffect(() => { setLocalIntermediate(null); }, [conflict.intermediate, conflict.status]);
 
-  const handleFlag = async () => {
+  const handleSubmit = async () => {
+    if (!noteText.trim()) return;
     try {
-      await execute('resolve-conflict', { id: conflict.id, flag: 'Flagged by user' });
-      setLocalIntermediate('FLAGGED');
+      if (activeAction === 'flag') {
+        await execute('resolve-conflict', { id: conflict.id, flag: noteText.trim() });
+        setLocalIntermediate('FLAGGED');
+      } else if (activeAction === 'research') {
+        await execute('resolve-conflict', { id: conflict.id, research: noteText.trim() });
+        setLocalIntermediate('RESEARCH');
+      } else {
+        await execute('resolve-conflict', { id: conflict.id, resolution: noteText.trim() });
+      }
+      setNoteText('');
+      setActiveAction(null);
     } catch { /* error shown inline */ }
   };
 
-  const handleResearch = async () => {
-    try {
-      await execute('resolve-conflict', { id: conflict.id, research: 'Marked for research' });
-      setLocalIntermediate('RESEARCH');
-    } catch { /* error shown inline */ }
-  };
-
-  const handleResolve = async () => {
-    if (!contextText.trim()) return;
-    try {
-      await execute('resolve-conflict', { id: conflict.id, resolution: contextText.trim() });
-      setContextText('');
-      setShowContext(false);
-    } catch { /* error shown inline */ }
+  const toggleAction = (action) => {
+    setActiveAction(prev => prev === action ? null : action);
+    setNoteText('');
   };
 
   const effectiveIntermediate = localIntermediate || conflict.intermediate;
@@ -111,39 +110,50 @@ export default function ConflictCard({ conflict, onNavigate, decision, onDecisio
         </div>
       )}
 
-      {/* Direct action buttons for unresolved conflicts */}
+      {/* Action tabs for unresolved conflicts */}
       {conflict.status !== 'RESOLVED' && !effectiveIntermediate && (
-        <div className="decision-row" style={{ flexDirection: 'column', gap: 8 }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn btn-sm btn-ghost" onClick={handleFlag} disabled={loading}>
-              <Icon name="flag" size={14} /> Flag for discussion
-            </button>
-            <button className="btn btn-sm btn-ghost" onClick={handleResearch} disabled={loading}>
-              <Icon name="search" size={14} /> Needs research
-            </button>
-            <button className="btn btn-sm btn-accent" onClick={() => setShowContext(!showContext)} disabled={loading}>
-              <Icon name="message-circle" size={14} /> I have context
-            </button>
+        <div style={{ marginTop: 10 }}>
+          <div className="tab-group">
+            {[
+              { key: 'flag', icon: 'flag', label: 'Flag' },
+              { key: 'research', icon: 'search', label: 'Research' },
+              { key: 'resolve', icon: 'message-circle', label: 'Resolve' },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                className={`tab-item ${activeAction === tab.key ? 'active' : ''}`}
+                onClick={() => toggleAction(tab.key)}
+                disabled={loading}
+              >
+                <Icon name={tab.icon} size={13} /> {tab.label}
+              </button>
+            ))}
           </div>
-          {showContext && (
-            <>
+          {activeAction && (
+            <div style={{ marginTop: 8 }}>
               <textarea
                 className="context-textarea"
-                placeholder="Add your context here..."
-                value={contextText}
-                onChange={(e) => setContextText(e.target.value)}
+                placeholder={activeAction === 'flag' ? 'Why does this need discussion?'
+                  : activeAction === 'research' ? 'What needs to be investigated?'
+                  : 'Add your resolution context...'}
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                autoFocus
               />
-              {contextText.trim() && (
+              {noteText.trim() && (
                 <button
-                  className="btn btn-sm btn-accent"
+                  className="btn btn-sm btn-primary"
                   style={{ marginTop: 6 }}
-                  onClick={handleResolve}
+                  onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? '...' : 'Resolve now'}
+                  {loading ? '...'
+                    : activeAction === 'flag' ? 'Flag for discussion'
+                    : activeAction === 'research' ? 'Mark for research'
+                    : 'Resolve now'}
                 </button>
               )}
-            </>
+            </div>
           )}
           {error && (
             <div style={{ fontSize: '0.75rem', color: 'var(--conflict-fg)', marginTop: 4 }}>{error}</div>

@@ -4,6 +4,7 @@
 #
 # Actions:
 #   --verify          PENDING → VERIFIED
+#   --restore         DISCARDED|FROZEN → VERIFIED (undo discard/freeze)
 #   --discard         PENDING|VERIFIED → DISCARDED (requires --reason)
 #   --merge           PENDING|VERIFIED → MERGED (requires --target IG-XX)
 #   --freeze          VERIFIED → FROZEN
@@ -37,7 +38,7 @@ FORCE=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --verify|--discard|--merge|--freeze|--unfreeze|--supersede)
+    --verify|--discard|--restore|--merge|--freeze|--unfreeze|--supersede)
       ACTION="${1#--}"
       shift
       ;;
@@ -76,7 +77,7 @@ done
 if [ -z "$ACTION" ] || [ -z "$INSIGHT_ID" ] || [ -z "$FILE" ]; then
   echo "Usage: ./scripts/verify-insight.sh <action> <insight_id> <file_path> [options]"
   echo ""
-  echo "Actions: --verify, --discard, --merge, --freeze, --unfreeze, --supersede"
+  echo "Actions: --verify, --discard, --restore, --merge, --freeze, --unfreeze, --supersede"
   echo "Options: --reason \"text\", --target IG-XX, --project PATH, --force"
   exit 1
 fi
@@ -117,8 +118,8 @@ validate_transition() {
 
   case "$to" in
     VERIFIED)
-      if [ "$from" != "PENDING" ] && [ "$from" != "FROZEN" ]; then
-        echo "ERROR: Cannot transition $INSIGHT_ID from $from to VERIFIED (allowed: PENDING, FROZEN)"
+      if [ "$from" != "PENDING" ] && [ "$from" != "FROZEN" ] && [ "$from" != "DISCARDED" ]; then
+        echo "ERROR: Cannot transition $INSIGHT_ID from $from to VERIFIED (allowed: PENDING, FROZEN, DISCARDED)"
         exit 1
       fi
       ;;
@@ -143,8 +144,8 @@ validate_transition() {
       fi
       ;;
     FROZEN)
-      if [ "$from" != "VERIFIED" ]; then
-        echo "ERROR: Cannot transition $INSIGHT_ID from $from to FROZEN (allowed: VERIFIED)"
+      if [ "$from" != "VERIFIED" ] && [ "$from" != "PENDING" ]; then
+        echo "ERROR: Cannot transition $INSIGHT_ID from $from to FROZEN (allowed: VERIFIED, PENDING)"
         exit 1
       fi
       ;;
@@ -164,6 +165,7 @@ validate_transition() {
 # Map action to target status
 case "$ACTION" in
   verify)    NEW_STATUS="VERIFIED" ;;
+  restore)   NEW_STATUS="VERIFIED" ;;
   discard)   NEW_STATUS="DISCARDED" ;;
   merge)     NEW_STATUS="MERGED" ;;
   freeze)    NEW_STATUS="FROZEN" ;;

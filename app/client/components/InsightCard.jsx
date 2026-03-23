@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import Card from './ui/Card.jsx';
 import { StatusBadge, IdBadge, WarningBadge, SubtleBadge } from './ui/Badge.jsx';
 import Icon from './ui/Icon.jsx';
@@ -14,10 +15,16 @@ function getFreshness(lastUpdated) {
   return { color: 'var(--vivid-red)', label: 'Stale', days, warn: true };
 }
 
+const TEMPORAL_ALIASES = { 'current': 'as-is', 'aspirational': 'to-be' };
+
 function parseCategory(raw) {
   if (!raw) return { category: '', temporal: 'as-is' };
-  const match = raw.match(/^(.+?)\s*\((to-be|future-state|as-is)\)\s*$/);
-  if (match) return { category: match[1].trim(), temporal: match[2] };
+  const match = raw.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  if (match) {
+    const tag = match[2].trim();
+    const temporal = TEMPORAL_ALIASES[tag] || (['as-is', 'to-be', 'future-state'].includes(tag) ? tag : 'as-is');
+    return { category: match[1].trim(), temporal };
+  }
   return { category: raw.trim(), temporal: 'as-is' };
 }
 
@@ -32,8 +39,29 @@ function parseDiscardReason(status) {
 
 const CATEGORY_OPTIONS = ['user-need', 'business', 'constraint', 'technical', 'design-principle'];
 const TEMPORAL_OPTIONS = ['as-is', 'to-be', 'future-state'];
-const VOICE_OPTIONS = ['user', 'stakeholder', 'document', 'researcher', 'ai'];
-const AUTHORITY_OPTIONS = ['direct-quote', 'observation', 'hypothesis', 'vision', 'fact'];
+const VOICE_OPTIONS = ['user', 'stakeholder', 'document', 'researcher', 'ai'].map(v => ({ value: v, label: v }));
+const AUTHORITY_OPTIONS = ['direct-quote', 'observation', 'hypothesis', 'vision', 'fact'].map(v => ({ value: v, label: v }));
+
+const selectStyles = {
+  control: (base) => ({ ...base, minHeight: 30, fontSize: '0.8rem', background: 'var(--card-bg)', borderColor: 'var(--border-color)', boxShadow: 'none', '&:hover': { borderColor: 'var(--accent-cyan)' } }),
+  menu: (base) => ({ ...base, background: 'var(--surface-elevated)', border: '1px solid var(--border-color)', fontSize: '0.8rem', zIndex: 10 }),
+  option: (base, state) => ({ ...base, background: state.isFocused ? 'var(--accent-dim)' : 'transparent', color: 'var(--text-primary)', cursor: 'pointer', padding: '4px 8px' }),
+  multiValue: (base) => ({ ...base, background: 'var(--accent-dim)', borderRadius: 3 }),
+  multiValueLabel: (base) => ({ ...base, color: 'var(--text-primary)', fontSize: '0.75rem', padding: '1px 4px' }),
+  multiValueRemove: (base) => ({ ...base, color: 'var(--text-muted)', '&:hover': { background: 'var(--conflict-bg)', color: 'var(--conflict-fg)' } }),
+  input: (base) => ({ ...base, color: 'var(--text-primary)', margin: 0, padding: 0 }),
+  placeholder: (base) => ({ ...base, color: 'var(--text-muted)' }),
+  singleValue: (base) => ({ ...base, color: 'var(--text-primary)' }),
+};
+
+function parseMultiValue(raw) {
+  if (!raw) return [];
+  return raw.split(',').map(v => v.trim()).filter(Boolean).map(v => ({ value: v, label: v }));
+}
+
+function toMultiString(selected) {
+  return selected.map(s => s.value).join(', ');
+}
 
 export default function InsightCard({ insight, onNavigate, decision, onDecision, willExitFilter = false }) {
   const [expanded, setExpanded] = useState(false);
@@ -46,8 +74,8 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
   const [editNarrative, setEditNarrative] = useState('');
   const [editCategory, setEditCategory] = useState('');
   const [editTemporal, setEditTemporal] = useState('as-is');
-  const [editVoice, setEditVoice] = useState('');
-  const [editAuthority, setEditAuthority] = useState('');
+  const [editVoice, setEditVoice] = useState([]);
+  const [editAuthority, setEditAuthority] = useState([]);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
   const { execute, loading, error, clearError } = useScriptAction();
@@ -100,8 +128,8 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
     const parsed = parseCategory(insight.category);
     setEditCategory(parsed.category);
     setEditTemporal(parsed.temporal);
-    setEditVoice(insight.voice || '');
-    setEditAuthority(insight.authority || '');
+    setEditVoice(parseMultiValue(insight.voice));
+    setEditAuthority(parseMultiValue(insight.authority));
     setEditing(true);
     setEditError(null);
   };
@@ -115,8 +143,8 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
         narrative: editNarrative,
         category: editCategory,
         temporal: editTemporal,
-        voice: editVoice,
-        authority: editAuthority,
+        voice: toMultiString(editVoice),
+        authority: toMultiString(editAuthority),
       };
       const res = await fetch(`/api/insight/${insight.id}`, {
         method: 'PATCH',
@@ -227,21 +255,15 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
             </label>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Voice
-              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editVoice} onChange={(e) => setEditVoice(e.target.value)}>
-                <option value="">—</option>
-                {VOICE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
+              <Select isMulti options={VOICE_OPTIONS} value={editVoice} onChange={setEditVoice} styles={selectStyles} placeholder="Select..." menuPortalTarget={document.body} />
             </label>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
               Authority
-              <select className="form-input" style={{ fontSize: '0.8rem', padding: '4px 6px', width: '100%', marginTop: 2 }} value={editAuthority} onChange={(e) => setEditAuthority(e.target.value)}>
-                <option value="">—</option>
-                {AUTHORITY_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
+              <Select isMulti options={AUTHORITY_OPTIONS} value={editAuthority} onChange={setEditAuthority} styles={selectStyles} placeholder="Select..." menuPortalTarget={document.body} />
             </label>
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className="btn btn-sm btn-approve" onClick={handleEditSave} disabled={editLoading}>
+            <button className="btn btn-sm btn-primary" onClick={handleEditSave} disabled={editLoading}>
               <Icon name={editLoading ? 'loader' : 'check'} size={14} spin={editLoading} /> Save
             </button>
             <button className="btn btn-sm btn-ghost" onClick={handleEditCancel} disabled={editLoading}>
@@ -336,7 +358,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
             <button className="btn btn-sm btn-ghost" onClick={handleFreeze} disabled={loading}>
               <Icon name="snowflake" size={14} /> Freeze
             </button>
-            <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={loading}>
+            <button className="btn btn-sm btn-ghost" onClick={handleDiscard} disabled={loading}>
               <Icon name="x" size={14} /> Discard
             </button>
           </div>
@@ -351,7 +373,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
                 onKeyDown={(e) => e.key === 'Enter' && handleDiscard()}
                 autoFocus
               />
-              <button className="btn btn-sm btn-reject" onClick={handleDiscard} disabled={!discardReason.trim() || loading}>
+              <button className="btn btn-sm btn-primary" onClick={handleDiscard} disabled={!discardReason.trim() || loading}>
                 Send
               </button>
               <button className="btn btn-sm btn-ghost" onClick={() => { setShowDiscardInput(false); setDiscardReason(''); }}>
@@ -368,7 +390,7 @@ export default function InsightCard({ insight, onNavigate, decision, onDecision,
       {/* Unfreeze button for FROZEN insights */}
       {isFrozen && !editing && (
         <div className="decision-row">
-          <button className="btn btn-sm btn-approve" onClick={handleUnfreeze} disabled={loading}>
+          <button className="btn btn-sm btn-primary" onClick={handleUnfreeze} disabled={loading}>
             <Icon name="check" size={14} /> Unfreeze
           </button>
           {error && (

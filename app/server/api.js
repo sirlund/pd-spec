@@ -528,7 +528,7 @@ export function createApi(projectRoot) {
         extracted: sourceMap.summary.processed || 0,
         claims: extractions.total_claims || 0,
         insights: insights.insights.length,
-        conflicts: conflicts.conflicts.length,
+        conflicts: conflicts.summary.pending || 0,
         conflicts_resolved: conflicts.summary.resolved || 0,
         untracked,
       };
