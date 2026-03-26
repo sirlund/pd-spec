@@ -66,7 +66,7 @@ EVERY file discovered in Phase 1 MUST be:
 
 "Redundancy" is NOT a valid technical reason to skip a file. If two files appear to contain similar information, BOTH must be processed. Deduplication happens in `/analyze`, not here.
 
-**Exception — `Role: context` sources:** If a folder's `_CONTEXT.md` contains `Role: context`, skip claim extraction for all files in that folder. These are reference materials (competitive benchmarks, historical artifacts, industry research) that inform the agent's reasoning but should NOT produce claims. Log them in SOURCE_MAP as `status: context (not extracted)`. They remain available for cross-referencing in `/analyze` workshop mode and `/spec`.
+**Exception — `Role: reference` sources:** If a folder's `_CONTEXT.md` contains `Role: reference`, or an individual file's frontmatter contains `Role: reference`, skip claim extraction for all files in that folder/file. These are reference materials (competitive benchmarks, historical artifacts, industry research) that inform the agent's reasoning but should NOT produce claims. Log them in SOURCE_MAP as `status: reference (not extracted)`. They remain available for cross-referencing in `/analyze` workshop mode and `/spec`. **Backwards compat:** `Role: context` is treated as `Role: reference`.
 
 ## MANDATORY RULE: DENSITY-AWARE EXTRACTION
 

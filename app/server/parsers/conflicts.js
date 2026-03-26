@@ -82,6 +82,32 @@ export function parseConflicts(content) {
         current.related_insights = current.related_insights.map(r => r.replace(/[\[\]]/g, ''));
         continue;
       }
+
+      // Side A / Side B → extract as claims + collect related insights
+      const sideA = line.match(/^-?\s*Side A:\s*(.+)/);
+      if (sideA) {
+        current.claims.push('Side A: ' + sideA[1].trim());
+        const refs = sideA[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || [];
+        refs.forEach(r => { const id = r.replace(/[\[\]]/g, ''); if (!current.related_insights.includes(id)) current.related_insights.push(id); });
+        continue;
+      }
+
+      const sideB = line.match(/^-?\s*Side B:\s*(.+)/);
+      if (sideB) {
+        current.claims.push('Side B: ' + sideB[1].trim());
+        const refs = sideB[1].match(/\[IG-[A-Za-z0-9-]+\]/g) || [];
+        refs.forEach(r => { const id = r.replace(/[\[\]]/g, ''); if (!current.related_insights.includes(id)) current.related_insights.push(id); });
+        continue;
+      }
+
+      // Impact line → store as description suffix
+      const impact = line.match(/^-?\s*Impact:\s*(.+)/);
+      if (impact) {
+        current.description = current.description
+          ? current.description + ' — ' + impact[1].trim()
+          : impact[1].trim();
+        continue;
+      }
     }
 
     // Source claims

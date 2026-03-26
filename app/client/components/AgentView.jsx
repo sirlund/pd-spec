@@ -229,6 +229,7 @@ export default function AgentView({ sessionToken, onNavigate, visible, onStatusC
   if (currentGroup) groupedLog.push(currentGroup);
 
   if (!sessionToken) {
+    if (!visible) return null;
     return (
       <div style={{ maxWidth: 700 }}>
         <div className="section-header">
