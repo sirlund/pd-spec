@@ -17,6 +17,39 @@
 - **Snapshot:** sources: X | extractions: X | insights: X (V verified) | conflicts: X (P pending) | outputs: X
 -->
 
+### 2026-04-06T00:00 — Pitch deck research + planning
+- **Request:** Research pitch decks para etapa pre-producto. Barri tiene oportunidad de pitch a inversores en Panamá (~mediados-fin abril)
+- **Actions:**
+  - Research completo: formatos (clásico VC, pre-seed optimizado, story-driven), market sizing alternatives (bottom-up vs TAM/SAM/SOM), LATAM VC context 2025-2026, errores fatales, ejemplos notables
+  - Decisión formato: Opción B (pre-seed 10 slides) + elementos narrativos de Opción C
+  - Presupuesto: 18-20h · $495.000-$550.000, todo con IA, Barri paga de una
+  - Research guardado: `02_Work/_temp/pitch_deck_research.md`
+- **Result:** Research listo. Pendiente datos de Barri (equipo, ask, mercado) para arrancar producción
+- **Snapshot:** 18 insights (18 PENDING) · 7 conflicts PENDING · 2 outputs (V3 + V3.1 docx)
+
+### 2026-03-31T00:00 — Propuesta V3.1 Consolidado Final
+- **Request:** Incorporar feedback Barri (mecánica final, scoring, anti-cheat comments, nuevos requerimientos) y generar propuesta consolidada V3.1
+- **Actions:**
+  - Guardado feedback Barri como fuente: `01_Sources/revision_propuesta_v2/feedback_barri_v3_mecanica.md`
+  - Análisis de delta V3→V3.1: `02_Work/DELTA_V3_V31.md`
+  - Decisiones confirmadas: scoring Barri (por dificultad 25/50/100/150, binario), oleadas rechazado, feedback inmediato, 702 preguntas, HQ tiebreaker +10h, prueba carga +12h, SOÑAO.COM +12h aparte, botón soporte +3h, anti-cheat tabla con notas legales
+  - Generado `03_Outputs/Propuesta_Triviapp_V3_1.docx` via `generate_propuesta_v31.py`
+- **Result:** V3.1 generada. T1 base: 105h/$2.887.500. Con todo (anti-cheat + SOÑAO.COM): 124h/$3.410.000. 3 pilotos: 152h/$4.180.000.
+- **Snapshot:** 18 insights (18 PENDING) · 7 conflicts PENDING · 2 outputs (V3 + V3.1 docx)
+
+### 2026-03-19T00:00 — Propuesta V3 Lean + anti-cheat + investigación técnica
+- **Request:** Analizar fuentes nuevas (propuesta v2 + transcripts mar 10/12), crear propuesta V3 lean, investigar pasarelas/magic link/RRSS/WhatsApp, diseñar anti-cheat
+- **Actions:**
+  - Cruce propuesta v2 + transcripts → 6 temas resueltos, tabla comparativa Básica/Pro/Lean
+  - Propuesta V3 Lean: 80h/$2.200.000 arrancar, 108h/$2.970.000 tres pilotos, upgrade Pro 193h/$5.307.500
+  - Scoring graduado propuesto (+5/+1/0/-2) + bonus tiempo solo en correcta + sin skip + banco ~440
+  - Anti-cheat: verificación ganador (videollamada), scoring por oleadas, orden aleatorio, auditoría top 10
+  - UX: bloques temáticos + mensajes narrador (0h extra, es contenido)
+  - Research: MercadoPago (recomendado), magic link (Supabase built-in), scraping RRSS (no vale la pena), WhatsApp (escalonado)
+  - Reunión con Barri Mar 18: V3 bien recibida, pendiente confirmación
+- **Result:** Commit `93463e8`. Propuesta V3 entregada. Barri inclinado a Lean.
+- **Snapshot:** 18 insights (18 PENDING) · 7 conflicts PENDING · 1 output (V3 docx)
+
 ### 2026-03-06T00:00 — Comunicación cliente
 - **Request:** Redactar respuesta a Marcelo Ibáñez sobre bloque simultáneo y presupuesto
 - **Actions:** Borrador email + WSP intro. Confirmado: "Barri" = Marcelo (segundo nombre). Estimado ~25-30 hrs adicionales por real-time + QA complejidad. PROJECT.md actualizado con nombre correcto del cliente.
