@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soñao — Multi-torneo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Metal+Mania&family=Bungee&family=Cinzel:wght@500;700&family=VT323&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/base.css">
+  <style>
+    body { background: #05050a; }
+    .multi { padding: 3.5rem 5rem; min-height: 100vh; display: flex; flex-direction: column; gap: 3rem; }
+
+    .top {
+      display: flex; flex-direction: column; gap: 0.8rem; max-width: 900px;
+    }
+    .top .eyebrow {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--sonao-violet);
+      text-shadow: 0 0 6px var(--sonao-violet-deep);
+    }
+    .top h1 {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 3rem;
+      line-height: 1.05;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
+    }
+    .top h1 em {
+      font-style: normal;
+      color: var(--sonao-violet);
+      text-shadow: 0 0 8px var(--sonao-violet), 0 0 22px var(--sonao-violet-deep);
+    }
+    .top .sub { font-size: 1.05rem; color: var(--text-1); max-width: 720px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .skin-card {
+      position: relative;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 1.4rem 1.2rem;
+      transition: transform 0.2s var(--ease-out);
+      cursor: pointer;
+    }
+    .skin-card:hover { transform: translateY(-4px); }
+
+    .skin-card .tag {
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      position: relative; z-index: 2;
+    }
+
+    .skin-card .mark-area {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 2;
+      padding: 2rem 0;
+    }
+    .skin-card .mark {
+      text-align: center;
+      line-height: 1;
+    }
+
+    .skin-card .meta {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .skin-card .meta .name {
+      font-size: 0.95rem; font-weight: 600; color: var(--text-0);
+      letter-spacing: 0.01em;
+    }
+    .skin-card .meta .niche {
+      font-size: 0.68rem; letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--text-2);
+    }
+    .skin-card .meta .prize {
+      font-size: 0.78rem; color: var(--text-1); margin-top: 0.5rem;
+      font-family: var(--font-mono);
+    }
+
+    /* ========== Skin 1 · TRIVIALLICA (Metallica) ========== */
+    .s-triviallica {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 35%, rgba(255, 47, 184, 0.2), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 25% 80%, rgba(255, 47, 90, 0.15), transparent 55%),
+        linear-gradient(180deg, #0A0308 0%, #050106 100%);
+      border-color: rgba(255, 47, 184, 0.3);
+    }
+    .s-triviallica .tag { color: #FF6AD0; text-shadow: 0 0 5px #FF2FB8; }
+    .s-triviallica .mark {
+      font-family: "Metal Mania", sans-serif;
+      font-size: 2rem; letter-spacing: 0.04em;
+      color: transparent;
+      -webkit-text-stroke: 1px #FF6AD0;
+      text-shadow: 0 0 8px #FF2FB8, 0 0 18px #FF2FB8, 0 0 36px #B0127A;
+    }
+    .s-triviallica .meta .prize { color: #FF6AD0; text-shadow: 0 0 3px #FF2FB8; }
+
+    /* ========== Skin 2 · STARSHIFT (Taylor Swift / pop) ========== */
+    .s-starshift {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 200, 80, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 80%, rgba(255, 120, 180, 0.15), transparent 55%),
+        linear-gradient(180deg, #0B0811 0%, #0C0614 100%);
+      border-color: rgba(255, 200, 80, 0.3);
+    }
+    .s-starshift .tag { color: #FFD47A; text-shadow: 0 0 5px #FFAA30; }
+    .s-starshift .mark {
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      font-size: 1.6rem; letter-spacing: 0.14em;
+      color: #FFE8B0;
+      text-shadow: 0 0 6px #FFAA30, 0 0 20px #FF9030, 0 0 36px #AA4A10;
+    }
+    .s-starshift .meta .prize { color: #FFD47A; text-shadow: 0 0 3px #FFAA30; }
+
+    /* ========== Skin 3 · PIXEL QUEST (anime / gaming) ========== */
+    .s-pixel {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(57, 255, 20, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 20% 80%, rgba(0, 230, 200, 0.15), transparent 55%),
+        linear-gradient(180deg, #031008 0%, #010A05 100%);
+      border-color: rgba(57, 255, 20, 0.3);
+      image-rendering: pixelated;
+    }
+    .s-pixel .tag { color: #7FFF60; text-shadow: 0 0 5px #39FF14; }
+    .s-pixel .mark {
+      font-family: "VT323", monospace;
+      font-size: 2.3rem; letter-spacing: 0.02em;
+      color: #7FFF60;
+      text-shadow: 0 0 4px #39FF14, 0 0 12px #39FF14, 0 0 28px #10A00A;
+    }
+    .s-pixel .meta .prize { color: #7FFF60; text-shadow: 0 0 3px #39FF14; }
+
+    /* ========== Skin 4 · LA BARRA (fútbol / Boca) ========== */
+    .s-barra {
+      background:
+        linear-gradient(145deg, #001A4A 0%, #000818 100%),
+        radial-gradient(ellipse at 50% 40%, rgba(255, 200, 30, 0.12), transparent 60%);
+      background-blend-mode: normal, overlay;
+      border-color: rgba(255, 200, 30, 0.25);
+    }
+    .s-barra::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(90deg,
+          rgba(255, 200, 30, 0.025) 0 4px,
+          transparent 4px 10px);
+      pointer-events: none;
+    }
+    .s-barra .tag { color: #FFD830; text-shadow: 0 0 5px #FFAA00; }
+    .s-barra .mark {
+      font-family: "Bungee", sans-serif;
+      font-size: 1.7rem; letter-spacing: 0.04em;
+      color: #FFD830;
+      text-shadow: 0 0 4px #FFAA00, 0 0 14px #FFAA00, 0 0 32px #AA6A00;
+      transform: skewX(-6deg);
+    }
+    .s-barra .meta .prize { color: #FFD830; text-shadow: 0 0 3px #FFAA00; }
+
+    /* ========== Skin 5 · DUNETRIVIA (Dune / sci-fi) ========== */
+    .s-dune {
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 35%, rgba(0, 200, 255, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 75% 80%, rgba(120, 100, 255, 0.15), transparent 55%),
+        linear-gradient(180deg, #020614 0%, #01030A 100%);
+      border-color: rgba(0, 200, 255, 0.3);
+    }
+    .s-dune .tag { color: #60D8FF; text-shadow: 0 0 5px #00A8E8; }
+    .s-dune .mark {
+      font-family: "Audiowide", sans-serif;
+      font-size: 1.45rem; letter-spacing: 0.18em;
+      color: #60D8FF;
+      text-shadow: 0 0 4px #00A8E8, 0 0 14px #00A8E8, 0 0 32px #0064A0;
+    }
+    .s-dune .meta .prize { color: #60D8FF; text-shadow: 0 0 3px #00A8E8; }
+
+    .footer-note {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--line);
+    }
+    .footer-note .l {
+      font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-2);
+    }
+    .footer-note .sonao-wm {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-2);
+    }
+    .footer-note .sonao-wm img {
+      height: 1.8em;
+      filter: drop-shadow(0 0 4px var(--sonao-violet)) drop-shadow(0 0 10px var(--sonao-violet-deep));
+    }
+
+    @media (max-width: 1100px) {
+      .multi { padding: 2rem 1.5rem; gap: 2rem; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .top h1 { font-size: 2.1rem; }
+      .top .sub { font-size: 0.95rem; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .skin-card { padding: 1.1rem 0.9rem; aspect-ratio: auto; min-height: 280px; }
+      .skin-card .mark { font-size: 1.5rem !important; }
+      .s-pixel .mark { font-size: 1.8rem !important; }
+      .footer-note { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .top h1 { font-size: 1.7rem; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+      .skin-card { min-height: 240px; padding: 0.9rem 0.7rem; }
+    }
+  </style>
+</head>
+<body class="grain vignette">
+  <div class="screen multi">
+    <header class="top">
+      <span class="eyebrow">VISIÓN · MULTI-TORNEO</span>
+      <h1>Un torneo para <em>cada sueño</em> compartido.</h1>
+      <p class="sub">El motor de Soñao es el mismo. Lo que cambia es el universo: cada comunidad, cada nicho, cada fandom tiene su propio lenguaje visual. La plataforma es neutra; la marca se adapta.</p>
+    </header>
+
+    <div class="grid">
+      <article class="skin-card s-triviallica">
+        <span class="tag">ROCK · ACTIVO</span>
+        <div class="mark-area"><div class="mark">TRIVIALLICA</div></div>
+        <div class="meta">
+          <span class="niche">Metallica</span>
+          <span class="name">Tokio + concierto</span>
+          <span class="prize">1.247 tickets · $14.964</span>
+        </div>
+      </article>
+
+      <article class="skin-card s-starshift">
+        <span class="tag">POP · PRÓXIMO</span>
+        <div class="mark-area"><div class="mark">STARSHIFT</div></div>
+        <div class="meta">
+          <span class="niche">Taylor Swift</span>
+          <span class="name">Eras Tour · VIP</span>
+          <span class="prize">0 / 2.000 tickets</span>
+        </div>
+      </article>
+
+      <article class="skin-card s-pixel">
+        <span class="tag">ANIME · PRÓXIMO</span>
+        <div class="mark-area"><div class="mark">PIXEL QUEST</div></div>
+        <div class="meta">
+          <span class="niche">Anime & Manga</span>
+          <span class="name">Anime Japan · Tokio</span>
+          <span class="prize">0 / 1.500 tickets</span>
+        </div>
+      </article>
+
+      <article class="skin-card s-barra">
+        <span class="tag">FÚTBOL · PLANIFICADO</span>
+        <div class="mark-area"><div class="mark">LA BARRA</div></div>
+        <div class="meta">
+          <span class="niche">Boca Juniors</span>
+          <span class="name">Final Libertadores</span>
+          <span class="prize">0 / 3.000 tickets</span>
+        </div>
+      </article>
+
+      <article class="skin-card s-dune">
+        <span class="tag">SCI-FI · PLANIFICADO</span>
+        <div class="mark-area"><div class="mark">DUNETRIVIA</div></div>
+        <div class="meta">
+          <span class="niche">Universo Dune</span>
+          <span class="name">Premiere Parte 3</span>
+          <span class="prize">0 / 1.000 tickets</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="footer-note">
+      <span class="l">Cada pasión, su universo · mismo motor</span>
+      <span class="sonao-wm">
+        <img src="../assets/sonao-neon.png" alt="Soñao">
+      </span>
+    </div>
+  </div>
+</body>
+</html>

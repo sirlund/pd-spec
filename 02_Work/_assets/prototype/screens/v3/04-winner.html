@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triviallica — Winner (C)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/alt.css">
+  <style>
+    .winner-screen { padding: 60px 20px 30px; display: flex; flex-direction: column; gap: 20px; position: relative; }
+
+    .glow-bg {
+      position: absolute;
+      top: 40px; left: 50%;
+      transform: translateX(-50%);
+      width: 320px; height: 220px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, rgba(204, 0, 255, 0.08) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .brand-row { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+    .brand-row .lockup {
+      font-size: 14px; font-weight: 800; letter-spacing: 3px;
+      color: var(--cd-mg);
+      text-shadow: 0 0 6px rgba(204, 0, 255, 0.4);
+    }
+    .ended {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 100px;
+      font-size: 9px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--cd-green);
+      background: rgba(0, 255, 136, 0.04);
+    }
+    .ended .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cd-green); box-shadow: 0 0 6px var(--cd-green); }
+
+    /* Winner spotlight */
+    .winner-card {
+      position: relative;
+      text-align: center;
+      padding: 24px 18px 22px;
+      background: linear-gradient(145deg, rgba(255,215,0,0.06), rgba(204,0,255,0.05));
+      border: 1px solid rgba(255, 215, 0, 0.28);
+      border-radius: 18px;
+      z-index: 1;
+    }
+    .winner-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 20px; right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cd-gold), transparent);
+      box-shadow: 0 0 8px var(--cd-gold);
+    }
+
+    .winner-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cd-gold);
+      text-shadow: 0 0 6px var(--cd-gold);
+      margin-bottom: 10px;
+    }
+
+    .winner-avatar {
+      width: 72px; height: 72px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cd-mg), var(--cd-gold));
+      border: 2px solid var(--cd-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 0 24px rgba(255, 215, 0, 0.35);
+    }
+
+    .winner-handle {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--cd-text);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .winner-real {
+      font-size: 11px;
+      color: var(--cd-muted);
+      margin-bottom: 14px;
+    }
+
+    .winner-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 215, 0, 0.18);
+      border-bottom: 1px solid rgba(255, 215, 0, 0.18);
+      margin-bottom: 14px;
+    }
+    .winner-stats .cell .v {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--cd-text);
+      line-height: 1;
+    }
+    .winner-stats .cell .v.accent { color: var(--cd-gold); text-shadow: 0 0 4px rgba(255, 215, 0, 0.4); }
+    .winner-stats .cell .l {
+      font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--cd-dim);
+      margin-top: 4px;
+    }
+
+    .prize-strip {
+      display: flex; gap: 12px; align-items: center;
+      padding: 12px 14px;
+      background: rgba(255, 215, 0, 0.04);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 12px;
+      text-align: left;
+    }
+    .prize-strip .icon {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .prize-strip .info .l { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--cd-gold); margin-bottom: 2px; }
+    .prize-strip .info .v { font-size: 13px; color: var(--cd-text); font-weight: 600; line-height: 1.2; }
+
+    /* Podium — top 3 */
+    .podium-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 10px;
+    }
+    .podium-col {
+      position: relative;
+      text-align: center;
+      padding: 14px 8px 10px;
+      border-radius: 10px 10px 0 0;
+      border-top: 2px solid;
+      border-left: 1px solid var(--cd-card);
+      border-right: 1px solid var(--cd-card);
+    }
+    .podium-col.p1 { background: linear-gradient(180deg, rgba(255,215,0,0.14), rgba(255,215,0,0.03)); border-top-color: var(--cd-gold); padding-top: 18px; padding-bottom: 14px; }
+    .podium-col.p2 { background: linear-gradient(180deg, rgba(192,192,192,0.1), rgba(192,192,192,0.02)); border-top-color: var(--cd-silver); }
+    .podium-col.p3 { background: linear-gradient(180deg, rgba(205,127,50,0.1), rgba(205,127,50,0.02)); border-top-color: var(--cd-bronze); }
+
+    .podium-col .medal {
+      display: inline-block;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+    .podium-col .nm {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cd-text);
+      margin-bottom: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .podium-col .pts {
+      font-size: 11px; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .podium-col.p1 .pts { color: var(--cd-gold); text-shadow: 0 0 4px rgba(255,215,0,0.4); }
+    .podium-col.p2 .pts { color: var(--cd-silver); }
+    .podium-col.p3 .pts { color: var(--cd-bronze); }
+
+    /* Remaining list */
+    .rest-list { display: flex; flex-direction: column; gap: 4px; }
+    .rest-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--cd-surface);
+      border-radius: 10px;
+    }
+    .rest-row .rank {
+      font-size: 11px; font-weight: 700;
+      color: var(--cd-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .rest-row .nm { font-size: 12px; color: var(--cd-text); font-weight: 500; }
+    .rest-row .acc { font-size: 10px; color: var(--cd-dim); font-variant-numeric: tabular-nums; }
+    .rest-row .pts { font-size: 12px; font-weight: 700; color: var(--cd-muted); font-variant-numeric: tabular-nums; }
+
+    /* You */
+    .divider {
+      display: flex; align-items: center; gap: 8px;
+      margin: 8px 0 2px;
+    }
+    .divider .line { flex: 1; height: 1px; background: var(--cd-dim); }
+    .divider .l { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--cd-muted); }
+
+    .you-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(0, 229, 204, 0.06);
+      border: 1px solid rgba(0, 229, 204, 0.3);
+      border-radius: 10px;
+    }
+    .you-row .rank {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--cd-cyan);
+      border-radius: 50%;
+      font-size: 10px; font-weight: 700;
+      color: var(--cd-cyan);
+    }
+    .you-row .nm { font-size: 12px; color: var(--cd-text); font-weight: 700; }
+    .you-row .acc { font-size: 10px; color: var(--cd-muted); }
+    .you-row .pts { font-size: 12px; font-weight: 700; color: var(--cd-cyan); }
+
+    .tournament-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding-top: 16px;
+      margin-top: 8px;
+      border-top: 1px solid var(--cd-card);
+    }
+    .tournament-stats .cell { text-align: center; }
+    .tournament-stats .cell .v { font-size: 13px; font-weight: 800; color: var(--cd-text); font-variant-numeric: tabular-nums; }
+    .tournament-stats .cell .l { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--cd-dim); margin-top: 3px; }
+  </style>
+</head>
+<body class="alt-body">
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="icons">
+        <div class="dots"><span></span><span></span><span></span><span></span></div>
+        <span style="font-size:10px;">5G</span>
+        <div class="bat"><div class="fill"></div></div>
+      </div>
+    </div>
+
+    <div class="winner-screen">
+      <div class="glow-bg"></div>
+
+      <div class="brand-row">
+        <span class="lockup">TRIVIALLICA</span>
+        <span class="ended"><span class="dot"></span>Torneo cerrado</span>
+      </div>
+
+      <div class="winner-card">
+        <span class="winner-badge">🏆 Ganador · Torneo #001</span>
+        <div class="winner-avatar">🤘</div>
+        <div class="winner-handle">@Jason_Burton</div>
+        <div class="winner-real">Diego Martínez · Valparaíso, Chile</div>
+
+        <div class="winner-stats">
+          <div class="cell"><div class="v accent">14.850</div><div class="l">Puntaje</div></div>
+          <div class="cell"><div class="v">249/250</div><div class="l">Aciertos</div></div>
+          <div class="cell"><div class="v">44:52</div><div class="l">Tiempo</div></div>
+        </div>
+
+        <div class="prize-strip">
+          <div class="icon">✈️</div>
+          <div class="info">
+            <div class="l">Premio otorgado</div>
+            <div class="v">Las Vegas · Metallica en The Sphere</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="podium-row">
+        <div class="podium-col p2">
+          <div class="medal">🥈</div>
+          <div class="nm">@cliff_hammett</div>
+          <div class="pts">14.725</div>
+        </div>
+        <div class="podium-col p1">
+          <div class="medal">🥇</div>
+          <div class="nm">@Jason_Burton</div>
+          <div class="pts">14.850</div>
+        </div>
+        <div class="podium-col p3">
+          <div class="medal">🥉</div>
+          <div class="nm">@justice_81</div>
+          <div class="pts">14.600</div>
+        </div>
+      </div>
+
+      <div class="rest-list">
+        <div class="rest-row"><span class="rank">04</span><span class="nm">@master_trivia</span><span class="acc">248/250</span><span class="pts">14.325</span></div>
+        <div class="rest-row"><span class="rank">05</span><span class="nm">@enter.sandman</span><span class="acc">246/250</span><span class="pts">14.180</span></div>
+        <div class="rest-row"><span class="rank">06</span><span class="nm">@seek.destroy</span><span class="acc">244/250</span><span class="pts">13.940</span></div>
+        <div class="rest-row"><span class="rank">07</span><span class="nm">@puppet.master</span><span class="acc">243/250</span><span class="pts">13.825</span></div>
+      </div>
+
+      <div class="divider">
+        <span class="line"></span>
+        <span class="l">Tu posición</span>
+        <span class="line"></span>
+      </div>
+
+      <div class="you-row">
+        <span class="rank">47</span>
+        <span class="nm">Tú</span>
+        <span class="acc">201/250</span>
+        <span class="pts">7.200</span>
+      </div>
+
+      <div class="tournament-stats">
+        <div class="cell"><div class="v">20.480</div><div class="l">Jugadores</div></div>
+        <div class="cell"><div class="v">250</div><div class="l">Preguntas</div></div>
+        <div class="cell"><div class="v">45 min</div><div class="l">Duración</div></div>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <script src="../../scripts/nav.js" defer></script>
+</body>
+</html>

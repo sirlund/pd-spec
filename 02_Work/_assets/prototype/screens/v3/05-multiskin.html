@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soñao — Multi-torneo (C)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@500;700&family=Bungee&family=Audiowide&family=Fredoka:wght@500;700&family=Rubik+Mono+One&family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/alt.css">
+  <style>
+    /* ----- Shared card styles (also used in bare mode) ----- */
+    .skin-card {
+      position: relative;
+      flex-shrink: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 26px 22px;
+      scroll-snap-align: center;
+      isolation: isolate;
+    }
+    .skin-card .tag {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      position: relative; z-index: 2;
+    }
+    .skin-card .tag .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .skin-card .mark-wrap {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 0;
+      position: relative; z-index: 2;
+    }
+    .skin-card .mark { text-align: center; line-height: 1; }
+    .skin-card .mark img { max-width: 85%; height: auto; filter: drop-shadow(0 0 12px currentColor); }
+
+    /* When a card has a bg-image, let the image lead and use a bottom overlay */
+    .skin-card.has-image { padding: 0; }
+    .skin-card.has-image .bg-img {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .skin-card.has-image .overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 25%, transparent 48%, rgba(0,0,0,0.92) 100%);
+      pointer-events: none;
+    }
+    .skin-card.has-image .tag {
+      position: absolute;
+      top: 16px; left: 16px;
+      padding: 5px 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid currentColor;
+      border-radius: 100px;
+      backdrop-filter: blur(6px);
+    }
+    .skin-card.has-image .mark-wrap { display: none; }
+    .skin-card.has-image .meta {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 18px 18px 20px;
+      z-index: 2;
+    }
+
+    .skin-card .meta {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .skin-card .meta .niche {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .skin-card .meta .name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .skin-card .meta .bar {
+      margin-top: 4px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px; overflow: hidden;
+    }
+    .skin-card .meta .bar .fill {
+      height: 100%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .skin-card .meta .stats {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 2px;
+      font-family: "Outfit", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .skin-card .meta .stats strong { color: #fff; font-weight: 700; }
+
+    /* ---------- 1 · TRIVIALLICA (Metallica · Rock) — activo ---------- */
+    .s-triviallica {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 47, 184, 0.28), transparent 60%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(255, 47, 90, 0.22), transparent 55%),
+        linear-gradient(180deg, #0A0308 0%, #050106 100%);
+      border: 1px solid rgba(255, 47, 184, 0.4);
+      color: #FF6AD0;
+    }
+    .s-triviallica .tag { color: #FF6AD0; text-shadow: 0 0 5px #FF2FB8; }
+    .s-triviallica .tag .dot { background: #FF2FB8; box-shadow: 0 0 6px #FF2FB8; }
+    .s-triviallica .mark {
+      font-family: "Metal Mania", sans-serif;
+      font-size: 40px; letter-spacing: 0.04em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px #FF6AD0;
+      text-shadow: 0 0 10px #FF2FB8, 0 0 24px #FF2FB8, 0 0 48px #B0127A;
+    }
+    .s-triviallica .meta .niche { color: #FF6AD0; text-shadow: 0 0 3px #FF2FB8; }
+
+    /* ---------- 2 · TRIVIAMON (Pokemon) — usa el logo real ---------- */
+    .s-triviamon {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 210, 0, 0.22), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 25% 80%, rgba(0, 120, 230, 0.2), transparent 55%),
+        linear-gradient(180deg, #06080F 0%, #020408 100%);
+      border: 1px solid rgba(255, 210, 0, 0.4);
+      color: #FFD830;
+    }
+    .s-triviamon .tag { color: #FFD830; text-shadow: 0 0 5px #FFAA00; }
+    .s-triviamon .tag .dot { background: #FFAA00; box-shadow: 0 0 6px #FFAA00; }
+    .s-triviamon .mark {
+      filter:
+        drop-shadow(0 0 8px rgba(255, 210, 0, 0.4))
+        drop-shadow(0 0 20px rgba(0, 120, 230, 0.3));
+    }
+    .s-triviamon .meta .niche { color: #FFD830; text-shadow: 0 0 3px #FFAA00; }
+
+    /* ---------- 3 · SWIFTIES (Taylor Swift) ---------- */
+    .s-swifties {
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 30%, rgba(255, 180, 80, 0.3), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 80%, rgba(255, 120, 180, 0.2), transparent 55%),
+        linear-gradient(180deg, #0B0811 0%, #0C0614 100%);
+      border: 1px solid rgba(255, 200, 80, 0.4);
+      color: #FFD47A;
+    }
+    .s-swifties .tag { color: #FFD47A; text-shadow: 0 0 5px #FFAA30; }
+    .s-swifties .tag .dot { background: #FFAA30; box-shadow: 0 0 6px #FFAA30; }
+    .s-swifties .mark {
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      font-size: 30px; letter-spacing: 0.14em;
+      color: #FFE8B0;
+      text-shadow: 0 0 8px #FFAA30, 0 0 22px #FF9030, 0 0 44px #AA4A10;
+    }
+    .s-swifties .meta .niche { color: #FFD47A; text-shadow: 0 0 3px #FFAA30; }
+
+    /* ---------- 4 · K-POP ---------- */
+    .s-kpop {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 35%, rgba(255, 47, 148, 0.3), transparent 60%),
+        radial-gradient(ellipse 60% 70% at 80% 80%, rgba(47, 230, 255, 0.25), transparent 55%),
+        linear-gradient(180deg, #0F0210 0%, #040008 100%);
+      border: 1px solid rgba(255, 47, 148, 0.45);
+      color: #FF6AC4;
+    }
+    .s-kpop .tag { color: #7FFFE8; text-shadow: 0 0 5px #2FE6FF; }
+    .s-kpop .tag .dot { background: #2FE6FF; box-shadow: 0 0 6px #2FE6FF; }
+    .s-kpop .mark {
+      font-family: "Rubik Mono One", sans-serif;
+      font-size: 30px; letter-spacing: 0.04em;
+      color: #FF6AC4;
+      text-shadow:
+        2px 2px 0 #2FE6FF,
+        0 0 8px #FF2F94, 0 0 22px #FF2F94, 0 0 40px #B01270;
+    }
+    .s-kpop .meta .niche { color: #FF6AC4; text-shadow: 0 0 3px #FF2F94; }
+
+    /* ---------- 5 · LA BARRA (Fútbol) ---------- */
+    .s-barra {
+      background:
+        linear-gradient(145deg, #001A4A 0%, #000818 100%);
+      border: 1px solid rgba(255, 200, 30, 0.4);
+      color: #FFD830;
+    }
+    .s-barra::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(255, 200, 30, 0.18), transparent 60%),
+        repeating-linear-gradient(90deg,
+          rgba(255, 200, 30, 0.03) 0 4px,
+          transparent 4px 10px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .s-barra .tag { color: #FFD830; text-shadow: 0 0 5px #FFAA00; }
+    .s-barra .tag .dot { background: #FFAA00; box-shadow: 0 0 6px #FFAA00; }
+    .s-barra .mark {
+      font-family: "Bungee", sans-serif;
+      font-size: 34px; letter-spacing: 0.04em;
+      color: #FFD830;
+      text-shadow: 0 0 5px #FFAA00, 0 0 16px #FFAA00, 0 0 36px #AA6A00;
+      transform: skewX(-6deg);
+    }
+    .s-barra .meta .niche { color: #FFD830; text-shadow: 0 0 3px #FFAA00; }
+
+    /* ---------- 6 · POLE POSITION (F1) ---------- */
+    .s-f1 {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 35%, rgba(255, 50, 50, 0.28), transparent 60%),
+        radial-gradient(ellipse 60% 80% at 85% 90%, rgba(255, 255, 255, 0.1), transparent 55%),
+        linear-gradient(180deg, #0C0203 0%, #050000 100%);
+      border: 1px solid rgba(255, 60, 60, 0.5);
+      color: #FF8080;
+    }
+    .s-f1 .tag { color: #FF8080; text-shadow: 0 0 5px #FF2020; }
+    .s-f1 .tag .dot { background: #FF2020; box-shadow: 0 0 6px #FF2020; }
+    .s-f1 .mark {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 52px; letter-spacing: 0.08em;
+      color: #FFFFFF;
+      line-height: 0.85;
+      text-shadow: 0 0 8px #FF2020, 0 0 22px #FF2020, 0 0 40px #8A0808;
+      transform: skewX(-4deg);
+    }
+    .s-f1 .mark small {
+      display: block;
+      font-size: 14px;
+      color: #FF8080;
+      letter-spacing: 0.3em;
+      margin-top: 6px;
+      transform: none;
+    }
+    .s-f1 .meta .niche { color: #FF8080; text-shadow: 0 0 3px #FF2020; }
+
+    /* ---------- Phone mode (in-device slider) ---------- */
+    body:not(.bare) .phone { min-height: 812px; }
+
+    .page { padding: 54px 18px 30px; display: flex; flex-direction: column; gap: 16px; }
+
+    .page .head { display: flex; flex-direction: column; gap: 4px; }
+    .page .head .eyebrow {
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--cd-mg); font-weight: 700;
+    }
+    .page .head h1 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--cd-text);
+      letter-spacing: -0.01em;
+    }
+    .page .head h1 em {
+      font-style: normal;
+      color: var(--cd-mg);
+      text-shadow: 0 0 6px rgba(204, 0, 255, 0.4);
+    }
+    .page .head p {
+      font-size: 12px;
+      color: var(--cd-muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .slider {
+      margin: 0 -18px;
+      padding: 4px 36px;
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding: 36px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slider::-webkit-scrollbar { display: none; }
+    .slider { scrollbar-width: none; }
+
+    .slider .skin-card {
+      width: 260px;
+      min-height: 400px;
+    }
+
+    .dots-row {
+      display: flex; justify-content: center; gap: 6px;
+      margin-top: 2px;
+    }
+    .dots-row .d {
+      width: 18px; height: 3px;
+      background: var(--cd-card);
+      border-radius: 2px;
+      transition: all 0.25s ease;
+    }
+    .dots-row .d.on {
+      background: var(--cd-mg);
+      box-shadow: 0 0 6px var(--cd-mg);
+      width: 28px;
+    }
+
+    .cta-row {
+      display: flex; gap: 10px; margin-top: 6px;
+    }
+    .cta-row .btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 10px;
+      border: 1px solid var(--cd-mg);
+      color: var(--cd-mg);
+      background: transparent;
+      cursor: pointer;
+    }
+    .cta-row .btn.primary {
+      background: linear-gradient(135deg, var(--cd-mg), var(--cd-mg-dim));
+      color: #fff;
+      border: none;
+      box-shadow: 0 0 16px rgba(204, 0, 255, 0.3);
+    }
+
+    /* ---------- Bare mode (no phone, cards only — for PPT) ---------- */
+    body.bare { padding: 0; background: transparent; }
+    body.bare .phone {
+      width: auto;
+      min-height: auto;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    body.bare .status-bar,
+    body.bare .home-indicator,
+    body.bare .page .head,
+    body.bare .dots-row,
+    body.bare .cta-row { display: none; }
+    body.bare .page { padding: 40px; gap: 0; }
+    body.bare .slider {
+      margin: 0;
+      padding: 0;
+      gap: 28px;
+      overflow: visible;
+      scroll-snap-type: none;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    body.bare .slider .skin-card {
+      width: 300px;
+      min-height: 460px;
+    }
+  </style>
+</head>
+<body class="alt-body">
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="icons">
+        <div class="dots"><span></span><span></span><span></span><span></span></div>
+        <span style="font-size:10px;">5G</span>
+        <div class="bat"><div class="fill"></div></div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="head">
+        <span class="eyebrow">MULTI-TORNEO</span>
+        <h1>Un torneo para <em>cada sueño</em> compartido.</h1>
+        <p>Mismo motor. Cada comunidad, su universo.</p>
+      </div>
+
+      <div class="slider" id="slider">
+        <article class="skin-card s-triviallica has-image">
+          <img class="bg-img" src="../../assets/triviallica-concept.png" alt="Triviallica">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>Rock · Jugándose</div>
+          <div class="mark-wrap"><div class="mark">TRIVIALLICA</div></div>
+          <div class="meta">
+            <span class="niche">Metal Militia</span>
+            <span class="name">Las Vegas · Metallica en The Sphere</span>
+            <div class="bar"><div class="fill" style="width: 100%"></div></div>
+            <div class="stats"><span><strong>2.250</strong> tickets</span><span>Activado ✓</span></div>
+          </div>
+        </article>
+
+        <article class="skin-card s-triviamon has-image">
+          <img class="bg-img" src="../../assets/skins/triviamon-2.png" alt="TriviaMon">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>Pokémon · Inscripciones</div>
+          <div class="mark-wrap"><div class="mark"><img src="../../assets/triviamon-logo.png" alt="TriviaMon"></div></div>
+          <div class="meta">
+            <span class="niche">Universo Pokémon</span>
+            <span class="name">Pokémon World Championship</span>
+            <div class="bar"><div class="fill" style="width: 52%"></div></div>
+            <div class="stats"><span><strong>5.240</strong> / 10.000</span><span>52%</span></div>
+          </div>
+        </article>
+
+        <article class="skin-card s-swifties has-image">
+          <img class="bg-img" src="../../assets/skins/swifties-2.png" alt="Swifties">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>Pop · Inscripciones</div>
+          <div class="mark-wrap"><div class="mark">SWIFTIES</div></div>
+          <div class="meta">
+            <span class="niche">Taylor Swift</span>
+            <span class="name">Eras Tour · VIP box</span>
+            <div class="bar"><div class="fill" style="width: 38%"></div></div>
+            <div class="stats"><span><strong>3.840</strong> / 10.000</span><span>38%</span></div>
+          </div>
+        </article>
+
+        <article class="skin-card s-kpop has-image">
+          <img class="bg-img" src="../../assets/skins/kpopx-2.png" alt="KPOPX">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>K-Pop · Próximo</div>
+          <div class="mark-wrap"><div class="mark">KPOPX</div></div>
+          <div class="meta">
+            <span class="niche">BTS · BLACKPINK · NewJeans</span>
+            <span class="name">Seúl · fan meeting</span>
+            <div class="bar"><div class="fill" style="width: 18%"></div></div>
+            <div class="stats"><span><strong>1.800</strong> / 10.000</span><span>18%</span></div>
+          </div>
+        </article>
+
+        <article class="skin-card s-barra has-image">
+          <img class="bg-img" src="../../assets/skins/labarra.png" alt="La Barra">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>Fútbol · Abriendo</div>
+          <div class="mark-wrap"><div class="mark">LA BARRA</div></div>
+          <div class="meta">
+            <span class="niche">Boca Juniors</span>
+            <span class="name">Final Libertadores</span>
+            <div class="bar"><div class="fill" style="width: 24%"></div></div>
+            <div class="stats"><span><strong>2.400</strong> / 10.000</span><span>24%</span></div>
+          </div>
+        </article>
+
+        <article class="skin-card s-f1 has-image">
+          <img class="bg-img" src="../../assets/skins/poleposition.png" alt="Pole Position">
+          <div class="overlay"></div>
+          <div class="tag"><span class="dot"></span>F1 · Planificado</div>
+          <div class="mark-wrap"><div class="mark">POLE<br><small>POSITION</small></div></div>
+          <div class="meta">
+            <span class="niche">Fórmula 1</span>
+            <span class="name">GP Mónaco · paddock club</span>
+            <div class="bar"><div class="fill" style="width: 0%"></div></div>
+            <div class="stats"><span>Abre pronto</span><span>Meta 10.000</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="dots-row" id="dots">
+        <span class="d on"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+      </div>
+
+      <div class="cta-row">
+        <a href="#" class="btn">Ver todos</a>
+        <a href="#" class="btn primary">Explorar torneos</a>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+
+  <script>
+    if (new URLSearchParams(location.search).get('bare') === '1') {
+      document.body.classList.add('bare');
+    }
+
+    const slider = document.getElementById('slider');
+    const dots = document.querySelectorAll('#dots .d');
+    if (slider && dots.length) {
+      slider.addEventListener('scroll', () => {
+        const cards = slider.querySelectorAll('.skin-card');
+        const center = slider.scrollLeft + slider.offsetWidth / 2;
+        let best = 0, bestDiff = Infinity;
+        cards.forEach((c, i) => {
+          const cCenter = c.offsetLeft + c.offsetWidth / 2;
+          const diff = Math.abs(cCenter - center);
+          if (diff < bestDiff) { bestDiff = diff; best = i; }
+        });
+        dots.forEach((d, i) => d.classList.toggle('on', i === best));
+      });
+    }
+  </script>
+  <script src="../../scripts/nav.js" defer></script>
+</body>
+</html>

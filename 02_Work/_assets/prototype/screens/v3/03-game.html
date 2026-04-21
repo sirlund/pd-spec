@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Triviallica — Game (alt)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/alt.css">
+  <style>
+    .hero-banner {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+    .hero-banner img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .hero-banner::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 44px;
+      background: linear-gradient(180deg, rgba(6,5,14,0.9), transparent);
+      z-index: 2;
+    }
+    .hero-banner::after {
+      content: "";
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      background: linear-gradient(180deg, transparent, var(--cd-bg));
+      z-index: 2;
+    }
+
+    .live-row {
+      position: absolute;
+      bottom: 14px; left: 16px; right: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 3;
+    }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--cd-danger);
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cd-danger);
+      box-shadow: 0 0 6px var(--cd-danger);
+    }
+    .live-count {
+      font-size: 11px;
+      color: var(--cd-muted);
+    }
+    .live-count strong {
+      color: var(--cd-mg);
+      font-weight: 700;
+    }
+
+    .progress-line {
+      height: 3px;
+      background: var(--cd-card);
+      position: relative;
+    }
+    .progress-line .fill {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      width: 18.8%; /* 47/250 */
+      background: linear-gradient(90deg, var(--cd-mg), var(--cd-cyan));
+    }
+
+    .meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px 0;
+    }
+    .meta-row .lbl { font-size: 10px; color: var(--cd-dim); }
+    .meta-row .streak { font-size: 10px; color: var(--cd-muted); }
+
+    .timer-wrap {
+      display: flex; justify-content: center;
+      margin: 12px 0;
+    }
+    .timer-circle {
+      position: relative;
+      width: 52px; height: 52px;
+    }
+    .timer-circle svg { transform: rotate(-90deg); }
+    .timer-circle .num {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--cd-text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .difficulty {
+      text-align: center;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cd-dim);
+      margin-bottom: 16px;
+    }
+
+    .question-card {
+      margin: 0 18px 16px;
+      background: var(--cd-card);
+      border: 1px solid var(--cd-mg-border);
+      border-radius: 16px;
+      padding: 18px;
+      position: relative;
+    }
+    .question-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 16px; right: 16px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cd-mg), transparent);
+    }
+    .question-card p {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--cd-text);
+      margin: 0;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 18px;
+    }
+    .answer {
+      background: var(--cd-surface);
+      border: 1px solid var(--cd-dim);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .answer .text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cd-muted);
+      line-height: 1.25;
+    }
+    .answer .sub {
+      font-size: 10px;
+      color: var(--cd-dim);
+      margin-top: 4px;
+    }
+    .answer.selected {
+      background: linear-gradient(135deg, rgba(204,0,255,0.13), rgba(204,0,255,0.07));
+      border-color: var(--cd-mg);
+      box-shadow: 0 0 12px rgba(204, 0, 255, 0.25);
+    }
+    .answer.selected::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--cd-mg);
+      box-shadow: 0 0 8px var(--cd-mg);
+    }
+    .answer.selected .text { color: var(--cd-text); font-weight: 700; }
+    .answer.selected .sub { color: var(--cd-cyan); }
+
+    .bottom-bar {
+      position: absolute;
+      bottom: 20px; left: 0; right: 0;
+      padding: 14px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(180deg, transparent, var(--cd-bg) 40%);
+    }
+    .bottom-bar .pos { font-size: 11px; color: var(--cd-dim); }
+    .bottom-bar .rest {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      color: var(--cd-muted);
+    }
+    .bottom-bar .rest .dot {
+      width: 8px; height: 8px;
+      background: var(--cd-green);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--cd-green);
+    }
+  </style>
+</head>
+<body class="alt-body">
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="icons">
+        <div class="dots"><span></span><span></span><span></span><span></span></div>
+        <span style="font-size:10px;">5G</span>
+        <div class="bat"><div class="fill"></div></div>
+      </div>
+    </div>
+
+    <div class="hero-banner">
+      <img src="../../assets/triviallica-hero.png" alt="Triviallica">
+      <div class="live-row">
+        <span class="live-badge"><span class="live-dot pulse"></span>EN VIVO</span>
+        <span class="live-count"><strong>20.480</strong> jugando</span>
+      </div>
+    </div>
+
+    <div class="progress-line"><div class="fill"></div></div>
+
+    <div class="meta-row">
+      <span class="lbl">Pregunta 47 / 250</span>
+      <span class="streak">Racha: 12 correctas</span>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="timer-circle">
+        <svg width="52" height="52">
+          <circle cx="26" cy="26" r="24" stroke="#13112A" stroke-width="3" fill="none"/>
+          <circle cx="26" cy="26" r="24" stroke="#CC00FF" stroke-width="3" fill="none"
+                  stroke-linecap="round"
+                  stroke-dasharray="135.7 150.8"
+                  style="filter: drop-shadow(0 0 4px #CC00FF);"/>
+        </svg>
+        <span class="num">27</span>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <p>¿En qué álbum de Metallica apareció la canción "One" por primera vez?</p>
+    </div>
+
+    <div class="answers">
+      <button class="answer">
+        <div class="text">Kill 'Em All</div>
+        <div class="sub">1983</div>
+      </button>
+      <button class="answer">
+        <div class="text">Master of Puppets</div>
+        <div class="sub">1986</div>
+      </button>
+      <button class="answer selected">
+        <div class="text">…And Justice for All</div>
+        <div class="sub">1988</div>
+      </button>
+      <button class="answer">
+        <div class="text">Metallica (Black Album)</div>
+        <div class="sub">1991</div>
+      </button>
+    </div>
+
+    <div class="bottom-bar">
+      <span class="pos">Tu posición: <strong style="color: var(--cd-text);">#47</strong></span>
+      <span class="rest"><span class="dot"></span>14.820 en carrera</span>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <script src="../../scripts/nav.js" defer></script>
+</body>
+</html>

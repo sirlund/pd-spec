@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Soñao — Splash (alt)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/alt.css">
+  <style>
+    .splash { padding: 80px 28px 40px; height: 812px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .splash-glow {
+      position: absolute;
+      top: 30%; left: 50%; transform: translate(-50%, -50%);
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(204, 0, 255, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .logo-img {
+      width: 220px;
+      height: auto;
+      filter: drop-shadow(0 0 16px rgba(204, 0, 255, 0.45)) drop-shadow(0 0 40px rgba(120, 80, 200, 0.35));
+      animation: fade-in 1s ease;
+      position: relative; z-index: 2;
+    }
+    .tagline {
+      margin-top: 28px;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cd-dim);
+      text-align: center;
+    }
+    .progress-wrap {
+      position: absolute;
+      bottom: 110px;
+      left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .progress-bar {
+      width: 160px;
+      height: 2px;
+      background: var(--cd-card);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      width: 88%;
+      background: linear-gradient(90deg, var(--cd-mg), var(--cd-cyan));
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px var(--cd-mg);
+    }
+    .progress-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--cd-dim);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body class="alt-body">
+  <div class="phone">
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="icons">
+        <div class="dots"><span></span><span></span><span></span><span></span></div>
+        <span style="font-size:10px;">5G</span>
+        <div class="bat"><div class="fill"></div></div>
+      </div>
+    </div>
+
+    <div class="splash">
+      <div class="splash-glow"></div>
+      <img class="logo-img" src="../../assets/sonao-neon.png" alt="Soñao">
+      <p class="tagline">el mérito, no el dinero</p>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="fill"></div></div>
+        <span class="progress-label">cargando</span>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

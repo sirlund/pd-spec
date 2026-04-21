@@ -1,0 +1,216 @@
+/* ============================================
+   Soñao — Base System
+   Dark neon foundation + Triviallica skin overrides
+   ============================================ */
+
+:root {
+  /* Base dark */
+  --bg-0: #05050a;
+  --bg-1: #0a0a12;
+  --bg-2: #12121c;
+  --surface: #1a1a26;
+
+  /* Soñao brand (violet neon) */
+  --sonao-violet: #7B6BFF;
+  --sonao-violet-glow: #9B8BFF;
+  --sonao-violet-deep: #4A3DC8;
+
+  /* Text */
+  --text-0: #F4F4F8;
+  --text-1: #D0D0DC;
+  --text-2: #9A9AA8;
+  --text-3: #70707D;
+
+  /* Neutral accents */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Accent utility (per-screen overrides below) */
+  --accent: var(--sonao-violet);
+  --accent-glow: var(--sonao-violet-glow);
+  --accent-deep: var(--sonao-violet-deep);
+
+  /* Type */
+  --font-display: "Audiowide", "Orbitron", system-ui, sans-serif;
+  --font-body: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Timing */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.45;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* ---------- Neon primitives ---------- */
+
+.neon-text {
+  color: var(--accent-glow);
+  text-shadow:
+    0 0 4px var(--accent),
+    0 0 12px var(--accent),
+    0 0 28px var(--accent-deep),
+    0 0 48px var(--accent-deep);
+}
+
+.neon-border {
+  border: 1.5px solid var(--accent);
+  box-shadow:
+    0 0 8px var(--accent),
+    0 0 24px var(--accent-deep),
+    inset 0 0 8px rgba(255, 255, 255, 0.04);
+}
+
+.neon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 1.1em 2.2em;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-glow);
+  background: transparent;
+  border: 1.5px solid var(--accent);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  text-decoration: none;
+  text-shadow: 0 0 6px var(--accent);
+  box-shadow:
+    0 0 10px var(--accent-deep),
+    inset 0 0 10px rgba(0, 0, 0, 0.4);
+}
+.neon-btn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  box-shadow:
+    0 0 18px var(--accent),
+    0 0 36px var(--accent-deep),
+    inset 0 0 12px rgba(255, 255, 255, 0.05);
+}
+.neon-btn.primary {
+  color: #0B0B14;
+  background: var(--accent);
+  border-color: var(--accent);
+  text-shadow: none;
+  box-shadow:
+    0 0 24px var(--accent),
+    0 0 48px var(--accent-deep);
+}
+.neon-btn.primary:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent-glow);
+}
+
+/* ---------- Atmosphere ---------- */
+
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.015) 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 3px 3px, 5px 5px;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  z-index: 1000;
+}
+
+.vignette::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
+  z-index: 999;
+}
+
+/* ---------- Layout helpers ---------- */
+
+.screen {
+  width: 100vw;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 3rem 5rem;
+}
+
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.center { display: flex; align-items: center; justify-content: center; }
+
+/* ---------- Mono labels (timer, stats) ---------- */
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* ---------- Flicker animation (subtle) ---------- */
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  2%, 4% { opacity: 0.78; }
+  6% { opacity: 1; }
+  50%, 60% { opacity: 0.96; }
+}
+
+.flicker {
+  animation: neon-flicker 7s infinite var(--ease-in-out);
+}
+
+/* ---------- By Soñao lockup ---------- */
+
+.by-sonao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 500;
+}
+.by-sonao .sonao-mark {
+  height: 1.8em;
+  filter: drop-shadow(0 0 4px var(--sonao-violet))
+          drop-shadow(0 0 10px var(--sonao-violet-deep));
+  opacity: 0.95;
+}
+
+/* ---------- Mobile safety ---------- */
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden; }
+  .container { padding: 1.5rem 1rem; max-width: 100%; }
+  .screen { min-height: auto; }
+}

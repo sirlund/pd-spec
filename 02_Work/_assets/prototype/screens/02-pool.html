@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triviallica — Pool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Metal+Mania&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/triviallica.css">
+  <style>
+    .pool { padding: 3rem 5rem; min-height: 100vh; display: flex; flex-direction: column; gap: 2.5rem; }
+
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.2rem;
+    }
+    .top-bar .brand { display: flex; align-items: center; gap: 1.2rem; }
+    .brand .logo-wm { font-family: "Metal Mania", sans-serif; font-size: 1.6rem; color: var(--magenta-glow); text-shadow: 0 0 8px var(--magenta), 0 0 20px var(--magenta-deep); letter-spacing: 0.05em; }
+    .brand .by-sonao .sonao-mark { height: 1.5em; }
+
+    .state-pill {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--magenta);
+      font-family: var(--font-display); font-size: 0.7rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--magenta-glow); text-shadow: 0 0 6px var(--magenta);
+      box-shadow: 0 0 10px var(--magenta-deep);
+    }
+    .state-pill.complete {
+      border-color: #39FF14;
+      color: #39FF14;
+      text-shadow: 0 0 6px #39FF14;
+      box-shadow: 0 0 14px rgba(57, 255, 20, 0.4);
+    }
+
+    .central {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3rem; text-align: center;
+      max-width: 1100px; margin: 0 auto; width: 100%;
+    }
+
+    .tournament-title {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: var(--text-1);
+      letter-spacing: 0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .tournament-title em {
+      font-style: normal;
+      color: var(--magenta-glow);
+      text-shadow: 0 0 6px var(--magenta);
+      font-family: "Metal Mania", sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+    }
+
+    .big-numbers {
+      display: flex; align-items: baseline; gap: 1.2rem;
+      font-family: var(--font-display);
+      letter-spacing: 0.02em;
+    }
+    .big-numbers .current {
+      font-size: 10rem;
+      line-height: 0.9;
+      color: var(--magenta-glow);
+      text-shadow:
+        0 0 10px var(--magenta),
+        0 0 32px var(--magenta),
+        0 0 70px var(--magenta-deep);
+    }
+    .big-numbers .sep { font-size: 4rem; color: var(--text-3); }
+    .big-numbers .target { font-size: 4rem; color: var(--text-1); letter-spacing: 0.03em; }
+
+    .tickets-sub {
+      font-size: 0.82rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--text-2);
+    }
+
+    .tube-wrapper {
+      width: 100%;
+      max-width: 820px;
+      display: flex; flex-direction: column; gap: 0.7rem;
+    }
+    .tube-labels { display: flex; justify-content: space-between; align-items: center; }
+    .tube-labels .lbl { font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-2); }
+    .tube-labels .lbl.bold { color: var(--magenta-glow); text-shadow: 0 0 4px var(--magenta); font-weight: 600; }
+
+    .pool-tube.big { height: 22px; border-radius: 100px; }
+
+    .status-line { margin-top: 0.3rem; font-size: 1rem; color: var(--text-1); letter-spacing: 0.03em; }
+    .status-line .hi { color: var(--magenta-glow); text-shadow: 0 0 4px var(--magenta); font-weight: 600; }
+
+    .info-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem;
+      width: 100%; max-width: 900px;
+    }
+    .info-card {
+      padding: 1.4rem 1.6rem; border: 1px solid var(--line); background: var(--bg-1);
+      text-align: left;
+    }
+    .info-card .l { font-size: 0.66rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-2); display: block; margin-bottom: 0.5rem; }
+    .info-card .v { font-family: var(--font-display); font-size: 1.3rem; color: var(--text-0); letter-spacing: 0.04em; line-height: 1.1; }
+    .info-card .v.accent { color: var(--magenta-glow); text-shadow: 0 0 6px var(--magenta); }
+
+    .breakeven-banner {
+      padding: 1.6rem 2rem;
+      border: 1.5px solid #39FF14;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+      background: rgba(57, 255, 20, 0.04);
+      display: none; align-items: center; gap: 1.5rem;
+      width: 100%; max-width: 900px;
+    }
+    .breakeven-banner.show { display: flex; }
+    .breakeven-banner .check {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid #39FF14; color: #39FF14;
+      text-shadow: 0 0 8px #39FF14; font-size: 1.8rem;
+    }
+    .breakeven-banner .msg .title {
+      font-family: var(--font-display); letter-spacing: 0.18em; text-transform: uppercase;
+      color: #39FF14; text-shadow: 0 0 6px #39FF14; font-size: 0.85rem; margin-bottom: 0.25rem;
+    }
+    .breakeven-banner .msg .body { color: var(--text-0); font-size: 1rem; }
+
+    .state-picker {
+      position: fixed; top: 1rem; right: 1rem; display: flex; gap: 0.4rem;
+      background: rgba(10, 2, 8, 0.9); padding: 0.4rem; border: 1px solid var(--line);
+    }
+    .state-picker a {
+      font-family: var(--font-display); font-size: 0.65rem;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--text-2); text-decoration: none;
+      padding: 0.4rem 0.8rem; border: 1px solid transparent;
+    }
+    .state-picker a.active {
+      color: var(--magenta-glow); border-color: var(--magenta);
+      text-shadow: 0 0 4px var(--magenta);
+    }
+
+    @media (max-width: 768px) {
+      .pool { padding: 1.5rem 1.2rem; gap: 1.5rem; }
+      .top-bar { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+      .big-numbers .current { font-size: 5.5rem; }
+      .big-numbers .sep, .big-numbers .target { font-size: 2.4rem; }
+      .info-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+      .info-card { padding: 1rem 1.2rem; }
+      .state-picker { top: auto; bottom: 1rem; right: 1rem; }
+      .breakeven-banner { padding: 1.1rem 1.3rem; gap: 1rem; }
+      .breakeven-banner .msg .body { font-size: 0.9rem; }
+    }
+    @media (max-width: 480px) {
+      .big-numbers .current { font-size: 4rem; }
+      .big-numbers .sep, .big-numbers .target { font-size: 1.8rem; }
+      .brand .logo-wm { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body class="skin-triviallica grain vignette">
+  <div class="grunge-bg"></div>
+
+  <div class="state-picker">
+    <a href="?state=low" data-s="low">Bajo</a>
+    <a href="?state=mid" data-s="mid">Medio</a>
+    <a href="?state=complete" data-s="complete">Completo</a>
+  </div>
+
+  <div class="screen pool">
+    <header class="top-bar">
+      <div class="brand">
+        <span class="logo-wm flicker">TRIVIALLICA</span>
+        <span class="by-sonao">
+          by
+          <img class="sonao-mark" src="../assets/sonao-neon.png" alt="Soñao">
+        </span>
+      </div>
+      <span class="state-pill" id="pill">Pool abierto</span>
+    </header>
+
+    <main class="central">
+      <div>
+        <p class="tournament-title">Torneo #001 · <em>Metallica</em></p>
+      </div>
+
+      <div>
+        <div class="big-numbers">
+          <span class="current" id="current">142</span>
+          <span class="sep">/</span>
+          <span class="target">1.000</span>
+        </div>
+        <div class="tickets-sub">Tickets vendidos · Break-even en 1.000</div>
+      </div>
+
+      <div class="tube-wrapper">
+        <div class="tube-labels">
+          <span class="lbl">0</span>
+          <span class="lbl bold" id="pct-lbl">14,2%</span>
+          <span class="lbl">1.000 · Break-even</span>
+        </div>
+        <div class="pool-tube big" id="tube">
+          <div class="fill" id="fill" style="--pct: 14.2%"></div>
+        </div>
+        <div class="status-line">
+          <span class="hi" id="status-hi">858</span>
+          <span id="status-rest"> tickets restantes para que el torneo se active.</span>
+        </div>
+      </div>
+
+      <div class="breakeven-banner" id="be-banner">
+        <div class="check">✓</div>
+        <div class="msg">
+          <div class="title">Break-even alcanzado</div>
+          <div class="body">El torneo se activa el sábado 26 a las 15:00. Premio Tokio · 7 días + concierto confirmado.</div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="l">Ticket</span>
+          <span class="v">$12 USD</span>
+        </div>
+        <div class="info-card">
+          <span class="l">Pool actual</span>
+          <span class="v accent" id="pool-amount">$1.704</span>
+        </div>
+        <div class="info-card">
+          <span class="l">Si no se llega</span>
+          <span class="v">Reembolso 100%</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const state = params.get('state') || 'low';
+    const states = {
+      low:      { current: 142,  pct: 14.2, remaining: 858, pool: '$1.704',  pill: 'Pool abierto',    complete: false },
+      mid:      { current: 742,  pct: 74.2, remaining: 258, pool: '$8.904',  pill: 'Cerca del goal',  complete: false },
+      complete: { current: 1247, pct: 100,  remaining: 0,   pool: '$14.964', pill: 'Activado',         complete: true  }
+    };
+    const s = states[state] || states.low;
+    document.getElementById('current').textContent = s.current.toLocaleString('es-CL');
+    document.getElementById('pct-lbl').textContent = s.pct === 100 ? '100%' : s.pct.toString().replace('.', ',') + '%';
+    document.getElementById('fill').style.setProperty('--pct', s.pct + '%');
+    document.getElementById('pool-amount').textContent = s.pool;
+
+    const statusHi = document.getElementById('status-hi');
+    const statusRest = document.getElementById('status-rest');
+    if (s.complete) {
+      statusHi.textContent = 'Premio confirmado.';
+      statusRest.textContent = ' El torneo arranca el sábado.';
+    } else {
+      statusHi.textContent = s.remaining.toLocaleString('es-CL');
+      statusRest.textContent = ' tickets restantes para que el torneo se active.';
+    }
+
+    const pill = document.getElementById('pill');
+    pill.textContent = s.pill;
+    if (s.complete) {
+      pill.classList.add('complete');
+      document.getElementById('tube').classList.add('complete');
+      document.getElementById('be-banner').classList.add('show');
+    }
+
+    document.querySelectorAll('.state-picker a').forEach(a => {
+      if (a.dataset.s === state) a.classList.add('active');
+    });
+  </script>
+</body>
+</html>

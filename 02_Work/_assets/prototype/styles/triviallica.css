@@ -1,0 +1,189 @@
+/* ============================================
+   Triviallica — Skin Metallica
+   Magenta/red neon · grunge urbano
+   ============================================ */
+
+.skin-triviallica {
+  /* Core palette */
+  --magenta: #FF2FB8;
+  --magenta-glow: #FF6AD0;
+  --magenta-deep: #B0127A;
+
+  --red: #FF2F5A;
+  --red-glow: #FF6A86;
+  --red-deep: #B0123A;
+
+  --violet-deep: #2A0A3A;
+
+  /* Override accents */
+  --accent: var(--magenta);
+  --accent-glow: var(--magenta-glow);
+  --accent-deep: var(--magenta-deep);
+
+  --accent-2: var(--red);
+  --accent-2-glow: var(--red-glow);
+  --accent-2-deep: var(--red-deep);
+
+  background-color: #070308;
+}
+
+/* ---------- Grunge background ---------- */
+
+.skin-triviallica .grunge-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255, 47, 184, 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 80% at 20% 80%, rgba(255, 47, 90, 0.12), transparent 50%),
+    radial-gradient(ellipse 60% 60% at 85% 70%, rgba(110, 18, 122, 0.15), transparent 55%),
+    linear-gradient(180deg, #0A0308 0%, #050106 100%);
+}
+
+.skin-triviallica .grunge-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      rgba(255, 255, 255, 0.008) 2px 3px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 40px,
+      rgba(255, 47, 184, 0.02) 40px 41px
+    );
+  mix-blend-mode: overlay;
+}
+
+/* ---------- Triviallica wordmark ---------- */
+
+.triviallica-logo {
+  font-family: "Metal Mania", "Audiowide", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--magenta-glow);
+  text-shadow:
+    0 0 6px var(--magenta),
+    0 0 16px var(--magenta),
+    0 0 32px var(--magenta-deep),
+    0 0 60px var(--red-deep);
+}
+
+.triviallica-logo .outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--red);
+  text-shadow:
+    0 0 8px var(--red),
+    0 0 20px var(--red-deep);
+}
+
+/* ---------- Red outer ring (like the concept sign frame) ---------- */
+
+.neon-frame {
+  position: relative;
+  padding: 3rem 4rem;
+  border: 1.5px solid var(--magenta);
+  box-shadow:
+    0 0 12px var(--magenta),
+    0 0 40px var(--magenta-deep),
+    inset 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+.neon-frame::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 1.5px solid var(--red);
+  box-shadow:
+    0 0 14px var(--red),
+    0 0 36px var(--red-deep);
+  pointer-events: none;
+}
+
+/* ---------- Pool progress bar (neon tube) ---------- */
+
+.pool-tube {
+  position: relative;
+  height: 14px;
+  background: rgba(255, 47, 184, 0.08);
+  border: 1px solid rgba(255, 47, 184, 0.25);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.pool-tube .fill {
+  position: absolute;
+  inset: 0;
+  width: var(--pct, 0%);
+  background: linear-gradient(90deg, var(--red) 0%, var(--magenta) 100%);
+  box-shadow:
+    0 0 10px var(--magenta),
+    0 0 20px var(--magenta-deep),
+    inset 0 0 8px rgba(255, 255, 255, 0.3);
+  transition: width 0.6s var(--ease-out);
+}
+
+.pool-tube.complete .fill {
+  animation: pool-pulse 2s infinite ease-in-out;
+}
+
+@keyframes pool-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+
+/* ---------- Trivia question option buttons ---------- */
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.3rem 1.8rem;
+  background: rgba(20, 5, 15, 0.6);
+  border: 1.5px solid rgba(255, 47, 184, 0.3);
+  border-radius: 2px;
+  color: var(--text-0);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s var(--ease-out);
+  backdrop-filter: blur(4px);
+}
+
+.option:hover {
+  border-color: var(--magenta);
+  box-shadow:
+    0 0 12px var(--magenta),
+    0 0 24px var(--magenta-deep);
+  background: rgba(60, 10, 40, 0.6);
+}
+
+.option .letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1.5px solid var(--magenta);
+  border-radius: 2px;
+  font-family: var(--font-display);
+  color: var(--magenta-glow);
+  text-shadow: 0 0 6px var(--magenta);
+  flex-shrink: 0;
+}
+
+.option.correct {
+  border-color: #39FF14;
+  box-shadow: 0 0 12px #39FF14, 0 0 32px rgba(57, 255, 20, 0.4);
+}
+.option.correct .letter {
+  border-color: #39FF14;
+  color: #39FF14;
+  text-shadow: 0 0 6px #39FF14;
+}

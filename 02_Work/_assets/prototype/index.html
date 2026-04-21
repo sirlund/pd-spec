@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soñao Prototype · Index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css">
+  <style>
+    .idx { padding: 4rem 5rem; max-width: 980px; margin: 0 auto; }
+    .idx h1 {
+      font-family: var(--font-display); font-weight: 400;
+      font-size: 2.2rem; letter-spacing: 0.08em;
+      color: var(--sonao-violet);
+      text-shadow: 0 0 8px var(--sonao-violet), 0 0 24px var(--sonao-violet-deep);
+      margin-bottom: 0.5rem;
+    }
+    .idx .sub { color: var(--text-2); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.72rem; margin-bottom: 3rem; }
+    .idx ul { list-style: none; display: grid; gap: 0.8rem; }
+    .idx li a {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 1.2rem 1.6rem;
+      color: var(--text-0); text-decoration: none;
+      border: 1px solid var(--line); background: var(--bg-1);
+      transition: all 0.18s var(--ease-out);
+    }
+    .idx li a:hover {
+      border-color: var(--sonao-violet);
+      box-shadow: 0 0 12px var(--sonao-violet-deep);
+      background: var(--bg-2);
+    }
+    .idx li .num { font-family: var(--font-display); color: var(--sonao-violet); text-shadow: 0 0 6px var(--sonao-violet-deep); min-width: 3rem; }
+    .idx li .name { flex: 1; }
+    .idx li .status { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-2); }
+
+    @media (max-width: 768px) {
+      .idx { padding: 2.5rem 1.2rem; }
+      .idx h1 { font-size: 1.6rem; }
+      .idx li a { padding: 1rem 1.1rem; gap: 1rem; flex-wrap: wrap; }
+      .idx li .num { min-width: 2rem; font-size: 0.9rem; }
+      .idx li .name { min-width: 60%; }
+      .idx li .status { font-size: 0.62rem; }
+    }
+  </style>
+</head>
+<body class="grain">
+  <div class="idx">
+    <h1>SOÑAO · PROTOTYPE</h1>
+    <p class="sub">Pitch deck mockups · v0.1</p>
+    <h2 style="font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.2em; color: var(--text-2); margin: 0 0 1rem; font-weight: 400;">VERSIÓN A · DESKTOP</h2>
+    <ul>
+      <li><a href="screens/01-landing.html"><span class="num">01</span><span class="name">Landing + countdown</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/02-pool.html?state=low"><span class="num">02</span><span class="name">Pool · Bajo (142/1000)</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/02-pool.html?state=mid"><span class="num">02</span><span class="name">Pool · Medio (742/1000)</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/02-pool.html?state=complete"><span class="num">02</span><span class="name">Pool · Completo (break-even ✓)</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/03-play.html"><span class="num">03</span><span class="name">Pregunta trivia en vivo</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/04-winner.html"><span class="num">04</span><span class="name">Resultado / ganador</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/05-multiskin.html"><span class="num">05</span><span class="name">Multi-torneo showcase</span><span class="status">Draft</span></a></li>
+    </ul>
+
+    <h2 style="font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.2em; color: var(--text-2); margin: 2.5rem 0 1rem; font-weight: 400;">VERSIÓN B · MOBILE (port Claude Desktop)</h2>
+    <ul>
+      <li><a href="screens/alt/00-splash.html"><span class="num">00</span><span class="name">Splash · "el mérito, no el dinero"</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/alt/01-landing.html"><span class="num">01</span><span class="name">Landing · ¿Cuánto sabes de Metallica?</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/alt/03-game.html"><span class="num">03</span><span class="name">Game · pregunta 7/15</span><span class="status">Draft</span></a></li>
+      <li><a href="screens/alt/04-leaderboard.html"><span class="num">04</span><span class="name">Leaderboard · torneo finalizado</span><span class="status">Draft</span></a></li>
+    </ul>
+
+    <h2 style="font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.2em; color: #FF6AD0; margin: 2.5rem 0 1rem; font-weight: 400; text-shadow: 0 0 6px rgba(255,47,184,0.4);">VERSIÓN C · UNIFICADA (mobile-first + pantallas A) ★</h2>
+    <ul>
+      <li><a href="screens/v3/00-splash.html"><span class="num">00</span><span class="name">Splash · Triviallica immersive</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/01-landing.html"><span class="num">01</span><span class="name">Landing · ¿Cuánto sabes de Metallica?</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/02-pool.html?state=low"><span class="num">02</span><span class="name">Pool · Bajo (142/1000)</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/02-pool.html?state=mid"><span class="num">02</span><span class="name">Pool · Medio (742/1000)</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/02-pool.html?state=complete"><span class="num">02</span><span class="name">Pool · Completo ✓</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/03-game.html"><span class="num">03</span><span class="name">Game · pregunta 7/15</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/04-winner.html"><span class="num">04</span><span class="name">Winner · podio + top 7 + tu posición</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/05-multiskin.html"><span class="num">05</span><span class="name">Multi-torneo · slider en phone</span><span class="status">C</span></a></li>
+      <li><a href="screens/v3/05-multiskin.html?bare=1"><span class="num">05</span><span class="name">Multi-torneo · cards sueltas (para PPT)</span><span class="status">bare</span></a></li>
+    </ul>
+  </div>
+</body>
+</html>

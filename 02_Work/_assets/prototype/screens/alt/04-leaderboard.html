@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Triviallica — Leaderboard (alt)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../styles/alt.css">
+  <style>
+    .glow-bg {
+      position: absolute;
+      top: 50px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px; height: 200px;
+      background: radial-gradient(circle, rgba(204, 0, 255, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .lb-content { position: relative; z-index: 2; padding: 60px 22px 30px; }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .brand .name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--cd-mg);
+      letter-spacing: 5px;
+      text-shadow: 0 0 8px rgba(204, 0, 255, 0.4);
+    }
+    .brand .by { font-size: 10px; color: var(--cd-dim); letter-spacing: 2px; margin-top: 2px; }
+
+    .ended {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 11px;
+      color: var(--cd-green);
+      margin-bottom: 22px;
+    }
+    .ended .dot {
+      width: 6px; height: 6px; background: var(--cd-green); border-radius: 50%;
+      box-shadow: 0 0 6px var(--cd-green);
+    }
+
+    .winner-spot {
+      text-align: center;
+      padding: 22px 18px;
+      background: linear-gradient(135deg, rgba(204,0,255,0.1), rgba(255,215,0,0.05));
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+    .winner-circle {
+      width: 64px; height: 64px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cd-mg), var(--cd-gold));
+      border: 2px solid var(--cd-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 0 24px rgba(255, 215, 0, 0.35);
+    }
+    .winner-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--cd-text);
+      margin-bottom: 4px;
+    }
+    .winner-stats {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cd-cyan);
+      margin-bottom: 6px;
+    }
+    .winner-prize {
+      font-size: 11px;
+      color: var(--cd-muted);
+    }
+    .winner-prize strong { color: var(--cd-cyan); }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--cd-card);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .stat-cell {
+      background: var(--cd-surface);
+      padding: 12px 0;
+      text-align: center;
+    }
+    .stat-cell .v { font-size: 16px; font-weight: 800; color: var(--cd-text); line-height: 1; }
+    .stat-cell .l { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--cd-dim); margin-top: 4px; display: block; }
+
+    .tabs {
+      display: flex; gap: 6px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cd-dim);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--cd-card);
+      border-color: var(--cd-mg-border);
+      color: var(--cd-text);
+    }
+
+    .lb-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .lb-row {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--cd-surface);
+      border: 1px solid transparent;
+      border-radius: 12px;
+    }
+    .lb-row .rank-chip {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      border-radius: 50%;
+      background: var(--cd-card);
+      border: 1px solid var(--cd-dim);
+      color: var(--cd-muted);
+    }
+    .lb-row.gold   { background: rgba(255,215,0,0.04); border-color: rgba(255,215,0,0.2); }
+    .lb-row.silver { background: rgba(192,192,192,0.04); border-color: rgba(192,192,192,0.2); }
+    .lb-row.bronze { background: rgba(205,127,50,0.04); border-color: rgba(205,127,50,0.2); }
+    .lb-row.gold .rank-chip   { background: rgba(255,215,0,0.15); border-color: var(--cd-gold); color: var(--cd-gold); }
+    .lb-row.silver .rank-chip { background: rgba(192,192,192,0.15); border-color: var(--cd-silver); color: var(--cd-silver); }
+    .lb-row.bronze .rank-chip { background: rgba(205,127,50,0.15); border-color: var(--cd-bronze); color: var(--cd-bronze); }
+
+    .lb-row .nm .name { font-size: 13px; font-weight: 700; color: var(--cd-text); }
+    .lb-row.top .nm .name { font-weight: 700; }
+    .lb-row:not(.top) .nm .name { font-weight: 500; }
+    .lb-row .nm .sub { font-size: 10px; color: var(--cd-muted); margin-top: 1px; }
+    .lb-row .pts {
+      font-size: 13px; font-weight: 700; color: var(--cd-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .lb-row.top .pts { color: var(--cd-mg); }
+
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 18px 0 10px;
+    }
+    .divider .line { flex: 1; height: 1px; background: var(--cd-dim); }
+    .divider .l { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--cd-dim); }
+
+    .you-row {
+      background: rgba(0, 229, 204, 0.06);
+      border: 1px solid rgba(0, 229, 204, 0.25);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 32px 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .you-row .rank-chip {
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      border-radius: 50%;
+      background: rgba(0, 229, 204, 0.1);
+      border: 1px solid var(--cd-cyan);
+      color: var(--cd-cyan);
+    }
+    .you-row .nm .name { font-size: 13px; font-weight: 700; color: var(--cd-text); }
+    .you-row .nm .sub { font-size: 10px; color: var(--cd-dim); margin-top: 1px; }
+    .you-row .pts { font-size: 13px; font-weight: 700; color: var(--cd-cyan); }
+  </style>
+</head>
+<body class="alt-body">
+  <div class="phone">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="icons">
+        <div class="dots"><span></span><span></span><span></span><span></span></div>
+        <span style="font-size:10px;">5G</span>
+        <div class="bat"><div class="fill"></div></div>
+      </div>
+    </div>
+
+    <div class="glow-bg"></div>
+
+    <div class="lb-content">
+      <div class="brand">
+        <div class="name">TRIVIALLICA</div>
+        <div class="by">by soñao</div>
+      </div>
+
+      <div class="ended">
+        <span class="dot pulse"></span>
+        Torneo finalizado
+      </div>
+
+      <div class="winner-spot">
+        <div class="winner-circle">🏆</div>
+        <div class="winner-name">MetalHead_CL</div>
+        <div class="winner-stats">15/15 correctas · 3:42 min</div>
+        <div class="winner-prize">Ganó <strong>Tokio, 7 días todo incluido</strong></div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-cell"><div class="v">1,247</div><span class="l">Jugadores</span></div>
+        <div class="stat-cell"><div class="v">15</div><span class="l">Preguntas</span></div>
+        <div class="stat-cell"><div class="v">~6h</div><span class="l">Duración</span></div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active">Leaderboard</button>
+        <button class="tab">Tus stats</button>
+      </div>
+
+      <div class="lb-list">
+        <div class="lb-row top gold">
+          <span class="rank-chip">1</span>
+          <div class="nm"><div class="name">MetalHead_CL</div><div class="sub">15/15 · 3:42</div></div>
+          <div class="pts">14,850</div>
+        </div>
+        <div class="lb-row top silver">
+          <span class="rank-chip">2</span>
+          <div class="nm"><div class="name">ThrashKing99</div><div class="sub">14/15 · 4:18</div></div>
+          <div class="pts">13,200</div>
+        </div>
+        <div class="lb-row top bronze">
+          <span class="rank-chip">3</span>
+          <div class="nm"><div class="name">RideTheLightning</div><div class="sub">14/15 · 5:01</div></div>
+          <div class="pts">12,800</div>
+        </div>
+        <div class="lb-row">
+          <span class="rank-chip">4</span>
+          <div class="nm"><div class="name">MasterPuppets</div><div class="sub">13/15 · 3:55</div></div>
+          <div class="pts">11,400</div>
+        </div>
+        <div class="lb-row">
+          <span class="rank-chip">5</span>
+          <div class="nm"><div class="name">SanitariumFan</div><div class="sub">13/15 · 4:22</div></div>
+          <div class="pts">11,100</div>
+        </div>
+        <div class="lb-row">
+          <span class="rank-chip">6</span>
+          <div class="nm"><div class="name">OneForAll_MX</div><div class="sub">12/15 · 4:05</div></div>
+          <div class="pts">10,200</div>
+        </div>
+        <div class="lb-row">
+          <span class="rank-chip">7</span>
+          <div class="nm"><div class="name">NothingElseM</div><div class="sub">12/15 · 4:44</div></div>
+          <div class="pts">9,800</div>
+        </div>
+      </div>
+
+      <div class="divider">
+        <span class="line"></span>
+        <span class="l">Tu posición</span>
+        <span class="line"></span>
+      </div>
+
+      <div class="you-row">
+        <span class="rank-chip">47</span>
+        <div class="nm"><div class="name">Tú</div><div class="sub">10/15 · 5:22</div></div>
+        <div class="pts">7,200</div>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

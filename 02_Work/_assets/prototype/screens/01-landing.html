@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triviallica — Landing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Metal+Mania&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/triviallica.css">
+  <style>
+    .landing { padding: 2.5rem 4rem; min-height: 100vh; display: flex; flex-direction: column; gap: 2rem; }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.2rem;
+    }
+    .top-bar .left, .top-bar .right {
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+    .top-bar .by-sonao .sonao-mark { height: 1.5em; }
+    .small-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-2); }
+
+    .hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4rem;
+      align-items: center;
+      max-width: 1320px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-left .tagline {
+      font-size: 0.75rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--magenta-glow); text-shadow: 0 0 6px var(--magenta);
+      margin-bottom: 1rem;
+    }
+    .hero-left h1 {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 3.6rem;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--text-0);
+      margin-bottom: 1.5rem;
+    }
+    .hero-left h1 em {
+      font-style: normal;
+      color: var(--magenta-glow);
+      text-shadow: 0 0 8px var(--magenta), 0 0 24px var(--magenta-deep);
+    }
+    .hero-left .lede {
+      color: var(--text-1);
+      font-size: 1.15rem;
+      line-height: 1.55;
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+    }
+
+    .cta-block {
+      display: flex; gap: 1.2rem; align-items: center;
+    }
+
+    .ticket-price {
+      display: flex; flex-direction: column; gap: 0.15rem;
+    }
+    .ticket-price .num {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--text-0);
+      letter-spacing: 0.04em;
+    }
+    .ticket-price .num .cur { color: var(--magenta-glow); text-shadow: 0 0 6px var(--magenta); }
+    .ticket-price .sub { font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-2); }
+
+    /* Hero right — neon sign */
+    .neon-sign {
+      position: relative;
+      aspect-ratio: 5/4;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #100307 0%, #1a0612 100%);
+      border: 1.5px solid var(--magenta);
+      box-shadow:
+        0 0 18px var(--magenta),
+        0 0 60px var(--magenta-deep),
+        inset 0 0 40px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+    .neon-sign::before {
+      content: "";
+      position: absolute; inset: 10px;
+      border: 1.5px solid var(--red);
+      box-shadow: 0 0 14px var(--red), 0 0 40px var(--red-deep);
+      pointer-events: none;
+    }
+    .neon-sign::after {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(255,47,184,0.22), transparent 55%),
+        radial-gradient(ellipse at 70% 70%, rgba(255,47,90,0.18), transparent 55%);
+      pointer-events: none;
+    }
+    .neon-sign .mark {
+      font-family: "Metal Mania", sans-serif;
+      font-size: 5rem;
+      letter-spacing: 0.04em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--magenta-glow);
+      text-shadow:
+        0 0 8px var(--magenta),
+        0 0 20px var(--magenta),
+        0 0 44px var(--magenta-deep),
+        0 0 80px var(--red-deep);
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .neon-sign .mark small {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 0.5em;
+      -webkit-text-stroke: 0;
+      color: var(--magenta-glow);
+      text-shadow: 0 0 6px var(--magenta);
+      margin-top: 0.8rem;
+    }
+    .neon-sign .corner-wire {
+      position: absolute;
+      width: 2px; background: var(--magenta-deep);
+      box-shadow: 0 0 6px var(--magenta-deep);
+    }
+    .neon-sign .corner-wire.tl { top: 0; left: 20%; height: 18px; }
+    .neon-sign .corner-wire.tr { top: 0; right: 30%; height: 14px; }
+
+    /* Countdown block under hero */
+    .countdown-band {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2.5rem;
+      align-items: center;
+      padding: 2rem 2.5rem;
+      border-top: 1px solid rgba(255, 47, 184, 0.2);
+      border-bottom: 1px solid rgba(255, 47, 184, 0.2);
+      background: rgba(255, 47, 184, 0.02);
+    }
+    .countdown-band .start-label .l {
+      display: block; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--text-2); margin-bottom: 0.35rem;
+    }
+    .countdown-band .start-label .v {
+      font-family: var(--font-display); font-size: 1.15rem; color: var(--text-0); letter-spacing: 0.04em;
+    }
+
+    .clock {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+    }
+    .clock .box {
+      text-align: center;
+      padding: 1rem 0.5rem 0.9rem;
+      border: 1px solid rgba(255, 47, 184, 0.3);
+      background: rgba(20, 5, 15, 0.6);
+      position: relative;
+    }
+    .clock .box .num {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 2.8rem;
+      line-height: 1;
+      color: var(--magenta-glow);
+      text-shadow:
+        0 0 6px var(--magenta),
+        0 0 18px var(--magenta-deep);
+    }
+    .clock .box .unit {
+      display: block;
+      font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--text-2);
+      margin-top: 0.6rem;
+    }
+
+    .pool-teaser { display: flex; flex-direction: column; gap: 0.5rem; min-width: 220px; text-align: right; }
+    .pool-teaser .label { text-align: right; }
+    .pool-teaser .count { font-family: var(--font-mono); font-size: 1.3rem; color: var(--text-0); }
+    .pool-teaser .count .curr { color: var(--magenta-glow); text-shadow: 0 0 6px var(--magenta); }
+
+    .prize-card {
+      margin-top: 1.8rem;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1.3rem 1.8rem;
+      border: 1px solid var(--line);
+      background: var(--bg-1);
+    }
+    .prize-card .icon {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--magenta);
+      color: var(--magenta-glow);
+      text-shadow: 0 0 6px var(--magenta);
+      font-size: 1.4rem;
+    }
+    .prize-card .info .l { font-size: 0.68rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-2); display: block; margin-bottom: 0.2rem;}
+    .prize-card .info .v { font-size: 1rem; color: var(--text-0); font-weight: 500; letter-spacing: 0.01em; }
+    .prize-card .value {
+      font-family: var(--font-mono); font-size: 1.2rem; color: var(--magenta-glow);
+      text-shadow: 0 0 6px var(--magenta);
+    }
+
+    @media (max-width: 860px) {
+      .landing { padding: 1.5rem 1.2rem; gap: 1.5rem; }
+      .top-bar { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+      .hero { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-left h1 { font-size: 2rem; }
+      .hero-left .lede { font-size: 1rem; }
+      .cta-block { flex-wrap: wrap; gap: 1rem; }
+      .neon-sign { aspect-ratio: 16/11; }
+      .neon-sign .mark { font-size: 3rem; }
+      .countdown-band {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.4rem 1.2rem;
+      }
+      .pool-teaser { text-align: left; }
+      .pool-teaser .label { text-align: left; }
+      .clock { gap: 0.6rem; }
+      .clock .box .num { font-size: 2rem; }
+      .prize-card { grid-template-columns: auto 1fr; gap: 1rem; padding: 1.1rem 1.2rem; }
+      .prize-card .value { grid-column: 1 / -1; text-align: right; }
+    }
+    @media (max-width: 480px) {
+      .hero-left h1 { font-size: 1.65rem; }
+      .neon-sign .mark { font-size: 2.2rem; }
+      .clock .box .num { font-size: 1.6rem; padding: 0; }
+      .clock .box { padding: 0.8rem 0.3rem; }
+    }
+  </style>
+</head>
+<body class="skin-triviallica grain vignette">
+  <div class="grunge-bg"></div>
+
+  <div class="screen landing">
+    <header class="top-bar">
+      <div class="left">
+        <span class="by-sonao">
+          <img class="sonao-mark" src="../assets/sonao-neon.png" alt="Soñao">
+        </span>
+        <span class="small-label">Torneo #001 · Metallica</span>
+      </div>
+      <div class="right">
+        <span class="small-label">Santiago · Chile</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-left">
+        <p class="tagline">Si sabes, viajas</p>
+        <h1>Demuestra cuánto sabes de Metallica. <em>Gana un viaje a Tokio</em> + concierto en vivo.</h1>
+        <p class="lede">Un torneo. Seis horas. 15 preguntas por ronda. Gana el fan que más sabe. La comunidad financia el premio. Si no se llega al break-even, se reembolsa todo.</p>
+        <div class="cta-block">
+          <a href="#" class="neon-btn primary">Comprar ticket</a>
+          <div class="ticket-price">
+            <span class="num"><span class="cur">$</span>12 USD</span>
+            <span class="sub">Ticket · sin costos ocultos</span>
+          </div>
+        </div>
+
+        <div class="prize-card">
+          <div class="icon">✈</div>
+          <div class="info">
+            <span class="l">Premio</span>
+            <span class="v">Tokio · 7 días + concierto Metallica en el Tokyo Dome</span>
+          </div>
+          <div class="value">~$8.400 USD</div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="neon-sign flicker">
+          <span class="corner-wire tl"></span>
+          <span class="corner-wire tr"></span>
+          <div class="mark">
+            TRIVIALLICA
+            <small>METALLICA · EST. 2026</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="countdown-band">
+      <div class="start-label">
+        <span class="l">Inicio del torneo</span>
+        <span class="v">Sáb 26 · 15:00 GMT-3</span>
+      </div>
+      <div class="clock">
+        <div class="box"><span class="num">07</span><span class="unit">Días</span></div>
+        <div class="box"><span class="num">14</span><span class="unit">Horas</span></div>
+        <div class="box"><span class="num">32</span><span class="unit">Min</span></div>
+        <div class="box"><span class="num">18</span><span class="unit">Seg</span></div>
+      </div>
+      <div class="pool-teaser">
+        <span class="label small-label">Pool actual</span>
+        <span class="count"><span class="curr">742</span> / 1.000 tickets</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
